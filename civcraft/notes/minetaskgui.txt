@@ -1,0 +1,185 @@
+	public void completeMineTask(Player p, Inventory inv) {
+		Mine mine = null;
+		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+		if (buildable instanceof Mine) {
+			mine = (Mine) buildable;
+		} else {
+			CivMessage.sendError(p, "Mine you are trying to access is null? Contact an admin if this continues.");
+		}
+		
+		Town t = mine.getTown();
+		String taskName = ChatColor.stripColor(inv.getName()).replace(t.getName()+" Mine Task ", "");
+		int task = Integer.parseInt(taskName);
+		
+		ConfigMineTask mtasks = CivSettings.mineTasks.get(task);
+		boolean addedNotRequiredItems = false;
+		
+		int redstoneG = 0;
+		int clayG = 0;
+		int ironG = 0;
+		int diamondG = 0;
+		
+		int redstoneR = 0;
+		int clayR = 0;
+		int ironR = 0;
+		int diamondR = 0;
+		
+		for (Integer typeID : mtasks.required.keySet()) {
+			int imat = typeID;
+			@SuppressWarnings("deprecation")
+			Material mat = Material.getMaterial(imat);
+			if (mat == Material.REDSTONE) {
+				redstoneR = mtasks.required.get(typeID);
+			}
+			if (mat == Material.CLAY_BALL) {
+				clayR = mtasks.required.get(typeID);
+			}
+			if (mat == Material.IRON_INGOT) {
+				ironR = mtasks.required.get(typeID);
+			}
+			if (mat == Material.DIAMOND) {
+				diamondR = mtasks.required.get(typeID);
+			}
+			if (mat != Material.REDSTONE && mat != Material.CLAY_BALL && mat != Material.IRON_INGOT && mat != Material.DIAMOND) {
+				CivLog.warning("Mine Task has null item, we cannot process it: "+mat);
+			}
+		}
+		
+		double reward = mtasks.reward;
+		
+		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
+			if (stack == null || stack.getType() == Material.AIR) {
+			continue;
+			}
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Requirements")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			if (stack.getType() == Material.REDSTONE) {
+				redstoneG += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (stack.getType() == Material.CLAY_BALL) {
+				clayG += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (stack.getType() == Material.IRON_INGOT) {
+				ironG += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (stack.getType() == Material.DIAMOND) {
+				diamondG += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+				addedNotRequiredItems = true;
+			} else if (craftMat == null) { //Drop any vanilla items in the inventory
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+				addedNotRequiredItems = true;
+			}
+		}
+		
+		if (redstoneG >= redstoneR && clayG >= clayR && ironG >= ironR && diamondG >= diamondR) { //Drop extra materials
+			int redstoneD = redstoneG - redstoneR;
+			int clayD = clayG - clayR;
+			int ironD = ironG - ironR;
+			int diamondD = diamondG - diamondR;
+			
+			for (int i = 0; i < reward; i++) {
+				ItemStack newMat = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+			}
+			
+			CivMessage.sendTown(t, p.getName()+" has completed mine task "+task+" and earned "+reward+" hammers!");
+			mine.sessionAdd(mine.getKey(mine, "task"+task), "complete");
+			
+			if (redstoneD > 0) {
+				for (int i = 0; i < redstoneD; i++) {
+					ItemStack newMat = new ItemStack(Material.REDSTONE);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (clayD > 0) {
+				for (int i = 0; i < clayD; i++) {
+					ItemStack newMat = new ItemStack(Material.CLAY_BALL);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (ironD > 0) {
+				for (int i = 0; i < ironD; i++) {
+					ItemStack newMat = new ItemStack(Material.IRON_INGOT);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (diamondD > 0) {
+				for (int i = 0; i < diamondD; i++) {
+					ItemStack newMat = new ItemStack(Material.DIAMOND);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+		} else if (redstoneG <= 0 && clayG <= 0 && ironG <= 0 && diamondG <= 0) {
+			CivMessage.sendError(p, "You need to deposit items in order to do a mine task!");
+		} else { //Drop anything that cannot complete the task
+			String errorMsg = "Not enough items to complete the task, you were missing: ";
+			
+			if (redstoneR > redstoneG) {
+				errorMsg += (redstoneR-redstoneG)+" Redstone, ";
+			} else {
+				errorMsg += "0 Redstone, ";
+			}
+			if (clayR > clayG) {
+				errorMsg += (clayR-clayG)+" Clay, ";
+			} else {
+				errorMsg += "0 Clay, ";
+			}
+			if (ironR > ironG) {
+				errorMsg += (ironR-ironG)+" Iron, ";
+			} else {
+				errorMsg += "0 Iron, ";
+			}
+			if (diamondR > diamondG) {
+				errorMsg += (diamondR-diamondG)+" Diamond, ";
+			} else {
+				errorMsg += "0 Diamond, ";
+			}
+			
+			if (redstoneG > 0) {
+				for (int i = 0; i < redstoneG; i++) {
+					ItemStack newMat = new ItemStack(Material.REDSTONE);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (clayG > 0) {
+				for (int i = 0; i < clayG; i++) {
+					ItemStack newMat = new ItemStack(Material.CLAY_BALL);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (ironG > 0) {
+				for (int i = 0; i < ironG; i++) {
+					ItemStack newMat = new ItemStack(Material.IRON_INGOT);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			if (diamondG > 0) {
+				for (int i = 0; i < diamondG; i++) {
+					ItemStack newMat = new ItemStack(Material.DIAMOND);
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				}
+			}
+			
+			CivMessage.sendError(p, errorMsg+".. Dropping these items back on the ground.");
+		}
+		
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+	}

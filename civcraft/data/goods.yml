@@ -1,0 +1,432 @@
+#
+# This file contains information about the trade goods.
+#
+# The trade goods are divided into two lists, land goods and water goods.
+# Configuration for them is identical, however as you might expect... water 
+# goods never spawn on land and land goods never spawn on water.
+#
+
+######## Global Trade Good Options #######
+# maximum bonus from same-type goods you can get.
+trade_good_multiplier_max: 3
+
+# Number of days before repo. When goodies are repo'd, they go back to the trade outpost that spawned them.
+# Day of the week trade goods are repo'd, and respawn at the trade outpost.
+# 1 = Sunday 7 = Saturday -- 0 = Midnight 12 = Noon -- 00 = right at the hour, 30 = halfway throuh the hour
+#Friday
+trade_good_repo_day: 6
+#6PM / 16H
+trade_good_repo_hour: 18
+# HR:01
+trade_good_repo_minute: 05
+
+########### Trade Good Generation Options #######
+generation:
+    # Minimum number of chunks trade goods can be apart
+    chunks_min: 15
+    # Maximum number of chunks trade goods should be apart
+    chunks_max: 32
+
+    # World size in x chunks (radius)
+    chunks_x: 500
+    # World size in z chunks (radius)
+    chunks_z: 500
+    
+    # Random seed for trade good locations
+    seed: 12345
+
+# Hemispheres, valid ranges that trade goods can spawn in.
+# The the minecraft world...
+#  north direction is z-
+#  south direction is z+
+#  west direction is x-
+#  east direction is x+
+#  By using 0 as a min or max means you dont care.
+hemispheres:
+      # The following hemisphere is north.
+      # We dont care about x (east/west) so
+      # they are zero.
+      # the z_min (how far negative we can go) do dont
+      # care about, so it is also zero.
+      # the z_max is set to -400 so that we must be greater than -400 to
+      # registered as a northern hemisphere.
+    - id: 'hemi_north'
+      x_min: 0
+      x_max: 0
+      z_min: 0
+      z_max: -200
+    - id: 'hemi_south'
+      x_min: 0
+      x_max: 0
+      z_min: 200
+      z_max: 0
+    - id: 'hemi_east'
+      x_min: 200
+      x_max: 0
+      z_min: 0
+      z_max: 0
+    - id: 'hemi_west'
+      x_min: 0
+      x_max: -200
+      z_min: 0
+      z_max: 0
+    # Overlapping hemishperes are OK.
+    - id: 'hemi_equator'
+      x_min: 0
+      x_max: 0
+      z_min: -200
+      z_max: 200
+    - id: 'hemi_northeast'
+      x_min: 200
+      x_max: 0
+      z_min: 0
+      z_max: -200
+    - id: 'hemi_northwest'
+      x_min: 0
+      x_max: -200
+      z_min: 0
+      z_max: -200
+    - id: 'hemi_southwest'
+      x_min: 0
+      x_max: -200
+      z_min: 200
+      z_max: 0
+    - id: 'hemi_southeast'
+      x_min: 200
+      x_max: 0
+      z_min: 200
+      z_max: 0
+########## Trade Good Types #######
+# id - unquie ID to identify this good
+# name - Display name shown on goods and messages
+# value - amount of base coins this good generates
+# buffs - list of buff id's that this trade good is using. (See buffs.yml)
+# material - item id of in-game item used for visuals.
+# material_data - data value of in-game item used for visuals.
+#
+land_goods:
+    - id: 'good_citrus'
+      name: Citrus
+      value: 125.0
+      buffs: 'buff_year_of_plenty'
+      material: 351 # dye
+      material_data: 14 # orange dye
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_cocoa'
+      name: Cocoa
+      value: 500.0
+      buffs: 'buff_advanced_touring, buff_year_of_plenty, buff_preservative'
+      material: 351 # dye
+      material_data: 3 # cocoa beans
+      culture: 1.2
+      food: 7
+#
+    - id: 'good_coffee'
+      name: Coffee
+      value: 375.0
+      buffs: 'buff_rush, buff_extraction, buff_innovation'
+      material: 390 # flower pot
+      material_data: 0
+      culture: 0.5
+      food: 7
+#      hemispheres: 'hemi_northwest'
+#
+    - id: 'good_copper'
+      name: Copper
+      value: 250.0
+      buffs: 'buff_advanced_tooling, buff_construction'
+      material: 369 # blaze rod
+      material_data: 0
+      culture: 0.5
+      food: 2
+#
+    - id: 'good_corn'
+      name: Corn
+      value: 125.0
+      buffs: 'buff_year_of_plenty'
+      material: 371 # gold nugget
+      material_data: 0
+      culture: 0.5
+      food: 10
+#
+    - id: 'good_cotton'
+      name: Cotton
+      value: 250.0
+      buffs: 'buff_fine_art, buff_hedonism'
+      material: 351 # dye
+      material_data: 15 # bone meal
+      culture: 0.8
+      food: 4
+#
+    - id: 'good_gems'
+      name: Gems
+      value: 375.0
+      buffs: 'buff_barter, buff_greed, buff_monopoly'
+      material: 388 # emerald
+      material_data: 0
+      culture: 1.2
+      food: 2
+#      hemispheres: 'hemi_southeast'
+#
+    - id: 'good_grapes'
+      name: Grapes
+      value: 250.0
+      buffs: 'buff_hedonism, buff_year_of_plenty'
+      material: 372 # nether wart seed
+      material_data: 0
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_guarana'
+      name: Guarana
+      value: 375.0
+      buffs: 'buff_rush, buff_extraction, buff_medicine'
+      material: 351 # dye
+      material_data: 1 # red dye
+      culture: 0.8
+      food: 4
+#      hemispheres: 'hemi_equator'
+#
+    - id: 'good_hemlock'
+      name: Hemlock
+      value: 375.0
+      buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
+      material: 31 # tall grass
+      material_data: 0
+      culture: 0.2
+      food: 2
+#      hemispheres: 'hemi_southwest'
+#
+    - id: 'good_herbs'
+      name: Herbs
+      value: 250.0
+      buffs: 'buff_medicine, buff_year_of_plenty'
+      material: 31 # tall grass
+      material_data: 2 # fern
+      culture: 0.2
+      food: 4
+#
+    - id: 'good_horses'
+      name: Horses
+      value: 250.0
+      buffs: 'buff_advanced_tooling, buff_year_of_plenty'
+      material: 415 # rabbit hide
+      material_data: 0
+      culture: 0.8
+      food: 4
+#
+    - id: 'good_incense'
+      name: Incense
+      value: 250.0
+      buffs: 'buff_fine_art, buff_innovation'
+      material: 362 # melon seed
+      material_data: 0
+      culture: 1.2
+      food: 2
+#
+    - id: 'good_ivory'
+      name: Ivory
+      value: 250.0
+      buffs: 'buff_fine_art, buff_monopoly'
+      material: 406 # nether quartz
+      material_data: 0
+      culture: 0.8
+      food: 2
+#
+    - id: 'good_jade'
+      name: Jade
+      value: 250.0
+      buffs: 'buff_advanced_touring, buff_fine_art'
+      material: 295 # seeds
+      material_data: 0
+      culture: 1.2
+      food: 2
+#
+    - id: 'good_limestone'
+      name: Limestone
+      value: 250.0
+      buffs: 'buff_barricade, buff_construction'
+      material: 1 # stone
+      material_data: 6 # polished andesite
+      culture: 0.5
+      food: 2
+#
+    - id: 'good_Marble'
+      name: Marble
+      value: 250.0
+      buffs: 'buff_construction, buff_fine_art'
+      material: 1 # stone
+      material_data: 4 # polished diorite
+      culture: 0.8
+      food: 2
+#
+    - id: 'good_niter'
+      name: Niter
+      value: 250.0
+      buffs: 'buff_advanced_tooling, buff_advanced_mixing'
+      material: 263 # coal
+      material_data: 1 # charcoal
+      culture: 0.8
+      food: 7
+#
+    - id: 'good_oil'
+      name: Oil
+      value: 500.0
+      buffs: 'buff_advanced_tooling, buff_advanced_mixing, buff_extraction, buff_fire_bomb'
+      material: 351 # dye
+      material_data: 0 # ink sack
+      culture: 1.2
+      food: 4
+#      hemispheres: 'hemi_north'
+#
+    - id: 'good_olives'
+      name: Olives
+      value: 125.0
+      buffs: 'buff_hedonism'
+      material: 434 # beetroot
+      material_data: 0
+      culture: 0.2
+      food: 7
+#
+    - id: 'good_papyrus'
+      name: Papyrus
+      value: 125.0
+      buffs: 'buff_innovation'
+      material: 351 # Ink sack
+      material_data: 2 # Green
+      culture: 0.5
+      food: 4
+#
+    - id: 'good_pelts'
+      name: Pelts
+      value: 250.0
+      buffs: 'buff_fine_art, buff_monopoly'
+      material: 334 # leather
+      material_data: 0
+      culture: 0.8
+      food: 2
+#
+    - id: 'good_poison_ivy'
+      name: "Poison Ivy"
+      value: 375.0
+      buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
+      material: 106 # vines
+      material_data: 0
+      culture: 0.2
+      food: 2
+#      hemispheres: 'hemi_northeast'
+#
+    - id: 'good_silver'
+      name: Silver
+      value: 250.0
+      buffs: 'buff_barter, buff_hedonism'
+      material: 265 # iron ingot
+      material_data: 0
+      culture: 0.8
+      food: 2
+#
+    - id: 'good_spice'
+      name: Spice
+      value: 250.0
+      buffs: 'buff_preservative'
+      material: 435 # beetroot seeds
+      material_data: 0
+      culture: 1.2
+      food: 10
+#
+    - id: 'good_tobacco'
+      name: Tobacco
+      value: 375.0
+      buffs: 'buff_greed, buff_fine_art, buff_monopoly'
+      material: 338 # sugar canes
+      material_data: 0
+      culture: 0.8
+      food: 7
+      hemispheres: 'hemi_south'
+#
+water_goods: 
+    - id: 'good_crabs'
+      name: Crabs
+      value: 250.0
+      buffs: 'buff_fishing, buff_year_of_plenty'
+      material: 432 # chorus fruit
+      material_data: 0
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_pearls'
+      name: Pearls
+      value: 375.0
+      buffs: 'buff_advanced_mixing, buff_greed, buff_monopoly'
+      material: 410 # prismarine crystals
+      material_data: 0
+      culture: 1.2
+      food: 4
+#      hemispheres: 'hemi_north'
+#
+    - id: 'good_rice'
+      name: Rice
+      value: 250.0
+      buffs: 'buff_innovation'
+      material: 361 # pumpkin seeds
+      material_data: 0
+      culture: 0.5
+      food: 10
+#
+    - id: 'good_salmon'
+      name: Salmon
+      value: 250.0
+      buffs: 'buff_fishing, buff_year_of_plenty'
+      material: 349 # raw fish
+      material_data: 1 # salmon
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_salt'
+      name: Salt
+      value: 250.0
+      buffs: 'buff_advanced_touring, buff_fine_art'
+      material: 353 # sugar
+      material_data: 0
+      culture: 0.8
+      food: 7
+#
+    - id: 'good_shrimp'
+      name: Shrimp
+      value: 250.0
+      buffs: 'buff_fishing, buff_year_of_plenty'
+      material: 349 # raw fish
+      material_data: 2 # clownfish
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_tea'
+      name: Tea
+      value: 250.0
+      buffs: 'buff_monopoly, buff_innovation'
+      material: 175 # sunflower
+      material_data: 0
+      culture: 0.8
+      food: 7
+#
+    - id: 'good_tuna'
+      name: Tuna
+      value: 125.0
+      buffs: 'buff_year_of_plenty'
+      material: 349 # fish
+      material_data: 0
+      culture: 0.5
+      food: 7
+#
+    - id: 'good_whale'
+      name: Whale
+      value: 500.0
+      buffs: 'buff_advanced_tooling, buff_extraction, buff_fine_art, buff_innovation'
+      material: 345 # compass
+      material_data: 0
+      culture: 1.2
+      food: 10
+#      hemispheres: 'hemi_south'
+#

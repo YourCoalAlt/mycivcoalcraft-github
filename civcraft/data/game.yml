@@ -1,0 +1,69 @@
+# Used for various things in the plugin including: random TP, 
+world:
+   radius_x: 7500
+   radius_z: 7500
+# Controls the PvP aspect of the game.
+pvp:
+   # Enable or Disable attack cooldown.
+   attack_cooldown_enabled: true
+   # What to set the attack speed to. Default for 1.9 is 4, at least 16 is needed for no cooldown.
+   attack_speed: 20
+
+# Determines inventory information.
+inventory:
+   # Enable or Disable use off off-hand.
+   allow_offhand: true
+
+# Farm Settings
+farm:
+   grow_tick_rate: 20
+
+# Amount of Tungston to drop from Lapis Ore
+tungsten_min_drop: 0
+tungsten_max_drop: 1
+tungsten_max_drop_with_fortune: 3
+
+# Amount of Lapis to drop from Lapis Ore
+lapis_min_drop: 2
+lapis_max_drop: 5
+lapis_max_drop_with_fortune: 8
+
+# Amount of items to drop from Coal Ore
+coal:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 2
+coal_hammers:
+   min_drop: 0
+   max_drop: 1
+   max_drop_fortune: 2
+# Amount of items to drop from Diammond Ore
+diamond:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 2
+diamond_hammers:
+   min_drop: 2
+   max_drop: 4
+   max_drop_fortune: 4
+
+#
+# Controls the Newspapers in player's backpacks. Can be reloaded anytime in-game with /ad reload newspapers
+# GUI data cannot overlap or else one of the newspapers will not show.
+# If you do not want to report for a section, remove all of its words and make it set to "       - 1, noreport"
+#
+newspapers:
+   - id: 0
+     itemId: 138
+     itemData: 0
+     guiData: 2
+     date: '2 July 2017'
+     headline: 'Beta v.1.3.3 Newspaper Launch'
+     publisher: 'YourCoal'
+     breakingNews:
+       - 1, noreport
+     gamedevNews:
+       - 1, We just added this!
+     generalNews:
+       - 1, Mines are OP
+#

@@ -1,0 +1,158 @@
+# This controls the drops from fishing
+#
+#Here is an explaination of the options
+#craftMatId - Custom item_id
+#type_id - Vanilla item_id
+#drop_chance - Probability to drop.
+#
+default_res_exp: 0.1
+
+fishing_drops:
+  - type: ShulkerBox
+    type_id: 229
+    loot_type: 'legendary'
+    drop_chance: 0.00127
+    catch_tier: 1
+    exp_min: 125
+    exp_max: 750
+    res_exp: 20.0
+#
+  - type: Salmon
+    type_id: 349
+    type_data: 1
+    loot_type: 'fish'
+    drop_chance: 0.221
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 3
+    res_exp: 0.2
+#
+  - type: Clownfish
+    type_id: 349
+    type_data: 2
+    loot_type: 'fish'
+    drop_chance: 0.131
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 4
+    res_exp: 0.35
+#
+  - type: Pufferfish
+    type_id: 349
+    type_data: 3
+    loot_type: 'fish'
+    drop_chance: 0.0741
+    catch_tier: 1
+    exp_min: 2
+    exp_max: 5
+    res_exp: 0.5
+#
+  - type: Leather
+    type_id: 334
+    loot_type: 'treasure'
+    drop_chance: 0.0372
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 4
+    res_exp: 0.2
+#
+  - type: String
+    type_id: 287
+    loot_type: 'treasure'
+    drop_chance: 0.0372
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 4
+    res_exp: 0.2
+#
+  - type: Bone
+    type_id: 352
+    loot_type: 'junk'
+    drop_chance: 0.0237
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 3
+    res_exp: 0.15
+#
+  - type: SugarCane
+    type_id: 338
+    loot_type: 'junk'
+    drop_chance: 0.0276
+    catch_tier: 1
+    exp_min: 1
+    exp_max: 4
+    res_exp: 0.15
+#
+  - type: Clay
+    type_id: 337
+    loot_type: 'treasure'
+    drop_chance: 0.0204
+    catch_tier: 2
+    exp_min: 2
+    exp_max: 5
+    res_exp: 0.25
+#
+  - type: Hammers
+    custom_id: 'civ_hammers'
+    loot_type: 'treasure'
+    drop_chance: 0.0117
+    catch_tier: 4
+    exp_min: 4
+    exp_max: 10
+    res_exp: 0.75
+#
+  - type: Beakers
+    custom_id: 'civ_beakers'
+    loot_type: 'treasure'
+    drop_chance: 0.0117
+    catch_tier: 4
+    exp_min: 4
+    exp_max: 10
+    res_exp: 0.75
+#
+  - type: InkSack
+    type_id: 351
+    loot_type: 'treasure'
+    drop_chance: 0.0131
+    catch_tier: 2
+    exp_min: 1
+    exp_max: 4
+    res_exp: 0.4
+#
+  - type: Slimeball
+    type_id: 341
+    loot_type: 'treasure'
+    drop_chance: 0.0204
+    catch_tier: 3
+    exp_min: 3
+    exp_max: 7
+    res_exp: 0.25
+#
+  - type: Gunpowder
+    type_id: 289
+    loot_type: 'treasure'
+    drop_chance: 0.0217
+    catch_tier: 3
+    exp_min: 3
+    exp_max: 7
+    res_exp: 0.25
+#
+  - type: UnitShard
+    custom_id: 'civ_unit_shard'
+    loot_type: 'legendary'
+    drop_chance: 0.00952
+    catch_tier: 4
+    exp_min: 4
+    exp_max: 8
+    res_exp: 1.0
+#
+  - type: UnitXP
+    custom_id: 'civ_unit_xp'
+    loot_type: 'legendary'
+    drop_chance: 0.000952
+    catch_tier: 6
+    exp_min: 40
+    exp_max: 80
+    res_exp: 10.0
+#
+

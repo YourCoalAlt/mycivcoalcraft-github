@@ -1,0 +1,106 @@
+#========= > Quest Levels < =========#
+quest_levels:
+    - level: 0
+      amount: 0
+    - level: 1
+      amount: 100
+    - level: 2
+      amount: 2000
+    - level: 3
+      amount: 5000
+    - level: 4
+      amount: 10000
+    - level: 5
+      amount: 30000
+    - level: 6
+      amount: 70000
+    - level: 7
+      amount: 125000
+    - level: 8
+      amount: 300000
+    - level: 9
+      amount: 675000
+    - level: 10
+      amount: 1000000
+    - level: 11
+      amount: 1500000
+    - level: 12
+      amount: 2000000
+#========= > Mining Levels < =========#
+mining_levels:
+    - level: 0
+      amount: 0
+    - level: 1
+      amount: 100
+    - level: 2
+      amount: 2000
+    - level: 3
+      amount: 5000
+    - level: 4
+      amount: 10000
+    - level: 5
+      amount: 30000
+    - level: 6
+      amount: 70000
+    - level: 7
+      amount: 125000
+    - level: 8
+      amount: 300000
+    - level: 9
+      amount: 675000
+    - level: 10
+      amount: 1000000
+    - level: 11
+      amount: 1500000
+    - level: 12
+      amount: 2000000
+#========= > Fishing Levels < =========#
+fishing_levels:
+    - level: 0
+      amount: 0
+    - level: 1
+      amount: 10
+    - level: 2
+      amount: 25
+    - level: 3
+      amount: 60
+    - level: 4
+      amount: 125
+    - level: 5
+      amount: 270
+    - level: 6
+      amount: 450
+    - level: 7
+      amount: 625
+    - level: 8
+      amount: 800
+    - level: 9
+      amount: 1000
+    - level: 10
+      amount: 1250
+    - level: 11
+      amount: 1500
+    - level: 12
+      amount: 1800
+    - level: 13
+      amount: 2150
+    - level: 14
+      amount: 2500
+    - level: 15
+      amount: 2900
+    - level: 16
+      amount: 3250
+    - level: 17
+      amount: 3600
+    - level: 18
+      amount: 4250
+    - level: 19
+      amount: 4750
+    - level: 20
+      amount: 5500
+    - level: 21
+      amount: 6250
+    - level: 22
+      amount: 8500
+#
+#

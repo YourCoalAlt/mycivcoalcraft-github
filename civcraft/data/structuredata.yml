@@ -1,0 +1,605 @@
+#======================================#
+#========= > Bank  Settings < =========#
+#======================================#
+bank_levels:
+   - level: 1
+     exchange_rate: 0.4
+   - level: 2
+     exchange_rate: 0.5
+   - level: 3
+     exchange_rate: 0.6
+   - level: 4
+     exchange_rate: 0.7
+   - level: 5
+     exchange_rate: 0.85
+   - level: 6
+     exchange_rate: 1.00
+   - level: 7
+     exchange_rate: 1.20
+   - level: 8
+     exchange_rate: 1.40
+   - level: 9
+     exchange_rate: 1.75
+   - level: 10
+     exchange_rate: 2.00
+#======================================#
+#======== > Quarry  Settings < ========#
+#======================================#
+quarry_items:
+   - item: 270
+     max_dura: 59
+     level: 1
+   - item: 274
+     max_dura: 131
+     level: 2
+# Rare, Uncommon, Common, Junk
+quarry_drops:
+#====> Wooden Pickaxe <====#
+  - type: CoalWoodPick
+    input: 270
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.085
+#
+#====> Stone Pickaxe <====#
+  - type: CoalStonePick
+    input: 274
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.065
+#
+  - type: IronStonePick
+    input: 274
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+#======================================#
+#======== > Trommel Settings < ========#
+#======================================#
+trommel_items:
+   - item: 4
+     level: 1
+   - item: 1
+     item_data: 1
+     level: 2
+# Rare, Uncommon, Common, Junk
+trommel_drops:
+#====> Cobblestone <====#
+  - type: CoalCobble
+    input: 4
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.0625
+#
+  - type: IronCobble
+    input: 4
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.035
+#
+  - type: GoldCobble
+    input: 4
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.0175
+#
+  - type: RedstoneCobble
+    input: 4
+    type_id: 331
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.02
+#
+  - type: LapisCobble
+    input: 4
+    type_id: 351
+    type_data: 4
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.02
+#
+  - type: DiamondCobble
+    input: 4
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.004
+#
+  - type: EmeraldCobble
+    input: 4
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.0025
+#
+#====> Granite <====#
+  - type: CoalGranite
+    input: 4
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.0425
+#
+  - type: IronGranite
+    input: 4
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.04
+#
+  - type: GoldGranite
+    input: 4
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.02
+#
+  - type: RedstoneGranite
+    input: 4
+    type_id: 331
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.015
+#
+  - type: LapisGranite
+    input: 4
+    type_id: 351
+    type_data: 4
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.025
+#
+  - type: DiamondGranite
+    input: 4
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.005
+#
+  - type: EmeraldGranite
+    input: 4
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.002
+#
+#====> Diorite <====#
+  - type: CoalDiorite
+    input: 4
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.075
+#
+  - type: IronDiorite
+    input: 4
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.025
+#
+  - type: GoldDiorite
+    input: 4
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.025
+#
+  - type: RedstoneDiorite
+    input: 4
+    type_id: 331
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.04
+#
+  - type: LapisDiorite
+    input: 4
+    type_id: 351
+    type_data: 4
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.015
+#
+  - type: DiamondDiorite
+    input: 4
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.003
+#
+  - type: EmeraldDiorite
+    input: 4
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.004
+#
+#====> Andesite <====#
+  - type: CoalAndesite
+    input: 4
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.05
+#
+  - type: IronAndesite
+    input: 4
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.045
+#
+  - type: GoldAndesite
+    input: 4
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.01
+#
+  - type: RedstoneAndesite
+    input: 4
+    type_id: 331
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: LapisAndesite
+    input: 4
+    type_id: 351
+    type_data: 4
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: DiamondAndesite
+    input: 4
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.0045
+#
+  - type: EmeraldAndesite
+    input: 4
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.002
+#
+#======================================#
+#======== > Cottage Settings < ========#
+#======================================#
+cottage_levels:
+   - level: 1
+     consumes:
+         - 297,1
+         - 391,1
+     count: 24
+     coins: 75.0
+#
+   - level: 2
+     consumes:
+         - 297,2
+         - 391,2
+     count: 48
+     coins: 125.0
+#
+   - level: 3
+     consumes:
+         - 297,2
+         - 391,3
+         - 392,1
+     count: 72
+     coins: 200.0
+#
+   - level: 4
+     consumes:
+         - 297,3
+         - 391,3
+         - 392,2
+     count: 96
+     coins: 250.0
+#
+   - level: 5
+     consumes:
+         - 297,4
+         - 391,4
+         - 392,3
+         - 434,1
+     count: 120
+     coins: 325.0
+#
+   - level: 6
+     consumes:
+         - 297,5
+         - 391,5
+         - 392,4
+         - 434,2
+     count: 168
+     coins: 375.0
+#
+   - level: 7
+     consumes:
+         - 297,6
+         - 391,6
+         - 392,5
+         - 434,3
+         - 353,2
+     count: 216
+     coins: 425.0
+#
+   - level: 7
+     consumes:
+         - 297,6
+         - 391,6
+         - 392,5
+         - 434,6
+         - 353,4
+     count: 288
+     coins: 475.0
+#======================================#
+#======== > Granary Settings < ========#
+#======================================#
+granary_levels:
+   - level: 1
+     max_storage: 256
+   - level: 2
+     max_storage: 512
+   - level: 3
+     max_storage: 768
+   - level: 4
+     max_storage: 1024
+   - level: 5
+     max_storage: 1536
+   - level: 6
+     max_storage: 2048
+#
+granary_food:
+   - food: 297
+   - food: 391
+   - food: 392
+   - food: 434
+   - food: 353
+#
+granary_tasks:
+   - task: 1
+     required: 32
+     reward: 1.0
+#
+   - task: 2
+     required: 64
+     reward: 2.5
+#
+   - task: 3
+     required: 96
+     reward: 4.0
+#
+   - task: 4
+     required: 128
+     reward: 5.5
+#
+   - task: 5
+     required: 160
+     reward: 7.0
+#
+   - task: 6
+     required: 192
+     reward: 8.5
+#
+   - task: 7
+     required: 224
+     reward: 10.0
+#
+   - task: 8
+     required: 256
+     reward: 11.5
+#
+   - task: 9
+     required: 288
+     reward: 13.0
+#
+   - task: 10
+     required: 320
+     reward: 14.5
+#
+   - task: 11
+     required: 352
+     reward: 16.0
+#
+   - task: 12
+     required: 384
+     reward: 17.5
+#
+#======================================#
+#======== > Grocer  Settings < ========#
+#======================================#
+grocer_levels:
+    - level: 1
+      itemName: 'Red Apple'
+      itemId: 260
+      itemData: 0
+      amount: 1
+      price: 5
+#
+    - level: 2
+      itemName: 'Cooked Fish'
+      itemId: 350
+      itemData: 0
+      amount: 1
+      price: 8
+#
+    - level: 3
+      itemName: 'Baked Potato'
+      itemId: 393
+      itemData: 0
+      amount: 1
+      price: 10
+#
+    - level: 4
+      itemName: 'Cooked Chicken'
+      itemId: 366
+      itemData: 0
+      amount: 1
+      price: 12
+#
+    - level: 5
+      itemName: 'Cooked Mutton'
+      itemId: 424
+      itemData: 0
+      amount: 1
+      price: 15
+#
+    - level: 6
+      itemName: 'Cooked Steak'
+      itemId: 364
+      itemData: 0
+      amount: 1
+      price: 20
+#
+    - level: 7
+      itemName: 'Cooked Porkchop'
+      itemId: 320
+      itemData: 0
+      amount: 1
+      price: 20
+#
+    - level: 8
+      itemName: 'Golden Carrot'
+      itemId: 396
+      itemData: 0
+      amount: 1
+      price: 50
+#
+#======================================#
+#========= > Mine  Settings < =========#
+#======================================#
+mine_levels:
+   - level: 1
+     hammers: 50.0
+     amount: 4
+     count: 24
+#
+   - level: 2
+     hammers: 100.0
+     amount: 8
+     count: 48
+#
+   - level: 3
+     hammers: 150.0
+     amount: 12
+     count: 72
+#
+   - level: 4
+     hammers: 200.0
+     amount: 16
+     count: 96
+#
+   - level: 5
+     hammers: 250.0
+     amount: 20
+     count: 120
+#
+   - level: 5
+     hammers: 300.0
+     amount: 24
+     count: 144
+#
+#
+mine_tasks:
+   - task: 1
+     required:
+         - 331,16
+     reward: 10
+#
+   - task: 2
+     required:
+         - 331,32
+     reward: 25
+#
+   - task: 3
+     required:
+         - 331,48
+     reward: 40
+#
+   - task: 4
+     required:
+         - 331,64
+         - 337,8
+     reward: 55
+#
+   - task: 5
+     required:
+         - 331,80
+         - 337,16
+     reward: 70
+#
+   - task: 6
+     required:
+         - 331,96
+         - 337,24
+     reward: 85
+#
+   - task: 7
+     required:
+         - 331,112
+         - 337,32
+         - 265,4
+     reward: 100
+#
+   - task: 8
+     required:
+         - 331,128
+         - 337,40
+         - 265,8
+     reward: 115
+#
+   - task: 9
+     required:
+         - 331,144
+         - 337,48
+         - 265,12
+     reward: 130
+#
+   - task: 10
+     required:
+         - 331,160
+         - 337,56
+         - 265,16
+         - 264,2
+     reward: 145
+#
+   - task: 11
+     required:
+         - 331,176
+         - 337,64
+         - 265,20
+         - 264,4
+     reward: 160
+#
+   - task: 12
+     required:
+         - 331,192
+         - 337,80
+         - 265,24
+         - 264,6
+     reward: 175
+#
+#
+#======================================#
+#========== > Lab Settings < ==========#
+#======================================#
+lab_levels:
+   - level: 1
+     beakers: 50.0
+     amount: 4
+     count: 24
+#
+   - level: 2
+     beakers: 100.0
+     amount: 8
+     count: 48
+#
+   - level: 3
+     beakers: 150.0
+     amount: 12
+     count: 72
+#
+   - level: 4
+     beakers: 200.0
+     amount: 16
+     count: 96
+#
+   - level: 5
+     beakers: 250.0
+     amount: 20
+     count: 120
+#
+   - level: 5
+     beakers: 300.0
+     amount: 24
+     count: 144
+#
+#

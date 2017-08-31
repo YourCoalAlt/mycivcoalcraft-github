@@ -1,0 +1,32 @@
+Types:
+  slime: Will give levitation x2 to player for 3 seconds, 10% less damage
+  sugar: Will give slowness x2 to player for 3 seconds, 5% less damage
+  flint: Regular arrow, 100% damage
+  nether brick: Will give weakness x0 to player for 7 seconds, uses base damage
+  magma cream: Will give wither to player for 5 seconds, 5% additional damage
+  
+
+#
+
+Wood: -15%
+  flint:
+  slime:
+  
+Stone: -8%
+  flint:
+  slime:
+  
+Iron: 0%
+  flint: 100%
+  slime:
+  
+Gold: +8%
+  flint:
+  slime:
+  
+Diamond: +15%
+  flint:
+  slime:
+  
+#
+

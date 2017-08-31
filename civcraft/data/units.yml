@@ -1,0 +1,264 @@
+# 
+# Unit configuration
+#
+
+# Base rates and information for items without any units attached.
+#
+base:
+    # T1 Leather speed bonus, greater than 1 is an increase
+    T1_leather_speed: 1.05
+
+    # T2 Leather speed bonus, greater than 1 is an increase
+    T2_leather_speed: 1.1
+
+    # T3 Leather speed bonus, greater than 1 is an increase
+    T3_leather_speed: 1.15
+
+    # T4 Leather speed bonus, greater than 1 is an increase
+    T4_leather_speed: 1.2
+
+    # T1 'Metal' speed bonus
+    T1_metal_speed: 0.975
+
+    # T2 'Metal' speed bonus
+    T2_metal_speed: 0.95
+
+    # T3 'Metal' speed bonus
+    T3_metal_speed: 0.925
+
+    # T4 'Metal' speed bonus
+    T4_metal_speed: 0.9
+
+# Special information per unit
+unit_info:
+    # Percentage of damage increase for warrior unit.
+    warrior_damage: 1.00
+
+    # Percentage of damage increase for archer unit.
+    archer_damage: 1.5
+
+units:
+  - id: 'u_settler'
+    name: "Settler"
+    class_name: 'com.avrgaming.civcraft.items.units.Settler'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   Founds a Town'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 10000.0
+    hammer_cost: 2500.0
+    limit: 0
+    item_id: 330
+    position: 9
+#
+  - id: 'u_spy'
+    name: "Spy"
+    class_name: 'com.avrgaming.civcraft.items.units.Spy'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   Perform Spy Missions'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 20000.0
+    hammer_cost: 2000.0
+    limit: 1
+    item_id: 381
+    position: 13
+#
+  - id: 'u_warrior'
+    name: "Warrior"
+    class_name: 'com.avrgaming.civcraft.items.units.Warrior'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +25% Attk on Swords'
+        - '<lightgrayi>   -10% Attk on Bows'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 10000.0
+    hammer_cost: 1000.0
+    limit: 1
+    item_id: 167
+    position: 18
+#
+  - id: 'u_archer'
+    name: "Archer"
+    class_name: 'com.avrgaming.civcraft.items.units.Archer'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   -10% Attk on Swords'
+        - '<lightgrayi>   +25% Attk on Bows'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 10000.0
+    hammer_cost: 1000.0
+    limit: 1
+    item_id: 96
+    position: 19
+#
+  - id: 'u_berserker'
+    name: "Berserker"
+    class_name: 'com.avrgaming.civcraft.items.units.Berserker'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +5% Attk on Swords'
+        - '<lightgrayi>   +10% Attk on Bows'
+        - '<lightgrayi>   +15% Dfse on Armor'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 15000.0
+    hammer_cost: 1500.0
+    limit: 1
+    item_id: 281
+    position: 20
+#
+  - id: 'u_swordsman'
+    name: "Swordsman"
+    class_name: 'com.avrgaming.civcraft.items.units.Swordsman'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +40% Attk on Swords'
+        - '<lightgrayi>   -20% Attk on Bows'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 40000.0
+    hammer_cost: 4000.0
+    limit: 1
+    item_id: 131
+    position: 27
+#
+  - id: 'u_crossbowman'
+    name: "Crossbowman"
+    class_name: 'com.avrgaming.civcraft.items.units.Crossbowman'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   -20% Attk on Swords'
+        - '<lightgrayi>   +40% Attk on Bows'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 40000.0
+    hammer_cost: 4000.0
+    limit: 1
+    item_id: 416
+    position: 28
+#
+  - id: 'u_spearman'
+    name: "Spearman"
+    class_name: 'com.avrgaming.civcraft.items.units.Spearman'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +10% Attk on Swords'
+        - '<lightgrayi>   +20% Attk on Bows'
+        - '<lightgrayi>   +30% Dfse on Armor'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 50000.0
+    hammer_cost: 5000.0
+    limit: 1
+    item_id: 282
+    position: 29
+#
+  - id: 'u_musketman'
+    name: "Musketman"
+    class_name: 'com.avrgaming.civcraft.items.units.Musketman'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +65% Attk on Swords'
+        - '<lightgrayi>   -30% Attk on Bows'
+        - '<lightgrayi>   +10% Dfse on Armor'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 100000.0
+    hammer_cost: 10000.0
+    limit: 1
+    item_id: 198
+    position: 36
+#
+  - id: 'u_slinger'
+    name: "Slinger"
+    class_name: 'com.avrgaming.civcraft.items.units.Slinger'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   -30% Attk on Swords'
+        - '<lightgrayi>   +65% Attk on Bows'
+        - '<lightgrayi>   +10% Dfse on Armor'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 100000.0
+    hammer_cost: 10000.0
+    limit: 1
+    item_id: 439
+    position: 37
+#
+  - id: 'u_knight'
+    name: "Knight"
+    class_name: 'com.avrgaming.civcraft.items.units.Knight'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   +25% Attk on Swords'
+        - '<lightgrayi>   +50% Attk on Bows'
+        - '<lightgrayi>   +75% Dfse on Armor'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 125000.0
+    hammer_cost: 12500.0
+    limit: 1
+    item_id: 442
+    position: 38
+#
+  - id: 'u_phalanx'
+    name: "Phalanx"
+    class_name: 'com.avrgaming.civcraft.items.units.Phalanx'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   Undefined Abilities'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 50000.0
+    hammer_cost: 5000.0
+    limit: 1
+    item_id: 148
+    position: 22
+
+  - id: 'u_engineer'
+    name: "Engineer"
+    class_name: 'com.avrgaming.civcraft.items.units.Engineer'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   Build War Cannons'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 100000.0
+    hammer_cost: 10000.0
+    limit: 1
+    item_id: 137
+    position: 15
+#
+  - id: 'u_siege'
+    name: "Siege"
+    class_name: 'com.avrgaming.civcraft.items.units.Siege'
+    description: 
+        - '<lightgreen>Trained Level 1'
+        - '<lightgrayi>   Build Siege Towers'
+    require_tech: 'tech_armory'
+    require_struct:
+    require_upgrade:
+    cost: 100000.0
+    hammer_cost: 10000.0
+    limit: 1
+    item_id: 432
+    position: 24
+#

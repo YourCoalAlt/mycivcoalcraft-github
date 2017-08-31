@@ -1,0 +1,77 @@
+default: 
+house: Cottage
+big house: 
+church: 
+bank: Bank
+building: 
+factory: Blacksmith
+lighthouse: 
+tower: Scout Tower
+temple: Temple
+bookshelf: Library
+theater: 
+beer: [Wonders]
+drink: 
+cultery: Grocer
+cup: 
+camera: 
+tree: Pasture
+basket: Farm
+cart: Market
+scales: 
+coins: 
+chest: Granary
+hammer: Mine
+bricks: Store
+flower: Monument
+skull: Arrow Tower
+anchor: Shipyard
+minecart: Trommel
+truck: Trade Outpost/Trade Boat
+gear: Quarry
+portal: Portal Network
+door: 
+sign: Windmill
+king: Capitol/Town Hall
+queen: 
+up/down/left/right(greenarrow): 
+up/down/left/right(fingerpoint):
+pin: 
+redflag: 
+orangeflag: 
+yellowflag: 
+greenflag: 
+blueflag: 
+purpleflag: 
+pinkflag: 
+pirateflag: 
+walk: 
+goldstar: 
+silverstar: 
+bronzestar: 
+goldmetal: 
+silvermetal: 
+bronzemetal: 
+diamond: 
+ruby: 
+world: 
+caution: 
+construction: 
+warning: 
+lock: 
+exclamation: 
+cross: 
+fire: 
+tornado: 
+bomb: Cannon Tower
+sheild: Barracks
+sun: 
+star: 
+key: Warehouse
+comment: 
+dog: 
+wrench: 
+compass: Stable
+lightbulb: Lab
+heart: 
+cake: Bakery
