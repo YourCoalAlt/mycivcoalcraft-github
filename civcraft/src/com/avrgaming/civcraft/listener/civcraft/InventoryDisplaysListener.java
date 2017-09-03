@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -65,8 +64,12 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Information")) {
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Town Info")) {
 			this.clickTownInfoViewer(p, event);
+		}
+		
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) {
+			this.clickTownQuestViewer(p, event);
 		}
 		
 		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")) {
@@ -196,14 +199,7 @@ public class InventoryDisplaysListener implements Listener {
 				String taskName = ChatColor.stripColor(meta.getDisplayName()).replace("[Available] Task ", "");
 				int task = Integer.parseInt(taskName);
 				
-				Mine mine = null;
-				Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-				if (buildable instanceof Mine) {
-					mine = (Mine) buildable;
-				} else {
-					CivMessage.sendError(p, "Mine you are trying to access is null? Contact an admin if this continues.");
-					return;
-				}
+				Mine mine = (Mine) res.getTown().getStructureByType("ti_mine");
 				mine.openTaskCompleterGUI(p, res.getTown(), task);
 				break;
 			case RED_SHULKER_BOX:
@@ -252,6 +248,35 @@ public class InventoryDisplaysListener implements Listener {
 				th.openTownBuffsListGUI(p, th.getTown());
 			default:
 				//CivMessage.global(event.getCurrentItem().getType().toString());
+				break;
+			}
+		} else {
+			event.setCancelled(true);
+			CivMessage.sendError(p, "Town Hall you are trying to access is null? Contact an admin if this continues.");
+			p.closeInventory();
+			return;
+		}
+	}
+	
+	public void clickTownQuestViewer(Player p, InventoryClickEvent event) {
+		//Resident res = CivGlobal.getResident(p);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			return;
+		}
+		
+//		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+//			event.setCancelled(true);
+//		}
+		
+		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+		if (buildable instanceof TownHall) {
+			TownHall th = (TownHall) buildable;
+			switch (event.getCurrentItem().getType()) {
+			case STONE_PICKAXE:
+				Mine mine = (Mine) th.getTown().getStructureByType("ti_mine");
+				mine.openToolGUI(p, th.getTown());
+				break;
+			default:
 				break;
 			}
 		} else {
@@ -1023,30 +1048,34 @@ public class InventoryDisplaysListener implements Listener {
 	
 
 	public void completeMineTask(Player p, Inventory inv) {
-		Mine mine = null;
-		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-		if (buildable instanceof Mine) {
-			mine = (Mine) buildable;
-		} else {
-			CivMessage.sendError(p, "Mine you are trying to access is null? Contact an admin if this continues.");
-		}
+		Resident res = CivGlobal.getResident(p);
+		Mine mine = (Mine) res.getTown().getStructureByType("ti_mine");
 		
 		Town t = mine.getTown();
 		String taskName = ChatColor.stripColor(inv.getName()).replace(t.getName()+" Mine Task ", "");
 		int task = Integer.parseInt(taskName);
 		
-		ConfigMineTask mtasks = CivSettings.mineTasks.get(task);
+		ConfigMineTask mtask = CivSettings.mineTasks.get(task);
 		boolean addedNotRequiredItems = false;
-		double reward = mtasks.reward;
+		double reward = mtask.reward;
 		
-		Map<Integer, Integer> given = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> required = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> returning = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> dropping = new HashMap<Integer, Integer>();
-		for (Entry<Integer, Integer> r : mtasks.required.entrySet()) {
-			required.put(r.getKey(), r.getValue());
-			given.put(r.getKey(), 0);
-//			CivMessage.global("Required: id"+r.getKey()+" amt"+r.getValue());
+		Map<ArrayList<String>, Integer> given = new HashMap<ArrayList<String>, Integer>();
+//		Map<Integer, Integer> given = new HashMap<Integer, Integer>();
+		Map<ArrayList<String>, Integer> required = new HashMap<ArrayList<String>, Integer>();
+//		Map<Integer, Integer> required = new HashMap<Integer, Integer>();
+		Map<ArrayList<String>, Integer> returning = new HashMap<ArrayList<String>, Integer>();
+//		Map<Integer, Integer> returning = new HashMap<Integer, Integer>();
+		Map<ArrayList<String>, Integer> dropping = new HashMap<ArrayList<String>, Integer>();
+//		Map<Integer, Integer> dropping = new HashMap<Integer, Integer>();
+		
+		for (ArrayList<String> item : mtask.required.keySet()) {
+//			for (String s : item) {
+//				String[] split = s.split(";");
+				required.put(item, mtask.required.get(item).intValue());
+				given.put(item, 0);
+//				CivMessage.global("Required: id"+Integer.valueOf(split[0])+
+//									" amt"+mtask.required.get(item).intValue()+" data"+Integer.valueOf(split[1]));
+//			}
 		}
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
@@ -1059,39 +1088,61 @@ public class InventoryDisplaysListener implements Listener {
 				continue;
 			}
 			
-			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-			if (required.containsKey(ItemManager.getId(stack)) && craftMat == null) {
-				int h = given.get(ItemManager.getId(stack)).intValue();
-				h += stack.getAmount();
-				given.put(ItemManager.getId(stack), h);
-//				CivMessage.global("Deposit Add: id"+ItemManager.getId(stack)+" amt"+stack.getAmount()+" newamt"+h);
-			} else if (craftMat != null) { //Allow custom items to be dropped
-				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
-				newMat.setData(stack.getData());
-				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
-				addedNotRequiredItems = true;
-			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
-				addedNotRequiredItems = true;
+			for (ArrayList<String> req : required.keySet()) {
+				LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+				for (String r : req) {
+					String[] rsplit = r.split(";");
+					int rid = Integer.valueOf(rsplit[0]);
+					int rdata = Integer.valueOf(rsplit[1]);
+					if (ItemManager.getId(stack) == rid && stack.getDurability() == rdata && craftMat == null) {
+						int h = given.get(req).intValue();
+						h += stack.getAmount();
+						given.put(req, h);
+//						CivMessage.global("Deposit Add: id"+ItemManager.getId(stack)+" data"+stack.getDurability()+
+//											" amt"+stack.getAmount()+" newamt"+h);
+					} else if (craftMat != null) { //Allow custom items to be dropped
+						ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+						newMat.setData(stack.getData());
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+						addedNotRequiredItems = true;
+					} else if (craftMat == null) { //Drop any vanilla items in the inventory
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+						addedNotRequiredItems = true;
+					}
+				}
 			}
 		}
 		
 		boolean canComplete = true;
-		for (Entry<Integer, Integer> r : required.entrySet()) {
-			for (Entry<Integer, Integer> g : given.entrySet()) {
-//				CivMessage.global("Reading "+r.getKey()+" v "+g.getKey());
-				if (g.getKey().equals(r.getKey())) {
-					if (g.getValue() >= r.getValue()) {
-//						CivMessage.global("Yes Complete: "+r.getKey()+" - "+g.getValue()+">=+"+r.getValue());
-						int td = g.getValue()-r.getValue();
-						if (td > 0) {
-							dropping.put(r.getKey(), td);
+		for (ArrayList<String> r : required.keySet()) {
+			for (String s1 : r) {
+				String[] rsplit = s1.split(";");
+				int rid = Integer.valueOf(rsplit[0]);
+				int rdata = Integer.valueOf(rsplit[1]);
+				
+				for (ArrayList<String> g : given.keySet()) {
+					for (String s2 : g) {
+						String[] gsplit = s2.split(";");
+						int gid = Integer.valueOf(gsplit[0]);
+						int gdata = Integer.valueOf(gsplit[1]);
+						
+//						CivMessage.global("Reading "+gid+","+gdata+" v "+rid+","+rdata);
+						if (gid == rid && gdata == rdata) {
+							int ramt = required.get(r).intValue();
+							int gamt = given.get(g).intValue();
+							if (gamt >= ramt) {
+//								CivMessage.global("Yes Complete: "+rid+","+rdata+" - "+gamt+" >= "+ramt);
+								int td = gamt-ramt;
+								if (td > 0) {
+									dropping.put(r, td);
+								}
+							} else {
+//								CivMessage.global("Yes Complete: "+rid+","+rdata+" - "+gamt+" < "+ramt);
+								int amt = ramt - (ramt-gamt);
+								returning.put(r, amt);
+								canComplete = false;
+							}
 						}
-					} else {
-//						CivMessage.global("Not Complete: "+r.getKey()+" - "+g.getValue()+"<+"+r.getValue());
-						int m = r.getValue() - (r.getValue()-g.getValue());
-						returning.put(r.getKey(), m);
-						canComplete = false;
 					}
 				}
 			}
@@ -1105,47 +1156,75 @@ public class InventoryDisplaysListener implements Listener {
 			
 			CivMessage.sendTown(t, p.getName()+" has completed mine task "+task+" and earned "+reward+" hammers!");
 			mine.sessionAdd(mine.getKey(mine, "task"+task), "complete");
-			for (Entry<Integer, Integer> d : dropping.entrySet()) {
-				int id = d.getKey();
-				int amt = d.getValue();
-				addedNotRequiredItems = true;
-				for (int i = 0; i < amt; i++) {
-					ItemStack drop = new ItemStack(ItemManager.getMaterial(id), 1);
-					p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+			
+			for (ArrayList<String> d : dropping.keySet()) {
+				for (String s : d) {
+					String[] split = s.split(";");
+					int id = Integer.valueOf(split[0]);
+					int data = Integer.valueOf(split[1]);
+					int amt = dropping.get(d).intValue();
+					addedNotRequiredItems = true;
+					for (int i = 0; i < amt; i++) {
+						ItemStack drop = new ItemStack(ItemManager.getMaterial(id), 1, (short) data);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+					}
 				}
 			}
 		} else { // Give items back, state missing items
-			for (Entry<Integer, Integer> g : dropping.entrySet()) {
-				int did = 0;
-				int damt = 0;
-				for (Entry<Integer, Integer> r : required.entrySet()) {
-					if (g.getKey().equals(r.getKey())) {
-						did = g.getKey();
-						damt = g.getValue() + r.getValue();
+			for (ArrayList<String> d : dropping.keySet()) {
+				for (String s1 : d) {
+					String[] dsplit = s1.split(";");
+					int did = Integer.valueOf(dsplit[0]);
+					int ddata = Integer.valueOf(dsplit[1]);
+					int damt = dropping.get(d).intValue();
+					
+					for (ArrayList<String> r : required.keySet()) {
+						for (String s2 : r) {
+							String[] rsplit = s2.split(";");
+							int rid = Integer.valueOf(rsplit[0]);
+							int rdata = Integer.valueOf(rsplit[1]);
+							int ramt = required.get(r).intValue();
+							
+							if (rid == did && rdata == ddata) {
+								damt += ramt;
+							}
+						}
 					}
-				}
-				
-				for (int i = 0; i < damt; i++) {
-					ItemStack drop = new ItemStack(ItemManager.getMaterial(did), 1);
-					p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+					
+					for (int i = 0; i < damt; i++) {
+						ItemStack drop = new ItemStack(ItemManager.getMaterial(did), 1, (short) ddata);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+					}
 				}
 			}
 			
 			String itemsDropping = "";
-			for (Entry<Integer, Integer> r : returning.entrySet()) {
-				int id = r.getKey();
-				int amt = r.getValue();
-				int missing = 0;
-				for (Entry<Integer, Integer> q : required.entrySet()) {
-					if (q.getKey().equals(id)) {
-						missing = q.getValue() - amt;
+			for (ArrayList<String> r : returning.keySet()) {
+				for (String s1 : r) {
+					String[] rsplit = s1.split(";");
+					int rid = Integer.valueOf(rsplit[0]);
+					int rdata = Integer.valueOf(rsplit[1]);
+					int ramt = returning.get(r).intValue();
+					int missing = 0;
+					
+					for (ArrayList<String> q : required.keySet()) {
+						for (String s2 : q) {
+							String[] qsplit = s2.split(";");
+							int qid = Integer.valueOf(qsplit[0]);
+							int qdata = Integer.valueOf(qsplit[1]);
+							int qamt = required.get(q).intValue();
+							
+							if (qid == rid && qdata == rdata) {
+								missing = qamt - ramt;
+							}
+						}
 					}
-				}
-				
-				itemsDropping += missing+" "+CivData.getDisplayName(id, 0)+", ";
-				for (int i = 0; i < amt; i++) {
-					ItemStack miss = new ItemStack(ItemManager.getMaterial(id), 1);
-					p.getWorld().dropItemNaturally(p.getEyeLocation(), miss);
+					
+					itemsDropping += missing+" "+CivData.getDisplayName(rid, rdata)+", ";
+					for (int i = 0; i < ramt; i++) {
+						ItemStack miss = new ItemStack(ItemManager.getMaterial(rid), 1, (short) rdata);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), miss);
+					}
 				}
 			}
 			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");

@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,6 +42,7 @@ import com.avrgaming.civcraft.config.ConfigMineTask;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
@@ -257,25 +257,6 @@ public class Mine extends Structure {
 	
 	
 	
-/*	@Override
-	public void spawnVillager(Location loc) {
-		World w = Bukkit.getWorld("world");
-		Villager v = w.spawn(loc, Villager.class);
-		v.setAdult();
-		v.setBreed(false);
-		v.setCanPickupItems(false);
-		v.setCustomName("Mine Guide");
-		v.setCustomNameVisible(true);
-		v.setProfession(Profession.NITWIT);
-		
-    	EntityInsentient nmsEntity = (EntityInsentient) ((CraftLivingEntity) v).getHandle();
-    	AttributeInstance attributes = nmsEntity.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-    	AttributeModifier modifier = new AttributeModifier(movementSpeedUID, "civcraft villager movement speed", 0.0F, 0);
-    	attributes.b(modifier);
-    	attributes.a(modifier);
-//		v.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 999999999, 127));
-	}*/
-	
 	public String getKey(Structure struct, String tag) {
 		return struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag; 
 	}
@@ -292,24 +273,25 @@ public class Mine extends Structure {
 				));
 		
 		for (ConfigMineTask m : CivSettings.mineTasks.values()) {
-			Map<Integer, Integer> consumptions = m.required;
 			List<String> loreRequired = new ArrayList<>();
 			
 			if (this.getTown().getLevel() < m.task) {
-				for (Integer typeID : consumptions.keySet()) {
-					int imat = typeID;
-					Material mat = ItemManager.getMaterial(imat);
-					int amt = consumptions.get(typeID);
-					loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Rose+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+				for (ArrayList<String> item : m.required.keySet()) {
+					for (String s : item) {
+						String[] split = s.split(";");
+						int imat = Integer.valueOf(split[0]);
+						int data = Integer.valueOf(split[1]);
+						loreRequired.add(CivColor.LightGrayBold+" » "+
+									CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+					}
 				}
-				
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Locked] Task "+m.task);
 				List<String> lore = new ArrayList<>();
-				lore.add(CivColor.LightGreen+"Will Require: ");
+				lore.add(CivColor.Green+"Will Require: ");
 				lore.addAll(loreRequired);
-				lore.add(CivColor.LightGreen+"Will Reward: "+CivColor.Rose+m.reward+" Hammers");
+				lore.add(CivColor.Green+"Will Reward: "+CivColor.Rose+m.reward+" Hammers");
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 				inv.addItem(item);
@@ -317,36 +299,42 @@ public class Mine extends Structure {
 				String key = getKey(this, "task"+m.task);
 				ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 				if (entry == null || entry.isEmpty()) {
-					for (Integer typeID : consumptions.keySet()) {
-						int imat = typeID;
-						Material mat = ItemManager.getMaterial(imat);
-						int amt = consumptions.get(typeID);
-						loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+					for (ArrayList<String> item : m.required.keySet()) {
+						for (String s : item) {
+							String[] split = s.split(";");
+							int imat = Integer.valueOf(split[0]);
+							int data = Integer.valueOf(split[1]);
+							loreRequired.add(CivColor.LightGrayBold+" » "+
+										CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						}
 					}
 					ItemStack item = new ItemStack(Material.LIME_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(CivColor.WhiteBold+"[Available] Task "+m.task);
 					List<String> lore = new ArrayList<>();
-					lore.add(CivColor.LightGreen+"Requires: ");
+					lore.add(CivColor.Green+"Requires: ");
 					lore.addAll(loreRequired);
-					lore.add(CivColor.LightGreen+"Rewards: "+CivColor.Yellow+m.reward+" Hammers");
+					lore.add(CivColor.Green+"Rewards: "+CivColor.Yellow+m.reward+" Hammers");
 					meta.setLore(lore);
 					item.setItemMeta(meta);
 					inv.addItem(item);
 				} else {
-					for (Integer typeID : consumptions.keySet()) {
-						int imat = typeID;
-						Material mat = ItemManager.getMaterial(imat);
-						int amt = consumptions.get(typeID);
-						loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+					for (ArrayList<String> item : m.required.keySet()) {
+						for (String s : item) {
+							String[] split = s.split(";");
+							int imat = Integer.valueOf(split[0]);
+							int data = Integer.valueOf(split[1]);
+							loreRequired.add(CivColor.LightGrayBold+" » "+
+										CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						}
 					}
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Completed] Task "+m.task);
 					List<String> lore = new ArrayList<>();
-					lore.add(CivColor.LightGreen+"Consumed: ");
+					lore.add(CivColor.Green+"Consumed: ");
 					lore.addAll(loreRequired);
-					lore.add(CivColor.LightGreen+"Rewarded: "+CivColor.Rose+m.reward+" Hammers");
+					lore.add(CivColor.Green+"Rewarded: "+CivColor.Rose+m.reward+" Hammers");
 					meta.setLore(lore);
 					item.setItemMeta(meta);
 					inv.addItem(item);
@@ -357,22 +345,25 @@ public class Mine extends Structure {
 	}
 	
 	public void openTaskCompleterGUI(Player p, Town town, int task) {
-		ConfigMineTask mtasks = CivSettings.mineTasks.get(task);
+		ConfigMineTask mtask = CivSettings.mineTasks.get(task);
 		
 		List<String> lr = new ArrayList<>();
-		for (Integer typeID : mtasks.required.keySet()) {
-			int imat = typeID;
-			Material mat = ItemManager.getMaterial(imat);
-			int amt = mtasks.required.get(typeID);
-			lr.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+		for (ArrayList<String> item : mtask.required.keySet()) {
+			for (String s : item) {
+				String[] split = s.split(";");
+				int imat = Integer.valueOf(split[0]);
+				int data = Integer.valueOf(split[1]);
+				lr.add(CivColor.LightGrayBold+" » "+
+							CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+			}
 		}
 		
-		String loreReq = CivColor.LightGreen+"Required: ;";
+		String loreReq = CivColor.Green+"Required: ;";
 		for (String s : lr) {
 			loreReq += s+" ;";
 		}
-		loreReq += CivColor.LightGreen+"Rewards: ;";
-		loreReq += CivColor.Yellow+mtasks.reward+" Hammers";
+		loreReq += CivColor.Green+"Rewards: ;";
+		loreReq += CivColor.Yellow+mtask.reward+" Hammers";
 		
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Mine Task "+task);
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 

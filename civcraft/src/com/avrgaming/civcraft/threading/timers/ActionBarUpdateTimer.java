@@ -12,12 +12,13 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.war.War;
 
 public class ActionBarUpdateTimer implements Runnable {
 	
 	@Override
 	public void run() {
-		if (CivCraft.isDisable) {
+		if (CivCraft.isDisable || War.isWarTime()) {
 			return;
 		}
 		
@@ -31,7 +32,7 @@ public class ActionBarUpdateTimer implements Runnable {
 			if (cc != null && tc != null) {
 				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", claim of "+CivColor.LightBlue+cc.getTown().getName();
 			} else if (cc != null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.Yellow+", nearby "+CivColor.LightBlue+cc.getTown().getName();
+				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+CivColor.Gold+"nearby "+CivColor.LightBlue+cc.getTown().getName();
 			} else {
 				borders = CivColor.Rose+"Wilderness, Unclaimed Land";
 			}

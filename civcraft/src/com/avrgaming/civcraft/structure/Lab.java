@@ -3,18 +3,9 @@ package com.avrgaming.civcraft.structure;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.components.ConsumeLevelComponent;
 import com.avrgaming.civcraft.components.ConsumeLevelComponent.Result;
@@ -24,19 +15,14 @@ import com.avrgaming.civcraft.config.ConfigMineLevel;
 import com.avrgaming.civcraft.config.ConfigMineTask;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
-import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.sessiondb.SessionEntry;
-import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
-import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
-import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Lab extends Structure {
 	
@@ -69,13 +55,13 @@ public class Lab extends Structure {
 		return "lightbulb";
 	}
 	
-	@Override
-	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
-		switch (sb.command) {
-		case "/task":
-			spawnTaskVillager(absCoord.getLocation(), (byte)sb.getData());
-		}
-	}
+//	@Override
+//	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+//		switch (sb.command) {
+//		case "/task":
+//			spawnTaskVillager(absCoord.getLocation(), (byte)sb.getData());
+//		}
+//	}
 	
 	public ConsumeLevelComponent getConsumeComponent() {
 		if (consumeComp == null) {
@@ -197,7 +183,7 @@ public class Lab extends Structure {
 		return struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag; 
 	}
 	
-	public void spawnTaskVillager(Location loc, int direction) {
+/*	public void spawnTaskVillager(Location loc, int direction) {
 		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
 		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
 		v.teleport(vLoc);
@@ -302,7 +288,7 @@ public class Lab extends Structure {
 				loreReq.split(";")
 				));
 		p.openInventory(inv);
-	}
+	}*/
 	
 	public void resetTasks() {
 		for (ConfigMineTask t : CivSettings.mineTasks.values()) {

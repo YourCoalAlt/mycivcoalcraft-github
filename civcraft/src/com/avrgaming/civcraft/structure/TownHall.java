@@ -642,7 +642,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void openMainInfoGUI(Player p, Town t) {
 		DecimalFormat df = new DecimalFormat();
 		ConfigTownLevel level = CivSettings.townLevels.get(t.getLevel());
-		Inventory inv = Bukkit.createInventory(null, 9*4, t.getName()+"'s Information");
+		Inventory inv = Bukkit.createInventory(null, 9*4, t.getName()+"'s Town Info");
 		
 		String colorTile = CivColor.LightGreen;
 		if (t.getTileImprovementCount() >= level.tile_improvements) {

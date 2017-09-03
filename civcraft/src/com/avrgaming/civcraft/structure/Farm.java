@@ -102,6 +102,7 @@ public class Farm extends Structure {
 		case CivData.WHEAT_CROP:
 		case CivData.CARROT_CROP:
 		case CivData.POTATO_CROP:
+		case CivData.BEETROOT_CROP:
 		case CivData.NETHERWART_CROP:
 //		case CivData.SUGARCANE_BLOCK:
 //			return true;
