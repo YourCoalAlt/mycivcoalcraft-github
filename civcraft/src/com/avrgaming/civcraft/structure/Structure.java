@@ -166,7 +166,7 @@ public class Structure extends Buildable {
 				struct = (Structure) new Cottage(rs);
 			}
 			break;
-		case "s_monument":
+		case "ti_monument":
 			if (rs == null) {
 				struct = (Structure) new Monument(center, id, town);
 			} else {

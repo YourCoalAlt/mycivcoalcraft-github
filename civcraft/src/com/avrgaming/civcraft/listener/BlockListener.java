@@ -1319,6 +1319,10 @@ public class BlockListener implements Listener {
 					TownHall th = (TownHall) buildable;
 					th.openMainInfoGUI(p, th.getTown());
 				}
+				if (vn.contains("Quest Viewer")) {
+					TownHall th = (TownHall) buildable;
+					th.openTownQuestGUI(p, th.getTown());
+				}
 			} else if (buildable instanceof Granary) {
 				Granary granary = (Granary) buildable;
 				if (vn.contains("Granary Tasks")) {

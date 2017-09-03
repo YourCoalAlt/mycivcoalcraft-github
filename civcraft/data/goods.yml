@@ -347,6 +347,15 @@ land_goods:
       hemispheres: 'hemi_south'
 #
 water_goods: 
+    - id: 'good_coral'
+      name: Coral
+      value: 250.0
+      buffs: 'buff_monopoly, buff_innovation'
+      material: 401 # firework rocket
+      material_data: 0
+      culture: 0.8
+      food: 7
+#
     - id: 'good_crabs'
       name: Crabs
       value: 250.0
@@ -400,15 +409,6 @@ water_goods:
       material: 349 # raw fish
       material_data: 2 # clownfish
       culture: 0.5
-      food: 7
-#
-    - id: 'good_tea'
-      name: Tea
-      value: 250.0
-      buffs: 'buff_monopoly, buff_innovation'
-      material: 175 # sunflower
-      material_data: 0
-      culture: 0.8
       food: 7
 #
     - id: 'good_tuna'

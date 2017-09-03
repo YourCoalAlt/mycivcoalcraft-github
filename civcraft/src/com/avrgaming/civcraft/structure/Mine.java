@@ -27,7 +27,9 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -44,13 +46,17 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
+import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureChest;
+import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
+import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
+import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Mine extends Structure {
 
@@ -81,6 +87,49 @@ public class Mine extends Structure {
 	@Override
 	public String getMarkerIconName() {
 		return "hammer";
+	}
+	
+	@Override
+	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+		switch (sb.command) {
+		case "/sign":
+			Integer id = Integer.valueOf(sb.keyvalues.get("id"));
+			int rid = id+1;
+			if (this.getLevel() >= rid) {
+				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
+				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				Sign sign = (Sign)absCoord.getBlock().getState();
+				sign.setLine(0, "");
+				sign.setLine(1, "Mine "+rid);
+				sign.setLine(2, CivColor.Green+"Useable");
+				sign.setLine(3, "");
+				sign.update();
+			} else {
+				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
+				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				Sign sign = (Sign)absCoord.getBlock().getState();
+				sign.setLine(0, "");
+				sign.setLine(1, "Mine "+rid);
+				sign.setLine(2, CivColor.Red+"Locked");
+				sign.setLine(3, "");
+				sign.update();
+			}
+			this.addStructureBlock(absCoord, false);
+			break;
+		}
+	}
+	
+	@Override
+	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
+		Resident res = CivGlobal.getResident(player);
+		if (res == null) return;
+		switch (sign.getAction()) {
+		case "sign":
+			if (res.isSBPermOverride()) {
+				sign.getCoord().getBlock().setType(Material.AIR);
+			}
+			break;
+		}
 	}
 	
 	public ConsumeLevelComponent getConsumeComponent() {

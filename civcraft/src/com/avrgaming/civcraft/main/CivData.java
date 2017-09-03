@@ -157,6 +157,8 @@ public class CivData {
 	
 	public static final int END_PORTAL_FRAME = 120;
 	
+	public static final int REDSTONE_LAMP = 123;
+	
 	public static final int COCOAPOD = 127;
 	public static final int EMERALD_ORE = 129;
 	public static final int ENDER_CHEST = 130;
@@ -319,6 +321,8 @@ public class CivData {
 	public static final int POTATO_ITEM = 392;
 	
 	public static final int EMPTY_MAP = 395;
+	
+	public static final int SKULL = 397;
 	
 	public static final int QUARTZ = 406;
 	
@@ -714,13 +718,13 @@ public class CivData {
 		 */
 		
 		switch(data) {
-		case SIGNPOST_NORTH:
+		case 8:
 			return CHEST_NORTH;
-		case SIGNPOST_SOUTH:
+		case 0:
 			return CHEST_SOUTH;
-		case SIGNPOST_EAST:
+		case 12:
 			return CHEST_EAST;
-		case SIGNPOST_WEST:
+		case 4:
 			return CHEST_WEST;
 		}
 		

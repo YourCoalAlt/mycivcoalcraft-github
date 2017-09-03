@@ -152,22 +152,22 @@ public class Capitol extends TownHall {
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock commandBlock) {
 		StructureSign structSign;
 		
-		if (commandBlock.command.equals("/towerfire")) {
+		if (commandBlock.command.equals("/guideinfo")) {
+			spawnInfoVillager(absCoord.getLocation(), (byte)commandBlock.getData());
+		} else if (commandBlock.command.equals("/questinfo")) {
+			spawnQuestVillager(absCoord.getLocation(), (byte)commandBlock.getData());
+		} else if (commandBlock.command.equals("/towerfire")) {
 			String id = commandBlock.keyvalues.get("id");
 			Integer towerID = Integer.valueOf(id);
-			
 			if (!arrowTowers.containsKey(towerID)) {
-				
 				ProjectileArrowComponent arrowTower = new ProjectileArrowComponent(this, absCoord.getLocation());
 				arrowTower.createComponent(this);
 				arrowTower.setTurretLocation(absCoord);
-				
 				arrowTowers.put(towerID, arrowTower);
 			}
 		} else if (commandBlock.command.equals("/next")) {
 			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
 			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
-
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Next\nLocation");
 			structSign.setDirection(commandBlock.getData());
@@ -175,7 +175,6 @@ public class Capitol extends TownHall {
 			structSign.update();
 			this.addStructureSign(structSign);
 			CivGlobal.addStructureSign(structSign);
-			
 		} else if (commandBlock.command.equals("/prev")) {
 			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
 			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
@@ -186,7 +185,6 @@ public class Capitol extends TownHall {
 			structSign.update();
 			this.addStructureSign(structSign);
 			CivGlobal.addStructureSign(structSign);
-			
 		} else if (commandBlock.command.equals("/respawndata")) {
 			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
 			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
@@ -197,16 +195,13 @@ public class Capitol extends TownHall {
 			structSign.update();
 			this.addStructureSign(structSign);
 			CivGlobal.addStructureSign(structSign);
-			
 			this.respawnSign = structSign;
 			changeIndex(index);
 		}
-		
 	}
 	
 	@Override
 	public void createControlPoint(BlockCoord absCoord) {
-		
 		Location centerLoc = absCoord.getLocation();
 		
 		/* Build the bedrock tower. */

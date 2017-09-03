@@ -72,6 +72,7 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
 import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarStats;
 
@@ -613,6 +614,18 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		}
 	}
 	
+	@Override
+	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+		switch (sb.command) {
+		case "/guideinfo":
+			spawnInfoVillager(absCoord.getLocation(), (byte)sb.getData());
+			break;
+		case "/questinfo":
+			spawnQuestVillager(absCoord.getLocation(), (byte)sb.getData());
+			break;
+		}
+	}
+	
 	// XXX Villager stuff
 	
 	public void spawnInfoVillager(Location loc, int direction) {
@@ -829,6 +842,68 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		}
 		
 		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		p.openInventory(inv);
+	}
+	
+	
+	public void spawnQuestVillager(Location loc, int direction) {
+		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
+		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
+		v.teleport(vLoc);
+		v.setAdult();
+		v.setAI(false);
+		v.setCustomName(this.getTown().getName()+"'s Quest Viewer");
+		v.setProfession(Profession.LIBRARIAN);
+		CivGlobal.addStructureVillager(v);
+	}
+	
+	public void openTownQuestGUI(Player p, Town t) {
+		Inventory inv = Bukkit.createInventory(null, 9*3, t.getName()+"'s Quest Viewer");
+		
+		if (t.getStructureByType("ti_mine") != null) {
+			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Mine Tasks", CivData.STONE_PICKAXE, 0, 
+					CivColor.LightGray+"« Click to View »"
+					));
+		} else {
+			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Mine Tasks", CivData.BEDROCK, 0, 
+					CivColor.LightGray+" « Cannot View Tasks »",
+					CivColor.Rose+"« Structure Not Found »"
+					));
+		}
+		
+		if (t.getStructureByType("ti_lab") != null) {
+			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Lab Tasks", CivData.EMPTY_BOTTLE, 0, 
+					CivColor.LightGray+"« Click to View »"
+					));
+		} else {
+			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Lab Tasks", CivData.BEDROCK, 0, 
+					CivColor.LightGray+" « Cannot View Tasks »",
+					CivColor.Rose+"« Structure Not Found »"
+					));
+		}
+		
+		if (t.getStructureByType("ti_monument") != null) {
+			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Monument Tasks", CivData.SKULL, 4, 
+					CivColor.LightGray+"« Click to View »"
+					));
+		} else {
+			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Monument Tasks", CivData.BEDROCK, 0, 
+					CivColor.LightGray+" « Cannot View Tasks »",
+					CivColor.Rose+"« Structure Not Found »"
+					));
+		}
+		
+		if (t.getStructureByType("ti_cottage") != null) {
+			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Cottage Tasks", CivData.REDSTONE_LAMP, 0, 
+					CivColor.LightGray+"« Click to View »"
+					));
+		} else {
+			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Cottage Tasks", CivData.BEDROCK, 0, 
+					CivColor.LightGray+" « Cannot View Tasks »",
+					CivColor.Rose+"« Structure Not Found »"
+					));
+		}
+		
 		p.openInventory(inv);
 	}
 }

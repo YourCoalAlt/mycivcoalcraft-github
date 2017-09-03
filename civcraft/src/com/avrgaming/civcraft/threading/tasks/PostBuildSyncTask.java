@@ -95,111 +95,6 @@ public class PostBuildSyncTask implements Runnable {
 			
 			/* Signs and chests should already be handled, look for more exotic things. */
 			switch (sb.command) {
-			case "/tradeoutpost":
-				/* Builds the trade outpost tower at this location. */
-				if (buildable instanceof TradeOutpost) {
-					TradeOutpost outpost = (TradeOutpost)buildable;
-					outpost.setTradeOutpostTower(absCoord);
-					try {
-						outpost.build_trade_outpost_tower();
-					} catch (CivException e) {
-						e.printStackTrace();
-					}
-					
-				}
-				break;
-			
-			case "/techbar":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					
-					int index = Integer.valueOf(sb.keyvalues.get("id"));
-					townhall.addTechBarBlock(absCoord, index);
-					
-				}
-				break;
-			case "/techname":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					
-					townhall.setTechnameSign(absCoord);
-					townhall.setTechnameSignData((byte)sb.getData());
-					
-				}							
-				break;
-			case "/techdata":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					
-					townhall.setTechdataSign(absCoord);
-					townhall.setTechdataSignData((byte)sb.getData());
-					
-				}
-				break;
-			case "/itemframe":
-				String strvalue = sb.keyvalues.get("id");
-				if (strvalue != null) {
-					int index = Integer.valueOf(strvalue);
-					
-					if (buildable instanceof TownHall) {
-						TownHall townhall = (TownHall)buildable;
-						townhall.createGoodieItemFrame(absCoord, index, sb.getData());
-						townhall.addStructureBlock(absCoord, false);
-					} 
-				}
-				break;
-			case "/respawn":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					
-					townhall.setRespawnPoint(absCoord);
-				}
-				break;
-			case "/revive":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					
-					townhall.setRevivePoint(absCoord);
-				}
-				break;
-			case "/control":
-				if (buildable instanceof TownHall) {
-					TownHall townhall = (TownHall)buildable;
-					townhall.createControlPoint(absCoord);
-				}
-				break;
-			case "/towerfire":
-				if (buildable instanceof ArrowTower) {
-					ArrowTower arrowtower = (ArrowTower)buildable;
-					arrowtower.setTurretLocation(absCoord);
-				}
-				if (buildable instanceof CannonTower) {
-					CannonTower cannontower = (CannonTower)buildable;
-					cannontower.setTurretLocation(absCoord);
-				}
-				
-				break;
-			case "/sign":
-				structSign = CivGlobal.getStructureSign(absCoord);
-				if (structSign == null) {
-					structSign = new StructureSign(absCoord, buildable);
-				}
-				block = absCoord.getBlock();
-				ItemManager.setTypeId(block, sb.getType());
-				ItemManager.setData(block, sb.getData());
-				
-				structSign.setDirection(ItemManager.getData(block.getState()));
-				for (String key : sb.keyvalues.keySet()) {
-					structSign.setType(key);
-					structSign.setAction(sb.keyvalues.get(key));
-					break;
-				}
-				
-				structSign.setOwner(buildable);
-				buildable.addStructureSign(structSign);
-				CivGlobal.addStructureSign(structSign);
-				
-				break;
 			case "/chest":
 				StructureChest structChest = CivGlobal.getStructureChest(absCoord);
 				if (structChest == null) {
@@ -223,10 +118,98 @@ public class PostBuildSyncTask implements Runnable {
 					chest.update();
 				}
 				break;
-			case "/guideinfo":
+			case "/sign":
+				structSign = CivGlobal.getStructureSign(absCoord);
+				if (structSign == null) {
+					structSign = new StructureSign(absCoord, buildable);
+				}
+				block = absCoord.getBlock();
+				ItemManager.setTypeId(block, sb.getType());
+				ItemManager.setData(block, sb.getData());
+				
+				structSign.setDirection(ItemManager.getData(block.getState()));
+				for (String key : sb.keyvalues.keySet()) {
+					structSign.setType(key);
+					structSign.setAction(sb.keyvalues.get(key));
+					break;
+				}
+				
+				structSign.setOwner(buildable);
+				buildable.addStructureSign(structSign);
+				CivGlobal.addStructureSign(structSign);
+				
+				break;
+			case "/itemframe":
+				String strvalue = sb.keyvalues.get("id");
+				if (strvalue != null) {
+					int index = Integer.valueOf(strvalue);
+					
+					if (buildable instanceof TownHall) {
+						TownHall townhall = (TownHall)buildable;
+						townhall.createGoodieItemFrame(absCoord, index, sb.getData());
+						townhall.addStructureBlock(absCoord, false);
+					} 
+				}
+				break;
+			case "/tradeoutpost":
+				/* Builds the trade outpost tower at this location. */
+				if (buildable instanceof TradeOutpost) {
+					TradeOutpost outpost = (TradeOutpost)buildable;
+					outpost.setTradeOutpostTower(absCoord);
+					try {
+						outpost.build_trade_outpost_tower();
+					} catch (CivException e) {
+						e.printStackTrace();
+					}
+				}
+				break;
+			case "/techbar":
 				if (buildable instanceof TownHall) {
-					TownHall th = (TownHall) buildable;
-					th.spawnInfoVillager(absCoord.getLocation(), (byte)sb.getData());
+					TownHall townhall = (TownHall)buildable;
+					int index = Integer.valueOf(sb.keyvalues.get("id"));
+					townhall.addTechBarBlock(absCoord, index);
+				}
+				break;
+			case "/techname":
+				if (buildable instanceof TownHall) {
+					TownHall townhall = (TownHall)buildable;
+					townhall.setTechnameSign(absCoord);
+					townhall.setTechnameSignData((byte)sb.getData());
+				}							
+				break;
+			case "/techdata":
+				if (buildable instanceof TownHall) {
+					TownHall townhall = (TownHall)buildable;
+					townhall.setTechdataSign(absCoord);
+					townhall.setTechdataSignData((byte)sb.getData());
+				}
+				break;
+			case "/respawn":
+				if (buildable instanceof TownHall) {
+					TownHall townhall = (TownHall)buildable;
+					townhall.setRespawnPoint(absCoord);
+				}
+				break;
+			case "/revive":
+				if (buildable instanceof TownHall) {
+					TownHall townhall = (TownHall)buildable;
+					townhall.setRevivePoint(absCoord);
+				}
+				break;
+			case "/control":
+				if (buildable instanceof TownHall) {
+					TownHall townhall = (TownHall)buildable;
+					townhall.createControlPoint(absCoord);
+				}
+				break;
+			case "/towerfire":
+				if (buildable instanceof ArrowTower) {
+					ArrowTower arrowtower = (ArrowTower)buildable;
+					arrowtower.setTurretLocation(absCoord);
+				}
+				if (buildable instanceof CannonTower) {
+					CannonTower cannontower = (CannonTower)buildable;
+					cannontower.setTurretLocation(absCoord);
 				}
 				break;
 			case "/smelter":

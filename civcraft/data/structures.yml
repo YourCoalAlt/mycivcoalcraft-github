@@ -475,7 +475,7 @@ structures:
     require_tech: 'tech_productivity'
     effect_event: process_mine
     tile_improvement: true
-    limit: 0
+    limit: 1
     cost: 20000.0
     upkeep: 1250.0
     hammer_cost: 1000.0
@@ -495,7 +495,7 @@ structures:
     require_tech: 'tech_experimentation'
     effect_event: process_lab
     tile_improvement: true
-    limit: 0
+    limit: 1
     cost: 20000.0
     upkeep: 1250.0
     hammer_cost: 1000.0
@@ -504,7 +504,7 @@ structures:
     components:
         - name: 'ConsumeLevelComponent'
 #
-  - id: s_monument
+  - id: ti_monument
     itemId: 397
     itemData: 4
     position: 21
@@ -514,7 +514,7 @@ structures:
     require_tech: 'tech_heritage'
     effect_event: generate_culture:25
     tile_improvement: true
-    limit: 0
+    limit: 1
     cost: 20000.0
     upkeep: 1250.0
     hammer_cost: 1000.0
