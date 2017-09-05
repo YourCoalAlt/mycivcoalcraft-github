@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.Inventory;
 
 import com.avrgaming.civcraft.components.NonMemberFeeComponent;
@@ -14,10 +16,12 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBankLevel;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -142,18 +146,43 @@ public class Bank extends Structure {
 		this.getTown().getTreasury().setPrincipalAmount(this.getTown().getTreasury().getBalance());
 	}
 	
-	@Override
-	public void onPostBuild(BlockCoord absCoord, SimpleBlock commandBlock) {
-		this.level = getTown().saved_bank_level;
-		this.interestRate = getTown().saved_bank_interest_amount;
-	}
-	
 	public NonMemberFeeComponent getNonMemberFeeComponent() {
 		return nonMemberFeeComponent;
 	}
 	
 	public void setNonMemberFeeComponent(NonMemberFeeComponent nonMemberFeeComponent) {
 		this.nonMemberFeeComponent = nonMemberFeeComponent;
+	}
+	
+	@Override
+	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+		this.level = getTown().saved_bank_level;
+		this.interestRate = getTown().saved_bank_interest_amount;
+		
+		switch (sb.command) {
+		case "/banker":
+			spawnBankerVillager(absCoord.getLocation(), (byte)sb.getData());
+			break;
+		}
+	}
+	
+	// XXX Villager stuff
+	
+	public void spawnBankerVillager(Location loc, int direction) {
+		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
+		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
+		v.teleport(vLoc);
+		v.setAdult();
+		v.setAI(false);
+		v.setCustomName(this.getTown().getName()+"'s Bank Teller");
+		v.setProfession(Profession.LIBRARIAN);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
+		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openToolGUI(Player p, Town town) {

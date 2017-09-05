@@ -19,7 +19,6 @@
 package com.avrgaming.civcraft.items.units;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -193,13 +192,16 @@ public class MissionBook extends UnitItemMaterial {
 		
 		try {
 			Resident resident = CivGlobal.getResident(playerName);
-			if (!resident.getTown().getTreasury().hasEnough(mission.cost)) {
-				throw new CivException("Your town requires "+mission.cost+" coins to perform this mission.");
+			if (!resident.getTreasury().hasEnough(mission.cost)) {
+				throw new CivException("You require "+mission.cost+" coins to perform this mission.");
 			}
 			
 			switch (mission.id) {
 			case "spy_subvert_government":
 				performSubvertGovernment(player, mission);
+				break;
+			case "spy_ravage_technology":
+				performRavageTechnology(player, mission);
 				break;
 			case "spy_investigate_town":
 				performInvestigateTown(player, mission);
@@ -229,44 +231,36 @@ public class MissionBook extends UnitItemMaterial {
 		return processMissionResult(player, target, mission, 1.0, 1.0);
 	}
 	private static boolean processMissionResult(Player player, Town target, ConfigMission mission, double failModifier, double compromiseModifier) {
-		
-		//int fail_rate = (int)((MissionBook.getMissionFailChance(mission, target)*failModifier)*100);
-		//int compromise_rate = (int)((MissionBook.getMissionCompromiseChance(mission, target)*compromiseModifier)*100);
-		
-		DecimalFormat df = new DecimalFormat();
-		
-		double  failChance = MissionBook.getMissionFailChance(mission, target)*failModifier;
-			failChance = Integer.valueOf(df.format((1 - failChance)*100));
-		double compChance = MissionBook.getMissionCompromiseChance(mission, target)*compromiseModifier;
-			compChance = Integer.valueOf(df.format(compChance));
+		double failChance = (int)((MissionBook.getMissionFailChance(mission, target)*failModifier)*100);
+		double compChance = (int)((MissionBook.getMissionCompromiseChance(mission, target)*compromiseModifier)*100);
 		
 		Resident resident = CivGlobal.getResident(player);
-
 		if (resident == null || !resident.hasTown()) {
 			return false;
 		}
 		
-		if (!resident.getTown().getTreasury().hasEnough(mission.cost)) {
-			CivMessage.send(player, CivColor.Rose+"Suddenly, your town doesn't have enough cash to follow through with the mission.");
+		if (!resident.getTreasury().hasEnough(mission.cost)) {
+			CivMessage.send(player, CivColor.Rose+"Suddenly, you do not have enough coins to follow through with the mission.");
 			return false;
 		}
 		
-		resident.getTown().getTreasury().withdraw(mission.cost);
+		resident.getTreasury().withdraw(mission.cost);
 		
 		Random rand = new Random();
-		String result = "";
+		String result = "Success";
 		int failnext = rand.nextInt(100);
 		int next = rand.nextInt(100);
 		if (failnext < failChance) {
-			result += "Failed";
-			
+			result = "Failed";
 			if (next < compChance) {
 				CivMessage.global(CivColor.Yellow+"INTERNATIONAL INCIDENT!"+CivColor.White+" "+
-						player.getName()+" was caught trying to perform a "+mission.name+" spy mission in "+
+						player.getName()+" was caught trying to perform (and failed) a "+mission.name+" spy mission in "+
 						target.getName()+"!");
 				CivMessage.send(player, CivColor.Rose+"You've been compromised! (Rolled "+next+" vs "+compChance+") Spy unit was destroyed!");
 				Unit.removeUnit(player);
 				result += ", COMPROMISED";
+			} else {
+				CivMessage.send(player, CivColor.LightGreen+"Not Compromised! (Rolled "+next+" vs "+compChance+")");
 			}
 			
 			MissionLogger.logMission(resident.getTown(), target, resident, mission.name, result);
@@ -274,9 +268,19 @@ public class MissionBook extends UnitItemMaterial {
 			return false;
 		}
 		
-		CivMessage.send(player, CivColor.LightGreen+"Not Compromised! (Rolled "+next+" vs "+compChance+")");
+		if (next < compChance) {
+			CivMessage.global(CivColor.Yellow+"INTERNATIONAL INCIDENT!"+CivColor.White+" "+
+					player.getName()+" was caught trying to perform (and succeeded) a "+mission.name+" spy mission in "+
+					target.getName()+"!");
+			CivMessage.send(player, CivColor.Rose+"You've been compromised! (Rolled "+next+" vs "+compChance+") Spy unit was destroyed!");
+			Unit.removeUnit(player);
+			result += ", COMPROMISED";
+		} else {
+			CivMessage.send(player, CivColor.LightGreen+"Not Compromised! (Rolled "+next+" vs "+compChance+")");
+		}
+		
 		CivMessage.send(player, CivColor.LightGreen+"Mission Success! (Rolled "+failnext+" vs "+failChance+")");
-		MissionLogger.logMission(resident.getTown(), target, resident, mission.name, "Success");
+		MissionLogger.logMission(resident.getTown(), target, resident, mission.name, result);
 		return true;
 
 	}
@@ -599,9 +603,9 @@ public class MissionBook extends UnitItemMaterial {
 		// Must be within enemy town borders.
 		ChunkCoord coord = new ChunkCoord(player.getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
-//		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
-//			throw new CivException("Must be in another civilization's town's borders.");
-//		}
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
 		
 		if (tc != null && !tc.getTown().isCapitol()) {
 			throw new CivException("Must be civilization's capital ("+tc.getTown().getCiv().getCapitolName()+") to perform this mission.");
@@ -633,6 +637,43 @@ public class MissionBook extends UnitItemMaterial {
 			civ.setGovernment("gov_anarchy");
 			CivMessage.global(CivColor.Yellow+"INTERNATIONAL INCIDENT! "+CivColor.White+"The government in "+civ.getName()+" has been overthrown in a spy mission"+
 					" and is set to anarchy for the next 24 hours!");
+			
+			CivMessage.sendSuccess(player, "Mission Accomplished.");
+		}
+	}
+	
+	public static void performRavageTechnology(Player player, ConfigMission mission) throws CivException {
+		Resident resident = CivGlobal.getResident(player);
+		if (resident == null || !resident.hasTown()) {
+			throw new CivException("Only residents of towns can perform spy missions.");
+		}
+		
+		// Must be within enemy town borders.
+		ChunkCoord coord = new ChunkCoord(player.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
+		
+		if (tc != null && !tc.getTown().isCapitol()) {
+			throw new CivException("Must be civilization's capital ("+tc.getTown().getCiv().getCapitolName()+") to perform this mission.");
+		}
+		
+		Civilization civ = tc.getTown().getCiv();
+		if (civ.getResearchTech() == null) {
+			throw new CivException("Civilization does not have a technology in progress.");
+		}
+		
+		if (civ.getResearchProgress() >= (civ.getResearchTech().beaker_cost/4)) {
+			throw new CivException("Cannot ravage a technology passed 75% completion.");
+		}
+		
+		if(processMissionResult(player, tc.getTown(), mission)) {
+			civ.setResearchTech(null);
+			civ.setResearchProgress(0);
+			civ.save();
+			CivMessage.global(CivColor.Yellow+"INTERNATIONAL INCIDENT! "+CivColor.White+"The technology being researched in civ "+civ.getName()+" has been ravaged in a spy mission"+
+					" and has lost its progress!");
 			
 			CivMessage.sendSuccess(player, "Mission Accomplished.");
 		}

@@ -94,6 +94,8 @@ import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
+import com.avrgaming.civcraft.war.War;
+import com.avrgaming.civcraft.war.WarStats;
 import com.avrgaming.global.perks.Perk;
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.Config;
@@ -1150,20 +1152,23 @@ public abstract class Buildable extends SQLObject {
 		return (int)percentage;
 	}
 
-	public void damage(int amount) {
+	public void damage(Player player, int amount) {
 		if (hitpoints == 0)
 			return;
 		hitpoints -= amount;
 		
 		if (hitpoints <= 0) {
 			hitpoints = 0;
-			onDestroy();
+			onDestroy(player);
 		}
 	}
 	
-	public void onDestroy() {
+	public void onDestroy(Player player) {
 		//can be overriden in subclasses.
 		CivMessage.global("A "+this.getDisplayName()+" in "+this.getTown().getName()+" has been destroyed!");
+		if (player != null && War.isWarTime()) {
+			WarStats.incrementPlayerDestroyedBuildings(player.getName());
+		}
 		this.hitpoints = 0;
 		this.fancyDestroyStructureBlocks();
 		this.save();
@@ -1190,7 +1195,7 @@ public abstract class Buildable extends SQLObject {
 			wasTenPercent = true;
 		}
 			
-		this.damage(amount);
+		this.damage(player, amount);
 		
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 1);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
@@ -1204,18 +1209,15 @@ public abstract class Buildable extends SQLObject {
 		if (player != null) {
 		Resident resident = CivGlobal.getResident(player);
 			if (resident.isCombatInfo()) {
-				CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged ("+
-						hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")");
+				CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged ("+hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")");
 			}
 		}
 		
 	}
 	
 	public void onDamageNotification(Player player, BuildableDamageBlock hit) {
-		CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged "+
-				hit.getOwner().getDamagePercentage()+"%!");
-		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"Our "+hit.getOwner().getDisplayName()+" at ("+hit.getOwner().getCorner()+
-				") is under attack! Damage is "+hit.getOwner().getDamagePercentage()+"%!");	
+		CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged "+hit.getOwner().getDamagePercentage()+"%!");
+		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"Our "+hit.getOwner().getDisplayName()+" at ("+hit.getOwner().getCorner()+") is under attack! Damage is "+hit.getOwner().getDamagePercentage()+"%!");	
 	}
 	
 	public Map<BlockCoord, Boolean> getStructureBlocks() {
@@ -1589,7 +1591,7 @@ public abstract class Buildable extends SQLObject {
 			damage = 10;
 		}
 		
-		this.damage(damage);
+		this.damage(null, damage);
 
 		DecimalFormat df = new DecimalFormat("###");
 		CivMessage.sendTown(this.getTown(), CivColor.Rose+"Our town's "+this.getDisplayName()+" at ("+

@@ -235,7 +235,7 @@ structures:
     limit: 2
     cost: 160000.0
     upkeep: 0.0
-    hammer_cost: 600.0
+    hammer_cost: 200.0
     points: 6000
     max_hitpoints: 2000
     allow_demolish: false
@@ -258,7 +258,7 @@ structures:
     limit: 2
     cost: 40000.0
     upkeep: 0.0
-    hammer_cost: 600.0
+    hammer_cost: 200.0
     points: 1000
     max_hitpoints: 1000
     allow_demolish: false
@@ -281,7 +281,7 @@ structures:
     limit: 1
     cost: 30000.0
     upkeep: 1000.0
-    hammer_cost: 2500.0
+    hammer_cost: 1500.0
     points: 275
     max_hitpoints: 300
     ignore_floating: true
@@ -309,7 +309,7 @@ structures:
     limit: 0
     cost: 25000.0
     upkeep: 500.0
-    hammer_cost: 2000.0
+    hammer_cost: 1500.0
     points: 100
     max_hitpoints: 400
 #
@@ -328,7 +328,7 @@ structures:
     limit: 0
     cost: 25000.0
     upkeep: 500.0
-    hammer_cost: 2000.0
+    hammer_cost: 1500.0
     points: 100
     max_hitpoints: 400
 #
@@ -343,7 +343,7 @@ structures:
     limit: 1
     cost: 2500.0
     upkeep: 200.0
-    hammer_cost: 850.0
+    hammer_cost: 500.0
     points: 75
     max_hitpoints: 200
 #
@@ -358,7 +358,7 @@ structures:
     limit: 1
     cost: 7500.0
     upkeep: 500.0
-    hammer_cost: 1000.0
+    hammer_cost: 875.0
     points: 60
     max_hitpoints: 300
     components:
@@ -378,7 +378,7 @@ structures:
     limit: 1
     cost: 2500.0
     upkeep: 100.0
-    hammer_cost: 1000.0
+    hammer_cost: 400.0
     points: 40
     max_hitpoints: 200
 #
@@ -393,7 +393,7 @@ structures:
     limit: 1
     cost: 10000.0
     upkeep: 1000.0
-    hammer_cost: 2250.0
+    hammer_cost: 1500.0
     points: 100
     max_hitpoints: 200
     components:
@@ -417,7 +417,7 @@ structures:
     limit: 4
     cost: 5000.0
     upkeep: 750.0
-    hammer_cost: 750.0
+    hammer_cost: 350.0
     points: 20
     max_hitpoints: 200
 #
@@ -433,7 +433,7 @@ structures:
     limit: 1
     cost: 25000.0
     upkeep: 1500.0
-    hammer_cost: 5000.0
+    hammer_cost: 3500.0
     points: 250
     max_hitpoints: 300
 #
@@ -448,7 +448,7 @@ structures:
     limit: 1
     cost: 30000.0  
     upkeep: 1500.0
-    hammer_cost: 1250.0
+    hammer_cost: 800.0
     points: 40
     max_hitpoints: 350
     components:
@@ -478,7 +478,7 @@ structures:
     limit: 1
     cost: 20000.0
     upkeep: 1250.0
-    hammer_cost: 1000.0
+    hammer_cost: 500.0
     points: 50
     max_hitpoints: 300
     components:
@@ -498,7 +498,7 @@ structures:
     limit: 1
     cost: 20000.0
     upkeep: 1250.0
-    hammer_cost: 1000.0
+    hammer_cost: 500.0
     points: 50
     max_hitpoints: 300
     components:
@@ -517,7 +517,7 @@ structures:
     limit: 1
     cost: 20000.0
     upkeep: 1250.0
-    hammer_cost: 1000.0
+    hammer_cost: 500.0
     points: 50
     max_hitpoints: 300
     components:
@@ -541,7 +541,7 @@ structures:
     limit: 1
     cost: 5000.0
     upkeep: 500.0
-    hammer_cost: 1500.0
+    hammer_cost: 500.0
     points: 35
     max_hitpoints: 250
     components:
@@ -569,7 +569,7 @@ structures:
     limit: 0
     cost: 2500.0
     upkeep: 250.0
-    hammer_cost: 500.0
+    hammer_cost: 100.0
     points: 25
     max_hitpoints: 50
     components:
@@ -590,7 +590,7 @@ structures:
     limit: 0
     cost: 25000.0
     upkeep: 2000.0
-    hammer_cost: 2500.0
+    hammer_cost: 1250.0
     points: 75
     max_hitpoints: 300
 #
@@ -605,7 +605,7 @@ structures:
     limit: 1
     cost: 2500.0
     upkeep: 1000.0
-    hammer_cost: 500.0
+    hammer_cost: 350.0
     points: 25
     max_hitpoints: 75
 #
@@ -622,7 +622,7 @@ structures:
     limit: 0
     cost: 5000.0
     upkeep: 1000.0
-    hammer_cost: 1250.0
+    hammer_cost: 750.0
     points: 100
     max_hitpoints: 150
     components:
@@ -644,7 +644,7 @@ structures:
     limit: 0
     cost: 5000.0
     upkeep: 500.0
-    hammer_cost: 875.0
+    hammer_cost: 625.0
     points: 75
     max_hitpoints: 400
 #
@@ -661,7 +661,7 @@ structures:
     limit: 1
     cost: 30000.0
     upkeep: 2000.0
-    hammer_cost: 2000.0
+    hammer_cost: 1250.0
     points: 100
     max_hitpoints: 250
     components:
@@ -685,7 +685,7 @@ structures:
     limit: 1
     cost: 1500.0
     upkeep: 100.0
-    hammer_cost: 750.0
+    hammer_cost: 450.0
     points: 25
     max_hitpoints: 150
 # Row 5
@@ -700,7 +700,7 @@ structures:
     limit: 1
     cost: 50000.0
     upkeep: 2500.0
-    hammer_cost: 4000.0
+    hammer_cost: 1500.0
     points: 350
     max_hitpoints: 350
 #
@@ -715,7 +715,7 @@ structures:
     limit: 1
     cost: 10000.0
     upkeep: 750.0
-    hammer_cost: 1250.0
+    hammer_cost: 750.0
     points: 25
     max_hitpoints: 500
     components:
@@ -735,7 +735,7 @@ structures:
     limit: 4
     cost: 15000.0
     upkeep: 750.0
-    hammer_cost: 1500.0
+    hammer_cost: 1000.0
     max_hitpoints: 500
     points: 75
 #
@@ -753,7 +753,7 @@ structures:
     limit: 8
     cost: 50000.0
     upkeep: 1500.0
-    hammer_cost: 3000.0
+    hammer_cost: 2000.0
     max_hitpoints: 750
     points: 150
 #
@@ -771,7 +771,7 @@ structures:
     limit: 4
     cost: 250000.0
     upkeep: 4000.0
-    hammer_cost: 5000.0
+    hammer_cost: 3500.0
     max_hitpoints: 1000
     points: 300
 # Row 6

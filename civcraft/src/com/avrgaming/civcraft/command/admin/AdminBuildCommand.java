@@ -112,7 +112,6 @@ public class AdminBuildCommand extends CommandBase {
 	
 	
 	public void destroynearest_cmd() throws CivException {				
-		
 		Town town = getNamedTown(1);
 		Player player = getPlayer();
 		
@@ -123,7 +122,7 @@ public class AdminBuildCommand extends CommandBase {
 			return;
 		}
 		
-		struct.onDestroy();
+		struct.onDestroy(null);
 		CivMessage.send(player, struct.getDisplayName()+" has been destroyed.");
 	}
 	

@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -85,6 +86,7 @@ import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.nocheat.NoCheatPlusSurvialFlyHandler;
 import com.avrgaming.civcraft.object.Civilization;
+import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
@@ -334,12 +336,17 @@ public final class CivCraft extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		for (Villager v : CivGlobal.structureVillagers.keySet()) {
-			v.setHealth(0);
-			v.remove();
+		CivMessage.global("The server is being stopped, saving data...");
+		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+			cc.getChunkCoord().getChunk().load();
+			for (Entity e : Bukkit.getWorld("world").getEntities()) {
+				if (e instanceof Villager) {
+					e.remove();
+				}
+			}
+			cc.getChunkCoord().getChunk().unload();
 		}
 		
-		CivMessage.global("The server is being stopped, saving data...");
 		isDisable = true;
 		SQLUpdate.save();
 		disableCivGlobal();

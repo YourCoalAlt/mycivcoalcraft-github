@@ -6,6 +6,9 @@
 #
 
 espionage:
+    # radius to search for exposure of players
+    player_search_radius: 625
+
     # Default exposure per second.
     exposure_per_second: 1
 
@@ -21,7 +24,7 @@ espionage:
 
     # Town location exposure limit
     # When the exposure level of a spy exceeds this percent, the town is notified of the position the spy is located at.
-    town_exposure_location: 0.8
+    town_exposure_location: 0.75
 
     # Town name exposure limit
     # When the exposure level of the spy exceeds this percent, the town knows who is spying on them.
@@ -59,7 +62,7 @@ missions:
       position: 9
       name: 'Subvert Government'
       description: 
-          - 'Plunges the target civiliztion into Anarchy.'
+          - 'Plunges the target civ into Anarchy.'
           - 'Emerges them in a random government.'
           - 'Must be at civilization capital town.'
       cost: 300000.0
@@ -69,6 +72,23 @@ missions:
       compromise_chance: 1.0
       intel: 3
       length: 150
+#
+    - id: 'spy_ravage_technology'
+      itemId: 377
+      itemData: 0
+      position: 10
+      name: 'Ravage Technology'
+      description: 
+          - 'Remove tech being researched in target civ.'
+          - 'This civ loses all progress with it.'
+          - 'Must be less than 75% completed.'
+      cost: 225000.0
+      range: 100.0
+      cooldown: 2.0
+      fail_chance: 0.65
+      compromise_chance: 1.0
+      intel: 3
+      length: 180
 #
     - id: 'spy_investigate_town'
       itemId: 380

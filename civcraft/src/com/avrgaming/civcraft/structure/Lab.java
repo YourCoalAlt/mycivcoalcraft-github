@@ -3,26 +3,42 @@ package com.avrgaming.civcraft.structure;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.components.ConsumeLevelComponent;
 import com.avrgaming.civcraft.components.ConsumeLevelComponent.Result;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigLabLevel;
-import com.avrgaming.civcraft.config.ConfigMineLevel;
-import com.avrgaming.civcraft.config.ConfigMineTask;
+import com.avrgaming.civcraft.config.ConfigLabTask;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
+import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Buff;
+import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureChest;
+import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
+import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
+import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Lab extends Structure {
 	
@@ -47,7 +63,13 @@ public class Lab extends Structure {
 	
 	@Override
 	public String getDynmapDescription() {
-		return null;
+		if (getConsumeComponent() == null) {
+			return null;
+		}
+		
+		String out = "";
+		out += "Level "+getConsumeComponent().getLevel();
+		return out;
 	}
 	
 	@Override
@@ -55,13 +77,48 @@ public class Lab extends Structure {
 		return "lightbulb";
 	}
 	
-//	@Override
-//	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
-//		switch (sb.command) {
-//		case "/task":
-//			spawnTaskVillager(absCoord.getLocation(), (byte)sb.getData());
-//		}
-//	}
+	@Override
+	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+		switch (sb.command) {
+		case "/sign":
+			Integer id = Integer.valueOf(sb.keyvalues.get("id"));
+			int rid = id+1;
+			if (this.getLevel() >= rid) {
+				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
+				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				Sign sign = (Sign)absCoord.getBlock().getState();
+				sign.setLine(0, "");
+				sign.setLine(1, "Lab "+rid);
+				sign.setLine(2, CivColor.Green+"Useable");
+				sign.setLine(3, "");
+				sign.update();
+			} else {
+				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
+				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				Sign sign = (Sign)absCoord.getBlock().getState();
+				sign.setLine(0, "");
+				sign.setLine(1, "Lab "+rid);
+				sign.setLine(2, CivColor.Red+"Locked");
+				sign.setLine(3, "");
+				sign.update();
+			}
+			this.addStructureBlock(absCoord, false);
+			break;
+		}
+	}
+	
+	@Override
+	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
+		Resident res = CivGlobal.getResident(player);
+		if (res == null) return;
+		switch (sign.getAction()) {
+		case "sign":
+			if (res.isSBPermOverride()) {
+				sign.getCoord().getBlock().setType(Material.AIR);
+			}
+			break;
+		}
+	}
 	
 	public ConsumeLevelComponent getConsumeComponent() {
 		if (consumeComp == null) {
@@ -71,12 +128,10 @@ public class Lab extends Structure {
 	}
 	
 	public Result consume(CivAsyncTask task) throws InterruptedException {
-		if (this.getChests().size() == 0) return Result.STAGNATE;	
-
+		if (this.getChests().size() == 0) return Result.STAGNATE;
 		MultiInventory multiInv = new MultiInventory();
 		ArrayList<StructureChest> chests = this.getAllChestsById(0);
 		
-		// Make sure the chest is loaded and add it to the multi inv.
 		for (StructureChest c : chests) {
 			task.syncLoadChunk(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getZ());
 			Inventory tmp;
@@ -99,31 +154,33 @@ public class Lab extends Structure {
 		switch (result) {
 		case STARVE:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.Rose+"fell"+CivColor.Green+"."+getConsumeComponent().getCountString());
+					CivColor.Rose+"fell "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+".");
 			break;
 		case LEVELDOWN:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()+1)+" "+getDisplayName()+" consumption "+
-					CivColor.Rose+"de-leveled"+CivColor.LightGreen+". It is now level "+CivColor.Green+getConsumeComponent().getLevel()+" "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.Rose+"de-leveled "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
+					CivColor.Green+getConsumeComponent().getLevel()+CivColor.LightGreen+".");
 			break;
 		case STAGNATE:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.Rose+"stagnated "+CivColor.LightGreen+". "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.Rose+"stagnated "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case GROW:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.Green+"rose"+CivColor.LightGreen+". "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.Green+"rose "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case LEVELUP:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()-1)+" "+getDisplayName()+" consumption "+
-					CivColor.Green+"leveled up"+CivColor.LightGreen+". It is now level "+getConsumeComponent().getLevel()+". "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.Green+"leveled up "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
+					getConsumeComponent().getLevel()+". ");
 			break;
 		case MAXED:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.LightPurple+"is maxed"+CivColor.LightGreen+". "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.LightPurple+"is maxed "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case UNKNOWN:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.GrayBold+"UNKNOWN"+CivColor.LightGreen+". "+CivColor.Green+getConsumeComponent().getCountString());
+					CivColor.GrayBold+"UNKNOWN "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		default:
 			break;
@@ -139,8 +196,7 @@ public class Lab extends Structure {
 	}
 	
 	public int getMaxCount() {
-		int level = getLevel();
-		ConfigMineLevel lvl = CivSettings.mineLevels.get(level);
+		ConfigLabLevel lvl = CivSettings.labLevels.get(getLevel());
 		return lvl.count;	
 	}
 	
@@ -157,105 +213,100 @@ public class Lab extends Structure {
 			return 0.0;
 		}
 		
-		int level = getLevel(); 
-		ConfigLabLevel lvl = CivSettings.labLevels.get(level);
+		ConfigLabLevel lvl = CivSettings.labLevels.get(getLevel());
 		int total_production = (int) (lvl.beakers*this.getTown().getLabRate().total);
-		//TODO make a new buff that works for mines/labs
 //		if (this.getTown().getBuffManager().hasBuff("buff_pyramid_cottage_bonus")) {
 //			total_production *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 //		}
 		
-//		total_production *= this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
-//		if (this.getCiv().hasTechnology("tech_taxation")) {
-//			double tech_bonus;
-//			try {
-//				tech_bonus = CivSettings.getDouble(CivSettings.techsConfig, "taxation_mine_buff");
-//				total_production *= tech_bonus;
-//			} catch (InvalidConfiguration e) {
-//				e.printStackTrace();
-//			}
-//		}
+		double buff = 1.0 + this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
+		total_production *= buff;
+		if (this.getCiv().hasTechnology("tech_resource_efficiency")) {
+			double tech_bonus;
+			try {
+				tech_bonus = CivSettings.getDouble(CivSettings.techsConfig, "tech_lab_buff");
+				total_production *= tech_bonus;
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+			}
+		}
 		return total_production;
 	}
 	
-	
+	// XXX Quests
 	public String getKey(Structure struct, String tag) {
 		return struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag; 
 	}
 	
-/*	public void spawnTaskVillager(Location loc, int direction) {
-		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
-		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
-		v.teleport(vLoc);
-		v.setAdult();
-		v.setAI(false);
-		v.setCustomName("Lab Tasks");
-		v.setProfession(Profession.LIBRARIAN);
-		CivGlobal.addStructureVillager(v);
-	}
-	
 	public void openToolGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Lab Tasks");
-		
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
-				CivColor.RESET+"This is the Lab Quest Villager. You can use it",
+				CivColor.RESET+"This is the Lab Quest Chest. You can use it",
 				CivColor.RESET+"to complete tasks to recieve beakers (items)",
 				CivColor.RESET+"for upgrading. You can get more tasks by having",
 				CivColor.RESET+"a higher town level, or through upgrades.",
 				CivColor.RESET+"Upgrades can also increase beaker output!"
 				));
 		
-		for (ConfigMineTask m : CivSettings.mineTasks.values()) {
-			Map<Integer, Integer> consumptions = m.required;
+		for (ConfigLabTask m : CivSettings.labTasks.values()) {
 			List<String> loreRequired = new ArrayList<>();
-			
 			if (this.getTown().getLevel() < m.task) {
-				for (Integer typeID : consumptions.keySet()) {
-					int imat = typeID;
-					Material mat = ItemManager.getMaterial(imat);
-					int amt = consumptions.get(typeID);
-					loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Rose+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+				for (ArrayList<String> item : m.required.keySet()) {
+					for (String s : item) {
+						String[] split = s.split(";");
+						int imat = Integer.valueOf(split[0]);
+						int data = Integer.valueOf(split[1]);
+						loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+					}
 				}
-				
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Locked] Task "+m.task);
 				List<String> lore = new ArrayList<>();
-				lore.add(CivColor.LightGreen+"Will Require: ");
+				lore.add(CivColor.Green+"Will Require: ");
 				lore.addAll(loreRequired);
-				lore.add(CivColor.LightGreen+"Will Reward: "+CivColor.Rose+m.reward+" Hammers");
+				lore.add(CivColor.Green+"Will Reward: "+CivColor.Rose+m.reward+" Beakers");
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 				inv.addItem(item);
 			} else {
-				for (Integer typeID : consumptions.keySet()) {
-					int imat = typeID;
-					Material mat = ItemManager.getMaterial(imat);
-					int amt = consumptions.get(typeID);
-					loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
-				}
-				
 				String key = getKey(this, "task"+m.task);
 				ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 				if (entry == null || entry.isEmpty()) {
+					for (ArrayList<String> item : m.required.keySet()) {
+						for (String s : item) {
+							String[] split = s.split(";");
+							int imat = Integer.valueOf(split[0]);
+							int data = Integer.valueOf(split[1]);
+							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						}
+					}
 					ItemStack item = new ItemStack(Material.LIME_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(CivColor.WhiteBold+"[Available] Task "+m.task);
 					List<String> lore = new ArrayList<>();
-					lore.add(CivColor.LightGreen+"Requires: ");
+					lore.add(CivColor.Green+"Requires: ");
 					lore.addAll(loreRequired);
-					lore.add(CivColor.LightGreen+"Rewards: "+CivColor.Yellow+m.reward+" Hammers");
+					lore.add(CivColor.Green+"Rewards: "+CivColor.Yellow+m.reward+" Beakers");
 					meta.setLore(lore);
 					item.setItemMeta(meta);
 					inv.addItem(item);
 				} else {
+					for (ArrayList<String> item : m.required.keySet()) {
+						for (String s : item) {
+							String[] split = s.split(";");
+							int imat = Integer.valueOf(split[0]);
+							int data = Integer.valueOf(split[1]);
+							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						}
+					}
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Completed] Task "+m.task);
 					List<String> lore = new ArrayList<>();
-					lore.add(CivColor.LightGreen+"Consumed: ");
+					lore.add(CivColor.Green+"Consumed: ");
 					lore.addAll(loreRequired);
-					lore.add(CivColor.LightGreen+"Rewarded: "+CivColor.Rose+m.reward+" Hammers");
+					lore.add(CivColor.Green+"Rewarded: "+CivColor.Rose+m.reward+" Beakers");
 					meta.setLore(lore);
 					item.setItemMeta(meta);
 					inv.addItem(item);
@@ -266,32 +317,31 @@ public class Lab extends Structure {
 	}
 	
 	public void openTaskCompleterGUI(Player p, Town town, int task) {
-		ConfigMineTask mtasks = CivSettings.mineTasks.get(task);
-		
+		ConfigLabTask mtask = CivSettings.labTasks.get(task);
 		List<String> lr = new ArrayList<>();
-		for (Integer typeID : mtasks.required.keySet()) {
-			int imat = typeID;
-			Material mat = ItemManager.getMaterial(imat);
-			int amt = mtasks.required.get(typeID);
-			lr.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+amt+" "+mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase().replace("_", " "));
+		for (ArrayList<String> item : mtask.required.keySet()) {
+			for (String s : item) {
+				String[] split = s.split(";");
+				int imat = Integer.valueOf(split[0]);
+				int data = Integer.valueOf(split[1]);
+				lr.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+			}
 		}
 		
-		String loreReq = CivColor.LightGreen+"Required:;";
-		for (String s : lr) {
-			loreReq += s+" ;";
-		}
-		loreReq += CivColor.LightGreen+"Rewards:;";
-		loreReq += CivColor.Yellow+mtasks.reward+" Hammers";
+		String loreReq = CivColor.Green+"Required: ;";
+		for (String s : lr) loreReq += s+" ;";
+		loreReq += CivColor.Green+"Rewards: ;";
+		loreReq += CivColor.Yellow+mtask.reward+" Beakers";
 		
-		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Mine Task "+task);
+		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Lab Task "+task);
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 
 				loreReq.split(";")
 				));
 		p.openInventory(inv);
-	}*/
+	}
 	
 	public void resetTasks() {
-		for (ConfigMineTask t : CivSettings.mineTasks.values()) {
+		for (ConfigLabTask t : CivSettings.labTasks.values()) {
 			String key = getKey(this, "task"+t.task);
 			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 			synchronized (entry) {
@@ -306,7 +356,7 @@ public class Lab extends Structure {
 	@Override
 	public void delete() throws SQLException {
 		super.delete();
-		for (ConfigMineTask t : CivSettings.mineTasks.values()) {
+		for (ConfigLabTask t : CivSettings.labTasks.values()) {
 			String key = getKey(this, "task"+t.task);
 			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 			synchronized (entry) {

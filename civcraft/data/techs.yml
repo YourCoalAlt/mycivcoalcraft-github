@@ -37,10 +37,17 @@ potions:
 # ------------------------------------------
 # the amount to multiply cottage coins once taxation is researched
 taxation_cottage_buff: 2.0
-taxation_mine_buff: 2.0
+tech_mine_buff: 2.0
 
 # Definitions for technologies.
 techs:
+   - id: 'tech_mysticism'
+     name: 'Mysticism'
+     beaker_cost: 0.0
+     cost: 0.0
+     points: 0
+     require_techs:
+#
    - id: 'tech_irrigation'
      name: 'Irrigation'
      beaker_cost: 0.0

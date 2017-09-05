@@ -487,7 +487,6 @@ mine_levels:
      amount: 24
      count: 144
 #
-#
 mine_tasks:
    - task: 1
      required:
@@ -507,67 +506,65 @@ mine_tasks:
    - task: 4
      required:
          - 331;0,64
-         - 337;0,8
+         - 263;0,8
      reward: 55
 #
    - task: 5
      required:
          - 331;0,80
-         - 337;0,16
+         - 263;0,16
      reward: 70
 #
    - task: 6
      required:
          - 331;0,96
-         - 337;0,24
+         - 263;0,24
      reward: 85
 #
    - task: 7
      required:
          - 331;0,112
-         - 337;0,32
+         - 263;0,32
          - 265;0,4
      reward: 100
 #
    - task: 8
      required:
          - 331;0,128
-         - 337;0,40
+         - 263;0,40
          - 265;0,8
      reward: 115
 #
    - task: 9
      required:
          - 331;0,144
-         - 337;0,48
+         - 263;0,48
          - 265;0,12
      reward: 130
 #
    - task: 10
      required:
          - 331;0,160
-         - 337;0,56
+         - 263;0,56
          - 265;0,16
-         - 264;0,2
+         - 388;0,2
      reward: 145
 #
    - task: 11
      required:
          - 331;0,176
-         - 337;0,64
+         - 263;0,64
          - 265;0,20
-         - 264;0,4
+         - 388;0,4
      reward: 160
 #
    - task: 12
      required:
          - 331;0,192
-         - 337;0,80
+         - 263;0,80
          - 265;0,24
-         - 264;0,6
+         - 388;0,6
      reward: 175
-#
-#
 #======================================#
 #========== > Lab Settings < ==========#
 #======================================#
@@ -601,5 +598,84 @@ lab_levels:
      beakers: 300.0
      amount: 24
      count: 144
+#
+lab_tasks:
+   - task: 1
+     required:
+         - 351;4,16
+     reward: 10
+#
+   - task: 2
+     required:
+         - 351;4,32
+     reward: 25
+#
+   - task: 3
+     required:
+         - 351;4,48
+     reward: 40
+#
+   - task: 4
+     required:
+         - 351;4,64
+         - 337;0,8
+     reward: 55
+#
+   - task: 5
+     required:
+         - 351;4,80
+         - 337;0,16
+     reward: 70
+#
+   - task: 6
+     required:
+         - 351;4,96
+         - 337;0,24
+     reward: 85
+#
+   - task: 7
+     required:
+         - 351;4,112
+         - 337;0,32
+         - 266;0,4
+     reward: 100
+#
+   - task: 8
+     required:
+         - 351;4,128
+         - 337;0,40
+         - 266;0,8
+     reward: 115
+#
+   - task: 9
+     required:
+         - 351;4,144
+         - 337;0,48
+         - 266;0,12
+     reward: 130
+#
+   - task: 10
+     required:
+         - 351;4,160
+         - 337;0,56
+         - 266;0,16
+         - 264;0,2
+     reward: 145
+#
+   - task: 11
+     required:
+         - 351;4,176
+         - 337;0,64
+         - 266;0,20
+         - 264;0,4
+     reward: 160
+#
+   - task: 12
+     required:
+         - 351;4,192
+         - 337;0,80
+         - 266;0,24
+         - 264;0,6
+     reward: 175
 #
 #

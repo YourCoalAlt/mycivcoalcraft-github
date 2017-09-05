@@ -628,6 +628,12 @@ public class Blacksmith extends Structure {
 		v.setAI(false);
 		v.setCustomName("Blacksmith Smelter");
 		v.setProfession(Profession.BLACKSMITH);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	

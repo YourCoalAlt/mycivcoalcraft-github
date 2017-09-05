@@ -42,6 +42,7 @@ import com.avrgaming.civcraft.structure.Barracks;
 import com.avrgaming.civcraft.structure.Blacksmith;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Granary;
+import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Warehouse;
@@ -275,6 +276,20 @@ public class InventoryDisplaysListener implements Listener {
 			case STONE_PICKAXE:
 				Mine mine = (Mine) th.getTown().getStructureByType("ti_mine");
 				mine.openToolGUI(p, th.getTown());
+				break;
+			case GLASS_BOTTLE:
+				Lab lab = (Lab) th.getTown().getStructureByType("ti_lab");
+				lab.openToolGUI(p, th.getTown());
+				break;
+			case SKULL:
+//				Monument monument = (Monument) th.getTown().getStructureByType("ti_monument");
+//				monument.openToolGUI(p, th.getTown());
+				CivMessage.sendError(p, "Culture quests coming soon!");
+				break;
+			case REDSTONE_LAMP_OFF:
+//				Cottage cottage = (Cottage) th.getTown().getStructureByType("ti_cottage");
+//				cottage.openToolGUI(p, th.getTown());
+				CivMessage.sendError(p, "Coin quests coming soon!");
 				break;
 			default:
 				break;
@@ -1060,21 +1075,16 @@ public class InventoryDisplaysListener implements Listener {
 		double reward = mtask.reward;
 		
 		Map<ArrayList<String>, Integer> given = new HashMap<ArrayList<String>, Integer>();
-//		Map<Integer, Integer> given = new HashMap<Integer, Integer>();
 		Map<ArrayList<String>, Integer> required = new HashMap<ArrayList<String>, Integer>();
-//		Map<Integer, Integer> required = new HashMap<Integer, Integer>();
 		Map<ArrayList<String>, Integer> returning = new HashMap<ArrayList<String>, Integer>();
-//		Map<Integer, Integer> returning = new HashMap<Integer, Integer>();
 		Map<ArrayList<String>, Integer> dropping = new HashMap<ArrayList<String>, Integer>();
-//		Map<Integer, Integer> dropping = new HashMap<Integer, Integer>();
 		
 		for (ArrayList<String> item : mtask.required.keySet()) {
 //			for (String s : item) {
 //				String[] split = s.split(";");
 				required.put(item, mtask.required.get(item).intValue());
 				given.put(item, 0);
-//				CivMessage.global("Required: id"+Integer.valueOf(split[0])+
-//									" amt"+mtask.required.get(item).intValue()+" data"+Integer.valueOf(split[1]));
+//				CivMessage.global("Required: id"+Integer.valueOf(split[0])+" amt"+mtask.required.get(item).intValue()+" data"+Integer.valueOf(split[1]));
 //			}
 		}
 		
@@ -1088,44 +1098,39 @@ public class InventoryDisplaysListener implements Listener {
 				continue;
 			}
 			
-			for (ArrayList<String> req : required.keySet()) {
-				LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-				for (String r : req) {
-					String[] rsplit = r.split(";");
-					int rid = Integer.valueOf(rsplit[0]);
-					int rdata = Integer.valueOf(rsplit[1]);
-					if (ItemManager.getId(stack) == rid && stack.getDurability() == rdata && craftMat == null) {
-						int h = given.get(req).intValue();
-						h += stack.getAmount();
-						given.put(req, h);
-//						CivMessage.global("Deposit Add: id"+ItemManager.getId(stack)+" data"+stack.getDurability()+
-//											" amt"+stack.getAmount()+" newamt"+h);
-					} else if (craftMat != null) { //Allow custom items to be dropped
-						ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
-						newMat.setData(stack.getData());
-						p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
-						addedNotRequiredItems = true;
-					} else if (craftMat == null) { //Drop any vanilla items in the inventory
-						p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
-						addedNotRequiredItems = true;
-					}
-				}
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			ArrayList<String> al = new ArrayList<String>();
+			al.add(ItemManager.getId(stack)+";"+stack.getDurability());
+			if (required.containsKey(al) && craftMat == null) {
+				inv.removeItem(stack);
+				int h = given.get(al).intValue();
+				h += stack.getAmount();
+				given.put(al, h);
+//				CivMessage.global("Deposit Add: id"+ItemManager.getId(stack)+" data"+stack.getDurability()+" amt"+stack.getAmount()+" newamt"+h);
+			} else if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+				CivMessage.sendError(p, craftMat.getName()+","+stack.getAmount());
+				addedNotRequiredItems = true;
+			} else if (craftMat == null) { //Drop any vanilla items in the inventory
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+				addedNotRequiredItems = true;
 			}
 		}
 		
+		inv.clear();
 		boolean canComplete = true;
 		for (ArrayList<String> r : required.keySet()) {
 			for (String s1 : r) {
 				String[] rsplit = s1.split(";");
 				int rid = Integer.valueOf(rsplit[0]);
 				int rdata = Integer.valueOf(rsplit[1]);
-				
 				for (ArrayList<String> g : given.keySet()) {
 					for (String s2 : g) {
 						String[] gsplit = s2.split(";");
 						int gid = Integer.valueOf(gsplit[0]);
 						int gdata = Integer.valueOf(gsplit[1]);
-						
 //						CivMessage.global("Reading "+gid+","+gdata+" v "+rid+","+rdata);
 						if (gid == rid && gdata == rdata) {
 							int ramt = required.get(r).intValue();
@@ -1134,10 +1139,11 @@ public class InventoryDisplaysListener implements Listener {
 //								CivMessage.global("Yes Complete: "+rid+","+rdata+" - "+gamt+" >= "+ramt);
 								int td = gamt-ramt;
 								if (td > 0) {
+//									CivMessage.global("Yes Dropping: "+td);
 									dropping.put(r, td);
 								}
 							} else {
-//								CivMessage.global("Yes Complete: "+rid+","+rdata+" - "+gamt+" < "+ramt);
+//								CivMessage.global("Yes Return: "+rid+","+rdata+" - "+gamt+" < "+ramt);
 								int amt = ramt - (ramt-gamt);
 								returning.put(r, amt);
 								canComplete = false;
@@ -1156,7 +1162,6 @@ public class InventoryDisplaysListener implements Listener {
 			
 			CivMessage.sendTown(t, p.getName()+" has completed mine task "+task+" and earned "+reward+" hammers!");
 			mine.sessionAdd(mine.getKey(mine, "task"+task), "complete");
-			
 			for (ArrayList<String> d : dropping.keySet()) {
 				for (String s : d) {
 					String[] split = s.split(";");
@@ -1177,14 +1182,12 @@ public class InventoryDisplaysListener implements Listener {
 					int did = Integer.valueOf(dsplit[0]);
 					int ddata = Integer.valueOf(dsplit[1]);
 					int damt = dropping.get(d).intValue();
-					
 					for (ArrayList<String> r : required.keySet()) {
 						for (String s2 : r) {
 							String[] rsplit = s2.split(";");
 							int rid = Integer.valueOf(rsplit[0]);
 							int rdata = Integer.valueOf(rsplit[1]);
 							int ramt = required.get(r).intValue();
-							
 							if (rid == did && rdata == ddata) {
 								damt += ramt;
 							}
@@ -1206,7 +1209,6 @@ public class InventoryDisplaysListener implements Listener {
 					int rdata = Integer.valueOf(rsplit[1]);
 					int ramt = returning.get(r).intValue();
 					int missing = 0;
-					
 					for (ArrayList<String> q : required.keySet()) {
 						for (String s2 : q) {
 							String[] qsplit = s2.split(";");

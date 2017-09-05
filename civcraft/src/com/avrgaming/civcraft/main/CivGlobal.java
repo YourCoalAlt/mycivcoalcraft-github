@@ -278,14 +278,16 @@ public class CivGlobal {
 		structureVillagers.put(v, v.getLocation());
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
-	public static Location getStructureVillager(Location loc) {
-		return structureVillagers.get(loc);
+	public static Location getStructureVillager(Villager v) {
+		return structureVillagers.get(v);
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
-	public static Location removeStructureVillager(Location loc) {
-		return structureVillagers.remove(loc);
+	public static Location getStructureVillagerLoc(Villager v) {
+		return structureVillagers.get(v);
+	}
+	
+	public static Location removeStructureVillager(Villager v) {
+		return structureVillagers.remove(v);
 	}
 	
 	public static void checkForInvalidStructures() {

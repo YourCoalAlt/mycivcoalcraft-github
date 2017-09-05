@@ -113,7 +113,7 @@ public class Spy extends UnitMaterial {
 					can = false;
 					out += CivColor.Rose+"    Cannot spy on admin civ.;";
 				} else {
-					out += CivColor.Green+"    Spying on Town "+CivColor.LightGreen+target.getName();
+					out += CivColor.Green+"    Spying on Town "+CivColor.LightGreen+target.getName()+";";
 				}
 				
 				
@@ -124,7 +124,7 @@ public class Spy extends UnitMaterial {
 				out += CivColor.Green+"Chance of Success: "+CivColor.LightGreen+successChance;
 				
 				double compChance = MissionBook.getMissionCompromiseChance(m, target);
-				String compromiseChance = df.format(compChance)+"%;";
+				String compromiseChance = df.format(compChance*100)+"%;";
 				out += CivColor.Green+"Chance of Compromise: "+CivColor.LightGreen+compromiseChance;
 				
 				String length = "";

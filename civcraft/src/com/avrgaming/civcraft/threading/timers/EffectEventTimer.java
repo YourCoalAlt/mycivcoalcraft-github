@@ -78,7 +78,6 @@ public class EffectEventTimer extends CivAsyncTask {
 			case "generate_coins":
 				if (struct instanceof Cottage) {
 					Cottage cottage = (Cottage)struct;
-					//cottage.generate_coins(this);
 					cottage.generateCoins(this);
 				}
 				break;
@@ -86,7 +85,7 @@ public class EffectEventTimer extends CivAsyncTask {
 				if (struct instanceof Mine) {
 					Mine mine = (Mine)struct;
 					try {
-						mine.process_mine(this);
+						mine.process_consume(this);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

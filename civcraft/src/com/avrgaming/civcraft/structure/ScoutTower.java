@@ -34,9 +34,11 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
+import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.Relation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class ScoutTower extends Structure {
@@ -178,13 +180,20 @@ public class ScoutTower extends Structure {
 				continue;
 			}
 			
+			// Notify the town or civ.
 			if (center.distance(player.getLocation()) <= range) {
-				/* Notify the town or civ. */
-					CivMessage.sendScout(this.getCiv(), "Scout tower detected "+relationColor+
-							player.getName()+"("+relationName+")"+CivColor.White+
-							" at ("+player.getLocation().getBlockX()+","+player.getLocation().getBlockY()+","+player.getLocation().getBlockZ()+")"+
-							" in "+this.getTown().getName());
+				ChunkCoord coord = new ChunkCoord(player.getLocation());
+				CultureChunk cc = CivGlobal.getCultureChunk(coord);
+				if (cc == null) {
+					CivMessage.sendScout(this.getCiv(), "Scout tower detected "+relationColor+player.getName()+" ("+relationName+")"+CivColor.White+
+							" outside of our borders, near town "+this.getTown().getName());
 					alreadyAnnounced.add(this.getCiv().getName()+":"+player.getName());
+				} else {
+					CivMessage.sendScout(this.getCiv(), "Scout tower detected "+relationColor+player.getName()+" ("+relationName+")"+CivColor.White+
+							" at ("+player.getLocation().getBlockX()+","+player.getLocation().getBlockY()+","+player.getLocation().getBlockZ()+")"+
+							" in town "+this.getTown().getName());
+					alreadyAnnounced.add(this.getCiv().getName()+":"+player.getName());
+				}
 			}
 		}
 		

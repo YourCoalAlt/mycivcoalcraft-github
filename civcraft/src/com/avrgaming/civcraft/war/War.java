@@ -45,10 +45,10 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.global.perks.PlatinumManager;
 
 public class War {
-
-	/* If true, WarTime is on. */
+	
+	// If true, WarTime is on.
 	private static boolean warTime;
-
+	
 	private static Date start = null;
 	private static Date end = null;
 	
@@ -62,7 +62,6 @@ public class War {
 		/* Save in the SessionDB just in case the server goes down. */
 		String key = "capturedTown";
 		String value = townName+":"+master.getId();
-		
 		CivGlobal.getSessionDB().add(key, value, master.getId(), 0, 0);
 	}
 	
@@ -145,9 +144,8 @@ public class War {
 	 * @param warTime the warTime to set
 	 */
 	public static void setWarTime(boolean warTime) {
-		
 		if (warTime == false) {
-			/* War time has ended. */
+			// War time has ended.
 			War.setStart(null);
 			War.setEnd(null);
 			War.restoreAllTowns();
@@ -158,27 +156,36 @@ public class War {
 			CivGlobal.trommelsEnabled = true;
 			CivGlobal.tradeEnabled = true;
 			
-			/* Delete any wartime file used to prevent reboots. */
+			// Delete any wartime file used to prevent reboots.
 			File file = new File("wartime");
 			file.delete();
 		
 			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Ended");
-			/* display some stats. */
+			// display some stats.
 			CivMessage.global("Most Lethal: "+WarStats.getTopKiller());
+			CivMessage.global("Most Death-Prone: "+WarStats.getTopDeathProne());
+			CivMessage.global("Most Beaten Up: "+WarStats.getTopPlayerDamaged());
+			CivMessage.global("Most Bloodthirsty: "+WarStats.getTopPlayerAttack());
+			CivMessage.global("Most Destructive Structures: "+WarStats.getTopDestroyedBuildings());
+			CivMessage.global("Most Destructive Hitpoints: "+WarStats.getTopPlayerDamageBuildings());
 			List<String> civs = WarStats.getCapturedCivs();
 			if (civs.size() > 0) {
 				for (String str : civs) {
 					CivMessage.global(str);
 				}
 			}
+			List<String> towns = WarStats.getCapturedTowns();
+			if (towns.size() > 0) {
+				for (String str : towns) {
+					CivMessage.global(str);
+				}
+			}
 			WarStats.clearStats();
-			
 			for (Civilization civ : CivGlobal.getCivs()) {
 				civ.onWarEnd();
 			}
-			
 		} else {
-			/* War time has started. */
+			// War time has started.
 			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Started");
 			War.setStart(new Date());
 			War.repositionPlayers("You've been teleported back to your town hall. WarTime has started and you were in enemy territory.");
@@ -186,7 +193,7 @@ public class War {
 			War.resetTownClaimFlags();
 			WarAntiCheat.kickUnvalidatedPlayers();
 			
-			/* Put a flag on the filesystem to prevent cron reboots. */
+			// Put a flag on the filesystem to prevent cron reboots.
 			File file = new File("wartime");
 			try {
 				file.createNewFile();
@@ -208,18 +215,14 @@ public class War {
 				e.printStackTrace();
 			}
 		}
-		
 		War.warTime = warTime;
 	}
 
-	/*
-	 * When a civ conqueres a town, then has its capitol conquered,
+	/* When a civ conqueres a town, then has its capitol conquered,
 	 * the town that it just conquered needs to go to the new owner.
 	 * If the new owner was the town's old owner, then that town is no longer
-	 * defeated.
-	 */
+	 * defeated. */
 	public static void transferDefeated(Civilization loser, Civilization winner) {
-		
 		/* Transfer any defeated towns */
 		ArrayList<String> removeUs = new ArrayList<String>();
 		
@@ -254,7 +257,6 @@ public class War {
 	}
 	
 	private static void processDefeated() {
-		
 		if (!CivGlobal.isCasualMode()) {
 			for (String townName : defeatedTowns.keySet()) {
 				try {

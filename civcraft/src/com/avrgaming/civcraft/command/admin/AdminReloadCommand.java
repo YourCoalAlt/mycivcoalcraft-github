@@ -3,7 +3,10 @@ package com.avrgaming.civcraft.command.admin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Listener;
 
 import com.avrgaming.civcraft.command.CommandBase;
@@ -14,6 +17,7 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
+import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.CivColor;
 
@@ -27,7 +31,23 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		commands.put("decformat", "Fixes decimal formats in some SQL saving features. WARNING: Can cause server lag.");
 		commands.put("govs", "Reloads the governments.yml file");
 		commands.put("structuredata", "Reloads the structuredata.yml file");
-		commands.put("newspaper", "Reloads the game.yml file (of newspapers only)");
+		commands.put("newspaper", "Reloads the game.yml file (newspapers only)");
+		commands.put("killvillagers", "Removes all villagers spawned by CivCraft. WARNING: Only use if you are rebooting server, or else they don't respawn!");
+	}
+	
+	public void killvillagers_cmd() {
+		int killed = 0;
+		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+			cc.getChunkCoord().getChunk().load();
+			for (Entity e : Bukkit.getWorld("world").getEntities()) {
+				if (e instanceof Villager) {
+					e.remove();
+					killed++;
+				}
+			}
+			cc.getChunkCoord().getChunk().unload();
+		}
+		CivMessage.send(sender, CivColor.Gold+"Removed "+killed+" villagers.");
 	}
 	
 	public void decformat_cmd() {

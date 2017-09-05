@@ -108,6 +108,7 @@ public class PlayerLocationCache {
 		for (PlayerLocationCache pc : cache.values()) {
 			if (pc.getCoord().distanceSquared(bcoord) < radiusSquared) {
 				list.add(pc);
+			} else {
 			}
 		}
 		

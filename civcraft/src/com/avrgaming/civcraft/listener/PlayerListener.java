@@ -282,8 +282,10 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (War.isWarTime()) {
-			if (event.getEntity().getKiller() != null) {
-				WarStats.incrementPlayerKills(event.getEntity().getKiller().getName());
+			Player d = event.getEntity();
+			WarStats.incrementPlayerDeaths(d.getName());
+			if (d.getKiller() != null) {
+				WarStats.incrementPlayerKills(d.getKiller().getName());
 			}
 		}
 	}
@@ -536,5 +538,44 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
+	}
+	
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerDamageEntityWarStat(EntityDamageByEntityEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		Player attacker;
+		Player defender;
+		Double damage;
+		
+		if (event.getEntity() instanceof Player) {
+			defender = (Player)event.getEntity();
+		} else {
+			defender = null;
+		}
+		
+		if (event.getDamager() instanceof Player) {
+			attacker = (Player)event.getDamager();
+		} else if (event.getDamager() instanceof Arrow) {
+			Arrow arrow = (Arrow)event.getDamager();
+			if (arrow.getShooter() instanceof Player) {
+				attacker = (Player)arrow.getShooter();
+			} else {
+				attacker = null;
+			}
+		} else {
+			attacker = null;
+		}
+		
+		if (attacker == null || defender == null) {
+			return;
+		}
+		
+		damage = Double.valueOf(new DecimalFormat("#.#").format(event.getDamage()));
+		WarStats.incrementPlayerDamage(defender.getName(), damage);
+		WarStats.incrementPlayerAttack(attacker.getName(), damage);
 	}
 }

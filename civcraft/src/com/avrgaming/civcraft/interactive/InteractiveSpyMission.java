@@ -47,7 +47,7 @@ public class InteractiveSpyMission implements InteractiveResponse {
 		DecimalFormat df = new DecimalFormat();
 		
 		String successChance = df.format((1 - failChance)*100)+"%";
-		String compromiseChance = df.format(compChance)+"%";
+		String compromiseChance = df.format(compChance*100)+"%";
 		String length = "";
 		
 		int mins = mission.length / 60;

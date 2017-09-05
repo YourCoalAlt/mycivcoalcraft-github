@@ -636,6 +636,12 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setAI(false);
 		v.setCustomName(this.getTown().getName()+"'s Handy Assistant");
 		v.setProfession(Profession.PRIEST);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	
@@ -854,6 +860,12 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setAI(false);
 		v.setCustomName(this.getTown().getName()+"'s Quest Viewer");
 		v.setProfession(Profession.LIBRARIAN);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	

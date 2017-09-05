@@ -224,26 +224,6 @@ public class PostBuildSyncTask implements Runnable {
 					wh.spawnToggleVillager(absCoord.getLocation(), (byte)sb.getData());
 				}
 				break;
-			case "/endtable":
-			case "/tasktable":
-				StructureTables table1 = CivGlobal.getStructureTable(absCoord);
-				if (table1 == null) {
-					table1 = new StructureTables(absCoord, buildable);
-				}
-				table1.setTaskTable(0);
-				buildable.addStructureTable(table1);
-				CivGlobal.addStructureTable(table1);
-				
-				/* Convert sign data to end portal frame.*/
-				block = absCoord.getBlock();
-//				if (ParticleEffectTimer.externalParticleBlocks.get(block.getLocation()) != null) {
-//					ParticleEffectTimer.externalParticleBlocks.remove(block.getLocation());
-//				}
-//				ParticleEffectTimer.externalParticleBlocks.put(Material.ENDER_PORTAL_FRAME, block.getLocation());
-				if (ItemManager.getId(block) != CivData.END_PORTAL_FRAME) {
-					ItemManager.setTypeId(block, CivData.END_PORTAL_FRAME);
-				}
-				break;
 			case "/upgradetable":
 			case "/upgrade":
 				StructureTables table2 = CivGlobal.getStructureTable(absCoord);

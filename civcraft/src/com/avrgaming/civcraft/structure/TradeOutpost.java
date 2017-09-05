@@ -30,6 +30,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -228,8 +229,8 @@ public class TradeOutpost extends Structure {
 	}
 	
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onDestroy(Player player) {
+		super.onDestroy(player);
 		
 		if (this.goodie != null) {
 			try {

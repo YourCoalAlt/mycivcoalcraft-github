@@ -646,7 +646,7 @@ public class Road extends Structure {
 			wasTenPercent = true;
 		}
 			
-		this.damage(amount);
+		this.damage(player, amount);
 		
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 1);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
@@ -657,7 +657,7 @@ public class Road extends Structure {
 	}
 	
 	@Override
-	public void onDestroy() {
+	public void onDestroy(Player player) {
 		//can be overriden in subclasses.
 		CivMessage.global("A "+this.getDisplayName()+" in "+this.getTown().getName()+" has been destroyed!");
 		this.hitpoints = 0;

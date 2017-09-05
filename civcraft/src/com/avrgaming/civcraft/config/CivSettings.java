@@ -129,6 +129,7 @@ public class CivSettings {
 	public static Map<Integer, ConfigMineLevel> mineLevels = new HashMap<Integer, ConfigMineLevel>();
 	public static Map<Integer, ConfigMineTask> mineTasks = new HashMap<Integer, ConfigMineTask>();
 	public static Map<Integer, ConfigLabLevel> labLevels = new HashMap<Integer, ConfigLabLevel>();
+	public static Map<Integer, ConfigLabTask> labTasks = new HashMap<Integer, ConfigLabTask>();
 	
 	public static FileConfiguration wonderConfig; /* wonders.yml */
 	public static Map<String, ConfigBuildableInfo> wonders = new HashMap<String, ConfigBuildableInfo>();
@@ -435,6 +436,7 @@ public class CivSettings {
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
 		ConfigGranaryTask.loadConfig(structuredataConfig, granaryTasks);
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
+		ConfigLabTask.loadConfig(structuredataConfig, labTasks);
 	}
 	
 	private static void loadConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException {
@@ -474,6 +476,7 @@ public class CivSettings {
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
+		ConfigLabTask.loadConfig(structuredataConfig, labTasks);
 		ConfigLabLevel.loadConfig(structuredataConfig, labLevels);
 		ConfigBankLevel.loadConfig(structuredataConfig, bankLevels);
 		ConfigQuarryItem.loadConfig(structuredataConfig, quarryItems);

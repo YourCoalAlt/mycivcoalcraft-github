@@ -449,6 +449,12 @@ public class Barracks extends Structure {
 		v.setAI(false);
 		v.setCustomName("Barracks Trainer");
 		v.setProfession(Profession.LIBRARIAN);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	

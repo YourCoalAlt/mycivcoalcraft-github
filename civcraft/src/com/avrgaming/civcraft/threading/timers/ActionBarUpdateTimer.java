@@ -42,15 +42,15 @@ public class ActionBarUpdateTimer implements Runnable {
 				if (exposure > 0) {
 					ActionBar abl = new ActionBar(
 							borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.LightGreenItalic+exposure);
-					abl.sendToAll();
+					abl.sendToPlayer(p);
 				} else {
 					ActionBar abl = new ActionBar(borders);
-					abl.sendToAll();
+					abl.sendToPlayer(p);
 				}
 			} else {
 				ActionBar abl = new ActionBar(
 						borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.RoseItalic+"null");
-				abl.sendToAll();
+				abl.sendToPlayer(p);
 			}
 		}
 	}

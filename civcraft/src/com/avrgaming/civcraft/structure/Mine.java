@@ -1,21 +1,3 @@
-/*************************************************************************
- * 
- * AVRGAMING LLC
- * __________________
- * 
- *  [2013] AVRGAMING LLC
- *  All Rights Reserved.
- * 
- * NOTICE:  All information contained herein is, and remains
- * the property of AVRGAMING LLC and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to AVRGAMING LLC
- * and its suppliers and may be covered by U.S. and Foreign Patents,
- * patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from AVRGAMING LLC.
- */
 package com.avrgaming.civcraft.structure;
 
 import java.sql.ResultSet;
@@ -26,14 +8,11 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.avrgaming.civcraft.components.AttributeBiomeRadiusPerLevel;
 import com.avrgaming.civcraft.components.ConsumeLevelComponent;
 import com.avrgaming.civcraft.components.ConsumeLevelComponent.Result;
 import com.avrgaming.civcraft.config.CivSettings;
@@ -41,35 +20,32 @@ import com.avrgaming.civcraft.config.ConfigMineLevel;
 import com.avrgaming.civcraft.config.ConfigMineTask;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
+import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
-import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureChest;
-import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
-import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
-import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Mine extends Structure {
-
+	
 	private ConsumeLevelComponent consumeComp = null;
 	
 	protected Mine(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
 	}
-
+	
 	public Mine(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 	}
-		
+	
 	@Override
 	public void loadSettings() {
 		super.loadSettings();
@@ -78,58 +54,21 @@ public class Mine extends Structure {
 	public String getkey() {
 		return getTown().getName()+"_"+this.getConfigId()+"_"+this.getCorner().toString(); 
 	}
-		
+	
 	@Override
 	public String getDynmapDescription() {
-		return null;
+		if (getConsumeComponent() == null) {
+			return null;
+		}
+		
+		String out = "";
+		out += "Level "+getConsumeComponent().getLevel();
+		return out;
 	}
 	
 	@Override
 	public String getMarkerIconName() {
 		return "hammer";
-	}
-	
-	@Override
-	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
-		switch (sb.command) {
-		case "/sign":
-			Integer id = Integer.valueOf(sb.keyvalues.get("id"));
-			int rid = id+1;
-			if (this.getLevel() >= rid) {
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
-				ItemManager.setData(absCoord.getBlock(), sb.getData());
-				Sign sign = (Sign)absCoord.getBlock().getState();
-				sign.setLine(0, "");
-				sign.setLine(1, "Mine "+rid);
-				sign.setLine(2, CivColor.Green+"Useable");
-				sign.setLine(3, "");
-				sign.update();
-			} else {
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
-				ItemManager.setData(absCoord.getBlock(), sb.getData());
-				Sign sign = (Sign)absCoord.getBlock().getState();
-				sign.setLine(0, "");
-				sign.setLine(1, "Mine "+rid);
-				sign.setLine(2, CivColor.Red+"Locked");
-				sign.setLine(3, "");
-				sign.update();
-			}
-			this.addStructureBlock(absCoord, false);
-			break;
-		}
-	}
-	
-	@Override
-	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
-		Resident res = CivGlobal.getResident(player);
-		if (res == null) return;
-		switch (sign.getAction()) {
-		case "sign":
-			if (res.isSBPermOverride()) {
-				sign.getCoord().getBlock().setType(Material.AIR);
-			}
-			break;
-		}
 	}
 	
 	public ConsumeLevelComponent getConsumeComponent() {
@@ -140,15 +79,10 @@ public class Mine extends Structure {
 	}
 	
 	public Result consume(CivAsyncTask task) throws InterruptedException {
-		//Look for the mine's chest.
-		if (this.getChests().size() == 0)
-			return Result.STAGNATE;	
-
+		if (this.getChests().size() == 0) return Result.STAGNATE;
 		MultiInventory multiInv = new MultiInventory();
-		
 		ArrayList<StructureChest> chests = this.getAllChestsById(0);
 		
-		// Make sure the chest is loaded and add it to the multi inv.
 		for (StructureChest c : chests) {
 			task.syncLoadChunk(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getZ());
 			Inventory tmp;
@@ -166,32 +100,38 @@ public class Mine extends Structure {
 		return result;
 	}
 	
-	public void process_mine(CivAsyncTask task) throws InterruptedException {	
+	public void process_consume(CivAsyncTask task) throws InterruptedException {	
 		Result result = this.consume(task);
 		switch (result) {
 		case STARVE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" mine's production "+
-					CivColor.Rose+"fell. "+CivColor.LightGreen+getConsumeComponent().getCountString());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+					CivColor.Rose+"fell "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+".");
 			break;
 		case LEVELDOWN:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A mine ran out of redstone and "+
-					CivColor.Rose+"lost"+CivColor.LightGreen+" a level. It is now level "+getConsumeComponent().getLevel());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()+1)+" "+getDisplayName()+" consumption "+
+					CivColor.Rose+"de-leveled "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
+					CivColor.Green+getConsumeComponent().getLevel()+CivColor.LightGreen+".");
 			break;
 		case STAGNATE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+
-					getConsumeComponent().getLevel()+" mine "+CivColor.Yellow+"stagnated "+CivColor.LightGreen+getConsumeComponent().getCountString());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+					CivColor.Rose+"stagnated "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case GROW:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" mine's production "+
-					CivColor.Green+"rose. "+CivColor.LightGreen+getConsumeComponent().getCountString());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+					CivColor.Green+"rose "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case LEVELUP:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A mine "+CivColor.Green+"gained"+CivColor.LightGreen+
-					" a level. It is now level "+getConsumeComponent().getLevel());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()-1)+" "+getDisplayName()+" consumption "+
+					CivColor.Green+"leveled up "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
+					getConsumeComponent().getLevel()+". ");
 			break;
 		case MAXED:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" mine is "+
-					CivColor.Green+"maxed. "+CivColor.LightGreen+getConsumeComponent().getCountString());
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+					CivColor.LightPurple+"is maxed "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
+			break;
+		case UNKNOWN:
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+					CivColor.GrayBold+"UNKNOWN "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		default:
 			break;
@@ -202,22 +142,12 @@ public class Mine extends Structure {
 		return this.getConsumeComponent().getLevel();
 	}
 	
-	public double getHammersPerTile() {
-		AttributeBiomeRadiusPerLevel attrBiome = (AttributeBiomeRadiusPerLevel)this.getComponent("AttributeBiomeRadiusPerLevel");
-		double base = attrBiome.getBaseValue();
-		
-		double rate = 1;
-		rate += this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
-		return (rate*base);
-	}
-	
 	public int getCount() {
 		return this.getConsumeComponent().getCount();
 	}
 	
 	public int getMaxCount() {
-		int level = getLevel();
-		ConfigMineLevel lvl = CivSettings.mineLevels.get(level);
+		ConfigMineLevel lvl = CivSettings.mineLevels.get(getLevel());
 		return lvl.count;	
 	}
 	
@@ -234,36 +164,33 @@ public class Mine extends Structure {
 			return 0.0;
 		}
 		
-		int level = getLevel(); 
-		ConfigMineLevel lvl = CivSettings.mineLevels.get(level);
+		ConfigMineLevel lvl = CivSettings.mineLevels.get(getLevel());
 		int total_production = (int) (lvl.hammers*this.getTown().getMineRate().total);
-		//TODO make a new buff that works for mines/labs
 //		if (this.getTown().getBuffManager().hasBuff("buff_pyramid_cottage_bonus")) {
 //			total_production *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 //		}
 		
-//		total_production *= this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
-//		if (this.getCiv().hasTechnology("tech_taxation")) {
-//			double tech_bonus;
-//			try {
-//				tech_bonus = CivSettings.getDouble(CivSettings.techsConfig, "taxation_mine_buff");
-//				total_production *= tech_bonus;
-//			} catch (InvalidConfiguration e) {
-//				e.printStackTrace();
-//			}
-//		}
+		double buff = 1.0 + this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
+		total_production *= buff;
+		if (this.getCiv().hasTechnology("tech_resource_efficiency")) {
+			double tech_bonus;
+			try {
+				tech_bonus = CivSettings.getDouble(CivSettings.techsConfig, "tech_mine_buff");
+				total_production *= tech_bonus;
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+			}
+		}
 		return total_production;
 	}
 	
-	
-	
+	// XXX Quests
 	public String getKey(Structure struct, String tag) {
 		return struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag; 
 	}
 	
 	public void openToolGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Mine Tasks");
-		
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Mine Quest Chest. You can use it",
 				CivColor.RESET+"to complete tasks to recieve hammers (items)",
@@ -274,15 +201,13 @@ public class Mine extends Structure {
 		
 		for (ConfigMineTask m : CivSettings.mineTasks.values()) {
 			List<String> loreRequired = new ArrayList<>();
-			
 			if (this.getTown().getLevel() < m.task) {
 				for (ArrayList<String> item : m.required.keySet()) {
 					for (String s : item) {
 						String[] split = s.split(";");
 						int imat = Integer.valueOf(split[0]);
 						int data = Integer.valueOf(split[1]);
-						loreRequired.add(CivColor.LightGrayBold+" » "+
-									CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 					}
 				}
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
@@ -304,8 +229,7 @@ public class Mine extends Structure {
 							String[] split = s.split(";");
 							int imat = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.LightGrayBold+" » "+
-										CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 						}
 					}
 					ItemStack item = new ItemStack(Material.LIME_SHULKER_BOX, 1);
@@ -324,8 +248,7 @@ public class Mine extends Structure {
 							String[] split = s.split(";");
 							int imat = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.LightGrayBold+" » "+
-										CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 						}
 					}
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
@@ -346,22 +269,18 @@ public class Mine extends Structure {
 	
 	public void openTaskCompleterGUI(Player p, Town town, int task) {
 		ConfigMineTask mtask = CivSettings.mineTasks.get(task);
-		
 		List<String> lr = new ArrayList<>();
 		for (ArrayList<String> item : mtask.required.keySet()) {
 			for (String s : item) {
 				String[] split = s.split(";");
 				int imat = Integer.valueOf(split[0]);
 				int data = Integer.valueOf(split[1]);
-				lr.add(CivColor.LightGrayBold+" » "+
-							CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+				lr.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 			}
 		}
 		
 		String loreReq = CivColor.Green+"Required: ;";
-		for (String s : lr) {
-			loreReq += s+" ;";
-		}
+		for (String s : lr) loreReq += s+" ;";
 		loreReq += CivColor.Green+"Rewards: ;";
 		loreReq += CivColor.Yellow+mtask.reward+" Hammers";
 		

@@ -30,6 +30,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.BuildableDamageBlock;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.war.WarStats;
 
 import gpl.AttributeUtil;
 
@@ -54,19 +55,17 @@ public class StructureBlockHitEvent implements Runnable {
 	
 	@Override
 	public void run() {
-		
 		if (playerName == null) {
 			return;
 		}
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(playerName);
-		} catch (CivException e) {
-			//Player offline now?
+		} catch (CivException e) { //Player offline now?
 			return;
 		}
 		if (dmgBlock.allowDamageNow(player)) {
-			/* Do our damage. */
+			// Do our damage.
 			int damage = 1;
 			LoreMaterial material = LoreMaterial.getMaterial(player.getInventory().getItemInMainHand());
 			if (material != null) {
@@ -83,11 +82,10 @@ public class StructureBlockHitEvent implements Runnable {
 			if (damage > 1) {
 				CivMessage.send(player, CivColor.LightGray+"Punchout does "+(damage-1)+" extra damage!");
 			}
-				
+			WarStats.incrementPlayerDamageBuildings(player.getName(), damage);
 			dmgBlock.getOwner().onDamage(damage, world, player, dmgBlock.getCoord(), dmgBlock);
 		} else {
-			CivMessage.sendErrorNoRepeat(player, 
-					"This block belongs to a "+dmgBlock.getOwner().getDisplayName()+" and cannot be destroyed right now.");
+			CivMessage.sendErrorNoRepeat(player, "This block belongs to a "+dmgBlock.getOwner().getDisplayName()+" and cannot be destroyed right now.");
 		}
 	}
 }

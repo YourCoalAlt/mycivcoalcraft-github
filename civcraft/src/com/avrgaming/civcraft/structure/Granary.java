@@ -99,6 +99,12 @@ public class Granary extends Structure {
 		v.setAI(false);
 		v.setCustomName("Granary Food Storage");
 		v.setProfession(Profession.NITWIT);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	
@@ -178,6 +184,12 @@ public class Granary extends Structure {
 		v.setAI(false);
 		v.setCustomName("Granary Tasks");
 		v.setProfession(Profession.NITWIT);
+		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
+			if (vg.getLocation().equals(v.getLocation())) {
+				CivGlobal.removeStructureVillager(v);
+				v.remove();
+			}
+		}
 		CivGlobal.addStructureVillager(v);
 	}
 	
