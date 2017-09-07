@@ -47,6 +47,33 @@ diamond_hammers:
    max_drop: 4
    max_drop_fortune: 4
 
+# Amount of Resident Experience to add for Mining XP for blocks broken
+mining_block:
+   - type: 'Coal Ore'
+     id: 16
+     res_xp: 0.1
+   - type: 'Iron Ore'
+     id: 15
+     res_xp: 0.2
+   - type: 'Gold Ore'
+     id: 14
+     res_xp: 0.4
+   - type: 'Lapis Ore'
+     id: 21
+     res_xp: 0.3
+   - type: 'Redstone Ore (Still)'
+     id: 73
+     res_xp: 0.3
+   - type: 'Redstone Ore (Glowing)'
+     id: 74
+     res_xp: 0.3
+   - type: 'Diamond Ore'
+     id: 56
+     res_xp: 0.6
+   - type: 'Emerald Ore'
+     id: 129
+     res_xp: 0.75
+
 #
 # Controls the Newspapers in player's backpacks. Can be reloaded anytime in-game with /ad reload newspapers
 # GUI data cannot overlap or else one of the newspapers will not show.

@@ -21,9 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigEXPFishingLevel;
-import com.avrgaming.civcraft.config.ConfigEXPMiningLevel;
-import com.avrgaming.civcraft.config.ConfigEXPQuestLevel;
+import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
 import com.avrgaming.civcraft.config.ConfigFishing;
 import com.avrgaming.civcraft.config.ConfigMaterial;
 import com.avrgaming.civcraft.config.ConfigMaterialCategory;
@@ -52,11 +50,17 @@ public class Backpack {
 	public static final int MAX_CHEST_SIZE = 6;
 	
 	public static Inventory experienceHelpInv = null;
+	public static Inventory miningRateInv = null;
 	public static Inventory fishingRateInv = null;
 	
 	public static void showExperienceHelp(Player player) {
 		if (experienceHelpInv == null) {
 			experienceHelpInv = Bukkit.getServer().createInventory(player, 9*3, "Experience Categories");
+			
+//			ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, CivColor.LightGray+"« Click for Rates »");
+//			mining = LoreGuiItem.setAction(mining, "OpenInventory");
+//			mining = LoreGuiItem.setActionData(mining, "invType", "showMiningRates");
+//			experienceHelpInv.addItem(mining);
 			
 			ItemStack fishing = LoreGuiItem.build(CivColor.LightBlueBold+"Fishing", CivData.RAW_FISH, 0, CivColor.LightGray+"« Click for Rates »");
 			fishing = LoreGuiItem.setAction(fishing, "OpenInventory");
@@ -150,6 +154,49 @@ public class Backpack {
 			player.openInventory(fishingRateInv);	
 		}
 	}
+	
+/*	public static void showMiningRates(Player player) {
+		miningRateInv = null;
+		if (miningRateInv == null) {
+			miningRateInv = Bukkit.getServer().createInventory(player, 9*3, "Mining Drops");
+			
+			Resident res = CivGlobal.getResident(player);
+			ResidentExperience re = CivGlobal.getResidentE(player);
+			if (res != null && re != null) {
+//				ConfigEXPFishingLevel fishinglvl = CivSettings.expFishingLevels.get(re.getFishingLevel());
+				for (ConfigEXPMining d : CivSettings.resxpMiningBlocks.values()) {
+					double mod = re.getFishingLevel() + 1; mod /= 2;
+					
+					String out = "";
+					out += CivColor.Green+"Type: "+CivColor.LightGreen+"Ore;";
+					DecimalFormat df = new DecimalFormat("#.##");
+					out += CivColor.Green+"XP Orbs: "+CivColor.LightGreen+"N/A;";
+					out += CivColor.Green+"Fishing XP: "+CivColor.LightGreen+Double.valueOf(df.format((d.resxp*mod)));
+					
+					out += ";"+CivColor.LightGray+"Vanilla Item";
+					ItemStack mining = LoreGuiItem.build(CivColor.White+CivData.getDisplayName(d.id, 0), d.id, 0, out.split(";"));
+					miningRateInv.addItem(mining);
+				}
+			} else {
+				ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, 
+						CivColor.Rose+"Error getting experience.",
+						CivColor.RESET+"Relog or contact an admin!");
+				miningRateInv.addItem(mining);
+			}
+			
+			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Experience Menu");
+			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
+			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
+			backButton = LoreGuiItem.setActionData(backButton, "invName", experienceHelpInv.getName());
+			miningRateInv.setItem((9*3)-1, backButton);
+			
+			LoreGuiItemListener.guiInventories.put(miningRateInv.getName(), miningRateInv);
+		}
+		
+		if (player != null && player.isOnline() && player.isValid()) {
+			player.openInventory(miningRateInv);	
+		}
+	}*/
 	
 	public static void showTutorialInventory(Player player) {	
 		if (tutorialInventory == null) {
@@ -440,9 +487,9 @@ public class Backpack {
 			Resident res = CivGlobal.getResident(player);
 			ResidentExperience re = CivGlobal.getResidentE(player);
 			if (res != null && re != null) {
-				ConfigEXPQuestLevel questlvl = CivSettings.expQuestLevels.get(re.getQuestLevel());
-				ConfigEXPMiningLevel mininglvl = CivSettings.expMiningLevels.get(re.getMiningLevel());
-				ConfigEXPFishingLevel fishinglvl = CivSettings.expFishingLevels.get(re.getFishingLevel());
+				ConfigEXPGenericLevel questlvl = CivSettings.expGenericLevels.get(re.getQuestLevel());
+				ConfigEXPGenericLevel mininglvl = CivSettings.expGenericLevels.get(re.getMiningLevel());
+				ConfigEXPGenericLevel fishinglvl = CivSettings.expGenericLevels.get(re.getFishingLevel());
 				
 				String town = "None"; if (res.hasTown()) town = res.getTown().getName();
 				String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
@@ -453,9 +500,9 @@ public class Backpack {
 						CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+questlvl.level+" ("+re.getQuestEXP()+"/"+questlvl.amount+" XP)",
 						CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+mininglvl.level+" ("+re.getMiningEXP()+"/"+mininglvl.amount+" XP)",
 						CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
-						CivColor.LightGreen+"Farming Level: "+CivColor.Yellow+"1 (0/1 XP)"+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Essence Level: "+CivColor.Yellow+"1 (0/1 XP)"+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Slaughter Level: "+CivColor.Yellow+"1 (0/1 XP)"+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Essence Level: "+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Slaughter Level: "+CivColor.Rose+" (InDev)",
 						CivColor.LightGray+"« Click for Experience Info »");
 				playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
 				playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");

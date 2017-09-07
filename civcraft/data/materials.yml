@@ -44,6 +44,30 @@ materials:
 #        amount: '1'
 # Resource Recipes  ===========================================
 # Checked 25 August 2017
+  - id: 'mat_vanilla_diamond_pickaxe'
+    item_id: 278
+    item_data: 0
+    name: 'Diamond Pickaxe'
+    craftable: true
+    shaped: true
+    category: '<blue>Tools'
+    components:
+       - name: 'Attack'
+         value: '0.5'
+       - name: 'RepairCost'
+         value: '2000.0'
+    ingredients:
+       - type_id: 280 #stick
+         data: 0
+         letter: 's'
+       - type_id: 264
+         data: 0
+         letter: 'm' 
+    shape:
+        - "mmm"
+        - " s "
+        - " s "
+# Checked 25 August 2017
   - id: 'civ_citrus'
     item_id: 351
     item_data: 14

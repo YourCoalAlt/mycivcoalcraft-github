@@ -234,7 +234,7 @@ public class Resident extends SQLObject {
 			SQL.makeTable(table_create);
 			CivLog.info("Created "+TABLE_NAME+" table");
 		} else {
-			CivLog.info(TABLE_NAME+" table OK!");
+			CivLog.info(TABLE_NAME+" table OK, missing some columns!");
 			
 			if (!SQL.hasColumn(TABLE_NAME, "uuid")) {
 				CivLog.info("\tCouldn't find `uuid` for resident.");

@@ -105,6 +105,7 @@ public class CivSettings {
 	
 	public static FileConfiguration gameConfig; /* game.yml */
 	public static Map<Integer, ConfigNewspaper> newspapers = new HashMap<Integer, ConfigNewspaper>();
+	public static Map<String, ConfigEXPMining> resxpMiningBlocks = new HashMap<String, ConfigEXPMining>();
 	
 	public static FileConfiguration structureConfig; /* structures.yml */
 	public static Map<String, ConfigBuildableInfo> structures = new HashMap<String, ConfigBuildableInfo>();
@@ -112,9 +113,7 @@ public class CivSettings {
 	public static ArrayList<ConfigTempleSacrifice> templeSacrifices = new ArrayList<ConfigTempleSacrifice>();
 	
 	public static FileConfiguration experienceConfig; /* experience.yml */
-	public static Map<Integer, ConfigEXPQuestLevel> expQuestLevels = new HashMap<Integer, ConfigEXPQuestLevel>();
-	public static Map<Integer, ConfigEXPMiningLevel> expMiningLevels = new HashMap<Integer, ConfigEXPMiningLevel>();
-	public static Map<Integer, ConfigEXPFishingLevel> expFishingLevels = new HashMap<Integer, ConfigEXPFishingLevel>();
+	public static Map<Integer, ConfigEXPGenericLevel> expGenericLevels = new HashMap<Integer, ConfigEXPGenericLevel>();
 	
 	public static FileConfiguration structuredataConfig; /* structuredata.yml */
 	public static Map<Integer, ConfigBankLevel> bankLevels = new HashMap<Integer, ConfigBankLevel>();
@@ -468,11 +467,10 @@ public class CivSettings {
 	}
 
 	private static void loadConfigObjects() throws InvalidConfiguration {
-		ConfigEXPQuestLevel.loadConfig(experienceConfig, expQuestLevels);
-		ConfigEXPMiningLevel.loadConfig(experienceConfig, expMiningLevels);
-		ConfigEXPFishingLevel.loadConfig(experienceConfig, expFishingLevels);
+		ConfigEXPGenericLevel.loadConfig(experienceConfig, expGenericLevels);
 		
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
+		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);

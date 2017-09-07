@@ -1344,6 +1344,9 @@ public class BlockListener implements Listener {
 				if (vn.contains("Barracks Unit Upgrader")) {
 					b.openUnitUpgradeGUI(p, b.getTown());
 				}
+				if (vn.contains("Barracks Repair Master")) {
+					b.openRepairGUI(p, b.getTown());
+				}
 			} else if (buildable instanceof Blacksmith) {
 				Blacksmith bs = (Blacksmith) buildable;
 				if (vn.contains("Blacksmith Smelter")) {

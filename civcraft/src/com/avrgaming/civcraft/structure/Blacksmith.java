@@ -59,7 +59,6 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
-import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.TimeTools;
 
 import gpl.AttributeUtil;
@@ -139,12 +138,6 @@ public class Blacksmith extends Structure {
 //		case 1:
 //			this.perform_forge_beta(player, player.getInventory().getItemInMainHand(), player.getInventory().getItemInOffHand(), 0);
 //			break;
-		case 2:
-			this.depositSmelt(player, player.getInventory().getItemInMainHand());
-			break;
-		case 3:
-			this.withdrawSmelt(player);
-			break;
 		}
 	}
 	
@@ -484,139 +477,6 @@ public class Blacksmith extends Structure {
 			return;
 		}
 	}
-	/*
-	 * Take the itemstack in hand and deposit it into
-	 * the session DB.
-	 */
-	@SuppressWarnings("deprecation")
-	public void depositSmelt(Player player, ItemStack itemsInHand) throws CivException {
-		
-		// Make sure that the item is a valid smelt type.
-		if (!Blacksmith.canSmelt(itemsInHand.getTypeId())) {
-			throw new CivException ("Can only smelt gold and iron ore.");
-		}
-		
-		// Only members can use the smelter
-		Resident res = CivGlobal.getResident(player.getName());
-		if (!res.hasTown() || this.getTown() != res.getTown()) {
-			throw new CivException ("Can only use the smelter if you are a town member.");
-		}
-		
-		String value = convertType(itemsInHand.getTypeId())+":"+(int) (itemsInHand.getAmount()*Blacksmith.YIELD_RATE)+":"+itemsInHand.getDurability();
-		String key = getKey(player, this, "smelt");
-		
-		// Store entry in session DB
-		sessionAdd(key, value);
-		
-		// Take ore away from player.
-		player.getInventory().removeItem(itemsInHand);
-		//BukkitTools.sch
-		// Schedule a message to notify the player when the smelting is finished.
-		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
-				CivColor.LightGreen+" Your stack of "+itemsInHand.getAmount()+" "+
-				CivData.getDisplayName(itemsInHand.getTypeId(), itemsInHand.getDurability())+" has finished smelting."), 
-				TimeTools.toTicks(SMELT_TIME_SECONDS));
-		
-		CivMessage.send(player,CivColor.LightGreen+ "Deposited "+itemsInHand.getAmount()+ " ore.");
-		
-		player.updateInventory();
-	}
-	
-	
-	/* 
-	 * Queries the sessionDB for entries for this player
-	 * When entries are found, their inserted time is compared to
-	 * the current time, if they have been in long enough each
-	 * itemstack is sent to the players inventory.
-	 * 
-	 * For each itemstack ready to withdraw try to place it in the 
-	 * players inventory. If there is not enough space, take the 
-	 * leftovers and place them back in the sessionDB.
-	 * If there are no leftovers, delete the sessionDB entry.
-	 */
-	@SuppressWarnings("deprecation")
-	public void withdrawSmelt(Player player) throws CivException {
-		// Only members can use the smelter
-		Resident res = CivGlobal.getResident(player.getName());
-		if (!res.hasTown() || this.getTown() != res.getTown()) {
-			throw new CivException ("Can only use the smelter if you are a town member.");
-		}
-		
-		String key = getKey(player, this, "smelt");
-		ArrayList<SessionEntry> entries = null;
-		entries = CivGlobal.getSessionDB().lookup(key);
-		
-		if (entries == null || entries.size() == 0) {
-			throw new CivException ("No items to withdraw");
-		}
-				
-		Inventory inv = player.getInventory();
-		HashMap <Integer, ItemStack> leftovers = null;
-
-		for (SessionEntry se : entries) {
-			String split[] = se.value.split(":");
-			int itemId = Integer.valueOf(split[0]);
-			int amount = Integer.valueOf(split[1]);
-			int data = Integer.valueOf(split[2]);
-			long now = System.currentTimeMillis();
-			int secondsBetween = CivGlobal.getSecondsBetween(se.time, now);
-			
-			// First determine the time between two events.
-			if (secondsBetween < Blacksmith.SMELT_TIME_SECONDS) {
-				 DecimalFormat df1 = new DecimalFormat("0.##"); 
-				 
-				double timeLeft = ((double)Blacksmith.SMELT_TIME_SECONDS - (double)secondsBetween) / (double)60;
-				//Date finish = new Date(now+(secondsBetween*1000));
-				CivMessage.send(player, CivColor.Yellow+"Stack of "+amount+" "+
-						CivData.getDisplayName(itemId, data)+" will be finished in "+ df1.format(timeLeft) +" minutes.");
-				continue;
-			}
-			
-			ItemStack stack = new ItemStack(itemId, amount, (short)data);
-			if (stack != null)
-				leftovers = inv.addItem(stack);
-	
-			// If this stack was successfully withdrawn, delete it from the DB.
-			if (leftovers.size() == 0) {
-				CivGlobal.getSessionDB().delete(se.request_id, se.key);
-				CivMessage.send(player, CivColor.LightGreen+"Withdrew "+amount+" "+CivData.getDisplayName(itemId, data));
-				break;
-			} else {
-				// We do not have space in our inventory, inform the player.
-				CivMessage.send(player, CivColor.Rose+"Not enough inventory space for all items.");
-				
-				// If the leftover size is the same as the size we are trying to withdraw, do nothing.
-				int leftoverAmount = CivGlobal.getLeftoverSize(leftovers);
-				
-				if (leftoverAmount == amount) {
-					continue;
-				}
-				
-				if (leftoverAmount == 0) {
-					//just in case we somehow get an entry with 0 items in it.
-					CivGlobal.getSessionDB().delete(se.request_id, se.key);
-				}
-				else {							
-					// Some of the items were deposited into the players inventory but the sessionDB 
-					// still has the full amount stored, update the db to only contain the leftovers.
-					String newValue = itemId+":"+leftoverAmount+":"+data;			
-					CivGlobal.getSessionDB().update(se.request_id, se.key, newValue);
-				}
-			}
-			
-			// only withdraw one item at a time.
-			break;
-		}	
-				
-		player.updateInventory();
-	}
-	
-	public void onPostBuild(BlockCoord absCoord, SimpleBlock commandBlock) {
-	}
-	
-	
-	
-	
 	
 	// XXX New Blacksmith Code
 	

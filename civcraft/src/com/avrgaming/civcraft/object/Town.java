@@ -105,7 +105,9 @@ public class Town extends SQLObject {
 	private Civilization motherCiv;
 	private int daysInDebt;
 	
-	/* Hammers */
+	private int supportDeposit;
+	
+	/* Growth */
 	private double baseGrowth = 1.0;
 	
 	/* Hammers */
@@ -206,8 +208,9 @@ public class Town extends SQLObject {
 					"`debt` double DEFAULT 0," +
 					"`coins` double DEFAULT 0," +
 					"`daysInDebt` int(11) DEFAULT 0,"+
-					"`flat_tax` double NOT NULL DEFAULT '0'," + 
-					"`tax_rate` double DEFAULT 0," + 
+					"`flat_tax` double NOT NULL DEFAULT '0'," +
+					"`tax_rate` double DEFAULT 0," +
+					"`supportDeposit` int(11) DEFAULT '0'," +
 					"`extra_hammers` double DEFAULT 0," +
 					"`culture` double DEFAULT 0," +
 					"`created_date` long," +
@@ -219,7 +222,12 @@ public class Town extends SQLObject {
 			SQL.makeTable(table_create);
 			CivLog.info("Created "+TABLE_NAME+" table");
 		} else {
-			CivLog.info(TABLE_NAME+" table OK!");
+			CivLog.info(TABLE_NAME+" table OK, missing some columns!");
+			
+			if (!SQL.hasColumn(TABLE_NAME, "supportDeposit")) {
+				CivLog.info("\tCouldn't find `supportDeposit` for town.");
+				SQL.addColumn(TABLE_NAME, "`supportDeposit` int(11) DEFAULT '0'");
+			}
 			
 			//Check for new columns and update the table if we dont have them.
 			SQL.makeCol("outlaws", "mediumtext", TABLE_NAME);
@@ -261,6 +269,8 @@ public class Town extends SQLObject {
 		this.setFlatTax(rs.getDouble("flat_tax"));
 		this.setTaxRate(rs.getDouble("tax_rate"));
 		this.setUpgradesFromString(rs.getString("upgrades"));
+		
+		this.setSupportDeposit(rs.getInt("supportDeposit"));
 		
 		//this.setHomeChunk(rs.getInt("homechunk_id"));
 		this.setExtraHammers(rs.getDouble("extra_hammers"));
@@ -319,6 +329,7 @@ public class Town extends SQLObject {
 		hashmap.put("daysInDebt", this.getDaysInDebt());
 		hashmap.put("flat_tax", this.getFlatTax());
 		hashmap.put("tax_rate", this.getTaxRate());
+		hashmap.put("supportDeposit", this.getSupportDeposit());
 		hashmap.put("extra_hammers", this.getExtraHammers());
 		hashmap.put("culture", this.getAccumulatedCulture());
 		hashmap.put("upgrades", this.getUpgradesString());
@@ -1746,7 +1757,7 @@ public class Town extends SQLObject {
 			out += CivColor.LightGreen+"» "+goodie.getDisplayName();
 			out += ";";
 		}
-		out += CivColor.LightGrayItalic+"(Click for Buffs List)";
+		out += CivColor.LightGray+"« Click for Buffs List »";
 		return out;
 	}
 	
@@ -3587,5 +3598,32 @@ public class Town extends SQLObject {
 		cache.sources = as;
 		this.attributeCache.put("CULTURE", cache);
 		return as;
+	}
+	
+	// Support Deposit
+	public Integer getSupportDeposit() {
+		return supportDeposit;
+	}
+	
+	public Integer setSupportDeposit(int amt) {
+		return this.supportDeposit = amt;
+	}
+	
+	public Integer addSupportDeposit(int amt) {
+		int newAmt = this.supportDeposit + amt;
+		if (newAmt < 0) {
+			return this.supportDeposit = 0;
+		} else {
+			return this.supportDeposit = newAmt;
+		}
+	}
+	
+	public Integer removeSupportDeposit(int amt) {
+		int newAmt = this.supportDeposit - amt;
+		if (newAmt < 0) {
+			return this.supportDeposit = 0;
+		} else {
+			return this.supportDeposit = newAmt;
+		}
 	}
 }

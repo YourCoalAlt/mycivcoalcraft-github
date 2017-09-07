@@ -73,7 +73,8 @@ public class InventoryDisplaysListener implements Listener {
 			this.clickTownQuestViewer(p, event);
 		}
 		
-		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")) {
+		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")  ||
+				event.getInventory().getName().contains("Building Support")) {
 			this.clickTownStatRegister(p, event);
 		}
 		
@@ -220,7 +221,7 @@ public class InventoryDisplaysListener implements Listener {
 	}
 	
 	public void clickTownInfoViewer(Player p, InventoryClickEvent event) {
-		//Resident res = CivGlobal.getResident(p);
+		Resident res = CivGlobal.getResident(p);
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			return;
 		}
@@ -229,81 +230,40 @@ public class InventoryDisplaysListener implements Listener {
 			event.setCancelled(true);
 		}
 		
-		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-		if (buildable instanceof TownHall) {
-			TownHall th = (TownHall) buildable;
-			switch (event.getCurrentItem().getType()) {
-			case WHEAT:
-				th.openGrowthStatsGUI(p, th.getTown());
-				break;
-			case COBBLE_WALL:
-				th.openHammerStatsGUI(p, th.getTown());
-				break;
-			case GLASS_BOTTLE:
-				th.openBeakerStatsGUI(p, th.getTown());
-				break;
-			case NETHER_STALK:
-				th.openCultureStatsGUI(p, th.getTown());
-				break;
-			case ITEM_FRAME:
-				th.openTownBuffsListGUI(p, th.getTown());
-			default:
-				//CivMessage.global(event.getCurrentItem().getType().toString());
-				break;
+		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
+		if (th == null) {
+			th = (TownHall) res.getTown().getStructureByType("s_capitol");
+			if (th == null) {
+				CivMessage.sendError(p, "Town Hall null? Contact an admin if this is wrong!"); p.closeInventory();
 			}
-		} else {
-			event.setCancelled(true);
-			CivMessage.sendError(p, "Town Hall you are trying to access is null? Contact an admin if this continues.");
-			p.closeInventory();
-			return;
+		}
+		switch (event.getCurrentItem().getType()) {
+		case WHEAT:
+			th.openGrowthStatsGUI(p, th.getTown());
+			break;
+		case COBBLE_WALL:
+			th.openHammerStatsGUI(p, th.getTown());
+			break;
+		case GLASS_BOTTLE:
+			th.openBeakerStatsGUI(p, th.getTown());
+			break;
+		case NETHER_STALK:
+			th.openCultureStatsGUI(p, th.getTown());
+			break;
+		case ITEM_FRAME:
+			th.openTownBuffsListGUI(p, th.getTown());
+			break;
+		case BEACON:
+			th.openSupportDepositGUI(p, th.getTown());
+			break;
+		default:
+			//CivMessage.global(event.getCurrentItem().getType().toString());
+			break;
 		}
 	}
 	
 	public void clickTownQuestViewer(Player p, InventoryClickEvent event) {
-		//Resident res = CivGlobal.getResident(p);
-		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-			return;
-		}
-		
-//		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
-//			event.setCancelled(true);
-//		}
-		
-		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-		if (buildable instanceof TownHall) {
-			TownHall th = (TownHall) buildable;
-			switch (event.getCurrentItem().getType()) {
-			case STONE_PICKAXE:
-				Mine mine = (Mine) th.getTown().getStructureByType("ti_mine");
-				mine.openToolGUI(p, th.getTown());
-				break;
-			case GLASS_BOTTLE:
-				Lab lab = (Lab) th.getTown().getStructureByType("ti_lab");
-				lab.openToolGUI(p, th.getTown());
-				break;
-			case SKULL:
-//				Monument monument = (Monument) th.getTown().getStructureByType("ti_monument");
-//				monument.openToolGUI(p, th.getTown());
-				CivMessage.sendError(p, "Culture quests coming soon!");
-				break;
-			case REDSTONE_LAMP_OFF:
-//				Cottage cottage = (Cottage) th.getTown().getStructureByType("ti_cottage");
-//				cottage.openToolGUI(p, th.getTown());
-				CivMessage.sendError(p, "Coin quests coming soon!");
-				break;
-			default:
-				break;
-			}
-		} else {
-			event.setCancelled(true);
-			CivMessage.sendError(p, "Town Hall you are trying to access is null? Contact an admin if this continues.");
-			p.closeInventory();
-			return;
-		}
-	}
-	
-	public void clickTownStatRegister(Player p, InventoryClickEvent event) {
-		//Resident res = CivGlobal.getResident(p);
+		Resident res = CivGlobal.getResident(p);
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			return;
 		}
@@ -312,21 +272,61 @@ public class InventoryDisplaysListener implements Listener {
 			event.setCancelled(true);
 		}
 		
-		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-		if (buildable instanceof TownHall) {
-			TownHall th = (TownHall) buildable;
-			switch (event.getCurrentItem().getType()) {
-			case MAP:
-				th.openMainInfoGUI(p, th.getTown());
-				break;
-			default:
-				break;
+		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
+		if (th == null) {
+			th = (TownHall) res.getTown().getStructureByType("s_capitol");
+			if (th == null) {
+				CivMessage.sendError(p, "Town Hall null? Contact an admin if this is wrong!"); p.closeInventory();
 			}
-		} else {
-			event.setCancelled(true);
-			CivMessage.sendError(p, "Town Hall you are trying to access is null? Contact an admin if this continues.");
-			p.closeInventory();
+		}
+		
+		switch (event.getCurrentItem().getType()) {
+		case STONE_PICKAXE:
+			Mine mine = (Mine) th.getTown().getStructureByType("ti_mine");
+			mine.openToolGUI(p, th.getTown());
+			break;
+		case GLASS_BOTTLE:
+			Lab lab = (Lab) th.getTown().getStructureByType("ti_lab");
+			lab.openToolGUI(p, th.getTown());
+			break;
+		case SKULL:
+//			Monument monument = (Monument) th.getTown().getStructureByType("ti_monument");
+//			monument.openToolGUI(p, th.getTown());
+			CivMessage.sendError(p, "Culture quests coming soon!");
+			break;
+		case REDSTONE_LAMP_OFF:
+//			Cottage cottage = (Cottage) th.getTown().getStructureByType("ti_cottage");
+//			cottage.openToolGUI(p, th.getTown());
+			CivMessage.sendError(p, "Coin quests coming soon!");
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public void clickTownStatRegister(Player p, InventoryClickEvent event) {
+		Resident res = CivGlobal.getResident(p);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			return;
+		}
+		
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+			event.setCancelled(true);
+		}
+		
+		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
+		if (th == null) {
+			th = (TownHall) res.getTown().getStructureByType("s_capitol");
+			if (th == null) {
+				CivMessage.sendError(p, "Town Hall null? Contact an admin if this is wrong!"); p.closeInventory();
+			}
+		}
+		switch (event.getCurrentItem().getType()) {
+		case MAP:
+			th.openMainInfoGUI(p, th.getTown());
+			break;
+		default:
+			break;
 		}
 	}
 	
@@ -566,6 +566,11 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
+		//Town Hall Inv (Building Support)
+		if (inv.getName().contains("'s Building Support")) {
+			this.checkTownBuildingSupport(p, inv);
+		}		
+		
 		//Bank Inv
 		if (inv.getName().contains("'s Bank Desk")) {
 			this.sellBankItems(p, inv);
@@ -575,6 +580,11 @@ public class InventoryDisplaysListener implements Listener {
 		if (inv.getName().contains("'s Smelter Operator")) {
 			this.smeltBlacksmithItems(p, inv);
 		}
+		
+		//Barracks Repair Inv
+		if (inv.getName().contains("'s Repair Master")) {
+			this.repairItem(p, inv, event);
+		}	
 		
 		//Mine Inv2
 		if (inv.getName().contains(res.getTown().getName()+" Mine Task ")) {
@@ -826,14 +836,79 @@ public class InventoryDisplaysListener implements Listener {
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
+	public void checkTownBuildingSupport(Player p, Inventory inv) {
+		Resident res = CivGlobal.getResident(p);
+		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
+		if (th == null) {
+			th = (TownHall) res.getTown().getStructureByType("s_capitol");
+			if (th == null) {
+				CivMessage.sendError(p, "Town Hall null? Contact an admin if this is wrong!"); p.closeInventory();
+			}
+		}
+		
+		boolean addedNotRequiredItems = false;
+		int dirt = 0;
+		int gravel = 0;
+		
+		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
+			if (stack == null || stack.getType() == Material.AIR) {
+				continue;
+			}
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Back")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() && stack.getItemMeta().getDisplayName().contains("[D] ")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			if (stack.getType() == Material.DIRT && craftMat == null) {
+				dirt += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (stack.getType() == Material.GRAVEL && craftMat == null) {
+				gravel += stack.getAmount();
+				inv.removeItem(stack);
+			} else if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+				addedNotRequiredItems = true;
+			} else if (craftMat == null) { //Drop any vanilla items in the inventory
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+				addedNotRequiredItems = true;
+			}
+		}
+		
+		Town t = th.getTown();
+		if (dirt > 0) {
+			t.addSupportDeposit(dirt);
+			t.save();
+			CivMessage.sendTown(t, "Added "+dirt+" dirt to town, thanks to "+p.getName()+"! We now have a total of "+t.getSupportDeposit()+" blocks stored.");
+		}
+		
+		if (gravel > 0) {
+			t.addSupportDeposit(gravel);
+			t.save();
+			CivMessage.sendTown(t, "Added "+gravel+" gravel to town, thanks to "+p.getName()+"! We now have a total of "+t.getSupportDeposit()+" blocks stored.");
+		}
+		
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+	}
+	
 	public void sellBankItems(Player p, Inventory inv) {
-		Bank bank = null;
-		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-		if (buildable instanceof Bank) {
-			bank = (Bank) buildable;
-		} else {
-			CivMessage.sendError(p, "Bank you are trying to access is null? Contact an admin if this continues.");
-			return;
+		Resident res = CivGlobal.getResident(p);
+		Bank bank = (Bank) res.getTown().getStructureByType("s_bank");
+		if (bank == null) {
+			CivMessage.sendError(p, "Bank null? Contact an admin if this is wrong!"); p.closeInventory();
 		}
 		
 		Town bTown = bank.getTown();
@@ -843,7 +918,6 @@ public class InventoryDisplaysListener implements Listener {
 		int diGiven = 0;
 		int eiGiven = 0;
 		
-		Resident res = CivGlobal.getResident(p);
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
 			if (stack == null || stack.getType() == Material.AIR) {
 				continue;
@@ -1061,7 +1135,57 @@ public class InventoryDisplaysListener implements Listener {
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
-
+	
+	public void repairItem(Player p, Inventory inv, InventoryCloseEvent event) {
+		Resident res = CivGlobal.getResident(p);
+		Barracks b = (Barracks) res.getTown().getStructureByType("s_barracks");
+		if (b == null) {
+			CivMessage.sendError(p, "Barracks null? Contact an admin if this is wrong!"); p.closeInventory();
+		}
+		
+		boolean addedNotRequiredItems = false;
+		ItemStack repair = null;
+		
+		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
+			if (stack == null || stack.getType() == Material.AIR) {
+				continue;
+			}
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.getItemMeta().getDisplayName().contains("Close Inventory To Repair")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			if (stack.getType() == Material.DIAMOND_PICKAXE) { // TODO make search for repairable items
+				repair = stack;
+				inv.removeItem(stack);
+			} else if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+				addedNotRequiredItems = true;
+			} else { //Drop any vanilla items in the inventory
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+				addedNotRequiredItems = true;
+			}
+		}
+		
+		if (repair != null) {
+			b.repairItem(p, res, repair);
+		} else {
+			CivMessage.sendError(p, "Please insert an item to repair!");
+		}
+		
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+	}
+	
+	
 	public void completeMineTask(Player p, Inventory inv) {
 		Resident res = CivGlobal.getResident(p);
 		Mine mine = (Mine) res.getTown().getStructureByType("ti_mine");

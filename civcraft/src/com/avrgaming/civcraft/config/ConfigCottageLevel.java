@@ -28,7 +28,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.avrgaming.civcraft.main.CivLog;
 
 public class ConfigCottageLevel {
-	public int level;			/* Current level number */
+	public int level; /* Current level number */
 	public Map<Integer, Integer> consumes; /* A map of block ID's and amounts required for this level to progress */
 	public int count; /* Number of times that consumes must be met to level up */
 	public double coins; /* Coins generated each time for the cottage */

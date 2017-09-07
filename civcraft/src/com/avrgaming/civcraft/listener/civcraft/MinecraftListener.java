@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.listener.civcraft;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -26,6 +27,8 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigEXPMining;
+import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
@@ -33,6 +36,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.ItemManager;
 
 /* https://github.com/gvlfm78/BukkitOldCombatMechanics */
@@ -42,15 +46,36 @@ public class MinecraftListener implements Listener {
 	//XXX Player-Bound Aspect
 	
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockBreakSpawnItems(BlockBreakEvent event) {
+	public void onBlockBreakSpawnItems(BlockBreakEvent event) throws CivException {
+		Player p = event.getPlayer();
 		Random rand = new Random();
+		
+		// Quest XP First, then check later for custom drops.
+		for (ConfigEXPMining m : CivSettings.resxpMiningBlocks.values()) {
+			if (ItemManager.getId(event.getBlock().getType()) == m.id) {
+				if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
+				ResidentExperience re = CivGlobal.getResidentE(p);
+				DecimalFormat df = new DecimalFormat("0.00");
+				double mod = re.getMiningLevel() + 1; mod /= 2;
+				
+				int eEXP = (int) (event.getExpToDrop()*mod) / 2;
+				event.setExpToDrop(eEXP);
+				
+				double genrf = m.resxp*mod;
+				double rfEXP = Double.valueOf(df.format(genrf));
+				re.addMiningEXP(rfEXP);
+			}
+		}
+		
+		// Custom Drops check now.
+		
 		if (event.getBlock().getType().equals(Material.LAPIS_ORE)) {
-			if (event.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
+			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
 				int min = CivSettings.getInteger(CivSettings.gameConfig, "tungsten_min_drop");
 				int max;
-				Map<Enchantment, Integer> enchant = event.getPlayer().getInventory().getItemInMainHand().getEnchantments();
+				Map<Enchantment, Integer> enchant = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchant.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchant.get(Enchantment.LOOT_BONUS_BLOCKS);
 					max = CivSettings.getInteger(CivSettings.gameConfig, "tungsten_max_drop_with_fortune")+(level-1);
@@ -62,9 +87,9 @@ public class MinecraftListener implements Listener {
 				randAmount -= min;
 				if (randAmount <= 0) randAmount = 1;
 				for (int i = 0; i < randAmount; i++) {
-					Location dropLoc = new Location(event.getPlayer().getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
+					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_tungsten_ore"));
-					event.getPlayer().getWorld().dropItemNaturally(dropLoc, stack);
+					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
@@ -73,13 +98,13 @@ public class MinecraftListener implements Listener {
 		}
 		
 		if (event.getBlock().getType().equals(Material.COAL_ORE)) {
-			if (event.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
+			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
 				// Coal Drops
 				int minC = CivSettings.getInteger(CivSettings.gameConfig, "coal.min_drop");
 				int maxC;
-				Map<Enchantment, Integer> enchantC = event.getPlayer().getInventory().getItemInMainHand().getEnchantments();
+				Map<Enchantment, Integer> enchantC = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchantC.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchantC.get(Enchantment.LOOT_BONUS_BLOCKS);
 					maxC = CivSettings.getInteger(CivSettings.gameConfig, "coal.max_drop_fortune")+(level-1);
@@ -91,15 +116,15 @@ public class MinecraftListener implements Listener {
 				randAmtC -= minC;
 				if (randAmtC <= minC) randAmtC = minC;
 				for (int i = 0; i < randAmtC; i++) {
-					Location dropLoc = new Location(event.getPlayer().getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
+					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = new ItemStack(Material.COAL);
-					event.getPlayer().getWorld().dropItemNaturally(dropLoc, stack);
+					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 				
 				// Hammer Drops
 				int minH = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.min_drop");
 				int maxH;
-				Map<Enchantment, Integer> enchantH = event.getPlayer().getInventory().getItemInMainHand().getEnchantments();
+				Map<Enchantment, Integer> enchantH = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchantH.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchantH.get(Enchantment.LOOT_BONUS_BLOCKS);
 					maxH = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.max_drop_fortune")+(level-1);
@@ -121,9 +146,9 @@ public class MinecraftListener implements Listener {
 				
 				if (randAmtH >= randAmtC) randAmtH = randAmtC;
 				for (int i = 0; i < randAmtH; i++) {
-					Location dropLoc = new Location(event.getPlayer().getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
+					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
-					event.getPlayer().getWorld().dropItemNaturally(dropLoc, stack);
+					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
@@ -132,13 +157,13 @@ public class MinecraftListener implements Listener {
 		}
 		
 		if (event.getBlock().getType().equals(Material.DIAMOND_ORE)) {
-			if (event.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
+			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
 				// Coal Drops
 				int minD = CivSettings.getInteger(CivSettings.gameConfig, "diamond.min_drop");
 				int maxD;
-				Map<Enchantment, Integer> enchantC = event.getPlayer().getInventory().getItemInMainHand().getEnchantments();
+				Map<Enchantment, Integer> enchantC = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchantC.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchantC.get(Enchantment.LOOT_BONUS_BLOCKS);
 					maxD = CivSettings.getInteger(CivSettings.gameConfig, "diamond.max_drop_fortune")+(level-1);
@@ -150,15 +175,15 @@ public class MinecraftListener implements Listener {
 				randAmtD -= minD;
 				if (randAmtD <= minD) randAmtD = minD;
 				for (int i = 0; i < randAmtD; i++) {
-					Location dropLoc = new Location(event.getPlayer().getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
+					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = new ItemStack(Material.DIAMOND);
-					event.getPlayer().getWorld().dropItemNaturally(dropLoc, stack);
+					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 				
 				// Hammer Drops
 				int minH = CivSettings.getInteger(CivSettings.gameConfig, "diamond_hammers.min_drop");
 				int maxH;
-				Map<Enchantment, Integer> enchantH = event.getPlayer().getInventory().getItemInMainHand().getEnchantments();
+				Map<Enchantment, Integer> enchantH = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchantH.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchantH.get(Enchantment.LOOT_BONUS_BLOCKS);
 					maxH = CivSettings.getInteger(CivSettings.gameConfig, "diamond_hammers.max_drop_fortune")+(level-1);
@@ -170,9 +195,9 @@ public class MinecraftListener implements Listener {
 				randAmtH -= minH;
 				if (randAmtH <= minH) randAmtH = minH;
 				for (int i = 0; i < randAmtH; i++) {
-					Location dropLoc = new Location(event.getPlayer().getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
+					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
-					event.getPlayer().getWorld().dropItemNaturally(dropLoc, stack);
+					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();

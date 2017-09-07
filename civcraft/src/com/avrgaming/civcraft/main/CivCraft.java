@@ -384,6 +384,7 @@ public final class CivCraft extends JavaPlugin {
 		for (Location loc : ParticleEffectTimer.externalParticleBlocks.keySet()) {
 			ParticleEffectTimer.externalParticleBlocks.remove(loc);
 		}
+		
 		for (Camp camp : CivGlobal.getCamps()) {
 			CivGlobal.removeCamp(camp.getName());
 		}
@@ -402,6 +403,10 @@ public final class CivCraft extends JavaPlugin {
 		
 		for (TownChunk tc : CivGlobal.getTownChunks()) {
 			CivGlobal.removeTownChunk(tc);
+		}
+		
+		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+			CivGlobal.removeCultureChunk(cc);
 		}
 		
 		for (Structure structure : CivGlobal.getStructures()) {

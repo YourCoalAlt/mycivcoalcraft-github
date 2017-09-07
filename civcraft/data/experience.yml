@@ -1,61 +1,4 @@
-#========= > Quest Levels < =========#
-quest_levels:
-    - level: 0
-      amount: 0
-    - level: 1
-      amount: 100
-    - level: 2
-      amount: 2000
-    - level: 3
-      amount: 5000
-    - level: 4
-      amount: 10000
-    - level: 5
-      amount: 30000
-    - level: 6
-      amount: 70000
-    - level: 7
-      amount: 125000
-    - level: 8
-      amount: 300000
-    - level: 9
-      amount: 675000
-    - level: 10
-      amount: 1000000
-    - level: 11
-      amount: 1500000
-    - level: 12
-      amount: 2000000
-#========= > Mining Levels < =========#
-mining_levels:
-    - level: 0
-      amount: 0
-    - level: 1
-      amount: 100
-    - level: 2
-      amount: 2000
-    - level: 3
-      amount: 5000
-    - level: 4
-      amount: 10000
-    - level: 5
-      amount: 30000
-    - level: 6
-      amount: 70000
-    - level: 7
-      amount: 125000
-    - level: 8
-      amount: 300000
-    - level: 9
-      amount: 675000
-    - level: 10
-      amount: 1000000
-    - level: 11
-      amount: 1500000
-    - level: 12
-      amount: 2000000
-#========= > Fishing Levels < =========#
-fishing_levels:
+general_levels:
     - level: 0
       amount: 0
     - level: 1
@@ -63,44 +6,82 @@ fishing_levels:
     - level: 2
       amount: 25
     - level: 3
-      amount: 60
+      amount: 75
     - level: 4
-      amount: 125
+      amount: 150
     - level: 5
-      amount: 270
+      amount: 250
     - level: 6
       amount: 450
     - level: 7
-      amount: 625
+      amount: 775
     - level: 8
-      amount: 800
+      amount: 1225
     - level: 9
-      amount: 1000
-    - level: 10
-      amount: 1250
-    - level: 11
-      amount: 1500
-    - level: 12
       amount: 1800
+    - level: 10
+      amount: 2450
+    - level: 11
+      amount: 3175
+    - level: 12
+      amount: 3975
     - level: 13
-      amount: 2150
+      amount: 4875
     - level: 14
-      amount: 2500
+      amount: 5900
     - level: 15
-      amount: 2900
+      amount: 7050
     - level: 16
-      amount: 3250
+      amount: 8325
     - level: 17
-      amount: 3600
+      amount: 9775
     - level: 18
-      amount: 4250
+      amount: 11400
     - level: 19
-      amount: 4750
+      amount: 13300
     - level: 20
-      amount: 5500
+      amount: 15475
     - level: 21
-      amount: 6250
+      amount: 18075
     - level: 22
-      amount: 8500
+      amount: 21100
+    - level: 23
+      amount: 24550
+    - level: 24
+      amount: 28425
+    - level: 25
+      amount: 32725
+    - level: 26
+      amount: 37700
+    - level: 27
+      amount: 43400
+    - level: 28
+      amount: 50200
+    - level: 29
+      amount: 58100
+    - level: 30
+      amount: 67100
+    - level: 31
+      amount: 78100
+    - level: 32
+      amount: 93100
+    - level: 33
+      amount: 113100
+    - level: 34
+      amount: 139100
+    - level: 35
+      amount: 172100
+    - level: 36
+      amount: 213100
+    - level: 37
+      amount: 266100
+    - level: 38
+      amount: 355100
+    - level: 39
+      amount: 418100
+    - level: 40
+      amount: 517100
+# If we continue, this is the last eqation used @ level 40 (517100):
+# //calc 1800+650+725+800+900+1025+1150+1275+1450+1625+1900+2175+2600+3025+3450+3875+4300+4975+5700+6800+7900+9000+11000+15000+20000+26000+33000+41000+53000+69000+83000+99000
 #
 #

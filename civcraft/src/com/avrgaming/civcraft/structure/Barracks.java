@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
@@ -146,7 +145,7 @@ public class Barracks extends Structure {
 		}
 	}
 	
-	private void repairItem(Player player, Resident resident, PlayerInteractEvent event) {
+	public void repairItem(Player player, Resident res, PlayerInteractEvent event) {
 		try {
 			ItemStack inHand = player.getInventory().getItemInMainHand();
 			if (inHand == null || inHand.getType().equals(Material.AIR)) {
@@ -181,7 +180,7 @@ public class Barracks extends Structure {
 				
 				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), craftMat);
 				repairItem.displayMessage();
-				resident.setInteractiveMode(repairItem);
+				res.setInteractiveMode(repairItem);
 				return;
 				
 			} catch (InvalidConfiguration e) {
@@ -194,6 +193,53 @@ public class Barracks extends Structure {
 		} catch (CivException e) {
 			CivMessage.sendError(player, e.getMessage());
 			event.setCancelled(true);
+		}
+	}
+	
+	public void repairItem(Player player, Resident res, ItemStack repair) {
+		// TODO Fix to give item back after repair, make repair cost hammers, and do CivException checks in GUI before we get here.
+		try {
+			if (repair == null || repair.getType().equals(Material.AIR)) {
+				throw new CivException("Must have an item in your hand in order to repair it.");
+			}
+			
+			if (repair.getType().getMaxDurability() == 0) {
+				throw new CivException("Can only repair items that use durability.");
+			}
+			
+			if (repair.getDurability() == 0) {
+				throw new CivException("This item is already at full health.");
+			}
+			
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
+			if (craftMat == null) {
+				throw new CivException("Cannot repair this item.");
+			}
+			
+			try {
+				double totalCost;
+				if (craftMat.hasComponent("RepairCost")) {
+					RepairCost repairCost = (RepairCost)craftMat.getComponent("RepairCost");
+					totalCost = repairCost.getDouble("value");
+				} else {
+					double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
+					double tierDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.tier_damp");
+					double tierCost = Math.pow((craftMat.getConfigMaterial().tier), tierDamp);				
+					double fromTier = Math.pow(baseTierRepair, tierCost);				
+					totalCost = Math.round(fromTier+0);
+				}
+				
+				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), craftMat);
+				repairItem.displayMessage();
+				res.setInteractiveMode(repairItem);
+				return;
+				
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				throw new CivException("Internal configuration error");
+			}
+		} catch (CivException e) {
+			CivMessage.sendError(player, e.getMessage());
 		}
 	}
 
@@ -250,15 +296,16 @@ public class Barracks extends Structure {
 			this.progressBar.put(Integer.valueOf(sb.keyvalues.get("id")), structSign);
 			break;
 		case "/repair":
-			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-			ItemManager.setData(absCoord.getBlock(), sb.getData());
-			structSign = new StructureSign(absCoord, this);
-			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Repair Item");
-			structSign.setDirection(sb.getData());
-			structSign.setAction("repair_item");
-			structSign.update();
-			this.addStructureSign(structSign);
-			CivGlobal.addStructureSign(structSign);
+			spawnRepairVillager(absCoord.getLocation(), (byte)sb.getData());
+//			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
+//			ItemManager.setData(absCoord.getBlock(), sb.getData());
+//			structSign = new StructureSign(absCoord, this);
+//			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Repair Item");
+//			structSign.setDirection(sb.getData());
+//			structSign.setAction("repair_item");
+//			structSign.update();
+//			this.addStructureSign(structSign);
+//			CivGlobal.addStructureSign(structSign);
 			break;
 		}
 	}
@@ -506,6 +553,34 @@ public class Barracks extends Structure {
 				inv.setItem(u.position, si);
 			}
 		}
+		p.openInventory(inv);
+	}
+	
+	// Item Repair Villager
+	
+	public void spawnRepairVillager(Location loc, int direction) {
+		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
+		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
+		v.teleport(vLoc);
+		v.setAdult();
+		v.setAI(false);
+		v.setCustomName("Barracks Repair Master");
+		v.setProfession(Profession.BLACKSMITH);
+		CivGlobal.addStructureVillager(v);
+	}
+	
+	public void openRepairGUI(Player p, Town t) {
+		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Repair Master");
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is the Barracks Repair Menu. In here,",
+				CivColor.RESET+"you can put an item inside the inventory to",
+				CivColor.RESET+"repair, in exchange for hammers.",
+				CivColor.RESET+"",
+				CivColor.RESET+""
+				));
+		
+		inv.setItem(8, LoreGuiItem.build(CivColor.LightGreenBold+"Close Inventory To Repair", ItemManager.getId(Material.ANVIL), 0));
+		
 		p.openInventory(inv);
 	}
 	

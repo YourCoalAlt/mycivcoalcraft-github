@@ -9,9 +9,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigEXPFishingLevel;
-import com.avrgaming.civcraft.config.ConfigEXPMiningLevel;
-import com.avrgaming.civcraft.config.ConfigEXPQuestLevel;
+import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.SQLUpdate;
 import com.avrgaming.civcraft.exception.CivException;
@@ -122,7 +120,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public void addQuestEXP(double generated) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPQuestLevel clc = CivSettings.expQuestLevels.get(this.getQuestLevel());
+		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getQuestLevel());
 		DecimalFormat df = new DecimalFormat("0.00");
 		this.questEXP = Double.valueOf(df.format(this.questEXP + generated));
 		this.save();
@@ -143,12 +141,12 @@ public class ResidentExperience extends SQLObject {
 	public int getQuestLevel() {
 		// Get the first level
 		int bestLevel = 0;
-		ConfigEXPQuestLevel level = CivSettings.expQuestLevels.get(0);
+		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
 		
 		while (this.questEXP >= level.amount) {
-			level = CivSettings.expQuestLevels.get(bestLevel+1);
+			level = CivSettings.expGenericLevels.get(bestLevel+1);
 			if (level == null) {
-				level = CivSettings.expQuestLevels.get(bestLevel);
+				level = CivSettings.expGenericLevels.get(bestLevel);
 				break;
 			}
 			bestLevel++;
@@ -158,7 +156,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public static int getMaxQuestLevel() {
 		int returnLevel = 0;
-		for (Integer level : CivSettings.expQuestLevels.keySet()) {
+		for (Integer level : CivSettings.expGenericLevels.keySet()) {
 			if (returnLevel < level) {
 				returnLevel = level;
 			}
@@ -173,7 +171,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public void addMiningEXP(double generated) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPMiningLevel clc = CivSettings.expMiningLevels.get(this.getMiningLevel());
+		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getMiningLevel());
 		DecimalFormat df = new DecimalFormat("0.00");
 		this.miningEXP = Double.valueOf(df.format(this.miningEXP + generated));
 		this.save();
@@ -194,12 +192,12 @@ public class ResidentExperience extends SQLObject {
 	public int getMiningLevel() {
 		// Get the first level
 		int bestLevel = 0;
-		ConfigEXPMiningLevel level = CivSettings.expMiningLevels.get(0);
+		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
 		
 		while (this.miningEXP >= level.amount) {
-			level = CivSettings.expMiningLevels.get(bestLevel+1);
+			level = CivSettings.expGenericLevels.get(bestLevel+1);
 			if (level == null) {
-				level = CivSettings.expMiningLevels.get(bestLevel);
+				level = CivSettings.expGenericLevels.get(bestLevel);
 				break;
 			}
 			bestLevel++;
@@ -209,7 +207,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public static int getMaxMiningLevel() {
 		int returnLevel = 0;
-		for (Integer level : CivSettings.expMiningLevels.keySet()) {
+		for (Integer level : CivSettings.expGenericLevels.keySet()) {
 			if (returnLevel < level) {
 				returnLevel = level;
 			}
@@ -224,7 +222,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public void addFishingEXP(double generated) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPFishingLevel clc = CivSettings.expFishingLevels.get(this.getFishingLevel());
+		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getFishingLevel());
 		DecimalFormat df = new DecimalFormat("0.00");
 		this.fishingEXP = Double.valueOf(df.format(this.fishingEXP + generated));
 		this.save();
@@ -246,12 +244,12 @@ public class ResidentExperience extends SQLObject {
 	public int getFishingLevel() {
 		// Get the first level
 		int bestLevel = 0;
-		ConfigEXPFishingLevel level = CivSettings.expFishingLevels.get(0);
+		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
 		
 		while (this.fishingEXP >= level.amount) {
-			level = CivSettings.expFishingLevels.get(bestLevel+1);
+			level = CivSettings.expGenericLevels.get(bestLevel+1);
 			if (level == null) {
-				level = CivSettings.expFishingLevels.get(bestLevel);
+				level = CivSettings.expGenericLevels.get(bestLevel);
 				break;
 			}
 			bestLevel++;
@@ -261,7 +259,7 @@ public class ResidentExperience extends SQLObject {
 	
 	public static int getMaxFishingLevel() {
 		int returnLevel = 0;
-		for (Integer level : CivSettings.expFishingLevels.keySet()) {
+		for (Integer level : CivSettings.expGenericLevels.keySet()) {
 			if (returnLevel < level) {
 				returnLevel = level;
 			}

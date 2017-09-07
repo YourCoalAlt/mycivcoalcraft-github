@@ -172,7 +172,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("clearresidents", "[town] - clears this town of it's random residents.");
 		commands.put("biomehere", "- shows you biome info where you're standing.");
 		commands.put("scout", "[civ] - enables debugging for scout towers in this civ.");
-		commands.put("getit", "gives you an item.");
 		commands.put("showinv", "shows you an inventory");
 		commands.put("showcraftinv", "shows you crafting inventory");
 		commands.put("setspecial", "sets special stuff");
@@ -183,7 +182,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("getdura", "gets the durability of an item");
 		commands.put("setdura", "sets the durability of an item");
 		commands.put("togglebookcheck", "Toggles checking for enchanted books on and off.");
-		commands.put("setexposure", "[int] sets your exposure to this ammount.");
 		commands.put("circle", "[int] - draws a circle at your location, with this radius.");
 		commands.put("loadperks", "loads perks for yourself");
 		commands.put("colorme", "[hex] adds nbt color value to item held.");
@@ -613,15 +611,6 @@ public class DebugCommand extends CommandBase {
 		
 		CivMessage.sendSuccess(player, "Built a circle at your feet.");
 	}
-	
-	public void setexposure_cmd() throws CivException {
-		Resident resident = getResident();
-		Player player = getPlayer();
-		Double exp = getNamedDouble(1);
-		resident.setSpyExposure(exp);
-		
-		CivMessage.sendSuccess(player, "Set Exposure.");
-	}	
 	
 	public void togglebookcheck_cmd() {
 		CivGlobal.checkForBooks = !CivGlobal.checkForBooks;

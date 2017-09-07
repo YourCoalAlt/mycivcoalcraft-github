@@ -648,7 +648,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void openMainInfoGUI(Player p, Town t) {
 		DecimalFormat df = new DecimalFormat();
 		ConfigTownLevel level = CivSettings.townLevels.get(t.getLevel());
-		Inventory inv = Bukkit.createInventory(null, 9*4, t.getName()+"'s Town Info");
+		Inventory inv = Bukkit.createInventory(null, 9*5, t.getName()+"'s Town Info");
 		
 		String colorTile = CivColor.LightGreen;
 		if (t.getTileImprovementCount() >= level.tile_improvements) {
@@ -692,21 +692,21 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		inv.setItem(10, LoreGuiItem.build(CivColor.GreenBold+"Growth", CivData.WHEAT_ITEM, 0, 
 				CivColor.LightGreen+df.format(t.getGrowth().total),
-				CivColor.LightGrayItalic+"(Click for More Options)"
+				CivColor.LightGray+"« Click for More Options »"
 				));
 		inv.setItem(12, LoreGuiItem.build(CivColor.GreenBold+"Hammers", CivData.COBBLESTONE_WALL, 0, 
 				CivColor.LightGreen+df.format(t.getHammers().total),
-				CivColor.LightGrayItalic+"(Click for More Options)"
+				CivColor.LightGray+"« Click for More Options »"
 				));
 		inv.setItem(14, LoreGuiItem.build(CivColor.GreenBold+"Beakers", CivData.EMPTY_BOTTLE, 0, 
 				CivColor.LightGreen+df.format(t.getBeakers().total),
-				CivColor.LightGrayItalic+"(Click for More Options)"
+				CivColor.LightGray+"« Click for More Options »"
 				));
 		ConfigCultureLevel clc = CivSettings.cultureLevels.get(t.getCultureLevel());	
 		inv.setItem(16, LoreGuiItem.build(CivColor.GreenBold+"Culture", CivData.NETHERWART_ITEM, 0, 
 				CivColor.Green+"Level: "+CivColor.LightGreen+clc.level,
 				CivColor.Green+"Amount: "+CivColor.LightGreen+t.getAccumulatedCulture()+" / "+clc.amount,
-				CivColor.LightGrayItalic+"(Click for More Options)"
+				CivColor.LightGray+"« Click for More Options »"
 				));
 		
 		Structure bank = t.getStructureByType("s_bank");
@@ -747,8 +747,17 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				t.getResidentsNameAndColor().split(";")
 				));
 		
-		inv.setItem(31, LoreGuiItem.build(CivColor.RoseBold+"More Soon!", CivData.BARRIER, 0, 
-				CivColor.LightGrayItalic+"More Soon!"
+		inv.setItem(30, LoreGuiItem.build(CivColor.GreenBold+"Building Support", CivData.BEACON, 0, 
+				CivColor.Green+"Currently Storing: "+CivColor.LightGreen+t.getSupportDeposit()+" Blocks",
+				CivColor.LightGray+"« Click to Deposit Blocks »"
+				));
+		
+		inv.setItem(32, LoreGuiItem.build(CivColor.RoseBold+"In Development", CivData.BEDROCK, 0, 
+				CivColor.LightGray+"« Check Back Later »"
+				));
+		
+		inv.setItem(40, LoreGuiItem.build(CivColor.RoseBold+"More Soon!", CivData.BARRIER, 0, 
+				CivColor.LightGray+"« More Soon »"
 				));
 		
 		p.openInventory(inv);
@@ -846,6 +855,21 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 					CivColor.colorize(CivColor.RESET+b.getDescription())
 					));
 		}
+		
+		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		p.openInventory(inv);
+	}
+	
+	public void openSupportDepositGUI(Player p, Town t) {
+		Inventory inv = Bukkit.createInventory(null, 9*6, t.getName()+"'s Building Support");
+		
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is the Support Deposit menu. You can add",
+				CivColor.RESET+"dirt or gravel into this GUI, and the blocks will",
+				CivColor.RESET+"be virtually saved. When you begin to build a",
+				CivColor.RESET+"structure, we will automatically try to place the",
+				CivColor.RESET+"blocks to support it (if we can)."
+				));
 		
 		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
