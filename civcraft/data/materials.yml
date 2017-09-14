@@ -44,7 +44,7 @@ materials:
 #        amount: '1'
 # Resource Recipes  ===========================================
 # Checked 25 August 2017
-  - id: 'mat_vanilla_diamond_pickaxe'
+  - id: 'civ_vanilla_diamond_pickaxe'
     item_id: 278
     item_data: 0
     name: 'Diamond Pickaxe'
@@ -53,9 +53,9 @@ materials:
     category: '<blue>Tools'
     components:
        - name: 'Attack'
-         value: '0.5'
+         value: '2.5'
        - name: 'RepairCost'
-         value: '2000.0'
+         value: '1500.0'
     ingredients:
        - type_id: 280 #stick
          data: 0
@@ -1816,10 +1816,10 @@ materials:
        - " b "
        - " h "
 # Checked 25 August 2017
-  - id: 'civ_longbow'
+  - id: 'civ_marksmen_bow'
     item_id: 261
     item_data: 0
-    name: 'Longbow'
+    name: 'Marksmen Bow'
     craftable: true
     required_not_techs: 'tech_fletching'
     shaped: true

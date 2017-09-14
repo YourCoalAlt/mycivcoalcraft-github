@@ -51,6 +51,7 @@ import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainAttack;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -178,7 +179,7 @@ public class Barracks extends Structure {
 					totalCost = Math.round(fromTier+0);
 				}
 				
-				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), craftMat);
+				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), inHand);
 				repairItem.displayMessage();
 				res.setInteractiveMode(repairItem);
 				return;
@@ -187,65 +188,91 @@ public class Barracks extends Structure {
 				e.printStackTrace();
 				throw new CivException("Internal configuration error");
 			}
-			
-			
-			
 		} catch (CivException e) {
 			CivMessage.sendError(player, e.getMessage());
 			event.setCancelled(true);
 		}
 	}
 	
+	public boolean canRepairItem(ItemStack repair) {
+		if (repair == null || repair.getType().equals(Material.AIR)) {
+			return false;
+		}
+		
+		if (repair.getType().getMaxDurability() == 0) {
+			return false;
+		}
+		
+		if (repair.getDurability() == 0) {
+			return false;
+		}
+		
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
+		if (craftMat == null) {
+			return false;
+		}
+		
+		for (String ritems : CivSettings.repairableItems) {
+			String[] split = ritems.split(":");
+			try {
+				Integer type = Integer.valueOf(split[0]);
+				int data = Integer.valueOf(split[1]);
+				if (type == ItemManager.getId(repair) && data == ItemManager.getData(repair)) {
+					return true;
+				}
+			} catch (NumberFormatException e) {
+				String custMatID = split[0];
+				if (craftMat == null || craftMat.getConfigId() != custMatID) {
+					continue;
+				}
+				return true;
+			}
+		}
+		return true;
+	}
+	
 	public void repairItem(Player player, Resident res, ItemStack repair) {
 		// TODO Fix to give item back after repair, make repair cost hammers, and do CivException checks in GUI before we get here.
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
 		try {
-			if (repair == null || repair.getType().equals(Material.AIR)) {
-				throw new CivException("Must have an item in your hand in order to repair it.");
-			}
-			
-			if (repair.getType().getMaxDurability() == 0) {
-				throw new CivException("Can only repair items that use durability.");
-			}
-			
-			if (repair.getDurability() == 0) {
-				throw new CivException("This item is already at full health.");
-			}
-			
-			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
-			if (craftMat == null) {
-				throw new CivException("Cannot repair this item.");
-			}
-			
-			try {
-				double totalCost;
-				if (craftMat.hasComponent("RepairCost")) {
-					RepairCost repairCost = (RepairCost)craftMat.getComponent("RepairCost");
-					totalCost = repairCost.getDouble("value");
-				} else {
-					double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
-					double tierDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.tier_damp");
-					double tierCost = Math.pow((craftMat.getConfigMaterial().tier), tierDamp);				
-					double fromTier = Math.pow(baseTierRepair, tierCost);				
-					totalCost = Math.round(fromTier+0);
-				}
+			double totalCost;
+			if (craftMat.hasComponent("RepairCost")) {
+				RepairCost getRepairCost = (RepairCost)craftMat.getComponent("RepairCost");
+				double repairCost = getRepairCost.getDouble("value");
 				
-				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), craftMat);
-				repairItem.displayMessage();
-				res.setInteractiveMode(repairItem);
-				return;
+				double durabilityDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.durability_damp");
+				double itemDurability = repair.getDurability();
+				double durabilityCost = Math.pow(itemDurability, durabilityDamp);
 				
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				throw new CivException("Internal configuration error");
+				double subTotal = (repairCost + durabilityCost);
+				totalCost = Math.round(subTotal);
+			} else {
+				double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
+				
+				double tierDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.tier_damp");
+				double tierCost = Math.pow((craftMat.getConfigMaterial().tier), tierDamp);
+				double fromTier = Math.pow(baseTierRepair, tierCost);
+				
+				double durabilityDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.durability_damp");
+				double itemDurability = repair.getDurability();
+				double durabilityCost = Math.pow(itemDurability, durabilityDamp);
+				
+				double subTotal = (fromTier + durabilityCost);
+				totalCost = Math.round(subTotal);
 			}
-		} catch (CivException e) {
-			CivMessage.sendError(player, e.getMessage());
+			
+			InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), repair);
+			repairItem.displayMessage();
+			res.setInteractiveMode(repairItem);
+			return;
+		} catch (InvalidConfiguration e) {
+			e.printStackTrace();
+			CivMessage.sendError(player, "Internal configuration error");
 		}
 	}
 
-	public static void repairItemInHand(double cost, String playerName, LoreCraftableMaterial craftMat) {
+	public static void repairItemInHand(double cost, String playerName, ItemStack stack) {
 		Player player;
-		
 		try {
 			player = CivGlobal.getPlayer(playerName);
 		} catch (CivException e) {
@@ -253,21 +280,23 @@ public class Barracks extends Structure {
 		}
 		
 		Resident resident = CivGlobal.getResident(player);
-		
 		if (!resident.getTreasury().hasEnough(cost)) {
 			CivMessage.sendError(player, "Sorry, but you don't have the required "+cost+" coins.");
 			return;
 		}
 		
-		LoreCraftableMaterial craftMatInHand = LoreCraftableMaterial.getCraftMaterial(player.getInventory().getItemInMainHand());
+//		LoreCraftableMaterial craftMatInHand = LoreCraftableMaterial.getCraftMaterial(player.getInventory().getItemInMainHand());
+//		if (!craftMatInHand.getConfigId().equals(craftMat.getConfigId())) {
+//			CivMessage.sendError(player, "You're not holding the item that you started the repair with.");
+//			return;
+//		}
 		
-		if (!craftMatInHand.getConfigId().equals(craftMat.getConfigId())) {
-			CivMessage.sendError(player, "You're not holding the item that you started the repair with.");
-			return;
-		}
-		
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+		ItemStack newStack = LoreMaterial.spawn(craftMat);
+		AttributeUtil attr = new AttributeUtil(stack); newStack = attr.getStack();
+		newStack.setDurability((short)0);
+		player.getInventory().addItem(newStack);
 		resident.getTreasury().withdraw(cost);
-		player.getInventory().getItemInMainHand().setDurability((short)0);
 		
 		CivMessage.sendSuccess(player, "Repaired "+craftMat.getName()+" for "+cost+" coins.");
 	}
@@ -571,7 +600,12 @@ public class Barracks extends Structure {
 	
 	public void openRepairGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Repair Master");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		for (int i = 0; i < 9*1; i++) {
+			ItemStack is = LoreGuiItem.build("«--", ItemManager.getId(Material.BARRIER), 0);
+			inv.setItem(i, is);
+		}
+		
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Barracks Repair Menu. In here,",
 				CivColor.RESET+"you can put an item inside the inventory to",
 				CivColor.RESET+"repair, in exchange for hammers.",
@@ -579,6 +613,18 @@ public class Barracks extends Structure {
 				CivColor.RESET+""
 				));
 		
+		inv.setItem(1, LoreGuiItem.build(CivColor.LightPurpleBold+"Repairable Items", ItemManager.getId(Material.WORKBENCH), 0, 
+				CivColor.RESET+"Must meet these standards to repair items:",
+				CivColor.RESET+"  » Custom Material",
+				CivColor.RESET+"  » Is Repairable Material",
+				CivColor.RESET+"  » Item Takes Durability Damage",
+				CivColor.RESET+"  » Item Has Durability Damage",
+				CivColor.RESET+""
+				));
+		
+		ItemStack tmp = new ItemStack(Material.BEDROCK);
+		inv.setItem(2, tmp);
+		inv.removeItem(tmp);
 		inv.setItem(8, LoreGuiItem.build(CivColor.LightGreenBold+"Close Inventory To Repair", ItemManager.getId(Material.ANVIL), 0));
 		
 		p.openInventory(inv);

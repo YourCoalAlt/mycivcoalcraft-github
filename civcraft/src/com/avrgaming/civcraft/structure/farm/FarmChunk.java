@@ -147,8 +147,6 @@ public class FarmChunk {
 		return;
 	}
 	
-	
-	
 /*	public void spawnSugarcane(BlockSnapshot bs, CivAsyncTask task) throws InterruptedException {
 		BlockSnapshot nextBlock;
 		try {
@@ -166,6 +164,13 @@ public class FarmChunk {
 		this.growBlocks.add(new GrowBlock(world, x, y, z, typeid, data, spawn));
 	}
 	
+	private boolean checkLight(BlockCoord growMe) {
+		if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
+			return false;
+		}
+		return true;
+	}
+	
 	public void growBlock(BlockSnapshot bs, BlockCoord growMe, CivAsyncTask task) throws InterruptedException {
 		//XXX we are skipping hydration as I guess we dont seem to care.
 		//XXX we also skip light level checks, as we dont really care about that either.
@@ -173,17 +178,13 @@ public class FarmChunk {
 		case CivData.WHEAT_CROP:
 		case CivData.CARROT_CROP:
 		case CivData.POTATO_CROP:
-			if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
-				break;
-			}
+			if (!checkLight(growMe)) break;
 			if (bs.getData() < 0x7) {
 				addGrowBlock("world", growMe.getX(), growMe.getY(), growMe.getZ(), bs.getTypeId(), bs.getData()+0x1, false);
 			}
 			break;
 		case CivData.BEETROOT_CROP:
-			if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
-				break;
-			}
+			if (!checkLight(growMe)) break;
 		case CivData.NETHERWART_CROP:
 			if (bs.getData() < 0x3) {
 				addGrowBlock("world", growMe.getX(), growMe.getY(), growMe.getZ(), bs.getTypeId(), bs.getData()+0x1, false);
@@ -191,9 +192,7 @@ public class FarmChunk {
 			break;
 		case CivData.MELON_STEM:
 		case CivData.PUMPKIN_STEM:
-			if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
-				break;
-			}
+			if (!checkLight(growMe)) break;
 			if (bs.getData() < 0x7) {
 				addGrowBlock("world", growMe.getX(), growMe.getY(), growMe.getZ(), bs.getTypeId(), bs.getData()+0x1, false);
 			} else if (bs.getData() == 0x7) {
@@ -201,9 +200,7 @@ public class FarmChunk {
 			}
 			break;
 		case CivData.COCOAPOD:	
-			if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
-				break;
-			}
+			if (!checkLight(growMe)) break;
 			if (CivData.canCocoaGrow(bs)) {
 				addGrowBlock("world", growMe.getX(), growMe.getY(), growMe.getZ(), bs.getTypeId(), CivData.getNextCocoaValue(bs), false);
 			}
@@ -229,7 +226,7 @@ public class FarmChunk {
 		// So for example, if we have a 120% growth rate, every 10 ticks 1 crop *always* grows,
 		// and another has a 20% chance to grow.
 		
-		double effectiveGrowthRate = (double)this.town.getGrowth().total / (double)100;
+		double effectiveGrowthRate = this.town.getGrowth().total / 100;
 		
 		for (Component comp : this.getFarm().attachedComponents) {
 			if (comp instanceof ActivateOnBiome) {

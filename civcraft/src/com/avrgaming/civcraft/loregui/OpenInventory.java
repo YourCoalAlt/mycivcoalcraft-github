@@ -55,6 +55,9 @@ public class OpenInventory implements GuiAction {
 				case "showFishingRates":
 					Backpack.showFishingRates(player);
 					break;
+				case "showTownMenu":
+					Backpack.showTownMenu(player);
+					break;
 				case "showGuiInv":
 					String invName = LoreGuiItem.getActionData(stack, "invName");
 					Inventory inv = LoreGuiItemListener.guiInventories.get(invName);

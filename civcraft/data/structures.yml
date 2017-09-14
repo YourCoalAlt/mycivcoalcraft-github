@@ -54,7 +54,7 @@ temple:
 ##################### Farm Settings ##########################
 farm:
     # Number of crops that will grow per 100% of growth rate.
-    grows_per_tick: 2
+    grows_per_tick: 3
 
     # Number of seconds it takes for a growth tick to fire, cannot be less than 1.
     #grow_tick_rate: 60
@@ -81,6 +81,10 @@ pasture:
 barracks:
     # Barracks repair cost uses the following formula.
     #
+    # current formula:
+    # cost = base_repair^(ITEM_TIER^tier_damp) + ITEM_DURABILITY^durability_damp --- Rounded to nearest tenth
+    #
+    # old formula:
     # cost = ((base_repair * (((tier+1)*tier_damp) + ((1/damagedPercent)*damage_damp)))
     #
     # So the base repair cost is multiplied by the tier's value, the +1 is for tier 0
@@ -91,16 +95,13 @@ barracks:
     # If you want the Tier to be more important, increase the tier damp.
     # If you want the item durability to be more important increase the damage damp
 
-
     # Base repair cost of all items
     base_damage_repair: 500.0
-    base_tier_repair: 2000.0
-
-    # damage dampen. 
-    damage_damp: 1.0
-
+    base_tier_repair: 2500.0
+    # durability dampen.
+    durability_damp: 0.85
     # tier dampen
-    tier_damp: 0.175
+    tier_damp: 0.2025
     
 
 #################### Stable Settings ########################

@@ -116,6 +116,7 @@ public class CivSettings {
 	public static Map<Integer, ConfigEXPGenericLevel> expGenericLevels = new HashMap<Integer, ConfigEXPGenericLevel>();
 	
 	public static FileConfiguration structuredataConfig; /* structuredata.yml */
+	public static ArrayList<String> repairableItems = new ArrayList<String>();
 	public static Map<Integer, ConfigBankLevel> bankLevels = new HashMap<Integer, ConfigBankLevel>();
 	public static Map<Integer, ConfigQuarryItem> quarryItems = new HashMap<Integer, ConfigQuarryItem>();
 	public static ArrayList<ConfigQuarry> quarryDrops = new ArrayList<ConfigQuarry>();
@@ -262,6 +263,12 @@ public class CivSettings {
 		for (Object obj : civConfig.getList("global.start_kit")) {
 			if (obj instanceof String) {
 				kitItems.add((String)obj);
+			}
+		}
+		
+		for (Object obj : structuredataConfig.getList("repairable_items")) {
+			if (obj instanceof String) {
+				repairableItems.add((String)obj);
 			}
 		}
 		

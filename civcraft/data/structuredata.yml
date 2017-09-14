@@ -23,6 +23,40 @@ bank_levels:
    - level: 10
      exchange_rate: 2.00
 #======================================#
+#======= > Barracks  Settings < =======#
+#======================================#
+repairable_items:
+   - 'civ_vanilla_diamond_pickaxe'
+   - 'civ_admin_sword'
+   - 'civ_sword_ban_hammer'
+   - 'civ_ranged_ban_hammer'
+   - 'civ_instant_kicker'
+   - 'civ_wood_sword'
+   - 'civ_stone_sword'
+   - 'civ_hunting_bow'
+   - 'civ_leather_helmet'
+   - 'civ_leather_chestplate'
+   - 'civ_leather_leggings'
+   - 'civ_leather_boots'
+   - 'civ_gold_sword'
+   - 'civ_recurve_bow'
+   - 'civ_gold_helmet'
+   - 'civ_gold_chestplate'
+   - 'civ_gold_leggings'
+   - 'civ_gold_boots'
+   - 'civ_iron_sword'
+   - 'civ_longbow'
+   - 'civ_iron_helmet'
+   - 'civ_iron_chestplate'
+   - 'civ_iron_leggings'
+   - 'civ_iron_boots'
+   - 'civ_diamond_sword'
+   - 'civ_marksmen_bow'
+   - 'civ_diamond_helmet'
+   - 'civ_diamond_chestplate'
+   - 'civ_diamond_leggings'
+   - 'civ_diamond_boots'
+#======================================#
 #======== > Quarry  Settings < ========#
 #======================================#
 quarry_items:

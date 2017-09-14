@@ -1156,30 +1156,42 @@ public class InventoryDisplaysListener implements Listener {
 				continue;
 			}
 			
-			if (stack.getItemMeta().getDisplayName().contains("Close Inventory To Repair")) {
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Repairable Items")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.getType() == Material.ANVIL && stack.getItemMeta().getDisplayName().contains("Close Inventory To Repair")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.getType() == Material.BARRIER && stack.getItemMeta().getDisplayName().contains("«--")) {
 				inv.removeItem(stack);
 				continue;
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-			if (stack.getType() == Material.DIAMOND_PICKAXE) { // TODO make search for repairable items
+			if (b.canRepairItem(stack)) { // Repair items that can be repaired
 				repair = stack;
 				inv.removeItem(stack);
-			} else if (craftMat != null) { //Allow custom items to be dropped
-				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
-				newMat.setData(stack.getData());
-				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
-				addedNotRequiredItems = true;
-			} else { //Drop any vanilla items in the inventory
-				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
-				addedNotRequiredItems = true;
+			} else {
+				if (craftMat != null) { // Allow custom items to be dropped
+					ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+					newMat.setData(stack.getData());
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+					addedNotRequiredItems = true;
+				} else { // Drop any vanilla items in the inventory
+					p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+					addedNotRequiredItems = true;
+				}
 			}
 		}
 		
 		if (repair != null) {
 			b.repairItem(p, res, repair);
 		} else {
-			CivMessage.sendError(p, "Please insert an item to repair!");
+			CivMessage.sendError(p, "Please insert an item to repair! (If an item did not repair, re-check the requirements of repairing.)");
 		}
 		
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
