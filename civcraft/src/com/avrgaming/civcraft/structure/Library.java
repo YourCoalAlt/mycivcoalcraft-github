@@ -22,15 +22,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.components.AttributeBiome;
 import com.avrgaming.civcraft.components.NonMemberFeeComponent;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -39,19 +45,21 @@ import com.avrgaming.civcraft.object.LibraryEnchantment;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Library extends Structure {
-
+	
 	private int level;
 	public AttributeBiome cultureBeakers;
-	
-	ArrayList<LibraryEnchantment> enchantments = new ArrayList<LibraryEnchantment>();
-
 	private NonMemberFeeComponent nonMemberFeeComponent;
 	
+	ArrayList<LibraryEnchantment> enchantments = new ArrayList<LibraryEnchantment>();
+	
 	public static Enchantment getEnchantFromString(String name) {
-		
 		// Armor Enchantments
 		if (name.equalsIgnoreCase("protection")) {
 			return Enchantment.PROTECTION_ENVIRONMENTAL;
@@ -122,15 +130,13 @@ public class Library extends Structure {
 		if (name.equalsIgnoreCase("infinity")) {
 			return Enchantment.ARROW_INFINITE;
 		}
-		
 		return null;
-		
 	}
-
+	
 	public double getNonResidentFee() {
 		return this.nonMemberFeeComponent.getFeeRate();
 	}
-
+	
 	public void setNonResidentFee(double nonResidentFee) {
 		this.nonMemberFeeComponent.setFeeRate(nonResidentFee);
 	}
@@ -178,9 +184,7 @@ public class Library extends Structure {
 	
 	@Override
 	public void updateSignText() {
-
 		int count = 0;
-		
 		for (LibraryEnchantment enchant : this.enchantments) {
 			StructureSign sign = getSignFromSpecialId(count);
 			if (sign == null) {
@@ -330,4 +334,51 @@ public class Library extends Structure {
 		this.updateSignText();
 	}
 	
+	@Override
+	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
+		switch (sb.command) {
+		case "/librarian":
+			spawnEnchantingVillager(absCoord.getLocation(), (byte)sb.getData());
+			break;
+		}
+	}
+	
+	// XXX Villager Information
+	
+	public void spawnEnchantingVillager(Location loc, int direction) {
+		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
+		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
+		v.teleport(vLoc);
+		v.setAdult();
+		v.setAI(false);
+		v.setCustomName("Library Enchanter");
+		v.setProfession(Profession.LIBRARIAN);
+		CivGlobal.addStructureVillager(v);
+	}
+	
+	public void openEnchantGUI(Player p, Town t) {
+		Resident res = CivGlobal.getResident(p);
+		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Library Enchanter");
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is the Library enchanting menu. You can,",
+				CivColor.RESET+"click on an enchantment to add to the item of",
+				CivColor.RESET+"your choice, and then a new GUI will display to",
+				CivColor.RESET+"insert the item in. Enchanting will require",
+				CivColor.RESET+"books, beakers, and possibly trade resources."
+				));
+		
+		for (LibraryEnchantment e : this.enchantments) {
+			String out = "";
+			out = CivColor.Green+"Enchant: "+CivColor.LightGreen+e.displayName+";";
+			out += CivColor.Green+"   At Level: "+CivColor.LightGreen+e.level+";";
+			
+			if (res.getTreasury().hasEnough(e.price)) out += CivColor.Green+"Cost: "+CivColor.LightGreen+e.price;
+			else out += CivColor.Red+"Cost: "+CivColor.Rose+e.price;
+			
+			ItemStack en = LoreGuiItem.build(e.displayName, 403, 0, out.split(";"));
+			inv.addItem(en);
+		}
+		
+		p.openInventory(inv);
+	}
 }

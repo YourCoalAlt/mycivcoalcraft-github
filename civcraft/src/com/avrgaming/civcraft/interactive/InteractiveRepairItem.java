@@ -45,7 +45,7 @@ public class InteractiveRepairItem implements InteractiveResponse {
 		
 		CivMessage.sendHeading(player, "Repair!");
 		CivMessage.send(player, CivColor.LightGreenBold+"Would you like to repair your "+name+CivColor.LightGreenBold+"?");
-		CivMessage.send(player, CivColor.LightGreenBold+"I can repair it for "+CivColor.Yellow+CivColor.BOLD+cost+" coins.");
+		CivMessage.send(player, CivColor.LightGreenBold+"I can repair it for "+CivColor.YellowBold+cost+" coins.");
 		CivMessage.send(player, CivColor.LightGreenBold+"If that's ok, please type 'yes'. Type anything else to cancel.");
 	}
 	
@@ -64,7 +64,7 @@ public class InteractiveRepairItem implements InteractiveResponse {
 				player.getInventory().addItem(newStack);
 				return;
 			}
-			Barracks.repairItemInHand(cost, resident.getName(), stack);
+			Barracks.repairItem(cost, resident.getName(), stack);
 		} catch (CivException e) { e.printStackTrace(); }
 	}
 }

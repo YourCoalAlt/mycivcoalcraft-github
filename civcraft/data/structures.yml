@@ -99,7 +99,7 @@ barracks:
     base_damage_repair: 500.0
     base_tier_repair: 2500.0
     # durability dampen.
-    durability_damp: 0.85
+    #durability_damp: 0.85
     # tier dampen
     tier_damp: 0.2025
     

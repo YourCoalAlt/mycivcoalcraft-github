@@ -107,6 +107,7 @@ import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.BuildableLayer;
 import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Granary;
+import com.avrgaming.civcraft.structure.Library;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Pasture;
 import com.avrgaming.civcraft.structure.Stable;
@@ -1351,6 +1352,11 @@ public class BlockListener implements Listener {
 				Blacksmith bs = (Blacksmith) buildable;
 				if (vn.contains("Blacksmith Smelter")) {
 					bs.openSmeltGUI(p, bs.getTown());
+				}
+			} else if (buildable instanceof Library) {
+				Library l = (Library) buildable;
+				if (vn.contains("Library Enchanter")) {
+					l.openEnchantGUI(p, l.getTown());
 				}
 			} else if (buildable instanceof Warehouse) {
 				Warehouse wh = (Warehouse) buildable;

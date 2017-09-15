@@ -34,7 +34,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -132,68 +131,6 @@ public class Barracks extends Structure {
 		this.updateTraining();
 	}
 	
-	@Override
-	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
-		Resident resident = CivGlobal.getResident(player);
-		if (resident == null) {
-			return;
-		}
-		
-		switch (sign.getAction()) {
-		case "repair_item":
-			repairItem(player, resident, event);			
-			break;
-		}
-	}
-	
-	public void repairItem(Player player, Resident res, PlayerInteractEvent event) {
-		try {
-			ItemStack inHand = player.getInventory().getItemInMainHand();
-			if (inHand == null || inHand.getType().equals(Material.AIR)) {
-				throw new CivException("Must have an item in your hand in order to repair it.");
-			}
-			
-			if (inHand.getType().getMaxDurability() == 0) {
-				throw new CivException("Can only repair items that use durability.");
-			}
-			
-			if (inHand.getDurability() == 0) {
-				throw new CivException("This item is already at full health.");
-			}
-			
-			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(inHand);
-			if (craftMat == null) {
-				throw new CivException("Cannot repair this item.");
-			}
-			
-			try {
-				double totalCost;
-				if (craftMat.hasComponent("RepairCost")) {
-					RepairCost repairCost = (RepairCost)craftMat.getComponent("RepairCost");
-					totalCost = repairCost.getDouble("value");
-				} else {
-					double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
-					double tierDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.tier_damp");
-					double tierCost = Math.pow((craftMat.getConfigMaterial().tier), tierDamp);				
-					double fromTier = Math.pow(baseTierRepair, tierCost);				
-					totalCost = Math.round(fromTier+0);
-				}
-				
-				InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), inHand);
-				repairItem.displayMessage();
-				res.setInteractiveMode(repairItem);
-				return;
-				
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				throw new CivException("Internal configuration error");
-			}
-		} catch (CivException e) {
-			CivMessage.sendError(player, e.getMessage());
-			event.setCancelled(true);
-		}
-	}
-	
 	public boolean canRepairItem(ItemStack repair) {
 		if (repair == null || repair.getType().equals(Material.AIR)) {
 			return false;
@@ -231,8 +168,13 @@ public class Barracks extends Structure {
 		return true;
 	}
 	
-	public void repairItem(Player player, Resident res, ItemStack repair) {
-		// TODO Fix to give item back after repair, make repair cost hammers, and do CivException checks in GUI before we get here.
+	public void repairItemCalculate(Player player, Resident res, ItemStack repair) {
+		if (!this.canRepairItem(repair)) {
+			player.getInventory().addItem(repair);
+			CivMessage.sendError(player, "Cannot repair item, failed repair check?");
+			return;
+		}
+		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
 		try {
 			double totalCost;
@@ -240,11 +182,14 @@ public class Barracks extends Structure {
 				RepairCost getRepairCost = (RepairCost)craftMat.getComponent("RepairCost");
 				double repairCost = getRepairCost.getDouble("value");
 				
-				double durabilityDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.durability_damp");
-				double itemDurability = repair.getDurability();
-				double durabilityCost = Math.pow(itemDurability, durabilityDamp);
+				double duraCost = 0;
+				if (!LoreEnhancement.isWeaponOrArmor(repair)) {
+					double itemDura = repair.getDurability();
+					double maxDura = repair.getType().getMaxDurability();
+					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
+				}
 				
-				double subTotal = (repairCost + durabilityCost);
+				double subTotal = (repairCost + duraCost);
 				totalCost = Math.round(subTotal);
 			} else {
 				double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
@@ -253,11 +198,14 @@ public class Barracks extends Structure {
 				double tierCost = Math.pow((craftMat.getConfigMaterial().tier), tierDamp);
 				double fromTier = Math.pow(baseTierRepair, tierCost);
 				
-				double durabilityDamp = CivSettings.getDouble(CivSettings.structureConfig, "barracks.durability_damp");
-				double itemDurability = repair.getDurability();
-				double durabilityCost = Math.pow(itemDurability, durabilityDamp);
+				double duraCost = 0;
+				if (!LoreEnhancement.isWeaponOrArmor(repair)) {
+					double itemDura = repair.getDurability();
+					double maxDura = repair.getType().getMaxDurability();
+					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
+				}
 				
-				double subTotal = (fromTier + durabilityCost);
+				double subTotal = (fromTier + duraCost);
 				totalCost = Math.round(subTotal);
 			}
 			
@@ -270,8 +218,8 @@ public class Barracks extends Structure {
 			CivMessage.sendError(player, "Internal configuration error");
 		}
 	}
-
-	public static void repairItemInHand(double cost, String playerName, ItemStack stack) {
+	
+	public static void repairItem(double cost, String playerName, ItemStack stack) {
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(playerName);
@@ -285,22 +233,15 @@ public class Barracks extends Structure {
 			return;
 		}
 		
-//		LoreCraftableMaterial craftMatInHand = LoreCraftableMaterial.getCraftMaterial(player.getInventory().getItemInMainHand());
-//		if (!craftMatInHand.getConfigId().equals(craftMat.getConfigId())) {
-//			CivMessage.sendError(player, "You're not holding the item that you started the repair with.");
-//			return;
-//		}
-		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 		ItemStack newStack = LoreMaterial.spawn(craftMat);
 		AttributeUtil attr = new AttributeUtil(stack); newStack = attr.getStack();
 		newStack.setDurability((short)0);
 		player.getInventory().addItem(newStack);
 		resident.getTreasury().withdraw(cost);
-		
 		CivMessage.sendSuccess(player, "Repaired "+craftMat.getName()+" for "+cost+" coins.");
 	}
-		
+	
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
 		StructureSign structSign;

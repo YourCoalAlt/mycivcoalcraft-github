@@ -1189,7 +1189,7 @@ public class InventoryDisplaysListener implements Listener {
 		}
 		
 		if (repair != null) {
-			b.repairItem(p, res, repair);
+			b.repairItemCalculate(p, res, repair);
 		} else {
 			CivMessage.sendError(p, "Please insert an item to repair! (If an item did not repair, re-check the requirements of repairing.)");
 		}
