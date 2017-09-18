@@ -33,11 +33,13 @@ public class LibraryEnchantment {
 	public String displayName;
 
 	public LibraryEnchantment(String name, int lvl, double p) throws CivException {
-		enchant = Library.getEnchantFromString(name);
+		enchant = Library.getEnchantFromString(name.toLowerCase().replace(" ", "_"));
 		if (enchant == null)  {
+			if (!name.contains("LoreEnhancement")) name = "LoreEnhancement"+name;
+			if (name.contains("Soulbound")) name = "LoreEnhancementSoulBound";
 			enhancement = LoreEnhancement.enhancements.get(name);
 			if (enhancement == null) {
-				throw new CivException("Could not create CivEnchantment:"+name+". Couldn't find enchantment or enhancement");
+				throw new CivException("Could not create CivEnchantment:"+name+". Couldn't find enchantment or enhancement.");
 			}
 		}
 		level = lvl;

@@ -813,6 +813,27 @@ public class CivSettings {
 		return returnUpgrade;
 	}
 	
+	public static ConfigTownUpgrade getUpgradeByNameRegexSpecial(Town town, String name) throws CivException {
+		ConfigTownUpgrade returnUpgrade = null;
+		for (ConfigTownUpgrade upgrade : townUpgrades.values()) {
+			if (name.equalsIgnoreCase(upgrade.name)) {
+				return upgrade;
+			}
+			
+			String loweredUpgradeName = upgrade.name.toLowerCase();
+			String loweredName = name.toLowerCase();
+			
+			if (loweredUpgradeName.contains(loweredName)) {
+				if (returnUpgrade == null) {
+					returnUpgrade = upgrade;
+				} else {
+					throw new CivException(name+" is not specific enough to single out only one upgrade.");
+				}
+			}
+		}
+		return returnUpgrade;
+	}
+	
 	public static ConfigCampUpgrade getCampUpgradeByNameRegex(Camp camp, String name) throws CivException {
 		ConfigCampUpgrade returnUpgrade = null;
 		for (ConfigCampUpgrade upgrade : campUpgrades.values()) {

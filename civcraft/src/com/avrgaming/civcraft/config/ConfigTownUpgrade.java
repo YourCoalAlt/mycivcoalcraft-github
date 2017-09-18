@@ -26,6 +26,7 @@ import java.util.Map;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -155,11 +156,42 @@ public class ConfigTownUpgrade {
 			struct = town.getStructureByType("s_library");
 			if (struct != null && (struct instanceof Library)) {
 				Library library = (Library)struct;
+				LibraryEnchantment removeEnchant = null;
 				LibraryEnchantment enchant = new LibraryEnchantment(args[1].trim(), Integer.valueOf(args[2].trim()), Double.valueOf(args[3].trim()));
-				library.addEnchant(enchant);
-				library.updateSignText();
-				CivMessage.sendTown(town, "The Library now offers the "+args[1].trim()+" enchantment at level "+args[2]+"!");
+				boolean addEnch = false;
+				boolean newEnch = true;
+				for (LibraryEnchantment e : library.getEnchants()) {
+					if (args[1].trim().equals(e.displayName)) {
+						newEnch = false;
+						if (e.level >= Integer.valueOf(args[2].trim())) {
+							CivMessage.sendTown(town, "Someone tried upgrading Library with "+e.displayName+" "+Integer.valueOf(args[2].trim())+" when we already have level "+e.level+". "
+									+ "Refunded "+this.cost+" coins to the town without upgrading.");
+							town.getTreasury().deposit(this.cost);
+						} else {
+							ConfigTownUpgrade refund = CivSettings.getUpgradeByNameRegexSpecial(town, "Research "+e.displayName+" "+CivData.getNumeral(e.level));
+							CivMessage.sendTown(town, "The Library previously had "+e.displayName+" "+e.level+" when upgrading to level "+Integer.valueOf(args[2].trim())+". "
+									+ "Refunded "+refund.cost+" coins to the town for upgrading.");
+							town.getTreasury().deposit(refund.cost);
+							removeEnchant = new LibraryEnchantment(e.displayName, e.level, e.price);
+							addEnch = true;
+						}
+					}
+				}
+				
+				if (newEnch) {
+					CivMessage.sendTown(town, "The Town now offers "+args[1].trim()+" "+args[2].trim()+" at the Library!");
+					addEnch = true;
+				}
+				
+				if (removeEnchant != null) {
+					library.removeEnchant(removeEnchant);
+				}
+				
+				if (addEnch) {
+					library.addEnchant(enchant);
+				}
 			}
+			town.save();
 			break;
 		case "set_grocer_level":
 			struct = town.getStructureByType("s_grocer");
