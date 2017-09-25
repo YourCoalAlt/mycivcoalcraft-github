@@ -32,7 +32,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BlockCoord;
 
 public class CannonTower extends Structure {
-
+	
 	ProjectileCannonComponent cannonComponent;
 	
 	protected CannonTower(Location center, String id, Town town)
@@ -44,7 +44,7 @@ public class CannonTower extends Structure {
 	protected CannonTower(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 	}
-
+	
 	@Override
 	public void loadSettings() {
 		super.loadSettings();
@@ -71,12 +71,10 @@ public class CannonTower extends Structure {
 	public void setDamage(double damage) {
 		cannonComponent.setDamage(damage);
 	}
-
-
+	
 	public void setTurretLocation(BlockCoord absCoord) {
 		cannonComponent.setTurretLocation(absCoord);
 	}
-	
 	
 //	@Override
 //	public void fire(Location turretLoc, Location playerLoc) {
@@ -110,7 +108,5 @@ public class CannonTower extends Structure {
 			e.printStackTrace();
 			throw new CivException(e.getMessage());
 		}
-		
 	}
-	
 }

@@ -83,18 +83,6 @@ public class ProjectileCannonComponent extends ProjectileComponent {
 				world.createExplosion(x, y, z, 0.0f, false);
 			}
 		}
-//		
-//		class SyncExplode implements Runnable {
-//			public double x;
-//			public double y;
-//			public double z;
-//			public World world;
-//			
-//			@Override
-//			public void run() {
-//				//world.createExplosion(x, y, z, 1.0f, true);
-//			}
-//		}
 		
 		class SyncFollow implements Runnable {
 			public CannonExplosionProjectile proj;
@@ -142,7 +130,4 @@ public class ProjectileCannonComponent extends ProjectileComponent {
 	public void setHalfSecondCount(int halfSecondCount) {
 		this.halfSecondCount = halfSecondCount;
 	}
-
-	
-	
 }

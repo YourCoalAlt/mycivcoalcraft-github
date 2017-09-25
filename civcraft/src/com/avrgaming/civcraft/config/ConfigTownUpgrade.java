@@ -26,6 +26,7 @@ import java.util.Map;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -164,14 +165,22 @@ public class ConfigTownUpgrade {
 					if (args[1].trim().equals(e.displayName)) {
 						newEnch = false;
 						if (e.level >= Integer.valueOf(args[2].trim())) {
-							CivMessage.sendTown(town, "Someone tried upgrading Library with "+e.displayName+" "+Integer.valueOf(args[2].trim())+" when we already have level "+e.level+". "
-									+ "Refunded "+this.cost+" coins to the town without upgrading.");
-							town.getTreasury().deposit(this.cost);
+							if (CivCraft.isStarted) {
+								CivMessage.sendTown(town, "Someone tried upgrading Library with "+e.displayName+" "+Integer.valueOf(args[2].trim())+" when we already have level "+e.level+". "
+										+ "Refunded "+this.cost+" coins to the town without upgrading.");
+								town.getTreasury().deposit(this.cost);
+							} else {
+								CivLog.warning("Skip upgrading Library with "+e.displayName+" "+Integer.valueOf(args[2].trim())+" when it already has level "+e.level+". Reason: [Startup Fix 0x00A]");
+							}
 						} else {
-							ConfigTownUpgrade refund = CivSettings.getUpgradeByNameRegexSpecial(town, "Research "+e.displayName+" "+CivData.getNumeral(e.level));
-							CivMessage.sendTown(town, "The Library previously had "+e.displayName+" "+e.level+" when upgrading to level "+Integer.valueOf(args[2].trim())+". "
-									+ "Refunded "+refund.cost+" coins to the town for upgrading.");
-							town.getTreasury().deposit(refund.cost);
+							if (CivCraft.isStarted) {
+								ConfigTownUpgrade refund = CivSettings.getUpgradeByNameRegexSpecial(town, "Research "+e.displayName+" "+CivData.getNumeral(e.level));
+								CivMessage.sendTown(town, "The Library previously had "+e.displayName+" "+e.level+" when upgrading to level "+Integer.valueOf(args[2].trim())+". "
+										+ "Refunded "+refund.cost+" coins to the town for upgrading.");
+								town.getTreasury().deposit(refund.cost);
+							} else {
+								CivLog.warning("Skipping Library previously had "+e.displayName+" "+e.level+" when upgrading to level "+Integer.valueOf(args[2].trim())+". Reason: [Startup Fix 0x00B]");
+							}
 							removeEnchant = new LibraryEnchantment(e.displayName, e.level, e.price);
 							addEnch = true;
 						}

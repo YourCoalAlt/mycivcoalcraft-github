@@ -19,7 +19,7 @@ war:
     time_day: 7
 
     # Hour of the day that war-time will start
-    time_hour: 16
+    time_hour: 12
 
     # Days before war time that towns are no longer allowed to declare war
     time_declare_days: 3
@@ -31,7 +31,7 @@ war:
     vassal_hours: 168
 
     # Percentage of income paid to master as a vassal.
-    vassal_tax: 0.5
+    vassal_tax: 0.3
 
     # Amount of hammers a wonder is delayed by each hit
     wonder_hammer_hit: 0.008
@@ -43,20 +43,20 @@ war:
     upkeep_per_war_multiplier: 0.005
 
     # Default Respawn Time (all control blocks active) in seconds
-    respawn_time: 30
+    respawn_time: 20
   
     # Respawn time per control block, destroying control blocks add this much time to respawn in seconds.
-    control_block_respawn_time: 30
+    control_block_respawn_time: 20
 
     # Control block hitpoints.
     control_block_hitpoints_capitol: 100
     
     control_block_hitpoints_camp: 100
 
-    control_block_hitpoints_townhall: 20
+    control_block_hitpoints_townhall: 25
     
     # Penalty of income and hammers taken and given to server when captured.
-    captured_penalty: 0.75
+    captured_penalty: 0.5
 
     # percentage of hitpoints to take away each hour when structures are invalid.
     invalid_hourly_penalty: 0.1
@@ -64,24 +64,13 @@ war:
     # number of seconds increase the respawn time if captials/townhalls are invalid (in mins)
     invalid_respawn_penalty: 10
 
-### PVP LOGGER settings.
-    # Logout time is 2mins after being hit.
-    logout_time: 120
-
-    # Time players remain zombies, in seconds
-    zombie_time: 30
-
-
 revolution:
     # Base cost for a revolution
     base_cost: 50000.0
-
     # number of extra coins paid per town in your old civ
-    coins_per_town: 20000.0
-
+    coins_per_town: 15000.0
     # Number of coins paid per point of all of your civ and town scores
     coins_per_point: 0.1
-
     # Maximum revolution fee you can pay --> 50 Millions
     maximum_fee: 50000000.0
 
@@ -91,14 +80,14 @@ scout_tower:
     range: 400.0
 
     # How often does thescout tower inform the town of enemies in borders(in seconds)
-    update: 120
+    update: 60
 
 arrow_tower:
     # Damage done per hit from arrow tower
     damage: 4.0
 
     # Range of the arrow tower
-    range: 100.0
+    range: 112.0
 
     # Min-range watch tower will target players at
     min_range: 5.0
@@ -107,7 +96,7 @@ arrow_tower:
     power: 2.8
 
     # how fast each arrow is fired in seconds.
-    fire_rate: 1.0
+    fire_rate: 2.0
 
     # Distance before homing stops.
     homing_stop_distance: 10.0
@@ -117,23 +106,23 @@ cannon_tower:
     damage: 7.0
     
     # Cannon tower range
-    range: 130.0
+    range: 144.0
 
     # Distance cannon towers must be built apart
-    build_distance: 130.0
+    build_distance: 128.0
 
     # Min-range of cannon tower
-    min_range: 30.0
+    min_range: 24.0
 
     # Speed of the 'cannon' projectile.
     speed: 6
 
     # Splash radius that damages players
-    splash: 30
+    splash: 24
 
     # Cannon tower fire rate
     # Defined in number of half-seconds to delay. Higher numbers is lower fire rate.
-    fire_rate: 4
+    fire_rate: 7.0
 
 wall:
    # Maximum height walls can be built at.
@@ -163,16 +152,16 @@ cannon:
     template: cannon
 
     # amount of blocks to destroy per shot
-    yield: 7.0
+    yield: 8.0
 
     # TNT cost, number of TNT blocks it costs per shot.
-    tnt_cost: 10
+    tnt_cost: 5
 
     # Number of seconds between shots.
-    cooldown: 30
+    cooldown: 15
 
     # Amount of HP each cannon has
-    hitpoints: 10
+    hitpoints: 25
 
     # Amount of damage done to PLAYERS when hit by a blast
     player_damage: 200
@@ -181,5 +170,5 @@ cannon:
     structure_damage: 100
 
     # Maximum range a cannon shot will travel.
-    max_range: 300.0
+    max_range: 256.0
 

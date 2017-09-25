@@ -112,7 +112,6 @@ import com.avrgaming.civcraft.threading.sync.SyncUpdateChunks;
 import com.avrgaming.civcraft.threading.sync.SyncUpdateInventory;
 import com.avrgaming.civcraft.threading.tasks.ArrowProjectileTask;
 import com.avrgaming.civcraft.threading.tasks.BuildUndoTask;
-import com.avrgaming.civcraft.threading.tasks.ProjectileComponentTimer;
 import com.avrgaming.civcraft.threading.tasks.ScoutTowerTask;
 import com.avrgaming.civcraft.threading.timers.ActionBarUpdateTimer;
 import com.avrgaming.civcraft.threading.timers.AnnouncementTimer;
@@ -123,6 +122,7 @@ import com.avrgaming.civcraft.threading.timers.ParticleEffectTimer;
 import com.avrgaming.civcraft.threading.timers.PlayerLocationCacheUpdate;
 import com.avrgaming.civcraft.threading.timers.PlayerProximityComponentTimer;
 import com.avrgaming.civcraft.threading.timers.PlayerTagUpdateTimer;
+import com.avrgaming.civcraft.threading.timers.ProjectileComponentTimer;
 import com.avrgaming.civcraft.threading.timers.ReduceExposureTimer;
 import com.avrgaming.civcraft.threading.timers.RegenTimer;
 import com.avrgaming.civcraft.threading.timers.UnitTrainTimer;
@@ -144,6 +144,7 @@ public final class CivCraft extends JavaPlugin {
 	private boolean isError = false;
 	private static JavaPlugin plugin;
 	public static boolean isDisable = false;
+	public static boolean isStarted = false;
 	
 	private void startTimers() {
 		
@@ -322,6 +323,7 @@ public final class CivCraft extends JavaPlugin {
 		
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
+				isStarted = true;
 				HolographicDisplaysListener.generateTradeGoodHolograms();
 				BuildUndoTask.resumeUndoTasks();
 			}

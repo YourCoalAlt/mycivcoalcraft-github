@@ -450,17 +450,18 @@ public class Town extends SQLObject {
 		String[] split = upgradeString.split(",");
 		
 		for (String str : split) {
-			if (str == null || str.equals("")) {
-				continue;
+			synchronized (str) {
+				if (str == null || str.equals("")) {
+					continue;
+				}
+				
+				ConfigTownUpgrade upgrade = CivSettings.townUpgrades.get(str);
+				if (upgrade == null) {
+					CivLog.warning("Unknown town upgrade:"+str+" in town "+this.getName());
+					continue;
+				}
+				this.upgrades.put(str, upgrade);
 			}
-			
-			ConfigTownUpgrade upgrade = CivSettings.townUpgrades.get(str);
-			if (upgrade == null) {
-				CivLog.warning("Unknown town upgrade:"+str+" in town "+this.getName());
-				continue;
-			}
-			
-			this.upgrades.put(str, upgrade);
 		}
 	}
 	

@@ -69,6 +69,14 @@ techs:
      points: 0
      require_techs:
 #
+   - id: 'tech_gunpowder'
+     name: 'Gunpowder'
+     beaker_cost: 0.0
+     cost: 0.0
+     points: 0
+     require_techs:
+#
+#
 #
 #
 #
