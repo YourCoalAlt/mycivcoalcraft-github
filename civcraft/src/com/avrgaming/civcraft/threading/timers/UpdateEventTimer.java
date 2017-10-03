@@ -22,8 +22,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.avrgaming.civcraft.camp.Camp;
-import com.avrgaming.civcraft.camp.CampUpdateTick;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
@@ -34,7 +32,7 @@ import com.avrgaming.civcraft.threading.tasks.TrommelAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 
 public class UpdateEventTimer extends CivAsyncTask {
-		
+	
 	public static ReentrantLock lock = new ReentrantLock();
 	
 	public UpdateEventTimer() {
@@ -42,7 +40,6 @@ public class UpdateEventTimer extends CivAsyncTask {
 	
 	@Override
 	public void run() {		
-
 		if (!lock.tryLock()) {
 			return;
 		}
@@ -50,10 +47,8 @@ public class UpdateEventTimer extends CivAsyncTask {
 		try {
 			// Loop through each structure, if it has an update function call it in another async process
 			Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
-	
 			while(iter.hasNext()) {
 				Structure struct = iter.next().getValue();
-				
 				if (!struct.isActive())
 					continue;
 				
@@ -90,18 +85,9 @@ public class UpdateEventTimer extends CivAsyncTask {
 			for (Wonder wonder : CivGlobal.getWonders()) {
 				wonder.onUpdate();
 			}
-			
-			
-			for (Camp camp : CivGlobal.getCamps()) {
-				if (!camp.sifterLock.isLocked()) {
-					TaskMaster.asyncTask(new CampUpdateTick(camp), 0);
-				}
-			}
 		
 		} finally {
 			lock.unlock();
 		}
-
 	}
-
 }

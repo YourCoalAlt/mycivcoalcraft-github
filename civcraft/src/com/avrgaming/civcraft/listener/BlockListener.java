@@ -80,8 +80,6 @@ import org.bukkit.potion.PotionEffectType;
 import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
-import com.avrgaming.civcraft.camp.Camp;
-import com.avrgaming.civcraft.camp.CampBlock;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTempleSacrifice;
 import com.avrgaming.civcraft.exception.CivException;
@@ -89,7 +87,6 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.object.ControlPoint;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureBlock;
@@ -160,12 +157,6 @@ public class BlockListener implements Listener {
 						return;
 					}
 
-					CampBlock cb = CivGlobal.getCampBlock(bcoord);
-					if (cb != null) {
-						event.setCancelled(true);
-						return;
-					}
-
 					StructureSign structSign = CivGlobal.getStructureSign(bcoord);
 					if (structSign != null) {
 						event.setCancelled(true);
@@ -210,13 +201,6 @@ public class BlockListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null) {
-			event.setCancelled(true);
-			return;
-		}
-
 		return;
 	}
 
@@ -232,12 +216,6 @@ public class BlockListener implements Listener {
 
 		RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 		if (rb != null) {
-			event.setCancelled(true);
-			return;
-		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null) {
 			event.setCancelled(true);
 			return;
 		}
@@ -473,12 +451,6 @@ public class BlockListener implements Listener {
 				return;
 			}
 
-			CampBlock cb = CivGlobal.getCampBlock(bcoord);
-			if (cb != null) {
-				event.setCancelled(true);
-				return;
-			}
-
 			StructureSign structSign = CivGlobal.getStructureSign(bcoord);
 			if (structSign != null) {
 				event.setCancelled(true);
@@ -682,14 +654,7 @@ public class BlockListener implements Listener {
 				}
 			}
 			return;
-		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null && !cb.canBreak(event.getPlayer().getName())) {
-			event.setCancelled(true);
-			CivMessage.sendError(event.getPlayer(), "This block is part of camp "+cb.getCamp().getName()+" owned by "+cb.getCamp().getOwner().getName()+" and cannot be destroyed.");
-			return;
-		}  		
+		} 		
 
 		coord.setFromLocation(event.getBlock().getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
@@ -788,20 +753,6 @@ public class BlockListener implements Listener {
 			event.setCancelled(true);
 			CivMessage.sendError(event.getPlayer(), "This block is protected and cannot be destroyed.");
 			return;
-		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null && !cb.canBreak(event.getPlayer().getName())) {
-			ControlPoint cBlock = cb.getCamp().controlBlocks.get(bcoord);
-			if (cBlock != null) {
-				cb.getCamp().onDamage(1, event.getBlock().getWorld(), event.getPlayer(), bcoord, null);
-				event.setCancelled(true);
-				return;
-			} else {	
-				event.setCancelled(true);
-				CivMessage.sendError(event.getPlayer(), "This block is part of camp "+cb.getCamp().getName()+" owned by "+cb.getCamp().getOwner().getName()+" and cannot be destroyed.");
-				return;
-			}
 		}
 
 		StructureSign structSign = CivGlobal.getStructureSign(bcoord);
@@ -1159,42 +1110,21 @@ public class BlockListener implements Listener {
 		if (resident == null) {
 			event.setCancelled(true);
 			return;
-		}
-				
-		coord.setFromLocation(event.getPlayer().getLocation());
-		Camp camp = CivGlobal.getCampFromChunk(coord);
-		if (camp != null) {
-			if (!camp.hasMember(event.getPlayer().getName())) {
-				CivMessage.sendError(event.getPlayer(), "You cannot sleep in a camp you do not belong to.");
-				event.setCancelled(true);
-				return;
-			}
-		}		
+		}	
 	}
 
 	public static void OnPlayerSwitchEvent(PlayerInteractEvent event) {
-
 		if (event.getClickedBlock() == null) {
 			return;
 		}
 
 		Resident resident = CivGlobal.getResident(event.getPlayer().getName());
-
 		if (resident == null) {
 			event.setCancelled(true);
 			return;
 		}
 
 		bcoord.setFromLocation(event.getClickedBlock().getLocation());
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null && !resident.isPermOverride()) {
-			if (!cb.getCamp().hasMember(resident.getName())) {
-				CivMessage.sendError(event.getPlayer(), "You cannot interact with a camp you do not belong to.");
-				event.setCancelled(true);
-				return;
-			}
-		}
-
 		coord.setFromLocation(event.getClickedBlock().getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
 
@@ -1254,15 +1184,6 @@ public class BlockListener implements Listener {
 		ItemStack stack = event.getItem();
 
 		coord.setFromLocation(event.getPlayer().getLocation());
-		Camp camp = CivGlobal.getCampFromChunk(coord);
-		if (camp != null) {
-			if (!camp.hasMember(event.getPlayer().getName())) {
-				CivMessage.sendError(event.getPlayer(), "You cannot use "+stack.getType().toString()+" in a camp you do not belong to.");
-				event.setCancelled(true);
-				return;
-			}
-		}
-
 		TownChunk tc = CivGlobal.getTownChunk(loc);
 		if (tc == null) {
 			return;
@@ -1637,11 +1558,6 @@ public class BlockListener implements Listener {
 		if (sb != null) {
 			event.setCancelled(true);
 		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null) {
-			event.setCancelled(true);
-		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -1750,11 +1666,6 @@ public class BlockListener implements Listener {
 
 		RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 		if (rb != null) {
-			return false;
-		}
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null) {
 			return false;
 		}
 
@@ -1926,20 +1837,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL) 
 	public void onBlockRedstoneEvent(BlockRedstoneEvent event) {
-		
 		bcoord.setFromLocation(event.getBlock().getLocation());
-
-		CampBlock cb = CivGlobal.getCampBlock(bcoord);
-		if (cb != null) {
-			if (ItemManager.getId(event.getBlock()) == CivData.WOOD_DOOR || ItemManager.getId(event.getBlock()) == CivData.IRON_DOOR ||
-				ItemManager.getId(event.getBlock()) == CivData.IRON_DOOR|| ItemManager.getId(event.getBlock()) == CivData.SPRUCE_DOOR||
-				ItemManager.getId(event.getBlock()) == CivData.BIRCH_DOOR|| ItemManager.getId(event.getBlock()) == CivData.JUNGLE_DOOR||
-				ItemManager.getId(event.getBlock()) == CivData.ACACIA_DOOR|| ItemManager.getId(event.getBlock()) == CivData.DARK_OAK_DOOR) {
-				event.setNewCurrent(0);
-				return;
-			}
-		}
-		
 		if (War.isWarTime()) {
 			event.setNewCurrent(0);
 			return;

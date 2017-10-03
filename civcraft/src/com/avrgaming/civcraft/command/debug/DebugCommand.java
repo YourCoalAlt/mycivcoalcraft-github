@@ -165,7 +165,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("refreshchunk", "refreshes the chunk you're standing in.. for science.");
 		commands.put("touches", "[town] - prints a list of friendly touches for this town's culture.");
 		commands.put("listconquered", "shows a list of conquered civilizations.");
-		commands.put("camp", "Debugs camps.");
 		commands.put("blockinfo", "[x] [y] [z] shows block info for this block.");
 		commands.put("trommel", "[name] - turn on this town's trommel debugging.");
 		commands.put("fakeresidents", "[town] [count] - Adds this many fake residents to a town.");
@@ -795,12 +794,6 @@ public class DebugCommand extends CommandBase {
 		Block b = Bukkit.getWorld("world").getBlockAt(x,y,z);
 		
 		CivMessage.send(sender, "type:"+ItemManager.getId(b)+" data:"+ItemManager.getData(b)+" name:"+b.getType().name());
-		
-	}
-	
-	public void camp_cmd() {
-		DebugCampCommand cmd = new DebugCampCommand();	
-		cmd.onCommand(sender, null, "farm", this.stripArgs(args, 1));
 	}
 	
 	public void listconquered_cmd() {

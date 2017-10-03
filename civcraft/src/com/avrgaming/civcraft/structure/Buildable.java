@@ -894,10 +894,6 @@ public abstract class Buildable extends SQLObject {
 						throw new CivException("Cannot build here, in the same chunk as a wall improvement.");
 					}
 					
-					if (CivGlobal.getCampBlock(coord) != null) {
-						throw new CivException("Cannot build here, structure blocks in the way.");
-					}
-					
 					if (CivGlobal.getBuildablesAt(coord) != null) {
 						throw new CivException("Cannot build here, there is already a structure here.");
 					}

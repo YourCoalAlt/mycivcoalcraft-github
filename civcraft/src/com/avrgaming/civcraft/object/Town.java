@@ -652,10 +652,6 @@ public class Town extends SQLObject {
 			if (resident.getTown() != null && resident.getTown().isMayor(resident)) {
 				throw new CivException("You cannot start another town since you are the mayor of "+resident.getTown().getName());
 			}
-		
-			if (resident.hasCamp()) {
-				throw new CivException("You must first leave your camp before starting a town.");
-			}
 			
 			Town existTown = CivGlobal.getTown(name);
 			if (existTown != null) {

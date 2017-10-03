@@ -31,7 +31,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.object.Civilization;
@@ -608,19 +607,6 @@ public class CivMessage {
 	public static void sendAll(String str) {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.sendMessage(str);
-		}
-	}
-
-	public static void sendCamp(Camp camp, String message) {
-		for (Resident resident : camp.getMembers()) {
-			try {
-				Player player = CivGlobal.getPlayer(resident);
-				player.sendMessage(CivColor.Yellow+"[Camp] "+CivColor.Yellow+message);		
-				CivLog.info("[Camp:"+camp.getName()+"] "+message);
-
-			} catch (CivException e) {
-				//player not online.
-			}
 		}
 	}
 

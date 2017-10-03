@@ -34,7 +34,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.command.ReportChestsTask;
 import com.avrgaming.civcraft.command.ReportPlayerInventoryTask;
@@ -94,9 +93,8 @@ public class AdminCommand extends CommandBase {
 		commands.put("town", "Admin a town.");
 		commands.put("war", "Manage war settings, turn wars off and on.... etc.");
 		commands.put("lag", "Manage lag on the server by disabling expensive tasks.");	
-		commands.put("camp", "Shows camp management subcommands.");
 		commands.put("chat", "Manage admin chat options, tc, cc, listen etc");
-		commands.put("res", "Manage resident options, settown, setcamp etc");
+		commands.put("res", "Manage resident options, settown, etc");
 		commands.put("build", "Manage buildings. Demolish/repair wonders etc.");
 		commands.put("items", "Opens inventory which allows you to spawn in custom items.");
 		commands.put("item", "Does special things to the item in your hand.");
@@ -183,9 +181,6 @@ public class AdminCommand extends CommandBase {
 	
 	public void savesql_cmd() {
 		try {
-			for (Camp c : CivGlobal.getCamps()) {
-				c.saveNow();
-			}
 			for (Civilization c : CivGlobal.getCivs()) {
 				c.saveNow();
 			}
@@ -357,11 +352,6 @@ public class AdminCommand extends CommandBase {
 	public void timer_cmd() {
 		AdminTimerCommand cmd = new AdminTimerCommand();	
 		cmd.onCommand(sender, null, "camp", this.stripArgs(args, 1));	
-	}
-	
-	public void camp_cmd() {
-		AdminCampCommand cmd = new AdminCampCommand();	
-		cmd.onCommand(sender, null, "camp", this.stripArgs(args, 1));
 	}
 	
 	public void playerreport_cmd() {

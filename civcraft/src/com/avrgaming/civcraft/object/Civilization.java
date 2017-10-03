@@ -37,7 +37,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.avrgaming.civcraft.camp.WarCamp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGovernment;
 import com.avrgaming.civcraft.config.ConfigTech;
@@ -66,6 +65,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.war.camp.WarCamp;
 
 public class Civilization extends SQLObject {
 
@@ -554,10 +554,6 @@ public class Civilization extends SQLObject {
 		Town existTown = CivGlobal.getTown(capitolName);
 		if (existTown != null) {
 			throw new CivException("A town named "+capitolName+" already exists!");
-		}
-		
-		if (resident.hasCamp()) {
-			throw new CivException("You must first leave your camp before founding a civilization.");
 		}
 		
 		//Test that we are not too close to another civ

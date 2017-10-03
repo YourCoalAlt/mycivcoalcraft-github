@@ -1,9 +1,9 @@
 package com.avrgaming.civcraft.interactive;
 
-import com.avrgaming.civcraft.camp.WarCamp;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.war.camp.WarCamp;
 
 public class InteractiveWarCampFound implements InteractiveResponse {
 

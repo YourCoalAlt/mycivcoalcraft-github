@@ -215,10 +215,6 @@ public class Cannon extends Buildable {
 					if (CivGlobal.getStructureBlock(coord) != null) {
 						throw new CivException("Cannot build here, structure blocks in the way.");
 					}
-								
-					if (CivGlobal.getCampBlock(coord) != null) {
-						throw new CivException("Cannot build here, a camp is in the way.");
-					}
 					
 					if (Cannon.cannonBlocks.containsKey(coord)) {
 						throw new CivException("Cannot build here, another cannon in the way.");

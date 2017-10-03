@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -34,7 +35,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avrgaming.anticheat.ACManager;
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.command.AcceptCommand;
 import com.avrgaming.civcraft.command.BackpackCommand;
 import com.avrgaming.civcraft.command.BuildCommand;
@@ -51,7 +51,6 @@ import com.avrgaming.civcraft.command.VoteCommand;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.command.admin.AdminGUICommand;
 import com.avrgaming.civcraft.command.admin.AdminTestCommand;
-import com.avrgaming.civcraft.command.camp.CampCommand;
 import com.avrgaming.civcraft.command.civ.CivChatCommand;
 import com.avrgaming.civcraft.command.civ.CivCommand;
 import com.avrgaming.civcraft.command.debug.DebugCommand;
@@ -305,7 +304,6 @@ public final class CivCraft extends JavaPlugin {
 		getCommand("market").setExecutor(new MarketCommand());
 		getCommand("select").setExecutor(new SelectCommand());
 		getCommand("here").setExecutor(new HereCommand());
-		getCommand("camp").setExecutor(new CampCommand());
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("kill").setExecutor(new KillCommand());
@@ -341,12 +339,14 @@ public final class CivCraft extends JavaPlugin {
 		CivMessage.global("The server is being stopped, saving data...");
 		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
 			cc.getChunkCoord().getChunk().load();
-			for (Entity e : Bukkit.getWorld("world").getEntities()) {
-				if (e instanceof Villager) {
-					e.remove();
+			for (World w : Bukkit.getWorlds()) {
+				for (Entity e : w.getEntities()) {
+					if (e instanceof Villager) {
+						e.remove();
+					}
 				}
+				cc.getChunkCoord().getChunk().unload();
 			}
-			cc.getChunkCoord().getChunk().unload();
 		}
 		
 		isDisable = true;
@@ -385,10 +385,6 @@ public final class CivCraft extends JavaPlugin {
 	public void disableCivGlobal() {
 		for (Location loc : ParticleEffectTimer.externalParticleBlocks.keySet()) {
 			ParticleEffectTimer.externalParticleBlocks.remove(loc);
-		}
-		
-		for (Camp camp : CivGlobal.getCamps()) {
-			CivGlobal.removeCamp(camp.getName());
 		}
 		
 		for (Civilization civ : CivGlobal.getCivs()) {

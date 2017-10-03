@@ -12,7 +12,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.avrgaming.civcraft.camp.CampBlock;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -85,9 +84,7 @@ public class CannonProjectile {
 					if (loc.distance(b.getLocation()) <= yield) {
 						bcoord.setFromLocation(b.getLocation());
 						StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
-						CampBlock cb = CivGlobal.getCampBlock(bcoord);
-						
-						if (sb == null && cb == null) {
+						if (sb == null) {
 							explodeBlock(b);
 							continue;
 						}

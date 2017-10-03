@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGranaryLevel;
 import com.avrgaming.civcraft.config.ConfigGranaryTask;
+import com.avrgaming.civcraft.config.ConfigLabTask;
 import com.avrgaming.civcraft.config.ConfigMineTask;
 import com.avrgaming.civcraft.config.ConfigMission;
 import com.avrgaming.civcraft.config.ConfigUnit;
@@ -65,34 +66,18 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Town Info")) {
-			this.clickTownInfoViewer(p, event);
-		}
+		if (event.getInventory().getName().contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) {
-			this.clickTownQuestViewer(p, event);
-		}
-		
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Town Info")) this.clickTownInfoViewer(p, event);
 		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")  ||
-				event.getInventory().getName().contains("Building Support")) {
-			this.clickTownStatRegister(p, event);
-		}
+				event.getInventory().getName().contains("Building Support")) this.clickTownStatRegister(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) {
-			this.clickUnitUpgrade(p, event);
-		}
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) this.clickUnitUpgrade(p, event);
 		
-		if (event.getInventory().getName().contains("Spy Mission Menu")) {
-			this.clickSpyMissionMenu(p, event);
-		}
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) {
-			this.clickWarehouseToggle(p, event);
-		}
-		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Smelter Operator")) {
-			this.clickBlacksmithSmelter(p, event);
-		}
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Smelter Operator"))	this.clickBlacksmithSmelter(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Food Storage")) {
 			event.setCancelled(true);
@@ -180,44 +165,8 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		}
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks")) {
-			event.setCancelled(true);
-			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-				return;
-			}
-			
-			if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
-				event.setCancelled(true);
-			}
-			
-			switch (event.getCurrentItem().getType()) {
-			case LIME_SHULKER_BOX:
-				if (!event.getCurrentItem().hasItemMeta()) {
-					CivMessage.sendError(p, "This task had an error, try again or contact an admin.");
-					p.closeInventory();
-				}
-				
-				ItemMeta meta = event.getCurrentItem().getItemMeta();
-				String taskName = ChatColor.stripColor(meta.getDisplayName()).replace("[Available] Task ", "");
-				int task = Integer.parseInt(taskName);
-				
-				Mine mine = (Mine) res.getTown().getStructureByType("ti_mine");
-				mine.openTaskCompleterGUI(p, res.getTown(), task);
-				break;
-			case RED_SHULKER_BOX:
-				CivMessage.sendError(p, "You already completed this task, it will be re-opened at upkeep!");
-				p.closeInventory();
-				break;
-			case BLACK_SHULKER_BOX:
-				CivMessage.sendError(p, "This task is currently locked, upgrade your town to unlock it!");
-				p.closeInventory();
-				break;
-			case AIR:
-				break;
-			default:
-				break;
-			}
-		}
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks"))	this.clickMineTask1(p, event);
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Lab Tasks"))	this.clickLabTask1(p, event);
 	}
 	
 	public void clickTownInfoViewer(Player p, InventoryClickEvent event) {
@@ -555,6 +504,86 @@ public class InventoryDisplaysListener implements Listener {
 		}
 	}
 	
+	public void clickMineTask1(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			return;
+		}
+		
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+			event.setCancelled(true);
+		}
+		
+		switch (event.getCurrentItem().getType()) {
+		case LIME_SHULKER_BOX:
+			if (!event.getCurrentItem().hasItemMeta()) {
+				CivMessage.sendError(p, "This task had an error, try again or contact an admin.");
+				p.closeInventory();
+			}
+			
+			ItemMeta meta = event.getCurrentItem().getItemMeta();
+			String taskName = ChatColor.stripColor(meta.getDisplayName()).replace("[Available] Task ", "");
+			int task = Integer.parseInt(taskName);
+			
+			Resident res = CivGlobal.getResident(p);
+			Mine mine = (Mine) res.getTown().getStructureByType("ti_mine");
+			mine.openTaskCompleterGUI(p, res.getTown(), task);
+			break;
+		case RED_SHULKER_BOX:
+			CivMessage.sendError(p, "You already completed this task, it will be re-opened at upkeep!");
+			p.closeInventory();
+			break;
+		case BLACK_SHULKER_BOX:
+			CivMessage.sendError(p, "This task is currently locked, upgrade your town to unlock it!");
+			p.closeInventory();
+			break;
+		case AIR:
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public void clickLabTask1(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			return;
+		}
+		
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+			event.setCancelled(true);
+		}
+		
+		switch (event.getCurrentItem().getType()) {
+		case LIME_SHULKER_BOX:
+			if (!event.getCurrentItem().hasItemMeta()) {
+				CivMessage.sendError(p, "This task had an error, try again or contact an admin.");
+				p.closeInventory();
+			}
+			
+			ItemMeta meta = event.getCurrentItem().getItemMeta();
+			String taskName = ChatColor.stripColor(meta.getDisplayName()).replace("[Available] Task ", "");
+			int task = Integer.parseInt(taskName);
+			
+			Resident res = CivGlobal.getResident(p);
+			Lab lab = (Lab) res.getTown().getStructureByType("ti_lab");
+			lab.openTaskCompleterGUI(p, res.getTown(), task);
+			break;
+		case RED_SHULKER_BOX:
+			CivMessage.sendError(p, "You already completed this task, it will be re-opened at upkeep!");
+			p.closeInventory();
+			break;
+		case BLACK_SHULKER_BOX:
+			CivMessage.sendError(p, "This task is currently locked, upgrade your town to unlock it!");
+			p.closeInventory();
+			break;
+		case AIR:
+			break;
+		default:
+			break;
+		}
+	}
+	
 	// XXX Inventory Closing
 	
 	@EventHandler
@@ -591,8 +620,14 @@ public class InventoryDisplaysListener implements Listener {
 			this.completeMineTask(p, inv);
 		}
 		
+		//Mine Inv2
+		if (inv.getName().contains(res.getTown().getName()+" Lab Task ")) {
+			this.completeLabTask(p, inv);
+		}
+		
 		//Task Inv1 (Granary, Mine, )
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Granary Tasks") || event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks")) {
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Granary Tasks") || event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks") ||
+				event.getInventory().getName().contains(res.getTown().getName()+"'s Lab Tasks")) {
 			this.closeTaskInv1(p, inv);
 		}
 		
@@ -1218,20 +1253,16 @@ public class InventoryDisplaysListener implements Listener {
 		for (ArrayList<String> item : mtask.required.keySet()) {
 //			for (String s : item) {
 //				String[] split = s.split(";");
-				required.put(item, mtask.required.get(item).intValue());
-				given.put(item, 0);
+				required.put(item, mtask.required.get(item).intValue()); given.put(item, 0);
 //				CivMessage.global("Required: id"+Integer.valueOf(split[0])+" amt"+mtask.required.get(item).intValue()+" data"+Integer.valueOf(split[1]));
 //			}
 		}
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR) {
-			continue;
-			}
+			if (stack == null || stack.getType() == Material.AIR) continue;
 			
 			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Requirements")) {
-				inv.removeItem(stack);
-				continue;
+				inv.removeItem(stack); continue;
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -1370,6 +1401,175 @@ public class InventoryDisplaysListener implements Listener {
 		
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
 	}
+	
+	
+	public void completeLabTask(Player p, Inventory inv) {
+		Resident res = CivGlobal.getResident(p);
+		Lab lab = (Lab) res.getTown().getStructureByType("ti_lab");
+		
+		Town t = lab.getTown();
+		String taskName = ChatColor.stripColor(inv.getName()).replace(t.getName()+" Lab Task ", "");
+		int task = Integer.parseInt(taskName);
+		
+		ConfigLabTask ltask = CivSettings.labTasks.get(task);
+		boolean addedNotRequiredItems = false;
+		double reward = ltask.reward;
+		
+		Map<ArrayList<String>, Integer> given = new HashMap<ArrayList<String>, Integer>();
+		Map<ArrayList<String>, Integer> required = new HashMap<ArrayList<String>, Integer>();
+		Map<ArrayList<String>, Integer> returning = new HashMap<ArrayList<String>, Integer>();
+		Map<ArrayList<String>, Integer> dropping = new HashMap<ArrayList<String>, Integer>();
+		
+		for (ArrayList<String> item : ltask.required.keySet()) {
+//			for (String s : item) {
+//				String[] split = s.split(";");
+				required.put(item, ltask.required.get(item).intValue()); given.put(item, 0);
+//				CivMessage.global("Required: id"+Integer.valueOf(split[0])+" amt"+ltask.required.get(item).intValue()+" data"+Integer.valueOf(split[1]));
+//			}
+		}
+		
+		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Requirements")) {
+				inv.removeItem(stack); continue;
+			}
+			
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			ArrayList<String> al = new ArrayList<String>();
+			al.add(ItemManager.getId(stack)+";"+stack.getDurability());
+			if (required.containsKey(al) && craftMat == null) {
+				inv.removeItem(stack);
+				int h = given.get(al).intValue();
+				h += stack.getAmount();
+				given.put(al, h);
+//				CivMessage.global("Deposit Add: id"+ItemManager.getId(stack)+" data"+stack.getDurability()+" amt"+stack.getAmount()+" newamt"+h);
+			} else if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+				CivMessage.sendError(p, craftMat.getName()+","+stack.getAmount());
+				addedNotRequiredItems = true;
+			} else if (craftMat == null) { //Drop any vanilla items in the inventory
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), stack);
+				addedNotRequiredItems = true;
+			}
+		}
+		
+		inv.clear();
+		boolean canComplete = true;
+		for (ArrayList<String> r : required.keySet()) {
+			for (String s1 : r) {
+				String[] rsplit = s1.split(";");
+				int rid = Integer.valueOf(rsplit[0]);
+				int rdata = Integer.valueOf(rsplit[1]);
+				for (ArrayList<String> g : given.keySet()) {
+					for (String s2 : g) {
+						String[] gsplit = s2.split(";");
+						int gid = Integer.valueOf(gsplit[0]);
+						int gdata = Integer.valueOf(gsplit[1]);
+//						CivMessage.global("Reading "+gid+","+gdata+" v "+rid+","+rdata);
+						if (gid == rid && gdata == rdata) {
+							int ramt = required.get(r).intValue();
+							int gamt = given.get(g).intValue();
+							if (gamt >= ramt) {
+//								CivMessage.global("Yes Complete: "+rid+","+rdata+" - "+gamt+" >= "+ramt);
+								int td = gamt-ramt;
+								if (td > 0) {
+//									CivMessage.global("Yes Dropping: "+td);
+									dropping.put(r, td);
+								}
+							} else {
+//								CivMessage.global("Yes Return: "+rid+","+rdata+" - "+gamt+" < "+ramt);
+								int amt = ramt - (ramt-gamt);
+								returning.put(r, amt);
+								canComplete = false;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (canComplete) { // Give Rewards, state rewards
+			for (int i = 0; i < reward; i++) {
+				ItemStack newMat = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_beakers"));
+				p.getWorld().dropItemNaturally(p.getEyeLocation(), newMat);
+			}
+			
+			CivMessage.sendTown(t, p.getName()+" has completed lab task "+task+" and earned "+reward+" beakers!");
+			lab.sessionAdd(lab.getKey(lab, "task"+task), "complete");
+			for (ArrayList<String> d : dropping.keySet()) {
+				for (String s : d) {
+					String[] split = s.split(";");
+					int id = Integer.valueOf(split[0]);
+					int data = Integer.valueOf(split[1]);
+					int amt = dropping.get(d).intValue();
+					addedNotRequiredItems = true;
+					for (int i = 0; i < amt; i++) {
+						ItemStack drop = new ItemStack(ItemManager.getMaterial(id), 1, (short) data);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+					}
+				}
+			}
+		} else { // Give items back, state missing items
+			for (ArrayList<String> d : dropping.keySet()) {
+				for (String s1 : d) {
+					String[] dsplit = s1.split(";");
+					int did = Integer.valueOf(dsplit[0]);
+					int ddata = Integer.valueOf(dsplit[1]);
+					int damt = dropping.get(d).intValue();
+					for (ArrayList<String> r : required.keySet()) {
+						for (String s2 : r) {
+							String[] rsplit = s2.split(";");
+							int rid = Integer.valueOf(rsplit[0]);
+							int rdata = Integer.valueOf(rsplit[1]);
+							int ramt = required.get(r).intValue();
+							if (rid == did && rdata == ddata) {
+								damt += ramt;
+							}
+						}
+					}
+					
+					for (int i = 0; i < damt; i++) {
+						ItemStack drop = new ItemStack(ItemManager.getMaterial(did), 1, (short) ddata);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), drop);
+					}
+				}
+			}
+			
+			String itemsDropping = "";
+			for (ArrayList<String> r : returning.keySet()) {
+				for (String s1 : r) {
+					String[] rsplit = s1.split(";");
+					int rid = Integer.valueOf(rsplit[0]);
+					int rdata = Integer.valueOf(rsplit[1]);
+					int ramt = returning.get(r).intValue();
+					int missing = 0;
+					for (ArrayList<String> q : required.keySet()) {
+						for (String s2 : q) {
+							String[] qsplit = s2.split(";");
+							int qid = Integer.valueOf(qsplit[0]);
+							int qdata = Integer.valueOf(qsplit[1]);
+							int qamt = required.get(q).intValue();
+							
+							if (qid == rid && qdata == rdata) {
+								missing = qamt - ramt;
+							}
+						}
+					}
+					
+					itemsDropping += missing+" "+CivData.getDisplayName(rid, rdata)+", ";
+					for (int i = 0; i < ramt; i++) {
+						ItemStack miss = new ItemStack(ItemManager.getMaterial(rid), 1, (short) rdata);
+						p.getWorld().dropItemNaturally(p.getEyeLocation(), miss);
+					}
+				}
+			}
+			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");
+		}
+		
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+	}
 }
-
 

@@ -20,15 +20,10 @@ public class PlayerTagUpdateTimer implements Runnable {
 			if (res == null) {
 				suffix = CivColor.RoseItalic+" [NULL]";
 			} else {
-				if (res.getCiv() != null) {
-					suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
-				} else if (res.getCamp() != null) {
-					suffix = CivColor.GoldBold+" ["+StringUtils.left(res.getCamp().getName(), 4)+"]";
-				} else {
-					suffix = CivColor.LightGrayBold+" [None]";
-				}
-				NametagEdit.getApi().setSuffix(p, suffix);
+				if (res.getCiv() != null) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
+					else suffix = CivColor.LightGrayBold+" [None]";
 				
+				NametagEdit.getApi().setSuffix(p, suffix);
 				String prefix = "";
 				if (p.hasPermission(CivSettings.MINI_ADMIN)) {
 					prefix += CivColor.RedBold+"Admin ";

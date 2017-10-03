@@ -30,7 +30,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigPlatinumReward;
@@ -53,7 +52,6 @@ public class AdminResCommand extends CommandBase {
 		displayName = "Admin Resident";
 		
 		commands.put("settown", "[player] [town] - puts this player in this town.");
-		commands.put("setcamp", "[player] [camp] - puts this player in this camp.");
 		commands.put("cleartown", "[resident] - clears this residents town.");
 		commands.put("enchant", "[enchant] [level] - Adds the enchantment with level to the item in your hand.");
 		commands.put("giveplat", "[player] [amount] - Gives this player the specified amount of platinum.");
@@ -270,22 +268,6 @@ public class AdminResCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Cleared "+resident.getName()+" from any town.");
 
 	}
-	
-	public void setcamp_cmd() throws CivException {		
-		Resident resident = getNamedResident(1);
-		Camp camp = getNamedCamp(2);
-
-		if (resident.hasCamp()) {
-			resident.getCamp().removeMember(resident);
-		}		
-		
-		camp.addMember(resident);
-		
-		camp.save();
-		resident.save();
-		CivMessage.sendSuccess(sender, "Moved "+resident.getName()+" into camp "+camp.getName());
-	}
-	
 	
 	public void settown_cmd() throws CivException {
 		

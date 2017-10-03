@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -39,13 +40,15 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		int killed = 0;
 		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
 			cc.getChunkCoord().getChunk().load();
-			for (Entity e : Bukkit.getWorld("world").getEntities()) {
-				if (e instanceof Villager) {
-					e.remove();
-					killed++;
+			for (World w : Bukkit.getWorlds()) {
+				for (Entity e : w.getEntities()) {
+					if (e instanceof Villager) {
+						e.remove();
+						killed++;
+					}
 				}
+				cc.getChunkCoord().getChunk().unload();
 			}
-			cc.getChunkCoord().getChunk().unload();
 		}
 		CivMessage.send(sender, CivColor.Gold+"Removed "+killed+" villagers.");
 	}

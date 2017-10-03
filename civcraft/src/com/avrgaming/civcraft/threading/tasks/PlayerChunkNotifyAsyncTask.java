@@ -25,7 +25,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -35,7 +34,6 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.AsciiMap;
-import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class PlayerChunkNotifyAsyncTask implements Runnable {
@@ -108,13 +106,10 @@ public class PlayerChunkNotifyAsyncTask implements Runnable {
 	}
 	
 	private void showPlotMoveMessage() {
-		
 		TownChunk fromTc = CivGlobal.getTownChunk(from);
 		TownChunk toTc = CivGlobal.getTownChunk(to);
 		CultureChunk fromCc = CivGlobal.getCultureChunk(from);
 		CultureChunk toCc = CivGlobal.getCultureChunk(to);
-		Camp toCamp = CivGlobal.getCampFromChunk(new ChunkCoord(to));
-		Camp fromCamp = CivGlobal.getCampFromChunk(new ChunkCoord(from));
 
 		Player player;
 		Resident resident;
@@ -126,15 +121,6 @@ public class PlayerChunkNotifyAsyncTask implements Runnable {
 		}
 		
 		String out = "";
-		
-		//We've entered a camp.
-		if (toCamp != null && toCamp != fromCamp) {
-			out += CivColor.Gold+"Camp "+toCamp.getName()+" "+CivColor.Rose+"[PvP]";
-		}
-		
-		if (toCamp == null && fromCamp != null) {
-			out += getToWildMessage();
-		}
 		
 		// From Wild, to town
 		if (fromTc == null && toTc != null) {			

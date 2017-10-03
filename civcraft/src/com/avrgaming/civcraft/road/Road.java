@@ -36,7 +36,6 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -335,7 +334,6 @@ public class Road extends Structure {
 		boolean allowedToPlaceHere = true;
 		for (int i = 0; i < Road.HEIGHT; i++) {
 			BlockCoord bcoord = new BlockCoord(startCoord);
-			ChunkCoord coord = new ChunkCoord(bcoord);
 			bcoord.setY(startCoord.getY() + i);
 			
 			if (ItemManager.getId(bcoord.getBlock()) == CivData.CHEST) {
@@ -344,10 +342,6 @@ public class Road extends Structure {
 			
 			if (CivGlobal.getProtectedBlock(bcoord) != null) {
 				throw new CivException("Cannot build a road here. Would destroy protected block at "+bcoord.toString());
-			}
-			
-			if (CivGlobal.getCampFromChunk(coord) != null) {
-				throw new CivException("Cannot build a road into a chunk which contains a camp.");
 			}
 			
 			StructureBlock structBlock = CivGlobal.getStructureBlock(bcoord);

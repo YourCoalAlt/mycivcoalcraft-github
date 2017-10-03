@@ -22,11 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTownLevel;
 import com.avrgaming.civcraft.database.SQL;
@@ -303,12 +301,6 @@ public class TownChunk extends SQLObject {
 			}
 		}
 		
-		Camp camp = CivGlobal.getCampFromChunk(coord);
-		if (camp != null) {
-			CivMessage.sendCamp(camp, CivColor.Yellow+ChatColor.BOLD+"Our camp's land was claimed by the town of "+town.getName()+" and has been disbaned!");
-			camp.disband();
-		}
-		
 		tc.setOutpost(outpost);
 		tc.save();
 		town.withdraw(cost);			
@@ -393,12 +385,6 @@ public class TownChunk extends SQLObject {
 			e1.printStackTrace();
 			throw new CivException("Internal Error Occurred.");
 
-		}
-	
-		Camp camp = CivGlobal.getCampFromChunk(coord);
-		if (camp != null) {
-			CivMessage.sendCamp(camp, CivColor.Yellow+ChatColor.BOLD+"Our camp's land was claimed by the town of "+town.getName()+" and has been disbaned!");
-			camp.disband();
 		}
 		
 		CivGlobal.addTownChunk(tc);

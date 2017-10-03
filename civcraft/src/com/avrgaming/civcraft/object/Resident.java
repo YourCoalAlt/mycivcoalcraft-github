@@ -49,7 +49,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
 import com.avrgaming.civcraft.config.ConfigPerk;
@@ -93,7 +92,6 @@ import gpl.InventorySerializer;
 public class Resident extends SQLObject {
 
 	private Town town = null;
-	private Camp camp = null;
 	private boolean townChat = false;
 	private boolean civChat = false;
 	private boolean adminChat = false;
@@ -110,7 +108,6 @@ public class Resident extends SQLObject {
 	private boolean sbperm = false;
 	private boolean controlBlockInstantBreak = false;
 	private int townID = 0;
-	private int campID = 0;
 	private boolean dontSaveTown = false;
 	private String timezone;
 	public boolean pvptag = false;
@@ -214,7 +211,6 @@ public class Resident extends SQLObject {
 					"`coins` double DEFAULT 0," +
 					"`daysTilEvict` mediumint DEFAULT NULL," +
 					"`givenKit` bool NOT NULL DEFAULT '0'," +
-					"`camp_id` int(11)," +
 					"`timezone` mediumtext,"+
 					"`banned` bool NOT NULL DEFAULT '0'," +
 					"`bannedMessage` mediumtext DEFAULT NULL,"+
@@ -281,11 +277,6 @@ public class Resident extends SQLObject {
 				SQL.addColumn(TABLE_NAME, "`last_ip` mediumtext default null");
 			}
 			
-			if (!SQL.hasColumn(TABLE_NAME, "camp_id")) {
-				CivLog.info("\tCouldn't find `camp_id` for resident.");
-				SQL.addColumn(TABLE_NAME, "`camp_id` int(11) default 0");
-			}
-			
 			if (!SQL.hasColumn(TABLE_NAME, "timezone")) {
 				CivLog.info("\tCouldn't find `timezone` for resident.");
 				SQL.addColumn(TABLE_NAME, "`timezone` mediumtext default null");			
@@ -312,7 +303,6 @@ public class Resident extends SQLObject {
 		this.setId(rs.getInt("id"));
 		this.setName(rs.getString("name"));
 		this.townID = rs.getInt("town_id");
-		this.campID = rs.getInt("camp_id");
 		this.lastIP = rs.getString("last_ip");
 		this.debugTown = rs.getString("debug_town");
 		this.pvptag = rs.getBoolean("pvptag");
@@ -361,15 +351,6 @@ public class Resident extends SQLObject {
 					this.dontSaveTown = true;
 				}
 				return;
-			}
-		}
-		
-		if (this.campID != 0) {
-			this.setCamp(CivGlobal.getCampFromId(this.campID));
-			if (this.camp == null) {
-				CivLog.error("COULD NOT FIND CAMP("+this.campID+") FOR RESIDENT("+this.getId()+") Name:"+this.getName());
-			} else {
-				camp.addMember(this);
 			}
 		}
 		
@@ -482,12 +463,6 @@ public class Resident extends SQLObject {
 			if (!dontSaveTown) {
 				hashmap.put("town_id", null);
 			}
-		}
-		
-		if (this.getCamp() != null) {
-			hashmap.put("camp_id", this.getCamp().getId());
-		} else {
-			hashmap.put("camp_id", null);
 		}
 		
 		hashmap.put("pvptag", this.pvptag);
@@ -989,25 +964,6 @@ public class Resident extends SQLObject {
 
 	public void setSelectedTown(Town selectedTown) {
 		this.selectedTown = selectedTown;
-	}
-
-	public Camp getCamp() {
-		return camp;
-	}
-
-	public void setCamp(Camp camp) {
-		this.camp = camp;
-	}
-
-	public boolean hasCamp() {
-		return (this.camp != null);
-	}
-
-	public String getCampString() {
-		if (this.camp == null) {
-			return "none";
-		}
-		return this.camp.getName();
 	}
 
 	public void showWarnings(Player player) {

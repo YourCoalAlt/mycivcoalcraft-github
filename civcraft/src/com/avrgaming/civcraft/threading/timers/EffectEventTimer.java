@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -41,15 +39,13 @@ import com.avrgaming.civcraft.util.CivColor;
 
 public class EffectEventTimer extends CivAsyncTask {
 	
-	//public static Boolean running = false;
-	
 	public static ReentrantLock runningLock = new ReentrantLock();
 	
 	public EffectEventTimer() {
 	}
 	
 	private void processTick() {
-		/* Clear the last taxes so they don't accumulate. */
+		// Clear the last taxes so they don't accumulate.
 		for (Civilization civ : CivGlobal.getCivs()) {
 			civ.lastTaxesPaidMap.clear();
 		}
@@ -61,17 +57,11 @@ public class EffectEventTimer extends CivAsyncTask {
 		while(iter.hasNext()) {
 			Structure struct = iter.next().getValue();
 			TownHall townhall = struct.getTown().getTownHall();
-			
-			if (townhall == null) {
-				continue;
-			}
-			
-			if (!struct.isActive())
-				continue;
+			if (townhall == null) continue;
+			if (!struct.isActive()) continue;
 			
 			struct.onEffectEvent();
-			if (struct.getEffectEvent() == null || struct.getEffectEvent().equals(""))
-				continue;
+			if (struct.getEffectEvent() == null || struct.getEffectEvent().equals("")) continue;
 			
 			String[] split = struct.getEffectEvent().toLowerCase().split(":"); 
 			switch (split[0]) {
@@ -104,10 +94,8 @@ public class EffectEventTimer extends CivAsyncTask {
 			}
 		}
 		
-		/* Process any hourly attributes for this town... Culture */
+		// Process any hourly attributes for this town... Culture
 		for (Town town : CivGlobal.getTowns()) {
-			double cultureGenerated;
-			
 			// highjack this loop to display town hall warning.
 			TownHall townhall = town.getTownHall();
 			if (townhall == null) {
@@ -115,40 +103,14 @@ public class EffectEventTimer extends CivAsyncTask {
 				continue;
 			}
 			
-			//AttrSource cultureSources = town.getCulture();
 			// Get amount generated after culture rate/bonus.
-			cultureGenerated = town.getCulture().total;
-			cultureGenerated = Math.round(cultureGenerated);
+			DecimalFormat df = new DecimalFormat("#.#");
+			double cultureGenerated = town.getCulture().total;
+			cultureGenerated = Double.valueOf(df.format(cultureGenerated));
 			town.addAccumulatedCulture(cultureGenerated);
-			
-			// Get from unused beakers.
-			DecimalFormat df = new DecimalFormat();
-			double unusedBeakers = town.getUnusedBeakers();
-	
-			try {
-				double cultureToBeakerConversion = CivSettings.getDouble(CivSettings.cultureConfig, "beakers_per_culture");
-				if (unusedBeakers > 0) {
-					double cultureFromBeakers = unusedBeakers*cultureToBeakerConversion;
-					cultureFromBeakers = Math.round(cultureFromBeakers);
-					unusedBeakers = Math.round(unusedBeakers);
-					
-					if (cultureFromBeakers > 0) {
-						CivMessage.sendTown(town, CivColor.LightGreen+"Converted "+CivColor.LightPurple+
-								df.format(unusedBeakers)+CivColor.LightGreen+" beakers into "+CivColor.LightPurple+
-								df.format(cultureFromBeakers)+CivColor.LightGreen+" culture since no tech was being researched.");
-						cultureGenerated += cultureFromBeakers;
-						town.addAccumulatedCulture(unusedBeakers);
-						town.setUnusedBeakers(0);
-					}
-				}
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				return;
-			}
-			
-			cultureGenerated = Math.round(cultureGenerated);
 			CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.LightPurple+cultureGenerated+CivColor.LightGreen+" culture.");
 		}
+		
 		// Checking for expired vassal states.
 		CivGlobal.checkForExpiredRelations();
 	}

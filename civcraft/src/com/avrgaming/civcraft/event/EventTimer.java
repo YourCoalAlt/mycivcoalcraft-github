@@ -77,7 +77,7 @@ public class EventTimer {
 		
 		/* Setup Hourly tick event. */
 		try {
-			HourlyTickEvent hourlyTickEvent = new HourlyTickEvent();
+			HourlyEvent hourlyTickEvent = new HourlyEvent();
 			new EventTimer("hourly", hourlyTickEvent, hourlyTickEvent.getNextDate());
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();

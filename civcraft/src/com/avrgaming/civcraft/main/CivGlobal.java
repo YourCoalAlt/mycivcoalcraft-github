@@ -52,9 +52,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.avrgaming.civcraft.camp.Camp;
-import com.avrgaming.civcraft.camp.CampBlock;
-import com.avrgaming.civcraft.camp.WarCamp;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
@@ -110,6 +107,7 @@ import com.avrgaming.civcraft.util.ItemFrameStorage;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarRegen;
+import com.avrgaming.civcraft.war.camp.WarCamp;
 import com.avrgaming.global.perks.PerkManager;
 
 import net.milkbowl.vault.economy.Economy;
@@ -142,7 +140,6 @@ public class CivGlobal {
 	private static Map<BlockCoord, StructureBlock> structureBlocks = new ConcurrentHashMap<BlockCoord, StructureBlock>();
 	//private static Map<BlockCoord, LinkedList<StructureBlock>> structureBlocksIn2D = new ConcurrentHashMap<BlockCoord, LinkedList<StructureBlock>>();
 	private static Map<String, HashSet<Buildable>> buildablesInChunk = new ConcurrentHashMap<String, HashSet<Buildable>>();
-	private static Map<BlockCoord, CampBlock> campBlocks = new ConcurrentHashMap<BlockCoord, CampBlock>();
 	private static Map<BlockCoord, StructureSign> structureSigns = new ConcurrentHashMap<BlockCoord, StructureSign>();
 	private static Map<BlockCoord, StructureChest> structureChests = new ConcurrentHashMap<BlockCoord, StructureChest>();
 	private static Map<BlockCoord, StructureTables> structureTables = new ConcurrentHashMap<BlockCoord, StructureTables>();
@@ -156,8 +153,6 @@ public class CivGlobal {
 	private static Map<ChunkCoord, HashSet<Wall>> wallChunks = new ConcurrentHashMap<ChunkCoord, HashSet<Wall>>();
 	private static Map<BlockCoord, RoadBlock> roadBlocks = new ConcurrentHashMap<BlockCoord, RoadBlock>();
 	private static Map<BlockCoord, CustomMapMarker> customMapMarkers = new ConcurrentHashMap<BlockCoord, CustomMapMarker>();
-	private static Map<String, Camp> camps = new ConcurrentHashMap<String, Camp>();
-	private static Map<ChunkCoord, Camp> campChunks = new ConcurrentHashMap<ChunkCoord, Camp>();
 	public static HashSet<BlockCoord> vanillaGrowthLocations = new HashSet<BlockCoord>();
 	private static Map<BlockCoord, Market> markets = new ConcurrentHashMap<BlockCoord, Market>();
 	public static HashSet<String> researchedTechs = new HashSet<String>();
@@ -207,7 +202,6 @@ public class CivGlobal {
 		CivLog.heading("Loading CivCraft Objects From Database");
 			
 		sdb = new SessionDatabase();
-		loadCamps();
 		loadCivs();
 		loadRelations();
 		loadTowns();
@@ -495,31 +489,6 @@ public class CivGlobal {
 		} finally {
 			SQL.close(rs, ps, context);
 		}
-	}
-	
-	public static void loadCamps() throws SQLException {
-		Connection context = null;
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		
-		try {
-			context = SQL.getGameConnection();		
-			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+Camp.TABLE_NAME);
-			rs = ps.executeQuery();
-	
-			while(rs.next()) {
-				try {
-					Camp camp = new Camp(rs);
-					CivGlobal.addCamp(camp);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} finally {
-			SQL.close(rs, ps, context);
-		}
-
-		CivLog.info("Loaded "+camps.size()+" Camps");
 	}
 	
 	public static void loadTownChunks() throws SQLException {
@@ -1619,14 +1588,12 @@ public class CivGlobal {
 			try {
 				relation.delete();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
 	public static boolean willInstantBreak(Material type) {
-
 		switch (type) {
 		case BED_BLOCK:
 		case BROWN_MUSHROOM:
@@ -1973,45 +1940,6 @@ public class CivGlobal {
 		return null;
 	}
 
-	public static Camp getCamp(String name) {
-		return camps.get(name.toLowerCase());
-	}
-	
-	public static void addCamp(Camp camp) {
-		camps.put(camp.getName().toLowerCase(), camp);
-	}
-	
-	public static void removeCamp(String name) {
-		camps.remove(name.toLowerCase());
-	}
-	
-	public static void addCampBlock(CampBlock cb) {
-		campBlocks.put(cb.getCoord(), cb);
-		
-		ChunkCoord coord = new ChunkCoord(cb.getCoord());
-		campChunks.put(coord, cb.getCamp());
-	}
-	
-	public static CampBlock getCampBlock(BlockCoord bcoord) {
-		return campBlocks.get(bcoord);
-	}
-
-	public static void removeCampBlock(BlockCoord bcoord) {
-		campBlocks.remove(bcoord);
-	}
-
-	public static Collection<Camp> getCamps() {
-		return camps.values();
-	}
-
-	public static Camp getCampFromChunk(ChunkCoord coord) {
-		return campChunks.get(coord);
-	}
-
-	public static void removeCampChunk(ChunkCoord coord) {
-		campChunks.remove(coord);
-	}
-
 	public static Collection<Market> getMarkets() {
 		return markets.values();
 	}
@@ -2022,15 +1950,6 @@ public class CivGlobal {
 	
 	public static void removeMarket(Market market) {
 		markets.remove(market.getCorner());
-	}
-
-	public static Camp getCampFromId(int campID) {
-		for (Camp camp : camps.values()) {
-			if (camp.getId() == campID) {
-				return camp;
-			}
-		}
-		return null;
 	}
 
 	public static Collection<Structure> getStructures() {

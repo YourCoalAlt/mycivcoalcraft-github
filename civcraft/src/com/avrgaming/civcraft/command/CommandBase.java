@@ -33,7 +33,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -598,71 +597,5 @@ public abstract class CommandBase implements CommandExecutor {
 		}
 		
 		return grp;
-	}
-	
-	protected void validCampOwner() throws CivException {
-		Resident resident = getResident();
-		
-		if (!resident.hasCamp()) {
-			throw new CivException("You are not currently in a camp.");
-		}
-		
-		if (resident.getCamp().getOwner() != resident) {
-			throw new CivException("Only the owner of the camp("+resident.getCamp().getOwnerName()+") is allowed to do this.");
-		}
-	}
-	
-	protected Camp getCurrentCamp() throws CivException {
-		Resident resident = getResident();
-		
-		if (!resident.hasCamp()) {
-			throw new CivException("You are not currently in a camp.");
-		}
-		
-		return resident.getCamp();
-	}
-	
-	protected Camp getNamedCamp(int index) throws CivException {
-		if (args.length < (index+1)) {
-			throw new CivException("Enter a camp name.");
-		}
-		
-		String name = args[index].toLowerCase();
-		name = name.replace("%", "(\\w*)");
-		
-		ArrayList<Camp> potentialMatches = new ArrayList<Camp>();
-		for (Camp camp : CivGlobal.getCamps()) {
-			String str = camp.getName().toLowerCase();
-			try {
-				if (str.matches(name)) {
-					potentialMatches.add(camp);
-				}
-			} catch (Exception e) {
-				throw new CivException("Invalid pattern.");
-			}
-			
-			if (potentialMatches.size() > MATCH_LIMIT) {
-				throw new CivException("Too many potential matches. Refine your search.");
-			}
-		}
-		
-		if (potentialMatches.size() == 0) {
-			throw new CivException("No camp matching that name.");
-		}
-		
-		
-		if (potentialMatches.size() != 1) {
-			CivMessage.send(sender, CivColor.LightPurple+ChatColor.UNDERLINE+"Potential Matches");
-			CivMessage.send(sender, " ");
-			String out = "";
-			for (Camp camp : potentialMatches) {
-				out += camp.getName()+", ";
-			}
-		
-			CivMessage.send(sender, CivColor.LightBlue+ChatColor.ITALIC+out);
-			throw new CivException("More than one camp matches, please clarify.");
-		}
-		
-		return potentialMatches.get(0);
 	}
 }

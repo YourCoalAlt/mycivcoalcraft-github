@@ -684,17 +684,6 @@ public class TownCommand extends CommandBase {
 			throw new CivException("Cannot invite players to a civ that is at war within "+War.getTimeDeclareDays()+" days before WarTime.");
 		}
 		
-		if (newResident.hasCamp()) {
-			try {
-				Player resPlayer = CivGlobal.getPlayer(newResident);
-				CivMessage.send(resPlayer, CivColor.Yellow+player.getName()+" tried to invite you to the town of "+town.getName()+
-						" but cannot since you are in a camp. Leave camp first using /camp leave");
-			} catch(CivException e) {
-				//player not online
-			}
-			throw new CivException("You cannot invite "+newResident.getName()+" to town since he is part of a camp. Have him leave camp first with /camp leave.");
-		}
-		
 		if (town.hasResident(newResident)) {
 			throw new CivException(newResident.getName()+" is already a member of town.");
 		}

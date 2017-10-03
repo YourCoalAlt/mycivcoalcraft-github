@@ -43,7 +43,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.avrgaming.civcraft.camp.Camp;
 import com.avrgaming.civcraft.endgame.ConfigEndCondition;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -178,10 +177,6 @@ public class CivSettings {
 	public static double speedtoe_consume;
 	public static int thorhammerchance;
 	public static int punchoutchance;
-	
-	public static FileConfiguration campConfig; /* camp.yml */
-	public static Map<Integer, ConfigCampLonghouseLevel> longhouseLevels = new HashMap<Integer, ConfigCampLonghouseLevel>();
-	public static Map<String, ConfigCampUpgrade> campUpgrades = new HashMap<String, ConfigCampUpgrade>();
 	
 	public static FileConfiguration marketConfig; /* market.yml */
 	public static Map<Integer, ConfigMarketItem> marketItems = new HashMap<Integer, ConfigMarketItem>();
@@ -464,7 +459,6 @@ public class CivSettings {
 		scoreConfig = loadCivConfig("score.yml");
 		perkConfig = loadCivConfig("perks.yml");
 		enchantConfig = loadCivConfig("enchantments.yml");
-		campConfig = loadCivConfig("camp.yml");
 		marketConfig = loadCivConfig("market.yml");
 		happinessConfig = loadCivConfig("happiness.yml");
 		materialsConfig = loadCivConfig("materials.yml");
@@ -512,8 +506,6 @@ public class CivSettings {
 		ConfigUnit.loadConfig(unitConfig, units);
 		ConfigMission.loadConfig(espionageConfig, missions);
 		ConfigPerk.loadConfig(perkConfig, perks);
-		ConfigCampLonghouseLevel.loadConfig(campConfig, longhouseLevels);
-		ConfigCampUpgrade.loadConfig(campConfig, campUpgrades);
 		ConfigMarketItem.loadConfig(marketConfig, marketItems);
 		ConfigStableItem.loadConfig(structureConfig, stableItems);
 		ConfigStableHorse.loadConfig(structureConfig, horses);
@@ -816,31 +808,6 @@ public class CivSettings {
 	public static ConfigTownUpgrade getUpgradeByNameRegexSpecial(Town town, String name) throws CivException {
 		ConfigTownUpgrade returnUpgrade = null;
 		for (ConfigTownUpgrade upgrade : townUpgrades.values()) {
-			if (name.equalsIgnoreCase(upgrade.name)) {
-				return upgrade;
-			}
-			
-			String loweredUpgradeName = upgrade.name.toLowerCase();
-			String loweredName = name.toLowerCase();
-			
-			if (loweredUpgradeName.contains(loweredName)) {
-				if (returnUpgrade == null) {
-					returnUpgrade = upgrade;
-				} else {
-					throw new CivException(name+" is not specific enough to single out only one upgrade.");
-				}
-			}
-		}
-		return returnUpgrade;
-	}
-	
-	public static ConfigCampUpgrade getCampUpgradeByNameRegex(Camp camp, String name) throws CivException {
-		ConfigCampUpgrade returnUpgrade = null;
-		for (ConfigCampUpgrade upgrade : campUpgrades.values()) {
-			if (!upgrade.isAvailable(camp)) {
-				continue;
-			}
-			
 			if (name.equalsIgnoreCase(upgrade.name)) {
 				return upgrade;
 			}
