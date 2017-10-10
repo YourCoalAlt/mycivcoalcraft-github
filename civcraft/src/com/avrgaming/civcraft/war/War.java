@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
 import com.avrgaming.civcraft.event.EventTimer;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -38,7 +39,6 @@ import com.avrgaming.civcraft.object.Relation;
 import com.avrgaming.civcraft.object.Relation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.siege.Cannon;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.camp.WarCamp;

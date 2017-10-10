@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.SQLUpdate;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.exception.InvalidObjectException;
@@ -28,7 +29,6 @@ import com.avrgaming.civcraft.randomevents.components.GrowthRate;
 import com.avrgaming.civcraft.randomevents.components.HammerRate;
 import com.avrgaming.civcraft.randomevents.components.Happiness;
 import com.avrgaming.civcraft.randomevents.components.Unhappiness;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.util.CivColor;
 import com.mysql.jdbc.StringUtils;
 

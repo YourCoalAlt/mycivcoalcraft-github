@@ -692,16 +692,13 @@ public class TownCommand extends CommandBase {
 			throw new CivException(newResident.getName()+" is already in town "+newResident.getTown().getName());
 		}
 		
+		newResident.validateJoinTown(town);
+		
 		JoinTownResponse join = new JoinTownResponse();
 		join.town = town;
 		join.resident = newResident;
 		join.sender = player;
-		
-		newResident.validateJoinTown(town);
-		
-		CivGlobal.questionPlayer(player, CivGlobal.getPlayer(newResident), 
-				"Would you like to join the town of "+town.getName()+"?",
-				INVITE_TIMEOUT, join);
+		CivGlobal.questionPlayer(player, CivGlobal.getPlayer(newResident), "Would you like to join the town of "+town.getName()+"?", INVITE_TIMEOUT, join);
 		
 		CivMessage.sendSuccess(sender, CivColor.LightGray+"Invited to "+args[1]+" to town "+town.getName());
 	}

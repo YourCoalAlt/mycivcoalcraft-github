@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
 import com.avrgaming.civcraft.exception.CivException;
@@ -41,7 +42,6 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Relation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.War;
 

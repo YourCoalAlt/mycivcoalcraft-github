@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.interactive.InteractiveCustomTemplateConfirm;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -12,7 +13,6 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.CivColor;

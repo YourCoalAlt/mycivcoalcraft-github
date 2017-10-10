@@ -18,8 +18,8 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class AdminReloadCommand extends CommandBase implements Listener {
@@ -37,20 +37,19 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 	}
 	
 	public void killvillagers_cmd() {
-		int killed = 0;
-		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
-			cc.getChunkCoord().getChunk().load();
+		int chunksSearched = 0;
+		for (TownChunk tc : CivGlobal.getTownChunks()) {
+			chunksSearched++;
+			tc.getChunkCoord().getChunk().load();
 			for (World w : Bukkit.getWorlds()) {
 				for (Entity e : w.getEntities()) {
 					if (e instanceof Villager) {
 						e.remove();
-						killed++;
 					}
 				}
-				cc.getChunkCoord().getChunk().unload();
 			}
 		}
-		CivMessage.send(sender, CivColor.Gold+"Removed "+killed+" villagers.");
+		CivMessage.send(sender, CivColor.Gold+"Removed all villagers from "+chunksSearched+" searched chunks.");
 	}
 	
 	public void decformat_cmd() {

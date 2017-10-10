@@ -63,6 +63,7 @@ import com.avrgaming.civcraft.command.town.TownCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.SQLUpdate;
+import com.avrgaming.civcraft.database.session.SessionDBAsyncTimer;
 import com.avrgaming.civcraft.endgame.EndConditionNotificationTask;
 import com.avrgaming.civcraft.event.EventTimerTask;
 import com.avrgaming.civcraft.exception.CivException;
@@ -93,7 +94,6 @@ import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.populators.TradeGoodPopulator;
 import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
-import com.avrgaming.civcraft.sessiondb.SessionDBAsyncTimer;
 import com.avrgaming.civcraft.siege.CannonListener;
 import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Structure;
@@ -337,17 +337,19 @@ public final class CivCraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
-		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
-			cc.getChunkCoord().getChunk().load();
+		int chunksSearched = 0;
+		for (TownChunk tc : CivGlobal.getTownChunks()) {
+			chunksSearched++;
+			tc.getChunkCoord().getChunk().load();
 			for (World w : Bukkit.getWorlds()) {
 				for (Entity e : w.getEntities()) {
 					if (e instanceof Villager) {
 						e.remove();
 					}
 				}
-				cc.getChunkCoord().getChunk().unload();
 			}
 		}
+		CivMessage.global("Cleaned "+chunksSearched+" Chunks of villagers.");
 		
 		isDisable = true;
 		SQLUpdate.save();

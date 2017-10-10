@@ -41,6 +41,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.components.NonMemberFeeComponent;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.items.components.Catalyst;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
@@ -52,7 +53,6 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.threading.tasks.NotificationTask;
 import com.avrgaming.civcraft.util.BlockCoord;

@@ -19,26 +19,19 @@
 package com.avrgaming.civcraft.command.admin;
 
 import java.sql.SQLException;
-import java.util.Random;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigPlatinumReward;
 import com.avrgaming.civcraft.exception.AlreadyRegisteredException;
 import com.avrgaming.civcraft.exception.CivException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
+import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.main.CivGlobal;
-import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
@@ -61,93 +54,12 @@ public class AdminResCommand extends CommandBase {
 		commands.put("rtp", "Will randomly teleport you in the world.");
 	}
 	
-	public void rtp_cmd() {
+	public void rtp_cmd() throws CivException {
+		if (!(sender instanceof Player)) {
+			throw new CivException("Can only teleport players.");
+		}
 		Player p = (Player) sender;
-		Location teleportLocation = null;
-		boolean isOnLand = false;
-		boolean isClearAbove = false;
-		
-		int rX = 5000;
-		int rZ = 5000;
-		try {
-			rX = CivSettings.getInteger(CivSettings.gameConfig, "world.radius_x");
-			rZ = CivSettings.getInteger(CivSettings.gameConfig, "world.radius_z");
-		} catch (InvalidConfiguration e) {
-			CivLog.error("-- Error on Reciving Setting --");
-			CivLog.error("Could not load either world.radius_x AND/OR world.radius_z when trying to teleport player "+p.getName());
-			e.printStackTrace();
-		}
-		
-		Random rand = new Random();
-		int x = -(rX/2) + (rand.nextInt(rX)) - (rX/10);
-		int y = 64;
-		int z = -(rZ/2) + (rand.nextInt(rZ)) - (rZ/10);
-		
-		while (isOnLand == false) {
-			teleportLocation = new Location(p.getWorld(), x, y, z);
-			Location teleportLocationBelow = new Location(p.getWorld(), x, y-1, z);
-			Location teleportLocationBelow2 = new Location(p.getWorld(), x, y-2, z);
-			if (teleportLocation.getBlock().getType() == Material.AIR &&
-					teleportLocationBelow.getBlock().getType() == Material.AIR &&
-					teleportLocationBelow2.getBlock().getType().isSolid() &&
-					
-					teleportLocation.getBlock().getBiome() != Biome.DEEP_OCEAN && teleportLocation.getBlock().getBiome() != Biome.FROZEN_OCEAN &&
-					teleportLocation.getBlock().getBiome() != Biome.OCEAN && teleportLocation.getBlock().getBiome() != Biome.FROZEN_RIVER &&
-					teleportLocation.getBlock().getBiome() != Biome.RIVER && teleportLocation.getBlock().getBiome() != Biome.BEACHES &&
-					teleportLocation.getBlock().getBiome() != Biome.COLD_BEACH && teleportLocation.getBlock().getBiome() != Biome.STONE_BEACH) {
-				isOnLand = true;
-			} else {
-				if (x <= rX && x > 0) {
-					x += rand.nextInt(3)+1;
-				} else if (x >= (-rX) && x < 0) {
-					x += -(rand.nextInt(3)+1);
-				} else {
-					x = -(rX/2) + (rand.nextInt(rX)) - (rX/10);
-				}
-				
-				if (z <= rZ && x > 0) {
-					z += rand.nextInt(3)+1;
-				} else if (z >= (-rZ) && x < 0) {
-					z += -(rand.nextInt(3)+1);
-				} else {
-					z = -(rZ/2) + (rand.nextInt(rZ)) - (rZ/10);
-				}
-			}
-		}
-		
-		while (isClearAbove == false) {
-			Location tpLocAbove1 = new Location(p.getWorld(), x, y+1, z);
-			Location tpLocAbove2 = new Location(p.getWorld(), x, y+2, z);
-			if (tpLocAbove1.getBlock().getType() == Material.AIR && tpLocAbove2.getBlock().getType() == Material.AIR) {
-				isClearAbove = true;
-			} else {
-				isOnLand = false;
-				if (x <= rX && x > 0) {
-					x += rand.nextInt(3)+1;
-				} else if (x >= (-rX) && x < 0) {
-					x += -(rand.nextInt(3)+1);
-				} else {
-					x = -(rX/2) + (rand.nextInt(rX)) - (rX/10);
-				}
-				
-				if (z <= rZ && x > 0) {
-					z += rand.nextInt(3)+1;
-				} else if (z >= (-rZ) && x < 0) {
-					z += -(rand.nextInt(3)+1);
-				} else {
-					z = -(rZ/2) + (rand.nextInt(rZ)) - (rZ/10);
-				}
-			}
-		}
-		
-		p.setInvulnerable(true);
-		p.removePotionEffect(PotionEffectType.REGENERATION);
-		p.removePotionEffect(PotionEffectType.SATURATION);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (20*10), 255));
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, (20*10), 255));
-		p.teleport(teleportLocation);
-		p.setInvulnerable(false);
-		CivMessage.sendSuccess(p, "You have been teleported to "+x+", "+y+", "+z+"!");
+		MinecraftListener.randomTeleport(p);
 	}
 	
 	public void exposure_cmd() throws CivException {

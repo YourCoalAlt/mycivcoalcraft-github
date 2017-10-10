@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.sessiondb;
+package com.avrgaming.civcraft.database.session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

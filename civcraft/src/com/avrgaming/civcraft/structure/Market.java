@@ -23,23 +23,31 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigMarketItem;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -135,7 +143,6 @@ public class Market extends Structure {
 	}
 	
 	public void setSignText(StructureSign sign, ConfigMarketItem item) {
-
 		String itemColor;
 		switch (item.lastaction) {
 		case BUY:
@@ -225,6 +232,7 @@ public class Market extends Structure {
 		ConfigMarketItem item;
 		switch (commandBlock.command.toLowerCase().trim()) {
 		case "/sellbig":
+			spawnTradesmanVillager(absCoord.getLocation(), 0);
 			id = Integer.valueOf(commandBlock.keyvalues.get("id"));
 			item = CivSettings.marketItems.get(id);
 			if (item != null) {
@@ -257,13 +265,83 @@ public class Market extends Structure {
 				}
 			}		
 			break;
+		case "/tradesman":
+			spawnTradesmanVillager(absCoord.getLocation(), 0);
+//			spawnTradesmanVillager(absCoord.getLocation(), (byte)sb.getData());
+			break;
 		}
 	}
-
-	
-
 	
 	
-
 	
+	
+	
+	// XXX Villager Information
+	
+	public void spawnTradesmanVillager(Location loc, int direction) {
+		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
+		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
+		v.teleport(vLoc);
+		v.setAdult();
+		v.setAI(false);
+		v.setCustomName("Market Tradesman");
+		v.setProfession(Profession.FARMER);
+		CivGlobal.addStructureVillager(v);
+	}
+	
+	public void openMainMenu(Player p) {
+		Inventory inv = Bukkit.createInventory(null, 9*6, "Global Market Menu");
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is the Global Market menu. You can buy",
+				CivColor.RESET+"and sell various types of blocks within this",
+				CivColor.RESET+"GUI.",
+				CivColor.RESET+" ",
+				CivColor.RESET+" "
+				));
+		
+		for (int id = 0; id < 200; id++) {
+			ConfigMarketItem mat = CivSettings.marketItems.get(id);
+			if (mat == null) {
+				continue;
+			}
+			
+			if (mat.custom_id == null) {
+				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, getPriceText(mat).split(";"));
+				inv.addItem(is);
+			} else {
+				String cid = mat.custom_id.replace("mat_", "").replaceAll("_", " ");
+				ItemStack is = LoreGuiItem.build(cid, 7, 0, getPriceText(mat).split(";"));
+				inv.addItem(is);
+			}
+		}
+		p.openInventory(inv);
+	}
+	
+	public String getPriceText(ConfigMarketItem item) {
+		String out = "";
+		String itemColor;
+		switch (item.lastaction) {
+		case BUY:
+			itemColor = CivColor.LightGreen;
+			break;
+		case SELL:
+			itemColor = CivColor.Rose;
+			break;
+		default:
+			itemColor = CivColor.Gray;
+			break;
+		}
+		
+		String name = CivData.getDisplayName(item.type_id, item.data);
+		if (item.custom_id != null) {
+			name = item.custom_id.replace("mat_", "").replaceAll("_", " ");
+		}
+		
+		out += CivColor.LightGray+"Sell "+BULK_AMOUNT+" "+name+" for "+itemColor+item.getSellCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins;";
+		out += CivColor.LightGray+"Sell 1 "+name+" for "+itemColor+item.getSellCostForAmount(1)+CivColor.LightGray+" Coins;";
+		out += CivColor.LightGray+"Buy 1 "+name+" for "+itemColor+item.getBuyCostForAmount(1)+CivColor.LightGray+" Coins;";
+		out += CivColor.LightGray+"Buy "+BULK_AMOUNT+" "+name+" for "+itemColor+item.getBuyCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins;";
+		out += CivColor.LightGray+" « Click for Options » ";
+		return out;
+	}
 }

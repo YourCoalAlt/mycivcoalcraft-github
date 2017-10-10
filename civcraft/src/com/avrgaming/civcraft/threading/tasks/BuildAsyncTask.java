@@ -105,26 +105,28 @@ public class BuildAsyncTask extends CivAsyncTask {
 				if (buildable.getTown().getMotherCiv() != null) {
 					CivMessage.sendTown(buildable.getTown(), "Wonder production halted while we're conquered by "+buildable.getTown().getCiv().getName());
 					try {
-						Thread.sleep(600000); //10 min notify.
+						Thread.sleep(5*60*1000); //5 min notify.
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} 
 				}
 				
-				Buildable inProgress = buildable.getTown().getCurrentStructureInProgress();
-				if (inProgress != null && inProgress != buildable) {
-					CivMessage.sendTown(buildable.getTown(), "Wonder production halted while we're constructing a "+inProgress.getDisplayName());
-					try {
-						Thread.sleep(300000); //5 min notify.
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} 
+//				Buildable inProgress = buildable.getTown().getCurrentStructureInProgress();
+				for (Buildable b : buildable.getTown().getCurrentStructuresInProgress().values()) {
+					if (b != null && b != buildable) {
+						CivMessage.sendTown(buildable.getTown(), "Wonder production halted while we're constructing a "+b.getDisplayName());
+						try {
+							Thread.sleep(5*60*1000); //5 min notify.
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} 
+					}
 				}
 				
 				if (buildable.getTown().getTownHall() == null) {
 					CivMessage.sendTown(buildable.getTown(), "Wonder production halted while you have no town hall.");
 					try {
-						Thread.sleep(300000); //5 min notify.
+						Thread.sleep(5*60*1000); //5 min notify.
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} 
@@ -220,7 +222,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 		if (buildable instanceof Wonder) {
 			buildable.getTown().setCurrentWonderInProgress(null);
 		} else {
-			buildable.getTown().setCurrentStructureInProgress(null);
+			buildable.getTown().removeCurrentStructureInProgress(buildable);
 		}
 		buildable.savedBlockCount = buildable.builtBlockCount;
 		buildable.updateBuildProgess();

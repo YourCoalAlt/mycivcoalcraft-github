@@ -21,8 +21,8 @@ package com.avrgaming.civcraft.components;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.main.CivGlobal;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.structure.Buildable;
 
 public class NonMemberFeeComponent extends Component {

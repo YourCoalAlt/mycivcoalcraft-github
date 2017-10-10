@@ -113,7 +113,8 @@ public class Town extends SQLObject {
 	/* Hammers */
 	private double baseHammers = 1.0;
 	private double extraHammers;
-	public Buildable currentStructureInProgress;
+//	public Buildable currentStructureInProgress;
+	public ConcurrentHashMap<BlockCoord, Buildable> currentStructureInProgress = new ConcurrentHashMap<BlockCoord, Buildable>();
 	public Buildable currentWonderInProgress;
 	
 	/* Beakers */
@@ -1420,14 +1421,14 @@ public class Town extends SQLObject {
 		
 		wonder.runCheck(center); //Throws exception if we can't build here.	
 
-		Buildable inProgress  = getCurrentStructureInProgress();
-		if (inProgress != null) {
-			throw new CivException("Your town is currently building a "+inProgress.getDisplayName()+" structure. Can only build one structure at a time.");
-		} else {
-			inProgress  = getCurrentWonderInProgress();
+//		Buildable inProgress  = getCurrentStructureInProgress();
+//		if (inProgress != null) {
+//			throw new CivException("Your town is currently building a "+inProgress.getDisplayName()+" structure. Can only build one structure at a time.");
+//		} else {
+			Buildable inProgress  = getCurrentWonderInProgress();
 			if (inProgress != null) {
 				throw new CivException("Your town is currently building "+inProgress.getDisplayName()+" and can only build one wonder at a time.");
-			}
+//			}
 		}
 		
 		try {
@@ -1484,10 +1485,10 @@ public class Town extends SQLObject {
 		
 		struct.runCheck(center); //Throws exception if we can't build here.	
 
-		Buildable inProgress  = getCurrentStructureInProgress();
-		if (inProgress != null) {
-			throw new CivException("Your town is currently building a "+inProgress.getDisplayName()+" and can only build one structure at a time.");
-		}
+//		Buildable inProgress  = getCurrentStructureInProgress();
+//		if (inProgress != null) {
+//			throw new CivException("Your town is currently building a "+inProgress.getDisplayName()+" and can only build one structure at a time.");
+//		}
 		
 		try {
 			/*
@@ -1840,8 +1841,10 @@ public class Town extends SQLObject {
 			this.removeBuildTask(structure);
 		}
 		
-		if (currentStructureInProgress == structure) {
-			currentStructureInProgress = null;
+		for (Buildable b : this.currentStructureInProgress.values()) {
+			if (b == structure) {
+				b = null;
+			}
 		}
 		
 		this.structures.remove(structure.getCorner());
@@ -2583,12 +2586,16 @@ public class Town extends SQLObject {
 		this.baseGrowth = baseGrowth;
 	}
 
-	public Buildable getCurrentStructureInProgress() {
+	public ConcurrentHashMap<BlockCoord, Buildable> getCurrentStructuresInProgress() {
 		return currentStructureInProgress;
 	}
 
-	public void setCurrentStructureInProgress(Buildable currentStructureInProgress) {
-		this.currentStructureInProgress = currentStructureInProgress;
+	public void addCurrentStructureInProgress(Buildable currentStructureInProgress) {
+		this.currentStructureInProgress.put(currentStructureInProgress.getCorner(), currentStructureInProgress);
+	}
+	
+	public void removeCurrentStructureInProgress(Buildable currentStructureInProgress) {
+		this.currentStructureInProgress.remove(currentStructureInProgress.getCorner(), currentStructureInProgress);
 	}
 
 	public Buildable getCurrentWonderInProgress() {

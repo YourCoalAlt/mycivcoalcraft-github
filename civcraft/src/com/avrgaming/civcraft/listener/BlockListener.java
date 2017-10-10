@@ -105,6 +105,7 @@ import com.avrgaming.civcraft.structure.BuildableLayer;
 import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Library;
+import com.avrgaming.civcraft.structure.Market;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Pasture;
 import com.avrgaming.civcraft.structure.Stable;
@@ -1278,6 +1279,11 @@ public class BlockListener implements Listener {
 				Library l = (Library) buildable;
 				if (vn.contains("Library Enchanter")) {
 					l.openEnchantGUI(p, l.getTown());
+				}
+			} else if (buildable instanceof Market) {
+				Market m = (Market) buildable;
+				if (vn.contains("Market Tradesman")) {
+					m.openMainMenu(p);
 				}
 			} else if (buildable instanceof Warehouse) {
 				Warehouse wh = (Warehouse) buildable;

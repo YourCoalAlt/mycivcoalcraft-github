@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.structure.Pasture;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.EntityUtil;

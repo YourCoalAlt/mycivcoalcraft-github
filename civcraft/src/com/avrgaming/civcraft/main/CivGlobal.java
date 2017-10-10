@@ -54,6 +54,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.SQL;
+import com.avrgaming.civcraft.database.session.SessionDatabase;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
 import com.avrgaming.civcraft.event.EventTimer;
 import com.avrgaming.civcraft.exception.CivException;
@@ -81,8 +83,6 @@ import com.avrgaming.civcraft.questions.QuestionBaseTask;
 import com.avrgaming.civcraft.questions.QuestionResponseInterface;
 import com.avrgaming.civcraft.randomevents.RandomEvent;
 import com.avrgaming.civcraft.road.RoadBlock;
-import com.avrgaming.civcraft.sessiondb.SessionDatabase;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Capitol;
 import com.avrgaming.civcraft.structure.Market;

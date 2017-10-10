@@ -22,10 +22,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 
 public class CalculateScoreTimer extends CivAsyncTask {

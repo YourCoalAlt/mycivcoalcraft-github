@@ -677,7 +677,7 @@ public abstract class Buildable extends SQLObject {
 		if (this instanceof Wonder) {
 			this.getTown().setCurrentWonderInProgress(this);
 		} else {
-			this.getTown().setCurrentStructureInProgress(this);
+			this.getTown().addCurrentStructureInProgress(this);
 		}
 		
 		this.startBuildTask(tpl, corner);
@@ -972,7 +972,7 @@ public abstract class Buildable extends SQLObject {
 		//CivBuildTask task = new CivBuildTask(TownyUniverse.getPlugin(), this, tpl, 
 			//	this.getBuildSpeed(), this.getBlocksPerTick(), center.getBlock());
 		if (this instanceof Structure) {
-			this.getTown().setCurrentStructureInProgress(this);
+			this.getTown().addCurrentStructureInProgress(this);
 		} else {
 			this.getTown().setCurrentWonderInProgress(this);
 		}

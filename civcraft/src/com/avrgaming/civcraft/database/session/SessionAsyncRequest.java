@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.sessiondb;
+package com.avrgaming.civcraft.database.session;
 
 import com.avrgaming.civcraft.threading.TaskMaster;
 

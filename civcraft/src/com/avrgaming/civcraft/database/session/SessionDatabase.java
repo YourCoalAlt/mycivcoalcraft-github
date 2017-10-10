@@ -16,7 +16,7 @@
  * is strictly forbidden unless prior written permission is obtained
  * from AVRGAMING LLC.
  */
-package com.avrgaming.civcraft.sessiondb;
+package com.avrgaming.civcraft.database.session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.avrgaming.civcraft.database.SQL;
+import com.avrgaming.civcraft.database.session.SessionAsyncRequest.Database;
+import com.avrgaming.civcraft.database.session.SessionAsyncRequest.Operation;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.sessiondb.SessionAsyncRequest.Database;
-import com.avrgaming.civcraft.sessiondb.SessionAsyncRequest.Operation;
 import com.avrgaming.civcraft.structure.Buildable;
 
 

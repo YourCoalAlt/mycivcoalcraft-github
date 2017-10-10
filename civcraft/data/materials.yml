@@ -57,7 +57,7 @@ materials:
        - name: 'RepairCost'
          value: '1500.0'
     ingredients:
-       - type_id: 280 #stick
+       - type_id: 280
          data: 0
          letter: 's'
        - type_id: 264
@@ -115,6 +115,18 @@ materials:
     category: '<lightgreen>Resources'
     components:
        - name: 'NoRightClick'
+# Checked 25 August 2017
+    # Do not change the id 'civ_teleport_to_player' or else code will break!
+  - id: 'civ_teleport_to_player'
+    item_id: 368
+    item_data: 0
+    name: 'Teleport to Player'
+    craftable: false
+    shaped: false
+    shiny: true
+    category: '<lightgreen>Resources'
+    components:
+       - name: 'TeleportPlayer'
 # Checked 25 August 2017
   - id: 'civ_unit_shard'
     item_id: 452
@@ -175,24 +187,10 @@ materials:
     shaped: false
     category: '<lightgreen>Resources'
     components:
-       - name: 'ModKick'
        - name: 'RangedAttack'
          value: '420'
        - name: 'Armor'
          value: '420'
-       - name: 'NoVanillaDurability'
-       - name: 'DurabilityOnDeath'
-         value: '0.0'
-# Checked 25 August 2017
-  - id: 'civ_instant_kicker'
-    item_id: 261
-    item_data: 0
-    name: 'Coal''s Instant Kicker'
-    craftable: false
-    shaped: false
-    category: '<lightgreen>Resources'
-    components:
-       - name: 'ModKick'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.0'
@@ -1182,7 +1180,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '1'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1204,7 +1202,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '4'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1510,7 +1508,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '1'
+         value: '2'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1701,7 +1699,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '3'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1749,7 +1747,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '5'
+         value: '4'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1773,7 +1771,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '3'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1964,7 +1962,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '4'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1988,7 +1986,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '8'
+         value: '7'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2012,7 +2010,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '6'
+         value: '5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2036,7 +2034,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '4'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'

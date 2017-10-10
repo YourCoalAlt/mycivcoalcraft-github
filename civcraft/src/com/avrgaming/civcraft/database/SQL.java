@@ -30,6 +30,7 @@ import java.util.Iterator;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigMarketItem;
+import com.avrgaming.civcraft.database.session.SessionDatabase;
 import com.avrgaming.civcraft.event.EventTimer;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -51,7 +52,6 @@ import com.avrgaming.civcraft.object.WallBlock;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.randomevents.RandomEvent;
 import com.avrgaming.civcraft.road.RoadBlock;
-import com.avrgaming.civcraft.sessiondb.SessionDatabase;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.threading.TaskMaster;

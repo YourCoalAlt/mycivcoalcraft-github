@@ -27,10 +27,12 @@ import org.bukkit.entity.Player;
 import com.avrgaming.anticheat.ACManager;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
+import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -38,7 +40,6 @@ import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.Relation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
-import com.avrgaming.civcraft.sessiondb.SessionEntry;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
@@ -66,7 +67,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 		try {
 			CivLog.info("Running PlayerLoginAsyncTask for "+getPlayer().getName()+" UUID("+playerUUID+")");
 			Resident resident = CivGlobal.getResidentViaUUID(playerUUID);
-			if (resident != null && resident.getName().toLowerCase() != getPlayer().getName().toLowerCase()) {
+			if (resident != null && !resident.getName().equalsIgnoreCase(getPlayer().getName())) {
 				CivLog.info("Resident changed their name, previously "+resident.getName()+", now "+getPlayer().getName());
 				CivGlobal.removeResident(resident);
 				resident.setName(getPlayer().getName());
@@ -75,7 +76,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 			}
 			
 			ResidentExperience re = CivGlobal.getResidentViaUUIDE(playerUUID);
-			if (re != null && re.getName().toLowerCase() != getPlayer().getName().toLowerCase()) {
+			if (re != null && !re.getName().equalsIgnoreCase(getPlayer().getName())) {
 				CivLog.info("Resident (experience) changed their name, previously "+resident.getName()+", now "+getPlayer().getName());
 				CivGlobal.removeResidentE(re);
 				re.setName(getPlayer().getName());
@@ -121,6 +122,9 @@ public class PlayerLoginAsyncTask implements Runnable {
 				}
 				CivMessage.send(resident, CivColor.LightGray+"You have a PvP timer enabled for "+mins+" mins. You cannot attack or be attacked until it expires.");
 				CivMessage.send(resident, CivColor.LightGray+"To remove it, type /resident pvptimer");
+				
+				CivMessage.send(resident, CivColor.LightGray+"You are being randomly teleported now in the world to begin your adventure.");
+				MinecraftListener.randomTeleport(getPlayer());
 			}
 			
 			if (re == null) {
