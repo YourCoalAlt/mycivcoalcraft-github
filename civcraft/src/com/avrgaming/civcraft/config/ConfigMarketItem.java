@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.database.SQL;
-import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivLog;
@@ -276,14 +275,15 @@ public class ConfigMarketItem {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void buy(Resident resident, Player player, int amount) throws CivException {
+	public void buy(Resident resident, Player player, int amount) {
 		int total_items = 0;
 		
 		double coins = resident.getTreasury().getBalance();
 		double cost = getBuyCostForAmount(amount);
 		
 		if (coins < cost) {
-			throw new CivException("You do not have the required "+cost);
+			CivMessage.sendError(player, "You do not have the required "+cost);
+			return;
 		}
 				
 		for (int i = 0; i < amount; i++) {
@@ -313,7 +313,7 @@ public class ConfigMarketItem {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void sell(Resident resident, Player player, int amount) throws CivException {
+	public void sell(Resident resident, Player player, int amount) {
 		int total_coins = 0;
 		int total_items = 0;
 		
@@ -321,18 +321,19 @@ public class ConfigMarketItem {
 		inv.addInventory(player.getInventory());
 		
 		if (!inv.contains(custom_id, this.type_id, (short)this.data, amount)) {
-			throw new CivException("You do not have "+amount+" "+this.name+" to sell.");
+			CivMessage.sendError(player, "You do not have "+amount+" "+this.name+" to sell.");
+			return;
 		}
 				
 		for (int i = 0; i < amount; i++) {			
 			total_coins += sell_value;
 			total_items += BASE_ITEM_AMOUNT;
-			
 			decrement();
 		}
 		
-		if (!inv.removeItem(this.custom_id, this.type_id, (short)this.data, amount)) {
-			throw new CivException("Sorry, you don't have enough "+this.name+" in your inventory.");
+		if (!inv.removeItemPlayer(player, this.custom_id, this.type_id, (short)this.data, amount)) {
+			CivMessage.sendError(player, "Sorry, you don't have enough "+this.name+" in your inventory.");
+			return;
 		}
 		
 		resident.getTreasury().deposit(total_coins);	

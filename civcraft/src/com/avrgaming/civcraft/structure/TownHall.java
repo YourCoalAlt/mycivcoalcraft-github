@@ -895,6 +895,13 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	
 	public void openTownQuestGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, t.getName()+"'s Quest Viewer");
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+" ",
+				CivColor.RESET+" ",
+				CivColor.RESET+" ",
+				CivColor.RESET+" ",
+				CivColor.RESET+" "
+				));
 		
 		if (t.getStructureByType("ti_mine") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Mine Tasks", CivData.STONE_PICKAXE, 0, 

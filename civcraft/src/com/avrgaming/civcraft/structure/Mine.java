@@ -281,8 +281,7 @@ public class Mine extends Structure {
 		
 		String loreReq = CivColor.Green+"Required: ;";
 		for (String s : lr) loreReq += s+" ;";
-		loreReq += CivColor.Green+"Rewards: ;";
-		loreReq += CivColor.Yellow+mtask.reward+" Hammers";
+		loreReq += CivColor.Green+"Rewards: "+CivColor.Yellow+mtask.reward+" Hammers";
 		
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Mine Task "+task);
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 

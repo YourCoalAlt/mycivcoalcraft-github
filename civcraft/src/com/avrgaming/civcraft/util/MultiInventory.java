@@ -21,6 +21,7 @@ package com.avrgaming.civcraft.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivMessage;
 
 public class MultiInventory {
 	
@@ -188,8 +190,7 @@ public class MultiInventory {
 		}
 		
 		// If count is not zero, we failed to find what we needed.
-		if (count != 0)
-			return false;
+		if (count != 0) return false;
 		
 		// We now have a hashmap full of items to remove.
 		//<Integer, ItemStack> leftovers = new HashMap<Integer, ItemStack>();
@@ -202,9 +203,56 @@ public class MultiInventory {
 		if (totalActuallyRemoved != amount) {
 			throw new CivException("Inventory Error! We tried to remove "+amount+" items but could only remove "+totalActuallyRemoved);
 		}
-		
 		return true;
+	}
+	
+	public boolean removeItemPlayer(Player p, String mid, int type, short data, int amount) {
+		ArrayList<ItemInvPair> toBeRemoved = new ArrayList<ItemInvPair>();
 		
+		int count = amount;
+		for (Inventory inv : invs) {
+			for (ItemStack item : inv.getContents()) {
+				if(!isCorrectItemStack(item, mid, type, data)) {
+					continue;
+				}
+				
+				//Three possibilities, 
+				//     1) This item stack has more than we are looking for. So we add a new item stack to the hashmap, with the size
+				//        for the amount we want to remove. Break, and it will then be removed.
+				//     2) This item stack is exactly equal to the amount we want removed. Add it to the hashmap, and break.
+				//     3) This item is NOT large enough for what we want, update the count, add it to the hashmap and keep looking.
+				
+				if (item.getAmount() > count) {
+					toBeRemoved.add(new ItemInvPair(inv, mid, type, data, count));
+					count = 0;
+					break;
+				} else if (item.getAmount() == count) {
+					toBeRemoved.add(new ItemInvPair(inv, mid, type, data, count));
+					count = 0;
+					break;
+				} else {
+					toBeRemoved.add(new ItemInvPair(inv, mid, type, data, item.getAmount()));
+					count -= item.getAmount();
+				}	
+			}
+		}
+		
+		// If count is not zero, we failed to find what we needed.
+		if (count != 0) return false;
+		
+		// We now have a hashmap full of items to remove.
+		//<Integer, ItemStack> leftovers = new HashMap<Integer, ItemStack>();
+		int totalActuallyRemoved = 0;
+		for (ItemInvPair invPair : toBeRemoved) {
+			Inventory inv = invPair.inv;
+			totalActuallyRemoved += removeItemFromInventory(inv, invPair.mid, invPair.type, invPair.data, invPair.amount);
+		}
+		
+		if (totalActuallyRemoved != amount) {
+			CivMessage.sendError(p, "Inventory Error! We tried to remove "+amount+" items but could only remove "+totalActuallyRemoved);
+			return false;
+		}
+		return true;
 	}
 	
 	public boolean removeItem(ItemStack item) throws CivException {

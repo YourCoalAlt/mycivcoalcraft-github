@@ -145,12 +145,6 @@ items:
       data: 0
       value: 3
  
-    - id: 127
-      name: 'Nether Wart'
-      type_id: 372
-      data: 0
-      value: 8
- 
  # Food Stuff 
    
     - id: 128

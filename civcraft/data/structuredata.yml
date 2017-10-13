@@ -30,7 +30,6 @@ repairable_items:
    - 'civ_admin_sword'
    - 'civ_sword_ban_hammer'
    - 'civ_ranged_ban_hammer'
-   - 'civ_instant_kicker'
    - 'civ_wood_sword'
    - 'civ_stone_sword'
    - 'civ_hunting_bow'

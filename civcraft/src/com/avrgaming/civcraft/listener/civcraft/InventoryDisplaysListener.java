@@ -21,6 +21,7 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGranaryLevel;
 import com.avrgaming.civcraft.config.ConfigGranaryTask;
 import com.avrgaming.civcraft.config.ConfigLabTask;
+import com.avrgaming.civcraft.config.ConfigMarketItem;
 import com.avrgaming.civcraft.config.ConfigMineTask;
 import com.avrgaming.civcraft.config.ConfigMission;
 import com.avrgaming.civcraft.config.ConfigUnit;
@@ -44,6 +45,7 @@ import com.avrgaming.civcraft.structure.Blacksmith;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Lab;
+import com.avrgaming.civcraft.structure.Market;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Warehouse;
@@ -74,6 +76,9 @@ public class InventoryDisplaysListener implements Listener {
 				event.getInventory().getName().contains("Building Support")) this.clickTownStatRegister(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) this.clickUnitUpgrade(p, event);
+		
+		if (event.getInventory().getName().contains("Global Market Menu")) this.clickMarketMenu(p, event);
+		if (event.getInventory().getName().contains("Market Trade ")) this.clickMarketItem(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
 		
@@ -212,6 +217,7 @@ public class InventoryDisplaysListener implements Listener {
 	}
 	
 	public void clickTownQuestViewer(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
 		Resident res = CivGlobal.getResident(p);
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			return;
@@ -309,6 +315,51 @@ public class InventoryDisplaysListener implements Listener {
 			p.closeInventory();
 			return;
 		}
+	}
+	
+	public void clickMarketMenu(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
+		
+		Resident res = CivGlobal.getResident(p);
+		Market s = (Market) res.getTown().getStructureByType("s_market");
+		if (s == null) { CivMessage.sendError(p, "Your town does not have a market... cannot use one until then!"); event.setCancelled(true); }
+		for (ConfigMarketItem m : CivSettings.marketItems.values()) {
+			if (ItemManager.getId(event.getCurrentItem()) == m.type_id && ItemManager.getData(event.getCurrentItem()) == m.data &&
+					event.getInventory().getName().contains("Global Market Menu")) s.openItemGUI(p, m);
+		}
+	}
+	
+	public void clickMarketItem(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
+		
+		Resident res = CivGlobal.getResident(p);
+		Market s = (Market) res.getTown().getStructureByType("s_market");
+		if (s == null) { CivMessage.sendError(p, "Your town does not have a market... cannot use one until then!"); event.setCancelled(true); }
+		
+		ConfigMarketItem m = null;
+		ItemStack mi = event.getInventory().getItem(1);
+		int id = ItemManager.getId(mi);
+		int data = ItemManager.getData(mi);
+		for (ConfigMarketItem ma : CivSettings.marketItems.values()) {
+			if (id == ma.type_id && data == ma.data) {
+				m = ma;
+			}
+		}
+		
+		String c = event.getCurrentItem().getItemMeta().getDisplayName();
+		if (c != null) {
+			if (c.contains("Sell "+Market.BULK_AMOUNT)) s.processSell(p, res, Market.BULK_AMOUNT, m);
+			else if (c.contains("Sell 1")) s.processSell(p, res, 1, m);
+			else if (c.contains("Buy 1")) s.processBuy(p, res, 1, m);
+			else if (c.contains("Buy "+Market.BULK_AMOUNT)) s.processBuy(p, res, Market.BULK_AMOUNT, m);
+		}
+		
+		Inventory opened = s.getMarketItemOpened(event.getInventory(), m);
+		event.getInventory().setContents(opened.getContents());
 	}
 	
 	public void clickSpyMissionMenu(Player p, InventoryClickEvent event) {
@@ -613,7 +664,7 @@ public class InventoryDisplaysListener implements Listener {
 		//Barracks Repair Inv
 		if (inv.getName().contains("'s Repair Master")) {
 			this.repairItem(p, inv, event);
-		}	
+		}
 		
 		//Mine Inv2
 		if (inv.getName().contains(res.getTown().getName()+" Mine Task ")) {
@@ -629,6 +680,11 @@ public class InventoryDisplaysListener implements Listener {
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Granary Tasks") || event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks") ||
 				event.getInventory().getName().contains(res.getTown().getName()+"'s Lab Tasks")) {
 			this.closeTaskInv1(p, inv);
+		}
+		
+		//Market Inv1
+		if (event.getInventory().getName().contains("Global Market Menu")) {
+			this.closeMarketInv1(p, inv);
 		}
 		
 		//Storage Inv2
@@ -715,6 +771,12 @@ public class InventoryDisplaysListener implements Listener {
 			}
 			
 			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		}
+	}
+	
+	public void closeMarketInv1(Player p, Inventory inv) {
+		for (ItemStack stack : inv.getContents().clone()) {
+			inv.remove(stack);
 		}
 	}
 	

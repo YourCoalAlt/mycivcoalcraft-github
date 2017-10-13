@@ -330,8 +330,7 @@ public class Lab extends Structure {
 		
 		String loreReq = CivColor.Green+"Required: ;";
 		for (String s : lr) loreReq += s+" ;";
-		loreReq += CivColor.Green+"Rewards: ;";
-		loreReq += CivColor.Yellow+mtask.reward+" Beakers";
+		loreReq += CivColor.Green+"Rewards: "+CivColor.Yellow+mtask.reward+" Beakers";
 		
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Lab Task "+task);
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 
