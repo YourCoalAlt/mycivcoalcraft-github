@@ -985,13 +985,10 @@ public abstract class Buildable extends SQLObject {
 	public int getBuildSpeed() {
 		// buildTime is in hours, we need to return milliseconds.
 		// We should return the number of milliseconds to wait between each block placement.
-		double hoursPerBlock = ( this.getHammerCost() / this.town.getHammers().total ) / this.totalBlockCount;
+		double hoursPerBlock = ((this.getHammerCost() / this.town.getHammers().total) / this.totalBlockCount) * this.town.getCurrentStructuresInProgress().size();
 		double millisecondsPerBlock = hoursPerBlock * 60 * 60 * 1000;
 		// Clip millisecondsPerBlock to 500 milliseconds.
-		if (millisecondsPerBlock < 500) {
-			millisecondsPerBlock = 500;
-		}
-		
+		if (millisecondsPerBlock < 500) millisecondsPerBlock = 500;
 		return (int)millisecondsPerBlock;
 	}
 	
@@ -1005,40 +1002,28 @@ public abstract class Buildable extends SQLObject {
 		// We do not want the blocks to be placed faster than 500 milliseconds.
 		// So in order to deal with speeds that are faster than that, we will
 		// increase the number of blocks given per tick. 
-		double hoursPerBlock = ( this.getHammerCost() / this.town.getHammers().total ) / this.totalBlockCount;
+		double hoursPerBlock = ((this.getHammerCost() / this.town.getHammers().total) / this.totalBlockCount) * this.town.getCurrentStructuresInProgress().size();
 		double millisecondsPerBlock = hoursPerBlock * 60 * 60 * 1000;
 		
-		// Dont let this get lower than 1 just in case to prevent any crazyiness...
-		//if (millisecondsPerBlock < 1)
-			//millisecondsPerBlock = 1;
-		
+		// Dont let this get lower than 500 or 1 just in case to prevent any crazyiness...
 		double blocks = (500 / millisecondsPerBlock);
-		
-		if (blocks < 1) {
-			blocks = 1;
-		}
-
+		if (blocks < 1) blocks = 1;
 		return (int)blocks;		
 	}
 	
 	/* Checks to see if the area is covered by another structure */
 	public void canBuildHere(Location center, double distance) throws CivException {
-		
 		// Do not let tile improvements be built on top of each other.
 		//String chunkHash = Civ.chunkHash(center.getChunk());
 		
 		//TODO Revisit for walls and farms?
 //		if (Civ.getWallChunk(chunkHash) != null) {
 //			throw new CivException("Cannot build here, another tile improvement is in this chunk.");
-//			
 //		}
 //		
 //		if (Civ.getFarmChunk(chunkHash) != null) {
 //			throw new CivException("Cannot build here, another tile improvement is in this chunk.");
 //		}
-		
-
-				
 		return;
 	}
 	

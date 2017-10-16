@@ -126,10 +126,6 @@ public class CultureChunk {
 		}
 	}
 	
-	public double getCoins() {
-		return getCultureBiomeInfo().coins+getAdditionalAttributes(Attribute.TypeKeys.COINS.name());
-	}
-	
 	public double getHappiness() {
 		return getCultureBiomeInfo().happiness+getAdditionalAttributes(Attribute.TypeKeys.HAPPINESS.name());
 	}
@@ -188,26 +184,21 @@ public class CultureChunk {
 		
 		if (cc == null) {
 			CivMessage.send(player, CivColor.LightPurple+biome.name()+
-					CivColor.Green+" Coins: "+CivColor.LightGreen+info.coins+
 					CivColor.Green+" Happiness:"+CivColor.LightGreen+info.happiness+
 					CivColor.Green+" Hammers:"+CivColor.LightGreen+info.hammers+
 					CivColor.Green+" Growth:"+CivColor.LightGreen+info.growth+				
 					CivColor.Green+" Beakers:"+CivColor.LightGreen+info.beakers);
 		} else {
 			CivMessage.send(player, CivColor.LightPurple+biome.name()+
-					CivColor.Green+" Coins: "+CivColor.LightGreen+cc.getCoins()+
 					CivColor.Green+" Happiness:"+CivColor.LightGreen+cc.getHappiness()+
 					CivColor.Green+" Hammers:"+CivColor.LightGreen+cc.getHammers()+
 					CivColor.Green+" Growth:"+CivColor.LightGreen+cc.getGrowth()+				
 					CivColor.Green+" Beakers:"+CivColor.LightGreen+cc.getBeakers());
 		}
-
 	}
 	
 	public static Biome getBiomeFromLocation(Location loc) {
 		Block block = loc.getChunk().getBlock(0, 0, 0);
 		return block.getBiome();
 	}
-	
-	
 }

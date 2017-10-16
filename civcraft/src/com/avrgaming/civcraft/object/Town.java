@@ -98,6 +98,9 @@ public class Town extends SQLObject {
 	private ConcurrentHashMap<BlockCoord, Structure> structures = new ConcurrentHashMap<BlockCoord, Structure>();
 	private ConcurrentHashMap<BlockCoord, Buildable> disabledBuildables = new ConcurrentHashMap<BlockCoord, Buildable>();
 	
+	public ConcurrentHashMap<BlockCoord, Buildable> currentStructureInProgress = new ConcurrentHashMap<BlockCoord, Buildable>();
+	public Buildable currentWonderInProgress;
+	
 	private int level;
 	private double taxRate;
 	private double flatTax;
@@ -108,17 +111,17 @@ public class Town extends SQLObject {
 	private int supportDeposit;
 	
 	/* Growth */
-	private double baseGrowth = 1.0;
+	private double baseGrowth = 50.0;
+	private double extraGrowthRate = 1.0;
 	
 	/* Hammers */
-	private double baseHammers = 1.0;
+	private double baseHammers = 50.0;
+	private double extraHammerRate = 1.0;
 	private double extraHammers;
-//	public Buildable currentStructureInProgress;
-	public ConcurrentHashMap<BlockCoord, Buildable> currentStructureInProgress = new ConcurrentHashMap<BlockCoord, Buildable>();
-	public Buildable currentWonderInProgress;
 	
 	/* Beakers */
-	private double baseBeakers = 1.0;
+	private double baseBeakers = 50.0;
+	private double extraBeakerRate = 1.0;
 	private double unusedBeakers;
 	
 	/* Culture */
@@ -137,8 +140,8 @@ public class Town extends SQLObject {
 	public ArrayList<TownChunk> savedEdgeBlocks = new ArrayList<TownChunk>();
 	public HashSet<Town> townTouchList = new HashSet<Town>();
 	
-	private ConcurrentHashMap<String, PermissionGroup> groups = new ConcurrentHashMap<String, PermissionGroup>();
 	private EconObject treasury;
+	private ConcurrentHashMap<String, PermissionGroup> groups = new ConcurrentHashMap<String, PermissionGroup>();
 	private ConcurrentHashMap<String, ConfigTownUpgrade> upgrades = new ConcurrentHashMap<String, ConfigTownUpgrade>();
 			
 	/* This gets populated periodically from a synchronous timer so it will be accessible from async tasks. */
@@ -163,7 +166,6 @@ public class Town extends SQLObject {
 	// kind of a hacky way to save the bank's level information between build undo calls
 	public int saved_quarry_level = 1;
 	public int saved_trommel_level = 1;
-	
 	public int saved_warehouse_level = 1;
 	
 	public int saved_granary_level = 1;
@@ -432,8 +434,9 @@ public class Town extends SQLObject {
 	
 	public void loadSettings() {
 		try {
-			this.baseHammers = CivSettings.getDouble(CivSettings.townConfig, "town.base_hammer_rate");
-			this.setBaseGrowth(CivSettings.getDouble(CivSettings.townConfig, "town.base_growth_rate"));
+			this.extraHammerRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_hammer_rate");
+			this.extraBeakerRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_beaker_rate");
+			this.extraGrowthRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_growth_rate");
 			
 //			this.happyCoinRate = new AttributeComponent();
 //			this.happyCoinRate.setSource("Happiness");
@@ -635,7 +638,7 @@ public class Town extends SQLObject {
 	}
 	
 	public void setHammerRate(double hammerRate) {
-		this.baseHammers = hammerRate;
+		this.extraHammerRate = hammerRate;
 	}
 	
 	public static Town newTown(Resident resident, String name, Civilization civ, boolean free, boolean capitol, 
@@ -2578,14 +2581,6 @@ public class Town extends SQLObject {
 		this.baseUnhappy = happy;
 	}
 
-	public double getBaseGrowth() {
-		return baseGrowth;
-	}
-
-	public void setBaseGrowth(double baseGrowth) {
-		this.baseGrowth = baseGrowth;
-	}
-
 	public ConcurrentHashMap<BlockCoord, Buildable> getCurrentStructuresInProgress() {
 		return currentStructureInProgress;
 	}
@@ -2988,6 +2983,9 @@ public class Town extends SQLObject {
 			}
 		} else {
 			rate /= 5;
+			
+			rates.put("Global Rate", this.extraGrowthRate);
+			rate *= this.extraGrowthRate;
 		}
 		return new AttrSource(rates, rate, null);
 	}
@@ -3160,6 +3158,9 @@ public class Town extends SQLObject {
 			}
 		} else {
 			rate /= 5;
+			
+			rates.put("Global Rate", this.extraHammerRate);
+			rate *= this.extraHammerRate;
 		}
 		return new AttrSource(rates, rate, null);
 	}
@@ -3332,6 +3333,8 @@ public class Town extends SQLObject {
 			}
 		} else {
 			rate /= 5;
+			rates.put("Global Rate", this.extraHammerRate);
+			rate *= this.extraBeakerRate;
 		}
 		return new AttrSource(rates, rate, null);
 	}

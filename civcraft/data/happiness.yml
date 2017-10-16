@@ -7,11 +7,11 @@ happiness:
   
   # Empire Unhappiness, how much unhappiness to add, per town, to the entire
   # civilization's towns.
-  per_town: 0.5
+  per_town: 0.25
   
   # Captured Town Unhappiness. Amount of unhappiness to add to each non-captured town
   # for each captured town in the civ.
-  per_captured_town: 1.5
+  per_captured_town: 1.0
   
   # Base distance Unhappiness
   distance_base: 0.01
@@ -23,7 +23,7 @@ happiness:
   distance_multiplier_outside_culture: 1.0
   
   # Maximum amount of distance unhappiness
-  distance_max: 15.0
+  distance_max: 10.0
   
   # Amount of happiness generated per war, as the aggressor
   per_war: 1.5
@@ -70,10 +70,10 @@ happiness:
     # Estatic: 92-100
     
     # New States
-    # Revolt: 0-13, 20%
-    # Miserable: 14-25, 40%
-    # Disturbed: 26-37, 60%
-    # Unhappy: 38-49, 80%
+    # Revolt: 0-13, 40%
+    # Miserable: 14-25, 55%
+    # Disturbed: 26-37, 70%
+    # Unhappy: 38-49, 85%
     # Content: 50-59, 100%
     # Peaceful: 60-68, 110%
     # Happy: 69-76, 120%
@@ -86,45 +86,45 @@ happiness:
       name: 'Revolt'
       color: 'Red'
       amount: 0.0
-      hammer_rate: 0.2
-      beaker_rate: 0.2
-      culture_rate: 0.2
-      growth_rate: 0.2
+      hammer_rate: 0.4
+      beaker_rate: 0.4
+      culture_rate: 0.4
+      growth_rate: 0.4
       upkeep_rate: 1.4
-      coin_rate: 0.2
+      coin_rate: 0.4
 #
     - level: 1
       name: 'Miserable'
       color: 'Rose'
       amount: 0.14
-      hammer_rate: 0.4
-      beaker_rate: 0.4
-      culture_rate: 0.4
-      growth_rate: 0.4
+      hammer_rate: 0.55
+      beaker_rate: 0.55
+      culture_rate: 0.55
+      growth_rate: 0.55
       upkeep_rate: 1.3
-      coin_rate: 0.4
+      coin_rate: 0.55
 #
     - level: 2
       name: 'Disturbed'
       color: 'Gold'
       amount: 0.26
-      hammer_rate: 0.6
-      beaker_rate: 0.6
-      culture_rate: 0.6
-      growth_rate: 0.6
+      hammer_rate: 0.7
+      beaker_rate: 0.7
+      culture_rate: 0.7
+      growth_rate: 0.7
       upkeep_rate: 1.2
-      coin_rate: 0.6
+      coin_rate: 0.7
 #
     - level: 3
       name: 'Unhappy'
       color: 'Yellow'
       amount: 0.38
-      hammer_rate: 0.8
-      beaker_rate: 0.8
-      culture_rate: 0.8
-      growth_rate: 0.8
+      hammer_rate: 0.85
+      beaker_rate: 0.85
+      culture_rate: 0.85
+      growth_rate: 0.85
       upkeep_rate: 1.1
-      coin_rate: 0.8
+      coin_rate: 0.85
 #
     - level: 4
       name: 'Content'

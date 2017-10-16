@@ -2,10 +2,7 @@
 # Use this to configure global town costs/settings as well as town levels and culture 
 # levels for towns.
 town:
-    # Min distance from another town
     min_town_distance: 192.0
-    
-    # Min distance from another town that is your enemy
     min_town_distance_enemy: 320.0
 
     # Grace distance that town will not calculate upkeep from.
@@ -14,15 +11,12 @@ town:
     # Amount of base upkeep to charge via 'square' of the distance
     upkeep_town_block_base: 10.0
 
-    # Falloff for the upkeep. Upkeep per plot is:
-    # upkeep = base * (distance-grace_distance)^falloff
+    # Falloff for the upkeep. Upkeep per plot is: upkeep = base * (distance-grace_distance)^falloff
     upkeep_town_block_falloff: 1.5
 
-    # Base hammer rate, usually 100, set higher to make building faster
-    base_hammer_rate: 1.0
-
-    # Base growth rate for towns.
-    base_growth_rate: 1.0
+    base_hammer_rate: 0.75
+    base_beaker_rate: 0.75
+    base_growth_rate: 0.33
 
     # Maximum number of blocks a town chunk can "protrude" from the main mass.
     max_town_chunk_protrude: 3
@@ -283,7 +277,7 @@ upgrades:
     - id: 'upgrade_bank_interest_level_2'
       name: 'Bank Interest II'
       cost: 4000.0
-      action: 'set_bank_interest,0.0100'
+      action: 'set_bank_interest,0.0125'
       require_upgrade: 'upgrade_bank_interest_level_1'
       require_tech: 'tech_currency'
       require_structure: 's_bank'
@@ -292,7 +286,7 @@ upgrades:
     - id: 'upgrade_bank_interest_level_3'
       name: 'Bank Interest III'
       cost: 8000.0
-      action: 'set_bank_interest,0.0150'
+      action: 'set_bank_interest,0.0250'
       require_upgrade: 'upgrade_bank_interest_level_2'
       require_tech: 'tech_nationalism'
       require_structure: 's_bank'
@@ -301,7 +295,7 @@ upgrades:
     - id: 'upgrade_bank_interest_level_4'
       name: 'Bank Interest IV'
       cost: 16000.0
-      action: 'set_bank_interest,0.0250'
+      action: 'set_bank_interest,0.040'
       require_upgrade: 'upgrade_bank_interest_level_3'
       require_tech: 'tech_innovation'
       require_structure: 's_bank'
