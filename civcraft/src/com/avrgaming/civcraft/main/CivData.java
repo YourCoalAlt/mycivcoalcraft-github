@@ -337,6 +337,7 @@ public class CivData {
 	public static final int SHIELD = 442;
 	public static final int ELYTRA = 443;
 	
+	public static final int TOTEM_OF_UNDYING = 449;
 	public static final int SHULKER_SHELL = 450;
 	
 	public static final int IRON_NUGGET = 452;

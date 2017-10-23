@@ -1455,11 +1455,6 @@ public class BlockListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		Boolean persist = CivGlobal.isPersistChunk(event.getChunk());		
-		if (persist != null && persist == true) {
-			event.setCancelled(true);
-		}
-		
 		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
 			if (ent.getType().equals(EntityType.BAT) || ent.getType().equals(EntityType.CAVE_SPIDER) || 
 					ent.getType().equals(EntityType.ENDERMAN) || ent.getType().equals(EntityType.POLAR_BEAR) || 
@@ -1484,9 +1479,7 @@ public class BlockListener implements Listener {
 	public void onChunkLoadEvent(ChunkLoadEvent event) {
 		ChunkCoord coord = new ChunkCoord(event.getChunk());
 		FarmChunk fc = CivGlobal.getFarmChunk(coord);
-		if (fc == null) {
-			return;
-		}
+		if (fc == null) return;
 		
 		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
 			if (ent.getType().equals(EntityType.BAT) || ent.getType().equals(EntityType.CAVE_SPIDER) || 
@@ -1508,7 +1501,6 @@ public class BlockListener implements Listener {
 		}
 	
 		class AsyncTask extends CivAsyncTask {
-
 			FarmChunk fc;
 			public AsyncTask(FarmChunk fc) {
 				this.fc = fc;
@@ -1521,9 +1513,7 @@ public class BlockListener implements Listener {
 					fc.getFarm().saveMissedGrowths();
 				}
 			}
-
 		}
-
 		TaskMaster.syncTask(new AsyncTask(fc), 500);
 	}
 

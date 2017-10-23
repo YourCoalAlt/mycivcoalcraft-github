@@ -153,22 +153,14 @@ public class LoreCraftableMaterial extends LoreMaterial {
 	}
 	
 	public static void buildStaticMaterials() {
-		/*
-		 * Loads in materials from configuration file.
-		 */
+		// Loads in materials from configuration file.
 		for (ConfigMaterial cfgMat : CivSettings.materials.values()) {
 			LoreCraftableMaterial loreMat = new LoreCraftableMaterial(cfgMat.id, cfgMat.item_id, (short)cfgMat.item_data);
-			
 			loreMat.setName(cfgMat.name);
-			if (cfgMat.lore != null) {
-				loreMat.setLore(cfgMat.lore);
-			}
-			
 			loreMat.setCraftable(cfgMat.craftable);
 			loreMat.setShaped(cfgMat.shaped);
 			loreMat.configMaterial = cfgMat;
 			loreMat.buildComponents();
-			
 			materials.put(cfgMat.id, loreMat);
 		}
 	}

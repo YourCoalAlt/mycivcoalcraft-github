@@ -4,27 +4,21 @@ materials:
     item_id: 7
     item_data: 0
     name: 'Refined Gold'
-    craftable: false
-    shaped: false
-    category: 'Special'
+    info: 'false;false;Special'
 #
 # Checked 25 August 2017
   - id: 'civ_refined_iron'
     item_id: 7
     item_data: 0
     name: 'Refined Iron'
-    craftable: false
-    shaped: false
-    category: 'Special'
+    info: 'false;false;Special'
 #
 # Checked 25 August 2017
   - id: 'civ_refined_diamond'
     item_id: 7
     item_data: 0
     name: 'Refined Diamond'
-    craftable: false
-    shaped: false
-    category: 'Special'
+    info: 'false;false;Special'
 #
 # Enchanting Recipes  ===========================================
 ## Checked 25 August 2017

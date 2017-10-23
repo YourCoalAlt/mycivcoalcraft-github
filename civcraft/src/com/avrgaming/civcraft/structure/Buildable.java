@@ -705,22 +705,20 @@ public abstract class Buildable extends SQLObject {
 			return;
 		}
 		
-		for (Civilization civ : CivGlobal.getAdminCivs()) {
-			Location townHallLoc = civ.getCapitolTownHallLocation();
-			if (townHallLoc == null) {
-				continue;
+		for (Civilization civ : CivGlobal.getCivs()) {
+			if (civ.isAdminCiv()) {
+				Location townHallLoc = civ.getCapitolTownHallLocation();
+				if (townHallLoc == null) continue;
+				
+				double distance = townHallLoc.distance(loc);
+				if (distance < requiredDistance) {
+					throw new CivException("You must build at least "+requiredDistance+" blocks away from spawn and/or admin civs.");
+				}
 			}
-
-			double distance = townHallLoc.distance(loc);
-			if (distance < requiredDistance) {
-				throw new CivException("You must build at least "+requiredDistance+" blocks away from spawn.");
-			}
-			
 		}
 	}
 	
 	protected void checkBlockPermissionsAndRestrictions(Player player, Block centerBlock, int regionX, int regionY, int regionZ, Location origin) throws CivException {
-		
 		boolean foundTradeGood = false;
 		TradeOutpost tradeOutpost = null;
 		boolean ignoreBorders = false;

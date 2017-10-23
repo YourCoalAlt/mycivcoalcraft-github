@@ -27,7 +27,6 @@ public class ConfigMaterial {
 	public int tier = 0;
 	
 	/* Optional */
-	public String[] lore = null;
 	public String required_tech = null;
 	public HashMap<String, ConfigIngredient> ingredients;
 	public String[] shape;
@@ -50,37 +49,21 @@ public class ConfigMaterial {
 			mat.name = (String)b.get("name");
 			mat.name = CivColor.colorize(mat.name);
 			
-			String category = (String)b.get("category");
-			if (category != null) {
-				mat.category = CivColor.colorize(category);
-				mat.categoryCivColortripped = CivColor.stripTags(category);
+			String info = (String)b.get("info");
+			if (info != null) {
+				String[] split = info.split(";");
+				mat.craftable = Boolean.valueOf(split[0]);
+				mat.shaped = Boolean.valueOf(split[1]);
 				
-				if (mat.category.toLowerCase().contains("tier 1")) {
-					mat.tier = 1;
-				} else if (mat.category.toLowerCase().contains("tier 2")) {
-					mat.tier = 2;
-				} else if (mat.category.toLowerCase().contains("tier 3")) {
-					mat.tier = 3;
-				} else if (mat.category.toLowerCase().contains("tier 4")) {
-					mat.tier = 4;
-				} else {
-					mat.tier = 0;
-				}
+				mat.category = CivColor.colorize(split[2]);
+				mat.categoryCivColortripped = CivColor.stripTags(split[2]);
+				if (mat.category.toLowerCase().contains("tier 1")) mat.tier = 1;
+				else if (mat.category.toLowerCase().contains("tier 2")) mat.tier = 2;
+				else if (mat.category.toLowerCase().contains("tier 3")) mat.tier = 3;
+				else if (mat.category.toLowerCase().contains("tier 4")) mat.tier = 4;
+				else mat.tier = 0;
 				
-			}
-			
-			/* Optional Lore */
-			List<?> configLore = (List<?>)b.get("lore");
-			if (configLore != null) {
-				String[] lore = new String[configLore.size()];
-				
-				int i = 0;
-				for (Object obj : configLore) {
-					if (obj instanceof String) {
-						lore[i] = (String)obj;
-						i++;
-					}
-				}
+				if (split[3] != null) mat.shiny = Boolean.valueOf(split[3]);
 			}
 			
 			Boolean craftable = (Boolean)b.get("craftable");

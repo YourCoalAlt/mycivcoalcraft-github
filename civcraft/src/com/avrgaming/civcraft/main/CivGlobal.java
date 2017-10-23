@@ -63,7 +63,6 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.CustomMapMarker;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Relation;
 import com.avrgaming.civcraft.object.Relation.Status;
@@ -131,10 +130,8 @@ public class CivGlobal {
 	private static Map<String, Town> towns = new ConcurrentHashMap<String, Town>();
 	private static Map<String, Civilization> civs = new ConcurrentHashMap<String, Civilization>();
 	private static Map<String, Civilization> conqueredCivs = new ConcurrentHashMap<String, Civilization>();
-	private static Map<String, Civilization> adminCivs = new ConcurrentHashMap<String, Civilization>();
 	private static Map<ChunkCoord, TownChunk> townChunks = new ConcurrentHashMap<ChunkCoord, TownChunk>();
 	private static Map<ChunkCoord, CultureChunk> cultureChunks = new ConcurrentHashMap<ChunkCoord, CultureChunk>();
-	private static Map<ChunkCoord, Boolean> persistChunks = new ConcurrentHashMap<ChunkCoord, Boolean>();
 	private static Map<BlockCoord, Structure> structures = new ConcurrentHashMap<BlockCoord, Structure>();
 	private static Map<BlockCoord, Wonder> wonders = new ConcurrentHashMap<BlockCoord, Wonder>();
 	private static Map<BlockCoord, StructureBlock> structureBlocks = new ConcurrentHashMap<BlockCoord, StructureBlock>();
@@ -152,7 +149,6 @@ public class CivGlobal {
 	private static Map<BlockCoord, BonusGoodie> bonusGoodies = new ConcurrentHashMap<BlockCoord, BonusGoodie>();
 	private static Map<ChunkCoord, HashSet<Wall>> wallChunks = new ConcurrentHashMap<ChunkCoord, HashSet<Wall>>();
 	private static Map<BlockCoord, RoadBlock> roadBlocks = new ConcurrentHashMap<BlockCoord, RoadBlock>();
-	private static Map<BlockCoord, CustomMapMarker> customMapMarkers = new ConcurrentHashMap<BlockCoord, CustomMapMarker>();
 	public static HashSet<BlockCoord> vanillaGrowthLocations = new HashSet<BlockCoord>();
 	private static Map<BlockCoord, Market> markets = new ConcurrentHashMap<BlockCoord, Market>();
 	public static HashSet<String> researchedTechs = new HashSet<String>();
@@ -793,9 +789,6 @@ public class CivGlobal {
 	
 	public static void addCiv(Civilization civ) {
 		civs.put(civ.getName().toLowerCase(), civ);
-		if (civ.isAdminCiv()) {
-			addAdminCiv(civ);
-		}
 	}
 	
 	public static Civilization getCiv(String name) {
@@ -898,9 +891,6 @@ public class CivGlobal {
 
 	public static void removeCiv(Civilization civilization) {
 		civs.remove(civilization.getName().toLowerCase());
-		if (civilization.isAdminCiv()) {
-			removeAdminCiv(civilization);
-		}
 	}
 
 	public static void removeTown(Town town) {
@@ -973,26 +963,6 @@ public class CivGlobal {
 
 	public static void processCulture() {
 		TaskMaster.asyncTask("culture-process", new CultureProcessAsyncTask(), 0);		
-	}
-
-	public static void addPersistChunk(Location location, boolean b) {
-		ChunkCoord coord = new ChunkCoord(location);
-		persistChunks.put(coord, b);
-	}
-	
-	public static boolean isPersistChunk(Location location) {
-		ChunkCoord coord = new ChunkCoord(location);
-		return persistChunks.get(coord);
-	}
-
-	public static Boolean isPersistChunk(Chunk chunk) {
-		ChunkCoord coord = new ChunkCoord(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
-		return persistChunks.get(coord);
-	}
-	
-	public static void addPersistChunk(String worldname, int x, int z, boolean b) {
-		ChunkCoord coord = new ChunkCoord(worldname, x, z);
-		persistChunks.put(coord, b);
 	}
 
 	public static Location getLocationFromHash(String hash) {
@@ -1808,26 +1778,6 @@ public class CivGlobal {
 	public static Collection<CultureChunk> getCultureChunks() {
 		return cultureChunks.values();
 	}
-	
-	public static void addCustomMarker(Location location, String name, String desc, String icon) {
-		CustomMapMarker marker = new CustomMapMarker();
-		marker.name = name;
-		marker.description = desc;
-		marker.icon = icon;
-		customMapMarkers.put(new BlockCoord(location), marker);
-	}
-	
-	public static void removeCustomMarker(Location location) {
-		customMapMarkers.remove(new BlockCoord(location));
-	}
-	
-	public static void removeCustomMarker(BlockCoord coord) {
-		customMapMarkers.remove(coord);
-	}
-	
-	public static Collection<CustomMapMarker> getCustomMarkers() {
-		return customMapMarkers.values();
-	}
 
 	public static Collection<TownChunk> getTownChunks() {
 		return townChunks.values();
@@ -1986,18 +1936,6 @@ public class CivGlobal {
 	
 	public static RoadBlock getRoadBlock(BlockCoord coord) {
 		return roadBlocks.get(coord);
-	}
-
-	public static Collection<Civilization> getAdminCivs() {
-		return adminCivs.values();
-	}
-	
-	public static void addAdminCiv(Civilization civ) {
-		adminCivs.put(civ.getName(), civ);
-	}
-	
-	public static void removeAdminCiv(Civilization civ) {
-		adminCivs.remove(civ.getName());
 	}
 
 	public static String getPhase() {

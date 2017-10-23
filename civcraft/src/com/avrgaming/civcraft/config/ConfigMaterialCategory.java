@@ -20,19 +20,15 @@ public class ConfigMaterialCategory {
 		}
 		
 		cat.materials.put(mat.id, mat);
-		if (mat.craftable) {
-			cat.craftableCount++;
-		}
+		if (mat.craftable) cat.craftableCount++;
 		categories.put(mat.categoryCivColortripped, cat);
-		
 	}
 	
 	public static Collection<ConfigMaterialCategory> getCategories() {
 		return categories.values();
 	}
-
+	
 	public static ConfigMaterialCategory getCategory(String key) {
 		return categories.get(key);
 	}
-	
 }

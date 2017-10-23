@@ -66,7 +66,7 @@ public class CivCommand extends CommandBase {
 		commands.put("dip", "Manage civilization's diplomacy.");
 		commands.put("victory", "Show which civs are close to victory.");
 		commands.put("votes", "Shows the diplomatic votes for all civs.");
-		commands.put("top5", "Show the top 5 civilizations in the world.");
+		commands.put("top10", "Show the top 10 civilizations in the world.");
 		commands.put("disbandtown", "[town] Disbands this town. Mayor must also issue /town disbandtown");
 		commands.put("revolution", "stages a revolution for the mother civilization!");
 		commands.put("claimleader", "claim yourself as leader of this civ. All current leaders must be inactive.");
@@ -267,28 +267,28 @@ public class CivCommand extends CommandBase {
 		CivMessage.send(sender, CivColor.Yellow+"Waiting on mayor to type /town disbandtown");
 	}
 	
-	public void top5_cmd() {	
-		CivMessage.sendHeading(sender, "Top 5 Civilizations");
-//		TreeMap<Integer, Civilization> scores = new TreeMap<Integer, Civilization>();
-//		
-//		for (Civilization civ : CivGlobal.getCivs()) {
-//			if (civ.isAdminCiv()) {
-//				continue;
-//			}
-//			scores.put(civ.getScore(), civ);
-//		}
+	public void top10_cmd() {	
+		CivMessage.sendHeading(sender, "Top 10 Civilizations");
+		
+		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("endgame:winningCiv");
+		if (entries.size() != 0) {
+			CivMessage.sendHeading(sender, "Civilization Victories"); int i = 1;
+			for (SessionEntry se : entries) {
+				Civilization civ = EndGameCondition.getCivFromSessionData(se.value);
+				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+civ.getScore()+" points  --  "+CivColor.BOLD+" VICTORY");
+				i++;
+			}
+			return;
+		}
 		
 		synchronized(CivGlobal.civilizationScores) {
 			int i = 1;
 			for (Integer score : CivGlobal.civilizationScores.descendingKeySet()) {
 				CivMessage.send(sender, i+") "+CivColor.Gold+CivGlobal.civilizationScores.get(score).getName()+CivColor.White+" - "+score+" points");
 				i++;
-				if (i > 5) {
-					break;
-				}
+				if (i > 10) break;
 			}
 		}
-		
 	}
 	
 	public void dip_cmd() {

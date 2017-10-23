@@ -33,15 +33,12 @@ import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class SpawnRegenEvent implements EventInterface {
-
+	
 	@Override
 	public void process() {
 		CivLog.info("TimerEvent: SpawnRegenEvent -------------------------------------");
-		
 		class RegenSyncTask implements Runnable {
-			
 			CultureChunk cc;
-			
 			public RegenSyncTask(CultureChunk cc) {
 				this.cc = cc;
 			}
@@ -53,7 +50,7 @@ public class SpawnRegenEvent implements EventInterface {
 		}
 		
 		int tickDelay = 0;
-		for (Civilization civ : CivGlobal.getAdminCivs()) {
+		for (Civilization civ : CivGlobal.getCivs()) {
 			if (civ.isAdminCiv()) {
 				for (Town town : civ.getTowns()) {				
 					for (CultureChunk cc : town.getCultureChunks()) {
@@ -66,8 +63,6 @@ public class SpawnRegenEvent implements EventInterface {
 				}
 			}
 		}
-				
-		
 	}
 
 	@Override
@@ -77,7 +72,6 @@ public class SpawnRegenEvent implements EventInterface {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.add(Calendar.HOUR_OF_DAY, regen_hour);
-		
 		Calendar now = Calendar.getInstance();
 		if (now.after(cal)) {
 			cal.add(Calendar.DATE, 1);
@@ -85,8 +79,6 @@ public class SpawnRegenEvent implements EventInterface {
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 		}
-		
 		return cal;
 	}
-
 }
