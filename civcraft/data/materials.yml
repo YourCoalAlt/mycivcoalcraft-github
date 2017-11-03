@@ -4,21 +4,27 @@ materials:
     item_id: 7
     item_data: 0
     name: 'Refined Gold'
-    info: 'false;false;Special'
+    craftable: false
+    shaped: false
+    category: 'Special'
 #
 # Checked 25 August 2017
   - id: 'civ_refined_iron'
     item_id: 7
     item_data: 0
     name: 'Refined Iron'
-    info: 'false;false;Special'
+    craftable: false
+    shaped: false
+    category: 'Special'
 #
 # Checked 25 August 2017
   - id: 'civ_refined_diamond'
     item_id: 7
     item_data: 0
     name: 'Refined Diamond'
-    info: 'false;false;Special'
+    craftable: false
+    shaped: false
+    category: 'Special'
 #
 # Enchanting Recipes  ===========================================
 ## Checked 25 August 2017
@@ -46,7 +52,7 @@ materials:
     shaped: true
     category: '<blue>Tools'
     components:
-       - name: 'Attack'
+       - name: 'Damage'
          value: '2.5'
        - name: 'RepairCost'
          value: '1500.0'
@@ -761,7 +767,7 @@ materials:
          count: 3
 #======================================================#
 #=================[ Special  Recipes ]=================#
-#======================================================#   
+#======================================================#
 # Checked 01/21/2017
   - id: 'civ_found_civ'
     item_id: 369
@@ -835,6 +841,28 @@ materials:
         - type_id: 57
           data: 0
           count: 2
+# Checked 01/21/2017
+  - id: 'civ_hopper'
+    item_id: 154
+    item_data: 0
+    name: 'Hopper'
+    craftable: true
+    shaped: true
+    category: '<lightgray>Special'
+    components:
+       - name: 'AllowBlockPlace'
+    ingredients:
+        - type_id: 0
+          data: 0
+          custom_id: 'civ_refined_iron'
+          letter: 'i'
+        - type_id: 54
+          data: 0
+          letter: 'c'
+    shape:
+        - "i i"
+        - "ici"
+        - " i "
 # Checked 25 August 2017
   - id: 'civ_backpack'
     item_id: 130

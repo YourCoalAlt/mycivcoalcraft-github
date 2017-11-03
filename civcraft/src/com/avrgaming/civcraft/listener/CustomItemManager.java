@@ -21,6 +21,7 @@ package com.avrgaming.civcraft.listener;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
@@ -59,12 +60,14 @@ import org.bukkit.inventory.PlayerInventory;
 import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigRemovedRecipes;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.items.ItemDurabilityEntry;
 import com.avrgaming.civcraft.items.components.Catalyst;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.lorestorage.ItemChangeResult;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
+import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -247,21 +250,26 @@ public class CustomItemManager implements Listener {
 		}
 	}
 	
+	private static String isCustomDrop(ItemStack stack) {
+		if (stack == null || ItemManager.getId(stack) != 166) { return null; }
+		if (LoreGuiItem.isGUIItem(stack)) { return null; }
+		return stack.getItemMeta().getDisplayName();
+	}
+	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnPlayerDropItem(PlayerDropItemEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+		if (event.isCancelled()) { return; }
 		ItemStack stack = event.getItemDrop().getItemStack();
-
 		if (LoreMaterial.isCustom(stack)) {
 			LoreMaterial.getMaterial(stack).onItemDrop(event);
+			return;
 		}
+		
+		String custom = isCustomDrop(stack);
+		if (custom != null) event.setCancelled(true);
 	}	
 	
-	/*
-	 * Prevent the player from using goodies in crafting recipies.
-	 */
+	/* Prevent the player from using goodies in crafting recipies.  */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnCraftItemEvent(CraftItemEvent event) {	
 		for (ItemStack stack : event.getInventory().getMatrix()) {
@@ -277,7 +285,6 @@ public class CustomItemManager implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnPlayerItemPickup(PlayerPickupItemEvent event) {
 		ItemStack stack = event.getItem().getItemStack();
-
 		if (LoreMaterial.isCustom(stack)) {
 			LoreMaterial.getMaterial(stack).onItemPickup(event);
 		}
@@ -286,18 +293,25 @@ public class CustomItemManager implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnItemSpawn(ItemSpawnEvent event) {
 		ItemStack stack = event.getEntity().getItemStack();
-
 		if (LoreMaterial.isCustom(stack)) {
 			LoreMaterial.getMaterial(stack).onItemSpawn(event);
+			return;
 		}
 		
-/*		if (isUnwantedVanillaItem(stack)) {
-			if (!stack.getType().equals(Material.HOPPER) && 
-					!stack.getType().equals(Material.HOPPER_MINECART)) {		
+		String custom = isCustomDrop(stack);
+		if (custom != null) {
+			ItemStack newStack = LoreMaterial.spawn(LoreMaterial.materialMap.get(custom), stack.getAmount());
+			event.getEntity().getWorld().dropItemNaturally(event.getLocation(), newStack);
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (isUnwantedVanillaItem(stack)) {
+			if (!stack.getType().equals(Material.HOPPER) && !stack.getType().equals(Material.HOPPER_MINECART)) {
 				event.setCancelled(true);
 				event.getEntity().remove();
 			}
-		}*/
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
@@ -442,8 +456,32 @@ public class CustomItemManager implements Listener {
 				}
 			}
 		}
-		
 		return true;
+	}
+	
+	private boolean processArmorDurabilityChanges(PlayerDeathEvent event, ItemStack stack, int i) {
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+		if (craftMat != null) {
+			ItemChangeResult result = craftMat.onDurabilityDeath(event, stack);
+			if (result != null) {
+				if (!result.destroyItem) {
+					replaceItem(event, stack, result.stack);
+				} else {
+					replaceItem(event, stack, new ItemStack(Material.AIR));
+					event.getDrops().remove(stack);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private void replaceItem(PlayerDeathEvent event, ItemStack item, ItemStack newItem) {
+		if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
+		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
+		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
+		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
+		else CivMessage.sendError(event.getEntity(), "Cannot fix item from your armor slot... contact an admin. Material: "+item);
 	}
 	
 	@EventHandler(priority = EventPriority.LOW) 
@@ -454,18 +492,11 @@ public class CustomItemManager implements Listener {
 		/* Search and execute any enhancements */
 		for (int i = 0; i < event.getEntity().getInventory().getSize(); i++) {
 			ItemStack stack = event.getEntity().getInventory().getItem(i);
-			if (stack == null) {
-				continue;
-			}
-						
-			if(!processDurabilityChanges(event, stack, i)) {
-				/* Don't process anymore more enhancements on items after its been destroyed. */
-				continue;
-			}
+			if (stack == null) continue;
 			
-			if (!LoreMaterial.hasEnhancements(stack)) {
-				continue;
-			}
+			// Don't process anymore more enhancements on items after its been destroyed.
+			if (!processDurabilityChanges(event, stack, i)) continue;
+			if (!LoreMaterial.hasEnhancements(stack)) continue;
 			
 			AttributeUtil attrs = new AttributeUtil(stack);
 			for (LoreEnhancement enhance : attrs.getEnhancements()) {
@@ -480,18 +511,11 @@ public class CustomItemManager implements Listener {
 		ItemStack[] contents = event.getEntity().getInventory().getArmorContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack stack = contents[i];
-			if (stack == null) {
-				continue;
-			}
-
-			if(!processDurabilityChanges(event, stack, i)) {
-				/* Don't process anymore more enhancements on items after its been destroyed. */
-				continue;
-			}
-
-			if (!LoreMaterial.hasEnhancements(stack)) {
-				continue;
-			}
+			if (stack == null) continue;
+			
+			// Don't process anymore more enhancements on items after its been destroyed.
+			if (!processArmorDurabilityChanges(event, stack, i)) continue;
+			if (!LoreMaterial.hasEnhancements(stack)) continue;
 			
 			AttributeUtil attrs = new AttributeUtil(stack);
 			for (LoreEnhancement enhance : attrs.getEnhancements()) {
@@ -532,11 +556,9 @@ public class CustomItemManager implements Listener {
 					return;
 				}
 			}
-			
 		}
-		TaskMaster.syncTask(new SyncRestoreItemsTask(noDrop, armorNoDrop, event.getEntity().getName()));
-		
-		
+		Boolean keepInventory = Boolean.valueOf(Bukkit.getWorld("world").getGameRuleValue("keepInventory"));
+		if (!keepInventory) { TaskMaster.syncTask(new SyncRestoreItemsTask(noDrop, armorNoDrop, event.getEntity().getName())); }
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
@@ -790,6 +812,18 @@ public class CustomItemManager implements Listener {
 			return;
 		}
 		craftMat.onItemDurabilityChange(event);
+	}
+	
+	private static boolean isUnwantedVanillaItem(ItemStack stack) {
+		if (stack == null) { return false; }
+		
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+		if (craftMat != null) { return false; }
+		if(LoreGuiItem.isGUIItem(stack)) { return false; }
+		
+		ConfigRemovedRecipes removed = CivSettings.removedRecipies.get(ItemManager.getId(stack));
+		if (removed == null && !stack.getType().equals(Material.ENCHANTED_BOOK)) { return false; }
+		return true;
 	}
 	
 /*	private static boolean isUnwantedVanillaItem(ItemStack stack) {

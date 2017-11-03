@@ -24,7 +24,6 @@ public class ReportManager {
 	public static String TABLE_NAME = "REPORTS";
 	public static void init() throws SQLException {
 		System.out.println("================= REPORTS INIT ======================");
-		
 		// Check/Build SessionDB tables				
 		if (!SQL.hasGlobalTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + TABLE_NAME+" (" +
@@ -42,7 +41,6 @@ public class ReportManager {
 		} else {
 			CivLog.info(TABLE_NAME+" table OK!");
 		}		
-				
 		System.out.println("==================================================");
 	}
 	
@@ -53,9 +51,8 @@ public class ReportManager {
 		}
 		return out;
 	}
-		
+	
 	public static void reportPlayer(String name, ReportType type, String message, String reportedBy) {
-		
 		class AsyncTask implements Runnable {
 			String name;
 			String reportType;
@@ -78,15 +75,12 @@ public class ReportManager {
 				}
 			}
 		}
-		
 		TaskMaster.asyncTask(new AsyncTask("player:"+name, type.name(), message, reportedBy), 0);
-		
 	}
 	
 	private static void reportPlayerSync(String name, String reportType, String message, String reportedBy) throws SQLException {
 		Connection global_context = null;
 		PreparedStatement s = null;
-		
 		try {
 			global_context = SQL.getGlobalConnection();
 			String query = "INSERT INTO `"+TABLE_NAME+"` (`name`, `server`, `report_type`, `message`, `reported_by`, `time`) "+
@@ -94,22 +88,16 @@ public class ReportManager {
 			s = global_context.prepareStatement(query);
 	
 			Date now = new Date();
-			
 			s.setString(1, name);
 			s.setString(2, Bukkit.getServerName());
 			s.setString(3, reportType);
 			s.setString(4, message);
 			s.setString(5, reportedBy);
 			s.setLong(6, now.getTime());
-		
 			int rs = s.executeUpdate();
-			if (rs == 0) {
-				throw new SQLException("Could not execute SQL code:"+query);
-			}
+			if (rs == 0) { throw new SQLException("Could not execute SQL code:"+query); }
 		} finally {
 			SQL.close(null, s, global_context);
 		}
 	}
-	
-	
 }

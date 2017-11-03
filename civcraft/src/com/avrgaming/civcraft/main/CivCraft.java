@@ -34,7 +34,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.avrgaming.anticheat.ACManager;
 import com.avrgaming.civcraft.command.AcceptCommand;
 import com.avrgaming.civcraft.command.BackpackCommand;
 import com.avrgaming.civcraft.command.BuildCommand;
@@ -115,6 +114,7 @@ import com.avrgaming.civcraft.threading.tasks.ScoutTowerTask;
 import com.avrgaming.civcraft.threading.timers.ActionBarUpdateTimer;
 import com.avrgaming.civcraft.threading.timers.AnnouncementTimer;
 import com.avrgaming.civcraft.threading.timers.BeakerTimer;
+import com.avrgaming.civcraft.threading.timers.CalculateScoreTimer;
 import com.avrgaming.civcraft.threading.timers.ChangeGovernmentTimer;
 import com.avrgaming.civcraft.threading.timers.CountdownTimer;
 import com.avrgaming.civcraft.threading.timers.ParticleEffectTimer;
@@ -132,7 +132,6 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
-import com.avrgaming.global.scores.CalculateScoreTimer;
 import com.avrgaming.sls.SLSManager;
 
 import pvptimer.PvPListener;
@@ -262,14 +261,11 @@ public final class CivCraft extends JavaPlugin {
 				
 		try {
 			CivSettings.init(this);
-			
 			SQL.initialize();
 			SQL.initCivObjectTables();
 			ChunkCoord.buildWorldList();
-			
 			CivGlobal.loadGlobals();
 			
-			ACManager.init();
 			try {
 				SLSManager.init();
 			} catch (CivException e1) {

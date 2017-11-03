@@ -3,11 +3,12 @@ package com.avrgaming.civcraft.database.session;
 import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class SessionAsyncRequest {
+	
 	String tb_prefix;
 	public SessionEntry entry;
 	public Operation op;
 	public Database database;
-		
+	
 	public enum Operation {
 		ADD,
 		DELETE,
@@ -54,9 +55,7 @@ public class SessionAsyncRequest {
 					}
 				}
 			}
-			
 			TaskMaster.asyncTask(new AsyncSessionDBRequestWaitTask(this), 0);
 		}
 	}
-	
 }

@@ -144,8 +144,7 @@ public class War {
 	 * @param warTime the warTime to set
 	 */
 	public static void setWarTime(boolean warTime) {
-		if (warTime == false) {
-			// War time has ended.
+		if (warTime == false) { // War time has ended.
 			War.setStart(null);
 			War.setEnd(null);
 			War.restoreAllTowns();
@@ -186,12 +185,12 @@ public class War {
 			}
 		} else {
 			// War time has started.
-			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Started");
 			War.setStart(new Date());
+			WarAntiCheat.kickUnvalidatedPlayers();
+			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Started");
 			War.repositionPlayers("You've been teleported back to your town hall. WarTime has started and you were in enemy territory.");
 			//War.vassalTownsWithNoTownHalls();
 			War.resetTownClaimFlags();
-			WarAntiCheat.kickUnvalidatedPlayers();
 			
 			// Put a flag on the filesystem to prevent cron reboots.
 			File file = new File("wartime");
@@ -469,9 +468,7 @@ public class War {
 			if (relation.getStatus() == Status.ALLY) {
 				Civilization ally = relation.getOtherCiv();
 				Relation allyRelation = ally.getDiplomacyManager().getRelation(enemy);
-				if (allyRelation == null) {
-					continue;
-				}
+				if (allyRelation == null) { continue; }
 				
 				if (allyRelation.getStatus() == Status.WAR && (allyRelation.getAggressor() == enemy)) {
 					return true;
@@ -480,5 +477,4 @@ public class War {
 		}
 		return false;
 	}
-	
 }

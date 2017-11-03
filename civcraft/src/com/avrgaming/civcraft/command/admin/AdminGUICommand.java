@@ -1,19 +1,21 @@
 package com.avrgaming.civcraft.command.admin;
 
-import java.sql.SQLException;
-
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.command.CommandBase;
+import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigTech;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
 
 public class AdminGUICommand extends CommandBase implements Listener {
@@ -23,126 +25,140 @@ public class AdminGUICommand extends CommandBase implements Listener {
 		command = "/ad gui";
 		displayName = "Admin GUI";
 		
-		commands.put("test", "Opens the GUI for Admins.");
+		commands.put("admin", "Opens the GUI for Admins.");
 	}
 	
-	public void test_cmd() {
-		CivMessage.send(sender, "oh");
+	public void admin_cmd() {
+		if (!(sender instanceof Player)) {
+			CivMessage.sendError(sender, "Only a player can execute this command.");
+			return;
+		}
+		Player p = (Player)sender;
+		openAdminGUI(p);
+	}
+	
+	public static void openAdminGUI(Player p) {
+		Inventory inv = Bukkit.createInventory(null, 36, "Admin Control Panel");
+		
+		ItemStack civMoney = new ItemStack(Material.EMERALD, 1);
+		ItemMeta civMoneyMeta = civMoney.getItemMeta();
+		civMoneyMeta.setDisplayName("Prep Civ Treasury");
+		civMoney.setItemMeta(civMoneyMeta);
+		
+		ItemStack townMoney = new ItemStack(Material.DIAMOND, 1);
+		ItemMeta townMoneyMeta = townMoney.getItemMeta();
+		townMoneyMeta.setDisplayName("Prep Town Treasury");
+		townMoney.setItemMeta(townMoneyMeta);
+		
+		ItemStack playerMoney = new ItemStack(Material.GOLD_INGOT, 1);
+		ItemMeta playerMoneyMeta = playerMoney.getItemMeta();
+		playerMoneyMeta.setDisplayName("Prep Your Treasury");
+		playerMoney.setItemMeta(playerMoneyMeta);
+		
+		ItemStack civAllTechs = new ItemStack(Material.BEACON, 1);
+		ItemMeta civAllTechsMeta = civAllTechs.getItemMeta();
+		civAllTechsMeta.setDisplayName("Give Civ All Tech");
+		civAllTechs.setItemMeta(civAllTechsMeta);
+		
+		ItemStack civBeakerRate = new ItemStack(Material.BREWING_STAND_ITEM, 1);
+		ItemMeta civBeakerRateMeta = civBeakerRate.getItemMeta();
+		civBeakerRateMeta.setDisplayName("Change Civ Beaker Rate");
+		civBeakerRate.setItemMeta(civBeakerRateMeta);
+		
+		ItemStack townCulture = new ItemStack(Material.PURPUR_BLOCK, 1);
+		ItemMeta townCultureMeta = townCulture.getItemMeta();
+		townCultureMeta.setDisplayName("Add Town Culture");
+		townCulture.setItemMeta(townCultureMeta);
+		
+		ItemStack townProductionRate = new ItemStack(Material.COBBLE_WALL, 1);
+		ItemMeta townProductionRateMeta = townProductionRate.getItemMeta();
+		townProductionRateMeta.setDisplayName("Change Town Production Rate");
+		townProductionRate.setItemMeta(townProductionRateMeta);
+		
+		inv.setItem(0, civMoney);
+		inv.setItem(3, townMoney);
+		inv.setItem(6, playerMoney);
+		
+		inv.setItem(9, civAllTechs);
+		inv.setItem(18, civBeakerRate);
+		
+		inv.setItem(12, townCulture);
+		inv.setItem(21, townProductionRate);
+		p.openInventory(inv);
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		Resident res = CivGlobal.getResident(p);
-		
-		if (res.getCiv() == null || res == null) {
-			return;
-		}
-		
-/*		if (event.getInventory().getName().contains(res.getCiv().getName()+" Research Menu")) {
+		if (event.getInventory().getName().equalsIgnoreCase("Admin Control Panel")) {
 			event.setCancelled(true);
 			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+//				p.closeInventory();
 				return;
 			}
 			
-			if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
-				event.setCancelled(true);
-			}
-			
 			switch (event.getCurrentItem().getType()) {
-			case BOOK_AND_QUILL:
-				res.getTown().getTownHall().openResearchTechGUI(p, event.getCurrentItem().getItemMeta().getDisplayName().toString());
+			case EMERALD:
+				p.closeInventory();
+				if (res.getCiv() == null) CivMessage.sendError(p, "You are not in a civilization!");
+				res.getCiv().getTreasury().deposit(1000000);
+				res.getCiv().save();
+				CivMessage.sendSuccess(p, "Added 1 million coins to civ treasury.");
+				break;
+			case DIAMOND:
+				p.closeInventory();
+				if (res.getTown() == null) CivMessage.sendError(p, "You are not in a town!");
+				res.getTown().getTreasury().deposit(1000000);
+				res.getTown().save();
+				CivMessage.sendSuccess(p, "Added 1 million coins to town treasury.");
+				break;
+			case GOLD_INGOT:
+				p.closeInventory();
+				if (res == null) CivMessage.sendError(p, "You are not a resident!?");
+				res.getTreasury().deposit(1000000);
+				res.save();
+				CivMessage.sendSuccess(p, "Added 1 million coins to your treasury.");
+				break;
+			case BEACON:
+				p.closeInventory();
+				if (res.getCiv() == null) CivMessage.sendError(p, "You are not in a civilization!");
+				for (ConfigTech tech : CivSettings.techs.values()) {
+					res.getCiv().addTech(tech);
+				}
+				res.getCiv().save();
+				CivMessage.sendSuccess(p, "Gave all techs to your civilization.");
+				break;
+			case BREWING_STAND_ITEM:
+				p.closeInventory();
+				if (res.getCiv() == null) CivMessage.sendError(p, "You are not in a civilization!");
+				res.getCiv().setBaseBeakers(1000000);
+				res.getCiv().save();
+				CivMessage.sendSuccess(p, "Set beakerrate to 1 million in your civilization.");
+				break;
+			case PURPUR_BLOCK:
+				p.closeInventory();
+				if (res.getTown() == null) CivMessage.sendError(p, "You are not in a town!");
+				res.getTown().addAccumulatedCulture(20000);
+				res.getTown().save();
+				CivMessage.sendSuccess(p, "Added 20,000 culture to your town.");
+				break;
+			case COBBLE_WALL:
+				p.closeInventory();
+				if (res.getTown() == null) CivMessage.sendError(p, "You are not in a town!");
+				res.getTown().setHammerRate(1000000);
+				res.getTown().save();
+				CivMessage.sendSuccess(p, "Set hammerrate to 1 million in your town.");
 				break;
 			case AIR:
 				break;
 			default:
+//				p.closeInventory();
 				break;
 			}
 		} else {
 			return;
-		}*/
-	}
-	
-	@SuppressWarnings("unused")
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) throws SQLException {
-		Inventory inv = event.getInventory();
-		Player p = (Player) event.getPlayer();
-		Resident res = CivGlobal.getResident(p);
-		Civilization civ = res.getCiv();
-		
-		if (res.getCiv() == null || res == null) {
-			return;
 		}
-		
-/*		if (inv.getName().contains(res.getCiv().getName()+" Research Menu")) {
-			inv.clear();
-		}
-		
-		if (inv.getName().contains("Researching ")) {
-			boolean addedNotRequiredItems = false;
-			String techName = inv.getName().substring(12);
-			if (techName != null) {
-				ConfigTech techTech = CivSettings.getTechByName(techName);
-				Technology tech = CivGlobal.getTechnology(techTech.id+civ.getId());
-				int beakersGiven = 0;
-				
-				for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-					if (stack == null || stack.getType() == Material.AIR) {
-						continue;
-					}
-					
-					if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Beakers Left")) {
-						inv.removeItem(stack);
-						continue;
-					}
-					
-					LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-					if (craftMat != null && craftMat.getConfigId().toLowerCase().equals("civ_beakers")) { //Collect all the beakers found in the GUI
-						beakersGiven += stack.getAmount();
-						inv.removeItem(stack);
-					} else if (craftMat != null && !craftMat.getConfigId().toLowerCase().equals("civ_beakers")) { //Allow non-beakers but custom items to be dropped
-						ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
-						newMat.setData(stack.getData());
-						p.getWorld().dropItemNaturally(event.getPlayer().getEyeLocation(), newMat);
-						addedNotRequiredItems = true;
-					} else if (craftMat == null) { //Drop any vanilla items in the inventory
-						p.getWorld().dropItemNaturally(event.getPlayer().getEyeLocation(), stack);
-						addedNotRequiredItems = true;
-					}
-				}
-				
-				if (beakersGiven >= tech.getBeakersLeft()) { //Drop extra beakers collected
-					int beakersToDrop = beakersGiven - tech.getBeakersLeft();
-					tech.setBeakersLeft(0);
-					tech.saveNow();
-					civ.addTech(techTech);
-					civ.removeTechFromProgress(techTech);
-					civ.saveNow();
-					CivMessage.global("The civilization of "+civ.getName()+" has completed researching "+techTech.name+"!");
-					if (beakersToDrop > 0) {
-						for (int i = 0; i < beakersToDrop; i++) {
-							ItemStack newMat = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_beakers"));
-							p.getWorld().dropItemNaturally(event.getPlayer().getEyeLocation(), newMat);
-							addedNotRequiredItems = true;
-						}
-					}
-				} else if (beakersGiven <= tech.getBeakersLeft() && beakersGiven > 0) { //Deposit anything left to the tech
-					tech.setBeakersLeft(tech.getBeakersLeft()-beakersGiven);
-					tech.saveNow();
-					CivGlobal.removeTechnology(tech);
-					CivGlobal.addTechnology(tech);
-					CivMessage.sendCiv(civ, "Our research on "+techTech.name+" recived "+beakersGiven+" beakers. It now has "+tech.getBeakersLeft()+" beakers left to completion.");
-				} else if (beakersGiven <= 0) {
-					CivMessage.sendError(p, "Please deposit beakers in order to research!");
-				}
-			}
-			
-			if (addedNotRequiredItems == true) {
-				CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
-			}
-		}*/
-		
 	}
 	
 	@Override

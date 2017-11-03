@@ -52,18 +52,15 @@ public class AdminBuildCommand extends CommandBase {
 		commands.put("listinvalid", "lists all invalid buildables.");
 		commands.put("showbuildable", "[loc] - show this buildable's y percertages.");
 
-		//commands.put("repairwonder", "Fixes the nearest wonder, requires confirmation.");		
+		//commands.put("repairwonder", "Fixes the nearest wonder, requires confirmation.");
 	}
-
+	
 	public void showbuildable_cmd() throws CivException {
 		String locString = getNamedString(1, "Complete location.");
-		
 		for (Buildable buildable : Buildable.invalidBuildables) {
 			if (buildable.getCorner().toString().equalsIgnoreCase(locString)) {
-				
 				for (Integer y : buildable.layerValidPercentages.keySet()) {
 					BuildableLayer layer = buildable.layerValidPercentages.get(y);
-					
 					Double percentage = (double)layer.current / (double)layer.max;
 					CivMessage.send(sender, "y:"+y+" percentage:"+percentage+" ("+layer.current+"/"+layer.max+")");
 				}

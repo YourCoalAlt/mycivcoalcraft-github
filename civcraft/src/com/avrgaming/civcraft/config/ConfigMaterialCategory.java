@@ -13,7 +13,7 @@ public class ConfigMaterialCategory {
 	public int craftableCount = 0;
 	
 	public static void addMaterial(ConfigMaterial mat) {
-		ConfigMaterialCategory cat = categories.get(mat.categoryCivColortripped);
+		ConfigMaterialCategory cat = categories.get(mat.categoryCivColorStripped);
 		if (cat == null) {
 			cat = new ConfigMaterialCategory();
 			cat.name = mat.category;
@@ -21,7 +21,7 @@ public class ConfigMaterialCategory {
 		
 		cat.materials.put(mat.id, mat);
 		if (mat.craftable) cat.craftableCount++;
-		categories.put(mat.categoryCivColortripped, cat);
+		categories.put(mat.categoryCivColorStripped, cat);
 	}
 	
 	public static Collection<ConfigMaterialCategory> getCategories() {

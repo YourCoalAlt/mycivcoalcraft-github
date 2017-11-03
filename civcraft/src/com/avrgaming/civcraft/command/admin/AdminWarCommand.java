@@ -18,7 +18,6 @@
  */
 package com.avrgaming.civcraft.command.admin;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -29,11 +28,12 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.threading.TaskMaster;
-import com.avrgaming.civcraft.threading.tasks.PlayerKickBan;
+import com.avrgaming.civcraft.threading.tasks.PlayerModerationBan;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.War;
 
 public class AdminWarCommand extends CommandBase {
-
+	
 	@Override
 	public void init() {
 		command = "/ad war";
@@ -47,32 +47,30 @@ public class AdminWarCommand extends CommandBase {
 	}
 	
 	public void onlywarriors_cmd() {
-		
 		War.setOnlyWarriors(!War.isOnlyWarriors());
-		
 		if (War.isOnlyWarriors()) {
-		
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				Resident resident = CivGlobal.getResident(player);
-				
-				if (player.isOp() || player.hasPermission(CivSettings.MINI_ADMIN)) {
+				Resident res = CivGlobal.getResident(player);
+				if (player.isOp() || player.hasPermission(CivSettings.MINI_ADMIN) || player.hasPermission(CivSettings.ADMIN)) {
 					CivMessage.send(sender, "Skipping "+player.getName()+" since he is OP or mini admin.");
 					continue;
 				}
 				
-				if (resident == null || !resident.hasTown() || 
-						!resident.getTown().getCiv().getDiplomacyManager().isAtWar()) {
+				if (res == null || !res.hasTown() || !res.getCiv().getDiplomacyManager().isAtWar()) {
+					float bantime = War.getEnd().getTime() - System.currentTimeMillis();
+					long seconds = (long) (bantime / 1000); long minutes = seconds / 60; long hours = minutes / 60;
+//					String time = days + ":" + hours % 24 + ":" + minutes % 60 + ":" + seconds % 60; 
 					
-					TaskMaster.syncTask(new PlayerKickBan(player.getName(), true, false, "Kicked: Only residents 'at war' can play right now."));
+					TaskMaster.syncTask(new PlayerModerationBan(res.getName(), CivColor.RedBold+"Console",
+							"Only players at war can be online during wartime! You will be unbanned at the end of war.",
+							(int)(hours % 24), (int)(minutes % 60), (int)(seconds % 60)));
 				}	
 			}
-			
 			CivMessage.global("All players 'not at war' have been kicked and cannot rejoin.");
 		} else {
 			CivMessage.global("All players are now allowed to join again.");
 		}
 	}
-	
 	
 //	public void setlastwar_cmd() throws CivException {
 //		if (args.length < 2) {
@@ -90,36 +88,32 @@ public class AdminWarCommand extends CommandBase {
 //		} catch (ParseException e) {
 //			throw new CivException("Couldnt parse "+args[1]+" into a date, use format: DAY:MONTH:YEAR:HOUR:MIN");
 //		}
-//		
 //	}
 	
 	public void start_cmd() {
-		
 		War.setWarTime(true);
 		CivMessage.sendSuccess(sender, "WarTime enabled.");
 	}
 	
 	public void stop_cmd() {
-		
 		War.setWarTime(false);
 		CivMessage.sendSuccess(sender, "WarTime disabled.");
 	}
-
+	
 	@Override
 	public void doDefaultAction() throws CivException {
 		showHelp();
 	}
-
+	
 	@Override
 	public void showHelp() {
 		showBasicHelp();
 	}
-
+	
 	@Override
 	public void permissionCheck() throws CivException {
 		if (sender.isOp() == false) {
 			throw new CivException("Only admins can use this command.");			
 		}	
 	}
-
 }

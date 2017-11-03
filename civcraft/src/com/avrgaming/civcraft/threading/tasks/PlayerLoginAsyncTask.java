@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.anticheat.ACManager;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.session.SessionEntry;
@@ -258,15 +257,6 @@ public class PlayerLoginAsyncTask implements Runnable {
 				}
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
-			}
-			
-			
-			/* Send Anti-Cheat challenge to player. */
-			if (!getPlayer().hasPermission("civ.ac_valid")) {
-				resident.setUsesAntiCheat(false);
-				ACManager.sendChallenge(getPlayer());
-			} else {
-				resident.setUsesAntiCheat(true);
 			}
 	
 			// Check for pending respawns.

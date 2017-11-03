@@ -97,8 +97,6 @@ public class Resident extends SQLObject {
 	private boolean adminChat = false;
 	private boolean combatInfo = false;
 	
-	private boolean usesAntiCheat = false;
-	
 	public static HashSet<String> allchatters = new HashSet<String>();
 	
 	/* Town or civ to chat in besides your own. */
@@ -500,9 +498,12 @@ public class Resident extends SQLObject {
 	}
 	
 	public String getTownString() {
-		if (town == null) {
-			return "none";
-		}
+		if (town == null) { return "none"; }
+		return this.getTown().getName();
+	}
+	
+	public String getCivString() {
+		if (town == null) { return "none"; }
 		return this.getTown().getName();
 	}
 	
@@ -1521,15 +1522,6 @@ public class Resident extends SQLObject {
 		}
 		
 		return true;
-	}
-
-	public boolean isUsesAntiCheat() throws CivException {
-		CivGlobal.getPlayer(this);
-		return usesAntiCheat;
-	}
-
-	public void setUsesAntiCheat(boolean usesAntiCheat) {
-		this.usesAntiCheat = usesAntiCheat;
 	}
 	
 	public void saveInventory() {

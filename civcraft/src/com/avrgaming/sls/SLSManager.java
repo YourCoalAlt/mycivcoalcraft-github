@@ -17,7 +17,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.TimeTools;
 
 public class SLSManager implements Runnable {
-
+	
 	public static String serverName;
 	public static String serverDescription;
 	public static String serverAddress;
@@ -26,14 +26,7 @@ public class SLSManager implements Runnable {
 	
 	public static void init() throws CivException, InvalidConfiguration {
 		String useListing = CivSettings.getStringBase("use_server_listing_service");
-		
-		if (useListing == null) {
-			return;
-		}
-		
-		if (!useListing.equalsIgnoreCase("true")) {
-			return;
-		}
+		if (useListing == null || !useListing.equalsIgnoreCase("true")) { return; }
 		
 		serverName = CivSettings.getStringBase("server_name");
 		if (serverName.contains(";")) {
@@ -55,15 +48,12 @@ public class SLSManager implements Runnable {
 			throw new CivException("Cannot have a server timezone with a ';' in it.");
 		}
 		
-		
 		gen_id = CivSettings.getGenID();
 		if (gen_id == null) {
 			UUID uid = UUID.randomUUID();
 			gen_id = uid.toString();
 			CivSettings.saveGenID(gen_id);
 		}
-		
-	
 		TaskMaster.asyncTimer("SLS", new SLSManager(), TimeTools.toTicks(30));
 	}
 	
@@ -83,8 +73,7 @@ public class SLSManager implements Runnable {
 				if (CivSettings.getStringBase("debug_heartbeat").equalsIgnoreCase("true")) {
 					CivLog.info("SLS HEARTBEAT:"+message);
 				}
-			} catch (InvalidConfiguration e1) {
-			}
+			} catch (InvalidConfiguration e1) { }
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.toCharArray().length, address, 25580);
 			DatagramSocket socket;
@@ -94,17 +83,13 @@ public class SLSManager implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 		} catch (UnknownHostException e) {
 			CivLog.error("Couldn't IP address to SLS service. If you're on a LAN with no internet access, disable SLS in the CivCraft config.");
-			//e.printStackTrace();
 		}
 	}
-
-
+	
 	@Override
 	public void run() {
 		SLSManager.sendHeartbeat();
 	}
-	
 }

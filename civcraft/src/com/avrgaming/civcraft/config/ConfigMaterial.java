@@ -23,7 +23,7 @@ public class ConfigMaterial {
 	public boolean shaped = false;
 	public boolean craftable = false;
 	public String category = "Misc";
-	public String categoryCivColortripped = category;
+	public String categoryCivColorStripped = category;
 	public int tier = 0;
 	
 	/* Optional */
@@ -49,23 +49,6 @@ public class ConfigMaterial {
 			mat.name = (String)b.get("name");
 			mat.name = CivColor.colorize(mat.name);
 			
-			String info = (String)b.get("info");
-			if (info != null) {
-				String[] split = info.split(";");
-				mat.craftable = Boolean.valueOf(split[0]);
-				mat.shaped = Boolean.valueOf(split[1]);
-				
-				mat.category = CivColor.colorize(split[2]);
-				mat.categoryCivColortripped = CivColor.stripTags(split[2]);
-				if (mat.category.toLowerCase().contains("tier 1")) mat.tier = 1;
-				else if (mat.category.toLowerCase().contains("tier 2")) mat.tier = 2;
-				else if (mat.category.toLowerCase().contains("tier 3")) mat.tier = 3;
-				else if (mat.category.toLowerCase().contains("tier 4")) mat.tier = 4;
-				else mat.tier = 0;
-				
-				if (split[3] != null) mat.shiny = Boolean.valueOf(split[3]);
-			}
-			
 			Boolean craftable = (Boolean)b.get("craftable");
 			if (craftable != null) {
 				mat.craftable = craftable;
@@ -74,6 +57,18 @@ public class ConfigMaterial {
 			Boolean shaped = (Boolean)b.get("shaped");
 			if (shaped != null) {
 				mat.shaped = shaped;
+			}
+			
+			String category = (String)b.get("category");
+			if (category != null) {
+				mat.category = CivColor.colorize(category);
+				mat.categoryCivColorStripped = CivColor.stripTags(category);
+				if (mat.category.toLowerCase().contains("tier 1")) mat.tier = 1;
+				else if (mat.category.toLowerCase().contains("tier 2")) mat.tier = 2;
+				else if (mat.category.toLowerCase().contains("tier 3")) mat.tier = 3;
+				else if (mat.category.toLowerCase().contains("tier 4")) mat.tier = 4;
+				else mat.tier = 0;
+				
 			}
 			
 			Boolean shiny = (Boolean)b.get("shiny");

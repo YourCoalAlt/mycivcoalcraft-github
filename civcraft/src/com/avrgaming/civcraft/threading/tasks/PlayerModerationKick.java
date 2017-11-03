@@ -26,12 +26,12 @@ public class PlayerModerationKick implements Runnable {
 			return;
 		}
 		
-		p.kickPlayer("Â§bÂ§lÂ« CivilizationCraft Â»"+"\n"+
+		p.kickPlayer(" §b§l« CivilizationCraft »"+"\n"+
 				" "+"\n"+
-				"Â§cÂ§lKicked By Â§rÂ§8Â»Â§ Â§dÂ§o"+kickedBy+"\n"+
-				"Â§cÂ§lReason Â§rÂ§8Â»Â§ Â§f"+reason+"\n"+
+				"§c§lKicked By §r§8»§ §d§o"+kickedBy+"\n"+
+				"§c§lReason §r§8»§ §f"+reason+"\n"+
 				" "+"\n"+
 				" "+"\n"+
-				"Â§7Â§o[You may re-join the server.]"+"\n");
+				"§7§o[You may re-join the server.]"+"\n");
 	}
 }

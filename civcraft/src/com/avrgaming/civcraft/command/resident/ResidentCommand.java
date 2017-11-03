@@ -293,7 +293,11 @@ public class ResidentCommand extends CommandBase {
 		Date lastOnline = new Date(resident.getLastOnline());
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 		CivMessage.send(sender, CivColor.Green+"Last Online:"+CivColor.LightGreen+sdf.format(lastOnline));
-		CivMessage.send(sender, CivColor.Green+"Town: "+CivColor.LightGreen+resident.getTownString());
+		if (resident.hasTown()) {
+			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGreen+resident.getTownString()+", "+resident.getCivString());
+		} else {
+			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGray+" Currently Homeless");
+		}
 		
 		if (sender.getName().equalsIgnoreCase(resident.getName()) || sender.isOp()) {
 			CivMessage.send(sender, CivColor.Green+"Personal Treasury: "+CivColor.LightGreen+resident.getTreasury().getBalance()+" "+
@@ -318,13 +322,15 @@ public class ResidentCommand extends CommandBase {
 		CivMessage.send(sender, CivColor.Green+"Groups: "+resident.getGroupsString());
 		
 		try {
-			if (resident.isUsesAntiCheat()) {
-				CivMessage.send(sender, CivColor.LightGreen+"Online and currently using CivCraft's Anti-Cheat");
+			Player p = CivGlobal.getPlayer(resident);
+			if (p.isOnline()) {
+				CivMessage.send(sender, CivColor.LightGreen+"Currently Online and validated.");
 			} else {
-				CivMessage.send(sender, CivColor.Rose+"Online but NOT validated by CivCraft's Anti-Cheat");
+				CivMessage.send(sender, CivColor.LightGray+"Resident is not currently online.");
 			}
 		} catch (CivException e) {
-			CivMessage.send(sender, CivColor.LightGray+"Resident is not currently online.");
+			CivMessage.send(sender, CivColor.Rose+"Invalid player...? Contact an admin.");
+			e.printStackTrace();
 		}	
 	}
 	
@@ -339,10 +345,8 @@ public class ResidentCommand extends CommandBase {
 	public void showHelp() {
 		showBasicHelp();
 	}
-
+	
 	@Override
 	public void permissionCheck() throws CivException {
-		
 	}
-
 }

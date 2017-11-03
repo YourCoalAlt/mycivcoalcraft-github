@@ -1,7 +1,7 @@
 # Used for various things in the plugin including: random TP, 
 world:
-   radius_x: 7500
-   radius_z: 7500
+   radius_x: 8000
+   radius_z: 8000
 # Controls the PvP aspect of the game.
 pvp:
    # Enable or Disable attack cooldown.
@@ -34,6 +34,15 @@ coal:
    max_drop: 1
    max_drop_fortune: 2
 coal_hammers:
+   min_drop: 0
+   max_drop: 1
+   max_drop_fortune: 2
+# Amount of items to drop from Redstone Ore
+redstone:
+   min_drop: 4
+   max_drop: 5
+   max_drop_fortune: 7
+redstone_beakers:
    min_drop: 0
    max_drop: 1
    max_drop_fortune: 2

@@ -51,15 +51,15 @@ public class PlayerModerationBan implements Runnable {
 		sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
 		Date date = new Date(res.getBannedLength());
 		
-		p.kickPlayer("Â§bÂ§lÂ« CivilizationCraft Â»"+"\n"+
+		p.kickPlayer(" §b§l« CivilizationCraft »"+"\n"+
 							" "+"\n"+
-							"Â§cÂ§lBanned By Â§rÂ§8Â»Â§ Â§dÂ§o"+bannedBy+"\n"+
-							"Â§cÂ§lReason Â§rÂ§8Â»Â§ Â§f"+reason+"\n"+
-							"Â§cÂ§lLength Â§rÂ§8Â»Â§ Â§a"+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+"\n"+
-							"Â§cÂ§lUnbanned At Â§rÂ§8Â»Â§ Â§f"+sdf.format(date)+"\n"+
+							"§c§lBanned By §r§8»§ §d§o"+bannedBy+"\n"+
+							"§c§lReason §r§8»§ §f"+reason+"\n"+
+							"§c§lLength §r§8»§ §a"+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+"\n"+
+							"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
 							" "+"\n"+
 							" "+"\n"+
-							"Â§eÂ§lAppeal at Â§rÂ§8Â»Â§ Â§6http://coalcivcraft.enjin.com/forum"+"\n"+
-							"Â§7Â§o[You are banned, cannot rejoin server.]"+"\n");
+							"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
+							"§7§o[You are banned, cannot rejoin server.]"+"\n");
 	}
 }

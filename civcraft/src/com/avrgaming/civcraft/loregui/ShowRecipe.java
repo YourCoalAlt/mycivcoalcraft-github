@@ -160,7 +160,7 @@ public class ShowRecipe implements GuiAction {
 			backButton = LoreGuiItem.setActionData(backButton, "invName", inv.getName());
 			recInv.setItem(LoreGuiItem.MAX_INV_SIZE-1, backButton);
 		} else {
-			ConfigMaterialCategory cat = ConfigMaterialCategory.getCategory(craftMat.getConfigMaterial().categoryCivColortripped); 
+			ConfigMaterialCategory cat = ConfigMaterialCategory.getCategory(craftMat.getConfigMaterial().categoryCivColorStripped); 
 			if (cat != null) {					
 				ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Category "+cat.name);
 				backButton = LoreGuiItem.setAction(backButton, "OpenInventory");

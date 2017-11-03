@@ -35,14 +35,14 @@ public class PlayerModerationKickBan implements Runnable {
 		sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
 		Date date = new Date(res.getBannedLength());
 		
-		p.kickPlayer("Â§bÂ§lÂ« CivilizationCraft Â»"+"\n"+
+		p.kickPlayer(" §b§l« CivilizationCraft »"+"\n"+
 				" "+"\n"+
-				"Â§cÂ§lKicked By Â§rÂ§8Â»Â§ Â§dÂ§o"+kickedBy+"\n"+
-				"Â§cÂ§lReason Â§rÂ§8Â»Â§ Â§fBanned: "+reason+"\n"+
-				"Â§cÂ§lUnbanned At Â§rÂ§8Â»Â§ Â§f"+sdf.format(date)+"\n"+
+				"§c§lKicked By §r§8»§ §d§o"+kickedBy+"\n"+
+				"§c§lReason §r§8»§ §fBanned: "+reason+"\n"+
+				"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
 				" "+"\n"+
 				" "+"\n"+
-				"Â§eÂ§lAppeal at Â§rÂ§8Â»Â§ Â§6http://coalcivcraft.enjin.com/forum"+"\n"+
-				"Â§7Â§o[You are banned, cannot rejoin server.]"+"\n");
+				"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
+				"§7§o[You are banned, cannot rejoin server.]"+"\n");
 	}
 }

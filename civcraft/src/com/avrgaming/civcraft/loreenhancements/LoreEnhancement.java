@@ -65,27 +65,56 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isArmor(ItemStack item) {
+		return isHelmet(item) || isChestplate(item) || isLeggings(item) || isBoots(item);
+	}
+	
+	public static boolean isHelmet(ItemStack item) {
+		switch (ItemManager.getId(item)) {
+		case CivData.LEATHER_HELMET:
+		case CivData.CHAIN_HELMET:
+		case CivData.GOLD_HELMET:
+		case CivData.IRON_HELMET:
+		case CivData.DIAMOND_HELMET:
+		case CivData.ELYTRA:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	public static boolean isChestplate(ItemStack item) {
+		switch (ItemManager.getId(item)) {
+		case CivData.LEATHER_CHESTPLATE:
+		case CivData.CHAIN_CHESTPLATE:
+		case CivData.GOLD_CHESTPLATE:
+		case CivData.IRON_CHESTPLATE:
+		case CivData.DIAMOND_CHESTPLATE:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	public static boolean isLeggings(ItemStack item) {
+		switch (ItemManager.getId(item)) {
+		case CivData.LEATHER_LEGGINGS:
+		case CivData.CHAIN_LEGGINGS:
+		case CivData.GOLD_LEGGINGS:
+		case CivData.IRON_LEGGINGS:
+		case CivData.DIAMOND_LEGGINGS:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	public static boolean isBoots(ItemStack item) {
 		switch (ItemManager.getId(item)) {
 		case CivData.LEATHER_BOOTS:
-		case CivData.LEATHER_CHESTPLATE:
-		case CivData.LEATHER_HELMET:
-		case CivData.LEATHER_LEGGINGS:
-		case CivData.IRON_BOOTS:
-		case CivData.IRON_CHESTPLATE:
-		case CivData.IRON_HELMET:
-		case CivData.IRON_LEGGINGS:
-		case CivData.DIAMOND_BOOTS:
-		case CivData.DIAMOND_CHESTPLATE:
-		case CivData.DIAMOND_HELMET:
-		case CivData.DIAMOND_LEGGINGS:
 		case CivData.CHAIN_BOOTS:
-		case CivData.CHAIN_CHESTPLATE:
-		case CivData.CHAIN_HELMET:
-		case CivData.CHAIN_LEGGINGS:
 		case CivData.GOLD_BOOTS:
-		case CivData.GOLD_CHESTPLATE:
-		case CivData.GOLD_HELMET:
-		case CivData.GOLD_LEGGINGS:
+		case CivData.IRON_BOOTS:
+		case CivData.DIAMOND_BOOTS:
 			return true;
 		default:
 			return false;

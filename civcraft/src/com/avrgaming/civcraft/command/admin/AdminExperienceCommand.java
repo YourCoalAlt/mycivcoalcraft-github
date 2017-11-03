@@ -20,9 +20,7 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 	}
 	
 	public void quest_cmd() throws CivException {
-		if (args.length < 3) {
-			throw new CivException("Please check your command: Must include resident name and a value.");
-		}
+		if (args.length < 3) throw new CivException("Please check your command: Must include resident name and a value.");
 		ResidentExperience re = CivGlobal.getResidentE(args[1]);
 		double value = Double.valueOf(args[2]);
 		re.addQuestEXP(value);
@@ -31,9 +29,7 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 	}
 	
 	public void mining_cmd() throws CivException {
-		if (args.length < 3) {
-			throw new CivException("Please check your command: Must include resident name and a value.");
-		}
+		if (args.length < 3) throw new CivException("Please check your command: Must include resident name and a value.");
 		ResidentExperience re = CivGlobal.getResidentE(args[1]);
 		double value = Double.valueOf(args[2]);
 		re.addMiningEXP(value);
@@ -42,9 +38,7 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 	}
 	
 	public void fishing_cmd() throws CivException {
-		if (args.length < 3) {
-			throw new CivException("Please check your command: Must include resident name and a value.");
-		}
+		if (args.length < 3) throw new CivException("Please check your command: Must include resident name and a value.");
 		ResidentExperience re = CivGlobal.getResidentE(args[1]);
 		double value = Double.valueOf(args[2]);
 		re.addFishingEXP(value);
