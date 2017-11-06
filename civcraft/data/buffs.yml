@@ -4,16 +4,26 @@
 #
 #
 
+#stackable_text: '<greenb>Stackable<r>'
+#unstackable_text: '<redb>Not Stackable<r>'
+
 buffs:
     - id: 'buff_construction'
       name: 'Construction'
-      description: 'Increases hammer production by <lightgreen>100<r> hammers. <gold>Stackable<r>'
-#      value: '0.25'
+      description: 'Increases hammer production by <lightgreen>100<r> hammers. <greenb>Stackable<r>'
       effect: 'hammercount'
       value: '100'
       stackable: true
       parent:
-   
+#
+    - id: 'buff_hedonism'
+      name: 'Hedonism'
+      description: 'Grants an extra <lightgreen>3<r> happiness. <greenb>Stackable<r>'
+      effect: 'happinesscount'
+      value: '3.0'
+      stackable: true
+      parent:
+#
     - id: 'buff_year_of_plenty'
       name: 'Year Of Plenty'
       description: 'Increases growth rate of farms by <lightgreen>20%<r>. <gold>Stackable<r>'
@@ -21,7 +31,7 @@ buffs:
       value: '0.2'
       stackable: true
       parent:
-
+#
     - id: 'buff_innovation'
       name: 'Innovation'
       description: 'Increases Science rate for civilization by <lightgreen>10%<r> <gold>Stackable<r>'
@@ -39,7 +49,7 @@ buffs:
     
     - id: 'buff_preservative'
       name: 'Preservative'
-      description: 'Reduces consumption of cottages by <lightgreen>50%<r>'
+      description: 'Reduces consumption of cottages by <lightgreen>50%<r>. <redb>Not Stackable<r>'
       value: '0.5'
       stackable: false
       parent:
@@ -134,13 +144,6 @@ buffs:
       description: 'Greatly increases the effectivenes of sabotage missions by <lightgreen>50%<r>'
       value: '0.5'
       stackable: false
-      parent:
-
-    - id: 'buff_hedonism'
-      name: 'Hedonism'
-      description: 'Grants an extra <lightgreen>3<r> happiness'
-      value: '3.0'
-      stackable: true
       parent:
 
     - id: 'buff_noanarchy'

@@ -169,13 +169,14 @@ public final class CivCraft extends JavaPlugin {
 
 		TaskMaster.asyncTimer("BeakerTimer", new BeakerTimer(60), TimeTools.toTicks(60));
 		TaskMaster.syncTimer("UnitTrainTimer", new UnitTrainTimer(), TimeTools.toTicks(1));
-		TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(2));
 
 		try {
+			final int exposure_time = (int)CivSettings.getInteger(CivSettings.espionageConfig, "reduce_time");
+			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));
+			
 			double arrow_firerate = CivSettings.getDouble(CivSettings.warConfig, "arrow_tower.fire_rate");
 			TaskMaster.syncTimer("arrowTower", new ProjectileComponentTimer(), (int)(arrow_firerate*20));	
 			TaskMaster.asyncTimer("ScoutTowerTask", new ScoutTowerTask(), TimeTools.toTicks(1));
-			
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
 			return;
@@ -386,18 +387,22 @@ public final class CivCraft extends JavaPlugin {
 		}
 		
 		for (Civilization civ : CivGlobal.getCivs()) {
+			civ.save();
 			CivGlobal.removeCiv(civ);
 		}
 		
 		for (Town town : CivGlobal.getTowns()) {
+			town.save();
 			CivGlobal.removeTown(town);
 		}
 		
 		for (Resident resident : CivGlobal.getResidents()) {
+			resident.save();
 			CivGlobal.removeResident(resident);
 		}
 		
 		for (TownChunk tc : CivGlobal.getTownChunks()) {
+			tc.save();
 			CivGlobal.removeTownChunk(tc);
 		}
 		
@@ -406,18 +411,22 @@ public final class CivCraft extends JavaPlugin {
 		}
 		
 		for (Structure structure : CivGlobal.getStructures()) {
+			structure.save();
 			CivGlobal.removeStructure(structure);
 		}
 		
 		for (Wonder wonder : CivGlobal.getWonders()) {
+			wonder.save();
 			CivGlobal.removeWonder(wonder);
 		}
 		
 		for (TradeGood tg : CivGlobal.getTradeGoods()) {
+			tg.save();
 			CivGlobal.removeTradeGood(tg);
 		}
 		
 		for (ProtectedBlock pg : CivGlobal.getProtectedBlocks()) {
+			pg.save();
 			CivGlobal.removeProtectedBlock(pg);
 		}
 	}

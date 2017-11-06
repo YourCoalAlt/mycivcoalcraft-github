@@ -29,19 +29,17 @@ import com.avrgaming.civcraft.threading.tasks.FoundCivSync;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class InteractiveConfirmCivCreation implements InteractiveResponse {
-
+	
 	@Override
 	public void respond(String message, Resident resident) {
-		
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(resident);
 		} catch (CivException e) {
 			return;
 		}
-
+		
 		resident.clearInteractiveMode();
-
 		if (!message.equalsIgnoreCase("yes")) {
 			CivMessage.send(player, "Civilization creation cancelled.");
 			return;
@@ -53,7 +51,5 @@ public class InteractiveConfirmCivCreation implements InteractiveResponse {
 		}
 		
 		TaskMaster.syncTask(new FoundCivSync(resident));
-
 	}
-
 }

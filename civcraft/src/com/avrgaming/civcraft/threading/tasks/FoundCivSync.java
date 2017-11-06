@@ -28,16 +28,14 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class FoundCivSync implements Runnable {
-
-	Resident resident;
 	
+	Resident resident;
 	public FoundCivSync(Resident resident) {
 		this.resident = resident;
 	}
 	
 	@Override
 	public void run() {
-
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(resident);
@@ -50,9 +48,5 @@ public class FoundCivSync implements Runnable {
 		} catch (CivException e) {
 			CivMessage.send(player, CivColor.Rose+e.getMessage());
 		}
-		
 	}
-
-	
-	
 }

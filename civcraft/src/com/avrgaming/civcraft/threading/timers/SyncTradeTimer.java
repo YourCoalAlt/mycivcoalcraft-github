@@ -27,20 +27,15 @@ import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class SyncTradeTimer implements Runnable {
-
+	
 	public SyncTradeTimer() {
 	}
 	
 	public void processTownsTradePayments(Town town) {
-		
-		//goodies = town.getEffectiveBonusGoodies();
-		
-		//double payment = TradeGood.getTownTradePayment(town, goodies);
 		double payment = TradeGood.getTownTradePayment(town);
 		DecimalFormat df = new DecimalFormat();
 		
-		if (payment > 0.0) {
-			
+		if (payment > 0) {
 			double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
 			if (taxesPaid > 0) {
 				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade."+
@@ -48,7 +43,6 @@ public class SyncTradeTimer implements Runnable {
 			} else {
 				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade.");
 			}
-			
 			town.getTreasury().deposit(payment - taxesPaid);
 			town.getDepositCiv().taxPayment(town, taxesPaid);
 		}
@@ -56,12 +50,9 @@ public class SyncTradeTimer implements Runnable {
 	
 	@Override
 	public void run() {
-		if (!CivGlobal.tradeEnabled) {
-			return;
-		}
-
-		CivGlobal.checkForDuplicateGoodies();
+		if (!CivGlobal.tradeEnabled) { return; }
 		
+		CivGlobal.checkForDuplicateGoodies();
 		for (Town town : CivGlobal.getTowns()) {
 			try {
 				processTownsTradePayments(town);
@@ -70,5 +61,4 @@ public class SyncTradeTimer implements Runnable {
 			}
 		}
 	}
-
 }

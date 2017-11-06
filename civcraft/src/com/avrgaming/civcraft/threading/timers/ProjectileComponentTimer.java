@@ -11,10 +11,7 @@ public class ProjectileComponentTimer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (!CivGlobal.towersEnabled) {
-				return;
-			}
-			
+			if (!CivGlobal.towersEnabled) { return; }
 			ProjectileComponent.componentsLock.lock();
 			try {
 				ArrayList<Component> projectileComponents = ProjectileComponent.componentsByType.get(ProjectileComponent.class.getName());

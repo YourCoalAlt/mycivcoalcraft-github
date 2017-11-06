@@ -25,31 +25,22 @@ import com.avrgaming.civcraft.components.Component;
 import com.avrgaming.civcraft.components.PlayerProximityComponent;
 
 public class PlayerProximityComponentTimer implements Runnable {
-
+	
 	@Override
 	public void run() {
-		
-		/* 
-		 * Grab all of the player proximity components and update them, this task
+		/* Grab all of the player proximity components and update them, this task
 		 * runs asynchronously once per tick and gathers all of the player locations
-		 * into an async friendly data-structure.
-		 */
+		 * into an async friendly data-structure. */
 		
 		Component.componentsLock.lock();
 		try {
 			ArrayList<Component> proximityComponents = Component.componentsByType.get(PlayerProximityComponent.class.getName());
-			
-			if (proximityComponents == null) {
-				return;
-			}
+			if (proximityComponents == null) { return; }
 
-			/* 
-			 * Wait for the lock to free up before we continue; 
-			 */
+			// Wait for the lock to free up before we continue
 			for (Component comp : proximityComponents) {
 				if (comp instanceof PlayerProximityComponent) {
-					PlayerProximityComponent ppc = (PlayerProximityComponent)comp;
-										
+					PlayerProximityComponent ppc = (PlayerProximityComponent)comp;		
 					if (ppc.lock.tryLock()) {
 						try {
 							ppc.buildNearbyPlayers(PlayerLocationCache.getCache());
@@ -63,5 +54,4 @@ public class PlayerProximityComponentTimer implements Runnable {
 			Component.componentsLock.unlock();
 		}
 	}
-
 }

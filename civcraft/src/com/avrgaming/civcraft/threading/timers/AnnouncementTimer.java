@@ -31,14 +31,11 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class AnnouncementTimer implements Runnable {
-
+	
 	List<String> announcements;
 	
-	
 	public AnnouncementTimer(String filename) {
-		
 		File file = new File(filename);
-		
 		announcements = new ArrayList<String>();
 		
 		if (!file.exists()) {
@@ -48,30 +45,24 @@ public class AnnouncementTimer implements Runnable {
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
-			
 			String line;
 			try {
 				while ((line = br.readLine()) != null) {
 					announcements.add(line);
 				}
-		
 				br.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
 			}
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return;
 		}
-		
 	}
 	
-	
 	@Override
-	public void run() {		
-		
+	public void run() {
 		for (String str : announcements) {
 			CivMessage.sendAll(CivColor.Gold+"Tip: "+CivColor.White+str);
 			
@@ -83,5 +74,4 @@ public class AnnouncementTimer implements Runnable {
 			} 
 		}
 	}
-
 }

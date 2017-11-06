@@ -538,9 +538,7 @@ public class Civilization extends SQLObject {
 
 	public static void newCiv(String name, String capitolName, Resident resident, Player player, Location loc) throws CivException {
 		ItemStack stack = player.getInventory().getItemInMainHand();
-		/*
-		 * Verify we have the correct item somewhere in our inventory.
-		 */
+		// Verify we have the correct item somewhere in our inventory.
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 		if (craftMat == null || !craftMat.hasComponent("FoundCivilization")) {
 			throw new CivException("You must be holding an item that can found a Civilization.");
@@ -556,11 +554,10 @@ public class Civilization extends SQLObject {
 			throw new CivException("A town named "+capitolName+" already exists!");
 		}
 		
-		//Test that we are not too close to another civ
+		// Test that we are not too close to another civ
 		try {
 			int min_distance = CivSettings.getInteger(CivSettings.civConfig, "civ.min_distance");
 			ChunkCoord foundLocation = new ChunkCoord(loc);
-			
 			for (CultureChunk cc : CivGlobal.getCultureChunks()) {
 				if (foundLocation.distance(cc.getChunkCoord()) <= min_distance) {
 					throw new CivException("Too close to the culture of "+cc.getCiv().getName()+", cannot found civilization here.");
@@ -584,7 +581,6 @@ public class Civilization extends SQLObject {
 				}
 			}
 			
-			
 			// Create permission groups for civs.
 			PermissionGroup leadersGroup = new PermissionGroup(civ, "leaders");
 			leadersGroup.addMember(resident);
@@ -595,7 +591,7 @@ public class Civilization extends SQLObject {
 			adviserGroup.saveNow();
 			civ.setAdviserGroup(adviserGroup);
 			
-			/* Save this civ in the db and hashtable. */
+			// Save this civ in the db and hashtable.
 			try {		
 				Town.newTown(resident, capitolName, civ, true, true, loc);
 			} catch (CivException e) {
@@ -617,7 +613,6 @@ public class Civilization extends SQLObject {
 			e.printStackTrace();
 			throw new CivException("Internal SQL Error.");
 		}
-		
 	}
 
 	public String getCapitolName() {

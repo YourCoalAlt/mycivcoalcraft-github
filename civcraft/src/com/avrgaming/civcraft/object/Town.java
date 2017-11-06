@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.object;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -27,11 +28,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,6 +62,7 @@ import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.interactive.InteractiveBuildableRefresh;
 import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.items.units.Unit;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -72,6 +78,7 @@ import com.avrgaming.civcraft.structure.TradeOutpost;
 import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.template.TemplateStream;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.sync.SyncUpdateTags;
 import com.avrgaming.civcraft.threading.tasks.BuildAsyncTask;
@@ -81,6 +88,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
+import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
 import com.avrgaming.global.perks.components.CustomTemplate;
@@ -437,19 +445,11 @@ public class Town extends SQLObject {
 			this.extraHammerRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_hammer_rate");
 			this.extraBeakerRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_beaker_rate");
 			this.extraGrowthRate = CivSettings.getDouble(CivSettings.townConfig, "town.base_growth_rate");
-			
-//			this.happyCoinRate = new AttributeComponent();
-//			this.happyCoinRate.setSource("Happiness");
-//			this.happyCoinRate.setAttrKey(Attribute.TypeKeys.COINS.name());
-//			this.happyCoinRate.setType(AttributeType.RATE);
-//			this.happyCoinRate.setOwnerKey(this.getName());
-//			this.happyCoinRate.registerComponent();
-			
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void setUpgradesFromString(String upgradeString) {
 		String[] split = upgradeString.split(",");
 		
@@ -1454,13 +1454,11 @@ public class Town extends SQLObject {
 	}
 	
 	public void buildStructure(Player player, String id, Location center, Template tpl) throws CivException {
-
 //		if (!center.getWorld().getName().equals("world")) {
 //			throw new CivException("Cannot build structures in the overworld ... for now.");
 //		}
 		
 		Structure struct = Structure.newStructure(center, id, this);
-		
 		if (!this.hasUpgrade(struct.getRequiredUpgrade())) {
 			throw new CivException("We require an upgrade we do not have yet.");
 		}
@@ -1527,7 +1525,12 @@ public class Town extends SQLObject {
 			e.printStackTrace();
 			throw new CivException("Internal Error.");
 		}
-				
+		
+		try {
+			this.buildSupport((Buildable)struct, struct.getCorner());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		this.getTreasury().withdraw(cost);
 		CivMessage.sendTown(this, CivColor.Yellow+"The town has started construction on a "+struct.getDisplayName());
 		
@@ -2357,229 +2360,6 @@ public class Town extends SQLObject {
 			
 		return this.getCiv().getGovernment();
 	}
-	
-	/* 
-	 * Gets the basic amount of happiness for a town.
-	 */
-	public AttrSource getHappiness() {
-		HashMap<String, Double> sources = new HashMap<String, Double>();
-		double total = 0;
-		
-		AttrCache cache = this.attributeCache.get("HAPPINESS");
-		if (cache == null) {
-			cache = new AttrCache();
-			cache.lastUpdate = new Date();
-		} else {
-			Date now = new Date();
-			if (now.getTime() > (cache.lastUpdate.getTime() + ATTR_TIMEOUT_SECONDS*1000)) {
-				cache.lastUpdate = now;
-			} else {
-				return cache.sources;
-			}
-		}
-		
-		/* Add happiness from town level. */
-		double townlevel = CivSettings.townHappinessLevels.get(this.getLevel()).happiness;
-		total += townlevel;
-		sources.put("Base Happiness", townlevel);
-		
-		/* Grab any sources from buffs. */
-		double goodiesWonders = this.buffManager.getEffectiveDouble("buff_hedonism");
-		sources.put("Goodies/Wonders", goodiesWonders);
-		total += goodiesWonders;
-		
-		/* Grab happiness from the number of trade goods socketed. */
-		int tradeGoods = this.bonusGoodies.size();
-		if (tradeGoods > 0) {
-			sources.put("Trade Goods", (double)tradeGoods);
-		}
-		total += tradeGoods;
-		
-		/* Add in base happiness if it exists. */
-		if (this.baseHappy != 0) {
-			sources.put("Base Happiness", this.baseHappy);
-			total += baseHappy;
-		}
-	
-		/* Grab beakers generated from culture. */
-		double fromCulture = 0;
-		for (CultureChunk cc : this.cultureChunks.values()) {
-			fromCulture += cc.getHappiness();
-		}
-		sources.put("Culture Biomes", fromCulture);
-		total += fromCulture;
-		
-		/* Grab happiness generated from structures with components. */
-		double structures = 0;
-		for (Structure struct : this.structures.values()) {
-			for (Component comp : struct.attachedComponents) {
-				if (comp instanceof AttributeBase) {
-					AttributeBase as = (AttributeBase)comp;
-					if (as.getString("attribute").equalsIgnoreCase("HAPPINESS")) {
-						double h = as.getGenerated();
-						if (h > 0) {
-							structures += h;
-						}
-					}
-				}
-			}
-		}
-		total += structures;
-		sources.put("Structures", structures);
-		
-		if (total < 0) {
-			total = 0;
-		}
-		
-		double randomEvent = RandomEvent.getHappiness(this);
-		total += randomEvent;
-		sources.put("Random Events", randomEvent);
-		
-		//TODO Governments
-
-		AttrSource as = new AttrSource(sources, total, null);
-		cache.sources = as;
-		this.attributeCache.put("HAPPINESS", cache);
-		return as;
-	}
-	
-	/* 
-	 * Gets the basic amount of happiness for a town.
-	 */
-	public AttrSource getUnhappiness() {
-		
-		AttrCache cache = this.attributeCache.get("UNHAPPINESS");
-		if (cache == null) {
-			cache = new AttrCache();
-			cache.lastUpdate = new Date();
-		} else {
-			Date now = new Date();
-			if (now.getTime() > (cache.lastUpdate.getTime() + ATTR_TIMEOUT_SECONDS*1000)) {
-				cache.lastUpdate = now;
-			} else {
-				return cache.sources;
-			}
-		}
-		
-		HashMap<String, Double> sources = new HashMap<String, Double>();
-			
-		/* Get the unhappiness from the civ. */
-		double total = this.getCiv().getCivWideUnhappiness(sources);
-		
-		
-		/* Get unhappiness from residents. */ 
-		double per_resident;
-		try {
-			per_resident = CivSettings.getDouble(CivSettings.happinessConfig, "happiness.per_resident");
-		} catch (InvalidConfiguration e) {
-			e.printStackTrace();
-			return null;
-		}
-		double happy_resident = per_resident * this.getResidents().size();
-		sources.put("Residents", happy_resident);
-		total += happy_resident;
-		
-		/* Try to reduce war unhappiness via the component. */
-		if (sources.containsKey("War")) {
-			for (Structure struct : this.structures.values()) {
-				for (Component comp : struct.attachedComponents) {
-					if (!comp.isActive()) {
-						continue;
-					}
-					
-					if (comp instanceof AttributeWarUnhappiness) {
-						AttributeWarUnhappiness warunhappyComp = (AttributeWarUnhappiness)comp;
-						double value = sources.get("War"); // Negative if a reduction 
-						value += warunhappyComp.value;
-						
-						if (value < 0) {
-							value = 0;
-						}
-						
-						sources.put("War", value);
-					}
-				}
-			}
-		}
-		
-		/* Get distance unhappiness from capitol. */
-		if (this.getMotherCiv() == null && !this.isCapitol()) {
-			double distance_unhappy = this.getCiv().getDistanceHappiness(this);
-			total += distance_unhappy;
-			sources.put("Distance To Capitol", distance_unhappy);
-		}
-		
-		/* Add in base unhappiness if it exists. */
-		if (this.baseUnhappy != 0) {
-			sources.put("Base Unhappiness", this.baseUnhappy);
-			total += this.baseUnhappy;
-		}
-		
-		/* Grab unhappiness generated from structures with components. */
-		double structures = 0;
-		for (Structure struct : this.structures.values()) {
-			for (Component comp : struct.attachedComponents) {
-				if (comp instanceof AttributeBase) {
-					AttributeBase as = (AttributeBase)comp;
-					if (as.getString("attribute").equalsIgnoreCase("HAPPINESS")) {
-						double h = as.getGenerated();
-						if (h < 0) {
-							structures += (h*-1);
-						}
-					}
-				}
-			}
-		}
-		total += structures;
-		sources.put("Structures", structures);
-		
-		/* Grabe unhappiness from Random events. */
-		double randomEvent = RandomEvent.getUnhappiness(this);
-		total += randomEvent;
-		if (randomEvent > 0) {
-			sources.put("Random Events", randomEvent);
-		}
-		
-		
-		//TODO Spy Missions
-		//TODO Governments
-
-		if (total < 0) {
-			total = 0;
-		}
-		
-		AttrSource as = new AttrSource(sources, total, null);
-		cache.sources = as;
-		this.attributeCache.put("UNHAPPINESS", cache);
-		return as;	}
-	
-	/*
-	 * Gets the rate at which we will modify other stats
-	 * based on the happiness level.
-	 */
-	public double getHappinessModifier()  {
-		return 1.0;
-	}
-
-	public double getHappinessPercentage() {
-		double total_happiness = getHappiness().total;
-		double total_unhappiness = getUnhappiness().total;
-		
-		double total = total_happiness + total_unhappiness;
-		return total_happiness/total;
-	}
-
-	public ConfigHappinessState getHappinessState() {
-		return CivSettings.getHappinessState(this.getHappinessPercentage());
-	}
-
-	public void setBaseHappiness(double happy) {
-		this.baseHappy  = happy;
-	}
-	
-	public void setBaseUnhappy(double happy) {
-		this.baseUnhappy = happy;
-	}
 
 	public ConcurrentHashMap<BlockCoord, Buildable> getCurrentStructuresInProgress() {
 		return currentStructureInProgress;
@@ -3012,7 +2792,7 @@ public class Town extends SQLObject {
 			cul += cc.getGrowth();
 		}
 		sources.put("Culture Biomes", cul);
-		total += cul; 
+		total += cul;
 		
 		// Trade Goods
 		double buffs = 0;
@@ -3607,6 +3387,201 @@ public class Town extends SQLObject {
 		return as;
 	}
 	
+	//XXX Happiness
+	public AttrSource getHappiness() {
+		HashMap<String, Double> sources = new HashMap<String, Double>();
+		double total = 0;
+		
+		AttrCache cache = this.attributeCache.get("HAPPINESS");
+		if (cache == null) {
+			cache = new AttrCache();
+			cache.lastUpdate = new Date();
+		} else {
+			Date now = new Date();
+			if (now.getTime() > (cache.lastUpdate.getTime() + ATTR_TIMEOUT_SECONDS*1000)) {
+				cache.lastUpdate = now;
+			} else {
+				return cache.sources;
+			}
+		}
+		
+		// Random Events
+		double randomEvent = RandomEvent.getHappiness(this);
+		sources.put("Random Events", randomEvent);
+		total += randomEvent;
+		
+		// Add happiness from town level.
+		double townlevel = CivSettings.townHappinessLevels.get(this.getLevel()).happiness;
+		sources.put("Base Happiness", townlevel);
+		total += townlevel;
+		
+		// Culture
+		double cul = 0;
+		for (CultureChunk cc : this.cultureChunks.values()) {
+			cul += cc.getHappiness();
+		}
+		sources.put("Culture Biomes", cul);
+		total += cul;
+		
+		// Trade Goods
+		double buffs = 0;
+		int buffCount = 0;
+		for (Buff buff : getBuffManager().getAllBuffs()) {
+			if (buff.getEffect() != null && buff.getEffect().toLowerCase().contains("happinesscount")) {
+				buffs += Double.valueOf(buff.getValue());
+				buffCount++;
+			}
+		}
+		sources.put("Buffs (x"+(buffCount)+")", buffs);
+		total += buffs;
+		
+		// Structures and Additional Components
+		double structures = 0;
+		for (Structure struct : this.structures.values()) {
+			for (Component comp : struct.attachedComponents) {
+				if (comp instanceof AttributeBase) {
+					AttributeBase as = (AttributeBase)comp;
+					if (as.getString("attribute").equalsIgnoreCase("HAPPINESS")) {
+						structures += as.getGenerated();
+					}
+				}
+			}
+		}
+		
+		sources.put("Structures", structures);
+		total += structures;
+		
+		if (baseHappy != 0) {
+			sources.put("Base Happiness", baseHappy);
+			total += baseHappy;
+		}
+		
+		if (total < baseHappy) { total = baseHappy; }
+
+		AttrSource as = new AttrSource(sources, total, null);
+		cache.sources = as;
+		this.attributeCache.put("HAPPINESS", cache);
+		return as;
+	}
+	
+	//XXX Unhappiness
+	
+	public AttrSource getUnhappiness() {
+		HashMap<String, Double> sources = new HashMap<String, Double>();
+		double total = 0;
+		
+		AttrCache cache = this.attributeCache.get("UNHAPPINESS");
+		if (cache == null) {
+			cache = new AttrCache();
+			cache.lastUpdate = new Date();
+		} else {
+			Date now = new Date();
+			if (now.getTime() > (cache.lastUpdate.getTime() + ATTR_TIMEOUT_SECONDS*1000)) {
+				cache.lastUpdate = now;
+			} else {
+				return cache.sources;
+			}
+		}
+		
+		// Random Events
+		double randomEvent = RandomEvent.getUnhappiness(this);
+		sources.put("Random Events", randomEvent);
+		total += randomEvent;
+		
+		// Residents
+		try {
+			double per_resident = CivSettings.getDouble(CivSettings.happinessConfig, "happiness.per_resident");
+			double total_resident = per_resident * this.getResidents().size();
+			sources.put("Residents", total_resident);
+			total += total_resident;
+		} catch (InvalidConfiguration e) {
+			CivLog.warning("Cannot set happiness for resident!");
+			e.printStackTrace();
+		}
+		
+		// Civ Unhappiness
+		double civWide = this.getCiv().getCivWideUnhappiness(sources);
+		sources.put("Civilization-Wide", civWide);
+		total += civWide;
+		
+		// Distance unhappiness from capitol
+		if (this.getMotherCiv() == null && !this.isCapitol()) {
+			double distance_unhappy = this.getCiv().getDistanceHappiness(this);
+			total += distance_unhappy;
+			sources.put("Distance To Capitol", distance_unhappy);
+		}
+		
+		// War Unhappiness via Component
+		if (sources.containsKey("War")) {
+			for (Structure struct : this.structures.values()) {
+				for (Component comp : struct.attachedComponents) {
+					if (!comp.isActive()) { continue; }
+					if (comp instanceof AttributeWarUnhappiness) {
+						AttributeWarUnhappiness warunhappyComp = (AttributeWarUnhappiness)comp;
+						double value = sources.get("War"); // Negative if a reduction 
+						value += warunhappyComp.value;
+						if (value < 0) { value = 0; }
+						sources.put("War", value);
+					}
+				}
+			}
+		}
+		
+		// Structures and Additional Components
+		double structures = 0;
+		for (Structure struct : this.structures.values()) {
+			for (Component comp : struct.attachedComponents) {
+				if (comp instanceof AttributeBase) {
+					AttributeBase as = (AttributeBase)comp;
+					if (as.getString("attribute").equalsIgnoreCase("UNHAPPINESS")) {
+						structures += as.getGenerated();
+					}
+					// Conversion if we forget to change all negative to positive.
+					if (as.getString("attribute").equalsIgnoreCase("HAPPINESS")) {
+						double h = as.getGenerated();
+						if (h < 0) {
+							structures += (h*-1);
+						}
+					}
+				}
+			}
+		}
+		
+		sources.put("Structures", structures);
+		total += structures;
+		
+		if (baseUnhappy != 0) {
+			sources.put("Base Unhappiness", baseUnhappy);
+			total += baseUnhappy;
+		}
+		
+		if (total < 0) { total = 0; }
+
+		AttrSource as = new AttrSource(sources, total, null);
+		cache.sources = as;
+		this.attributeCache.put("UNHAPPINESS", cache);
+		return as;
+	}
+
+	public double getHappinessPercentage() {
+		double total_happiness = getHappiness().total;
+		double total_unhappiness = getUnhappiness().total;
+		double total = total_happiness + total_unhappiness;
+		return total_happiness/total;
+	}
+	
+	public ConfigHappinessState getHappinessState() {
+		return CivSettings.getHappinessState(this.getHappinessPercentage());
+	}
+
+	public void setBaseHappiness(double happy) {
+		this.baseHappy  = happy;
+	}
+	
+	public void setBaseUnhappy(double happy) {
+		this.baseUnhappy = happy;
+	}
+	
 	// Support Deposit
 	public Integer getSupportDeposit() {
 		return supportDeposit;
@@ -3632,5 +3607,56 @@ public class Town extends SQLObject {
 		} else {
 			return this.supportDeposit = newAmt;
 		}
+	}
+	
+	public void buildSupport(Buildable buildable, BlockCoord cornerLoc) throws IOException {
+		String templateFilepath = buildable.getSavedTemplatePath();
+		TemplateStream tplStream = new TemplateStream(templateFilepath);
+		List<SimpleBlock> bottomLayer = tplStream.getBlocksForLayer(0);
+		HashMap<ChunkCoord, ChunkSnapshot> chunks = new HashMap<ChunkCoord, ChunkSnapshot>();
+		
+		for (SimpleBlock sb : bottomLayer) {
+			Block next = cornerLoc.getBlock().getRelative(sb.x, cornerLoc.getY(), sb.z);
+			ChunkCoord coord = new ChunkCoord(next.getLocation());
+			if (chunks.containsKey(coord)) { continue; }
+			chunks.put(coord, next.getChunk().getChunkSnapshot());
+		}
+		
+		int canSupport = this.getSupportDeposit();
+		int supported = 0;
+		int failed = 0;
+		for (int y = cornerLoc.getY()-1; y > 0; y--) {
+			for (SimpleBlock sb : bottomLayer) {				
+				/* We only want the bottom layer of a template to be checked. */
+				try {
+					int absX;
+					int absZ;
+					absX = cornerLoc.getX() + sb.x;
+					absZ = cornerLoc.getZ() + sb.z;
+					int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, cornerLoc.getWorldname());
+					if (type == CivData.AIR) {
+						if (canSupport > 0) {
+							// Set block to dirt
+							Bukkit.getWorld("world").getBlockAt(absX, y, absZ).setType(Material.DIRT);
+							canSupport--;
+							supported++;
+						} else {
+							failed++;
+						}
+					}
+				} catch (CivException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		Town t = buildable.getTown();
+		this.setSupportDeposit(canSupport);
+		t.save();
+		CivMessage.sendTown(t, "Our "+buildable.getName()+" has consumed "+supported+" blocks to fill in unsupportive blocks.");
+		if (failed > 0) {
+			CivMessage.sendTown(t, CivColor.Rose+"[Warning!] "+CivColor.RESET+"Our "+buildable.getName()+" did not have the required "+failed+" blocks to fill in unsupportive blocks.");
+		}
+		CivMessage.sendTown(t, "Our town now has "+t.getSupportDeposit()+" blocks left to support structures.");
 	}
 }

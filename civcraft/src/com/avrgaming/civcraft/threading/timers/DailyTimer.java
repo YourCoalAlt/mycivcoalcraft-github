@@ -41,7 +41,7 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.global.perks.PlatinumManager;
 
 public class DailyTimer implements Runnable {
-
+	
 	public static ReentrantLock lock = new ReentrantLock();
 	
 	public DailyTimer() {
@@ -49,7 +49,6 @@ public class DailyTimer implements Runnable {
 	
 	@Override
 	public void run() {
-	
 		if(lock.tryLock()) {
 			try {
 				try {
@@ -77,9 +76,8 @@ public class DailyTimer implements Runnable {
 						}
 					}
 					
-					/* Check for any winners. */
+					// Check for any winners.
 					TaskMaster.asyncTask(new EndGameCheckTask(), 0);
-					
 				} finally {
 					CivLog.info("Daily timer is finished, setting true.");
 					DailyEvent.dailyTimerFinished = true;
@@ -88,7 +86,6 @@ public class DailyTimer implements Runnable {
 				lock.unlock();
 			}
 		}
-		
 	}
 	
 	private void payCivUpkeep() {
@@ -110,16 +107,11 @@ public class DailyTimer implements Runnable {
 			}
 		}
 		
-		
 		for (Civilization civ : CivGlobal.getCivs()) {
-			if (civ.isAdminCiv()) {
-				continue;
-			}
+			if (civ.isAdminCiv()) { continue; }
 			
 			try {
-				double total = 0;
-				
-				total = civ.payUpkeep();
+				double total = civ.payUpkeep();
 				if (civ.getTreasury().inDebt()) {
 					civ.incrementDaysInDebt();
 				}
@@ -131,38 +123,33 @@ public class DailyTimer implements Runnable {
 			}
 		}
 	}
-
+	
 	private void payTownUpkeep() {
 		for (Town t : CivGlobal.getTowns()) {
+			if (t.getCiv().isAdminCiv()) { continue; }
 			try {
-				double total = 0;
-				total = t.payUpkeep();
+				double total = t.payUpkeep();
 				if (t.inDebt()) {
 					t.incrementDaysInDebt();
 				}
-				
-				t.save();
 				CivMessage.sendTown(t, "Paid "+total+" coins in upkeep costs.");
+				t.save();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
+	
 	private void collectTownTaxes() {
-		
 		for (Civilization civ : CivGlobal.getCivs()) {
-			if (civ.isAdminCiv()) {
-				continue;
-			}
-			
+			if (civ.isAdminCiv()) { continue; }
 			
 			double total = 0;
 			for (Town t : civ.getTowns()) {
 				try {
 					double taxrate = t.getDepositCiv().getIncomeTaxRate();
 					double townTotal = 0;
-	
+					
 					townTotal += t.collectPlotTax();
 					townTotal += t.collectFlatTax();
 					
@@ -180,36 +167,27 @@ public class DailyTimer implements Runnable {
 			}
 			
 			if (civ.isForSale()) {
-				/* 
-				 * Civs for sale cannot maintain aggressive wars.
-				 */
+				/* Civs for sale cannot maintain aggressive wars. */
 				civ.clearAggressiveWars();
 			}
-			
 			
 			//TODO make a better messaging system...
 			CivMessage.sendCiv(civ, "Collected "+total+" town taxes.");
 		}
-	
 	}
 	
 	private void decrementResidentGraceCounters() {
-		
 		//TODO convert this from a countdown into a "days in debt" like civs have.
 		LinkedList<Resident> residentsToGive = new LinkedList<Resident>();
 		for (Resident resident : CivGlobal.getResidents()) {
-			if (!resident.hasTown()) {
-				continue;
-			}
+			if (!resident.hasTown()) { continue; }
 			
 			try {
 				if (resident.getDaysTilEvict() > 0) {
 					resident.decrementGraceCounters();
 				}
 				
-				
 				residentsToGive.add(resident);
-				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -219,8 +197,5 @@ public class DailyTimer implements Runnable {
 				CivSettings.platinumRewards.get("inTownDuringUpkeep").name,
 				CivSettings.platinumRewards.get("inTownDuringUpkeep").amount,
 				"Town taxes were collected, but its not all bad. You've earned %d!");
-		
 	}
-
-
 }

@@ -31,17 +31,16 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class InteractiveCapitolName implements InteractiveResponse {
-
+	
 	@Override
 	public void respond(String message, Resident resident) {
-		
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(resident);
 		} catch (CivException e) {
 			return;
 		}
-
+		
 		if (message.equalsIgnoreCase("cancel")) {
 			CivMessage.send(player, "Civilization creation cancelled.");
 			resident.clearInteractiveMode();
@@ -56,7 +55,6 @@ public class InteractiveCapitolName implements InteractiveResponse {
 		
 		message = message.replace(" ", "_");
 		message = message.replace("\"", "");
-		message = message.replace("\'", "");
 		
 		resident.desiredCapitolName = message;
 		CivMessage.send(player, CivColor.LightGreen+"The Civilization of "+CivColor.Yellow+resident.desiredCivName+
@@ -66,11 +64,10 @@ public class InteractiveCapitolName implements InteractiveResponse {
 		class SyncTask implements Runnable {
 			String playerName;
 			
-			
 			public SyncTask(String name) {
 				this.playerName = name;
 			}
-
+			
 			@Override
 			public void run() {
 				Player player;
@@ -81,21 +78,15 @@ public class InteractiveCapitolName implements InteractiveResponse {
 				}
 				
 				Resident resident = CivGlobal.getResident(playerName);
-				if (resident == null) {
-					return;
-				}
+				if (resident == null) { return; }
 				
 				CivMessage.send(player, TownCommand.survey(player.getLocation()));
 				CivMessage.send(player, "");
 				CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"Are you sure? Type 'yes' and I will create this Civilization. Type anything else, and I will forget the whole thing.");
 				resident.setInteractiveMode(new InteractiveConfirmCivCreation());				
 			}
-		
 		}
-
 		TaskMaster.syncTask(new SyncTask(resident.getName())); 
-
 		return;
 	}
-
 }

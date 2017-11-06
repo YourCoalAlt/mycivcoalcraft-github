@@ -45,7 +45,7 @@ public class DebugTestCommand extends CommandBase {
 	public void setlag_cmd() throws CivException {
 		Integer tps = getNamedInteger(1);
 		TaskMaster.syncTimer("lagtimer", new LagSimulationTimer(tps), 0);
-		CivMessage.sendSuccess(sender, "Let the lagging begin.");		
+		CivMessage.sendSuccess(sender, "Let the lagging begin.");
 	}
 	
 	public void getsyncchesttest_cmd() throws CivException {

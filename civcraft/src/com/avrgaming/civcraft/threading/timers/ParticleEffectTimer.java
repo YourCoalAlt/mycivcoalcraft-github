@@ -39,9 +39,7 @@ public class ParticleEffectTimer extends CivAsyncTask {
 		while(iter.hasNext()) {
 			ArrayList<Location> allLocations = new ArrayList<Location>();
 			Structure struct = iter.next().getValue();
-			if (!struct.isActive()) {
-				continue;
-			}
+			if (!struct.isActive()) { continue; }
 			
 			for (Location bc : externalParticleBlocks.keySet()) {
 				if (bc != null) {
@@ -130,14 +128,7 @@ public class ParticleEffectTimer extends CivAsyncTask {
 		while(iter.hasNext()) {
 			ArrayList<Location> specialLocations = new ArrayList<Location>();
 			Structure struct = iter.next().getValue();
-			if (!struct.isActive()) {
-				continue;
-			}
-			
-			//if (!struct.getCenterLocation().getBlock().getChunk().isLoaded()) {
-			//	CivLog.warning("Chunk not loaded for "+struct.getDisplayName());
-			//	continue;
-			//}
+			if (!struct.isActive()) { continue; }
 			
 			if (struct instanceof Trommel) {
 				Trommel trommel = (Trommel) struct;

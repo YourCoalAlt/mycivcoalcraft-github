@@ -16,7 +16,6 @@
  * is strictly forbidden unless prior written permission is obtained
  * from AVRGAMING LLC.
  */
-
 package com.avrgaming.civcraft.items.components;
 
 import java.io.IOException;
@@ -47,8 +46,8 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	public void onPrepareCreate(AttributeUtil attrUtil) {
 		attrUtil.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
 		attrUtil.addLore(ChatColor.RESET+CivColor.Rose+"<Right Click To Use>");
-		//attrUtil.addEnhancement("LoreEnhancementSoulBound", null, null);
-		//attrUtil.addLore(CivColor.Gold+"Soulbound");
+		attrUtil.addEnhancement("LoreEnhancementSoulBound", null, null);
+		attrUtil.addLore(CivColor.Gold+"Soulbound");
 	}
 	
 	public void foundCiv(Player player) throws CivException {
@@ -57,7 +56,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 			throw new CivException("You must be a registered resident to found a civ. This shouldn't happen. Contact an admin.");
 		}
 			
-		/* Build a preview for the Capitol structure. */
+		// Build a preview for the Capitol structure.
 		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Checking structure position...Please wait.");
 		ConfigBuildableInfo info = CivSettings.structures.get("s_capitol");
 		Buildable.buildPerklessVerifyStatic(player, info, player.getLocation(), this);
@@ -71,10 +70,8 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	}
 	
 	public void onInteract(PlayerInteractEvent event) {
-		
 		event.setCancelled(true);
-		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) &&
-				!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			return;
 		}
 		
@@ -85,7 +82,6 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 				this.name = name;
 			}
 			
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				Player player;
@@ -99,13 +95,11 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 				} catch (CivException e) {
 					return;
 				}
-				player.updateInventory();
 			}
 		}
 		TaskMaster.syncTask(new SyncTask(event.getPlayer().getName()));
-		
 	}
-
+	
 	@Override
 	public void execute(String playerName) {
 		Player player;
@@ -116,8 +110,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 		}
 		
 		Resident resident = CivGlobal.getResident(player);
-		
-		/* Save the location so we dont have to re-validate the structure position. */
+		// Save the location so we dont have to re-validate the structure position.
 		resident.desiredTownLocation = player.getLocation();
 		CivMessage.sendHeading(player, "Founding A New Civ");
 		CivMessage.send(player, CivColor.LightGreen+"You and your small band of travelers have finally found the chosen land.");

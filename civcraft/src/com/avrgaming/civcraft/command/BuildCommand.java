@@ -54,7 +54,29 @@ public class BuildCommand extends CommandBase {
 		commands.put("demolishnearest", "- destroys the nearest structure. Requires confirmation.");
 		commands.put("refreshnearest", "Refreshes the nearest structure's blocks. Requires confirmation.");
 		commands.put("validatenearest", "Validates the nearest structure. Removing any validation penalties if it's ok.");
+		commands.put("supportnearest", "Supports the nearest structure. Places dirt if block is not valid support.");
 		//commands.put("preview", "shows a preview of this structure at this location.");
+	}
+	
+	public void supportnearest_cmd() throws CivException, IOException {
+		Player player = getPlayer();
+		Resident resident = getResident();
+		Buildable buildable = CivGlobal.getNearestBuildable(player.getLocation());
+		
+		if (buildable.getTown() != resident.getTown()) {
+			throw new CivException("You can only support structures inside your own town.");
+		}
+		
+		if (War.isWarTime()) {
+			throw new CivException("Cannot support structures during WarTime.");
+		}
+		
+		if (buildable.isIgnoreFloating()) {
+			throw new CivException(buildable.getDisplayName()+" is exempt from floating structure checks.");
+		}
+		
+		CivMessage.sendSuccess(player, "Running support on "+buildable.getDisplayName()+" at "+buildable.getCenterLocation()+"...");
+		buildable.getTown().buildSupport(buildable, buildable.getCorner());
 	}
 	
 	public void validatenearest_cmd() throws CivException {
@@ -291,7 +313,6 @@ public class BuildCommand extends CommandBase {
 	
 	private void buildByName(String fullArgs) throws CivException {
 		ConfigBuildableInfo sinfo = CivSettings.getBuildableInfoByName(fullArgs);
-
 		if (sinfo == null) {
 			throw new CivException("Unknown structure "+fullArgs);
 		}
@@ -315,13 +336,6 @@ public class BuildCommand extends CommandBase {
 				throw new CivException("Internal IO Error.");
 			}
 		}
-		
-//		if (sinfo.isWonder) {
-//			town.buildWonder(getPlayer(), sinfo.id, getPlayer().getLocation());
-//		} else {
-//			town.buildStructure(getPlayer(), sinfo.id, getPlayer().getLocation());
-//		}
-//		CivMessage.sendSuccess(sender, "Started building "+sinfo.displayName);
 	}
 
 	@Override

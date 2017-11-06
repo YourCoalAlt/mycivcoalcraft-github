@@ -9,11 +9,10 @@ import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.util.BlockCoord;
 
 public class RegenTimer implements Runnable {
-
+	
 	@Override
 	public void run() {
 		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
-		
 		while(iter.hasNext()) {
 			Structure struct = iter.next().getValue();
 			struct.processRegen();
@@ -23,5 +22,4 @@ public class RegenTimer implements Runnable {
 			wonder.processRegen();
 		}
 	}
-
 }

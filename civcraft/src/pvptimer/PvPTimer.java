@@ -11,20 +11,15 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 
 public class PvPTimer implements Runnable {
-
+	
 	@Override
 	public void run() {
-		
 		for (Resident resident : CivGlobal.getResidents()) {
-			if (!resident.isProtected()) {
-				continue;
-			}
+			if (!resident.isProtected()) { continue; }
 			
-			int mins;
 			try {
-				mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
+				int mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
 				if (DateUtil.isAfterMins(new Date(resident.getRegistered()), mins)) {
-				//if (DateUtil.isAfterSeconds(new Date(resident.getRegistered()), mins)) {
 					resident.setisProtected(false);
 					CivMessage.send(resident, CivColor.LightGray+"Your PvP protection has expired.");
 				}

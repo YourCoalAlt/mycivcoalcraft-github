@@ -20,7 +20,6 @@ public class ConfigEndCondition {
 		List<Map<?, ?>> perks = cfg.getMapList("end_conditions");
 		for (Map<?, ?> obj : perks) {
 			ConfigEndCondition p = new ConfigEndCondition();
-			
 			p.id = (String)obj.get("id");
 			p.className = (String)obj.get("class");
 			p.victoryName = (String)obj.get("name");
@@ -30,10 +29,8 @@ public class ConfigEndCondition {
 					p.attributes.put((String)entry.getKey(), (String)entry.getValue());
 				}
 			}
-			
 			endconditionMap.put(p.id, p);
 		}
-		CivLog.info("Loaded "+endconditionMap.size()+" Perks.");		
+		CivLog.info("Loaded "+endconditionMap.size()+" End Conditions.");		
 	}
-	
 }

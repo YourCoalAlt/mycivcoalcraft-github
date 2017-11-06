@@ -1,21 +1,3 @@
-/*************************************************************************
- * 
- * AVRGAMING LLC
- * __________________
- * 
- *  [2013] AVRGAMING LLC
- *  All Rights Reserved.
- * 
- * NOTICE:  All information contained herein is, and remains
- * the property of AVRGAMING LLC and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to AVRGAMING LLC
- * and its suppliers and may be covered by U.S. and Foreign Patents,
- * patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from AVRGAMING LLC.
- */
 package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
@@ -45,11 +27,11 @@ import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class TrommelAsyncTask extends CivAsyncTask {
-
+	
 	Trommel trommel;
 	
 	public static HashSet<String> debugTowns = new HashSet<String>();
-
+	
 	public static void debug(Trommel trommel, String msg) {
 		if (debugTowns.contains(trommel.getTown().getName())) {
 			CivLog.warning("TrommelDebug:"+trommel.getTown().getName()+":"+msg);
@@ -391,10 +373,8 @@ public class TrommelAsyncTask extends CivAsyncTask {
 	public ArrayList<ConfigTrommel> getRandomDrops(Town t, int input, int input_data) {
 		Random rand = new Random();		
 		ArrayList<ConfigTrommel> dropped = new ArrayList<ConfigTrommel>();
-		
 		for (ConfigTrommel d : CivSettings.trommelDrops) {
 			if (d.input == input && d.input_data == input_data) {
-				
 				double dc = ((trommel.getLevel()-1)*0.002) + d.drop_chance;
 				//double dc = d.drop_chance + ((trommel.getLevel() / 100) / 2);
 				
@@ -412,10 +392,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 					}
 				}
 				
-				if (dc <= 0) {
-					dc = d.drop_chance;
-				}
-				
+				if (dc <= 0) { dc = d.drop_chance; }
 				int chance = rand.nextInt(10000);
 				if (chance < (dc*10000)) {
 					dropped.add(d);

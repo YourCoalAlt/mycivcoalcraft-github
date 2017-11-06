@@ -32,12 +32,10 @@ public class CalculateScoreTimer extends CivAsyncTask {
 	@Override
 	public void run() {
 		if (!CivGlobal.scoringEnabled) return;
-		
 		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("endgame:winningCiv");
 		TreeMap<Integer, Civilization> civScores = new TreeMap<Integer, Civilization>();
 		TreeMap<Integer, Town> townScores = new TreeMap<Integer, Town>();
-		if (entries.size() != 0) {
-			// we have a winner, do not accumulate scores anymore.
+		if (entries.size() != 0) { // we have a winner, do not accumulate scores anymore.
 			for (SessionEntry se : entries) {
 				Civilization civ = EndGameCondition.getCivFromSessionData(se.value);
 				civScores.put(civ.getScore(), civ);

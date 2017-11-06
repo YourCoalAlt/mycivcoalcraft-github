@@ -849,6 +849,7 @@ materials:
     craftable: true
     shaped: true
     category: '<lightgray>Special'
+    vanilla: true
     components:
        - name: 'AllowBlockPlace'
     ingredients:

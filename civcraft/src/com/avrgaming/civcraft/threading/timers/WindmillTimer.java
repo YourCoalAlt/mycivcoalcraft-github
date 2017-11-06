@@ -10,13 +10,10 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.war.War;
 
 public class WindmillTimer implements Runnable {
-
+	
 	@Override
 	public void run() {
-		if (War.isWarTime()) {
-			return;
-		}
-		
+		if (War.isWarTime()) { return; }
 		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
 		while(iter.hasNext()) {
 			Structure struct = iter.next().getValue();
@@ -25,5 +22,4 @@ public class WindmillTimer implements Runnable {
 			}
 		}
 	}
-
 }

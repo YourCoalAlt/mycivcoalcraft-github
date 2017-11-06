@@ -93,26 +93,25 @@ public class Market extends Structure {
 			}
 			
 			if (mat.custom_id == null) {
-				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, getPriceText(mat).split(";"));
+				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, CivColor.LightGray+" « Click for Options » ");
 				inv.addItem(is);
 			} else {
 				String cid = mat.custom_id.replace("mat_", "").replaceAll("_", " ");
-				ItemStack is = LoreGuiItem.build(cid, 7, 0, getPriceText(mat).split(";"));
+				ItemStack is = LoreGuiItem.build(cid, 7, 0, CivColor.LightGray+" « Click for Options » ");
 				inv.addItem(is);
 			}
 		}
 		p.openInventory(inv);
 	}
 	
-	public String getPriceText(ConfigMarketItem item) {
+	public String ge1tPriceText(ConfigMarketItem item) {
 		String out = "";
 		String itemColor = getItemColor(item);
 		
 		out += CivColor.LightGray+"Sell "+BULK_AMOUNT+" for "+itemColor+item.getSellCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins;";
 		out += CivColor.LightGray+"Sell 1 for "+itemColor+item.getSellCostForAmount(1)+CivColor.LightGray+" Coins;";
 		out += CivColor.LightGray+"Buy 1 for "+itemColor+item.getBuyCostForAmount(1)+CivColor.LightGray+" Coins;";
-		out += CivColor.LightGray+"Buy "+BULK_AMOUNT+" for "+itemColor+item.getBuyCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins;";
-		out += CivColor.LightGray+" « Click for Options » ";
+		out += CivColor.LightGray+"Buy "+BULK_AMOUNT+" for "+itemColor+item.getBuyCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins";
 		return out;
 	}
 	
@@ -147,10 +146,10 @@ public class Market extends Structure {
 		if (m.custom_id != null) name = m.custom_id.replace("mat_", "").replaceAll("_", " ");
 		
 		if (m.custom_id == null) {
-			ItemStack is = LoreGuiItem.build(CivData.getDisplayName(m.type_id, m.data), m.type_id, m.data, getPriceText(m).split(";"));
+			ItemStack is = LoreGuiItem.build(CivData.getDisplayName(m.type_id, m.data), m.type_id, m.data, "» » »");
 			inv.setItem(1, is);
 		} else {
-			ItemStack is = LoreGuiItem.build(name, 7, 0, getPriceText(m).split(";"));
+			ItemStack is = LoreGuiItem.build(name, 7, 0, "» » »");
 			inv.setItem(1, is);
 		}
 		

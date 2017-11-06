@@ -1,5 +1,5 @@
 # culture to beaker conversion ratio.
-beakers_per_culture: 0.25
+beakers_per_culture: 0.1
 
 #    - level: Unique level
 #      amount: Amount of culture to get to this level
@@ -12,59 +12,59 @@ culture_levels:
       chunks: 6
 #
     - level: 1
-      amount: 175
+      amount: 75
       chunks: 8
 #
     - level: 2
-      amount: 2000
+      amount: 200
       chunks: 10
 #
     - level: 3
-      amount: 5000
+      amount: 500
       chunks: 12
 #
     - level: 4
-      amount: 10000
+      amount: 1000
       chunks: 14
 #
     - level: 5
-      amount: 30000
+      amount: 3000
       chunks: 16
 #
     - level: 6
-      amount: 70000
+      amount: 7000
       chunks: 18
 #
     - level: 7
-      amount: 125000
+      amount: 12500
       chunks: 20
 #
     - level: 8
-      amount: 300000
+      amount: 30000
       chunks: 22
 #
     - level: 9
-      amount: 675000
+      amount: 67500
       chunks: 24
 #
     - level: 10
-      amount: 1000000
+      amount: 100000
       chunks: 26
 #
     - level: 11
-      amount: 1500000
+      amount: 150000
       chunks: 28
 #
     - level: 12
-      amount: 2000000
+      amount: 200000
       chunks: 30
 #
     - level: 13
-      amount: 2750000
+      amount: 275000
       chunks: 32
 #
     - level: 14
-      amount: 4000000
+      amount: 400000
       chunks: 32
 #
 culture_biomes:

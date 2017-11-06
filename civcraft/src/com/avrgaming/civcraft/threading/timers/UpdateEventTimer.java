@@ -40,34 +40,26 @@ public class UpdateEventTimer extends CivAsyncTask {
 	
 	@Override
 	public void run() {		
-		if (!lock.tryLock()) {
-			return;
-		}
+		if (!lock.tryLock()) { return; }
 		
 		try {
 			// Loop through each structure, if it has an update function call it in another async process
 			Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
 			while(iter.hasNext()) {
 				Structure struct = iter.next().getValue();
-				if (!struct.isActive())
-					continue;
+				if (!struct.isActive()) { continue; }
 				
 				try {
 					if (struct.getUpdateEvent() != null && !struct.getUpdateEvent().equals("")) {
 						if (struct.getUpdateEvent().equals("trommel_process")) {
-							if (!CivGlobal.trommelsEnabled) {
-								continue;
-							}
+							if (!CivGlobal.trommelsEnabled) { continue; }
 							TaskMaster.asyncTask("trommel-"+struct.getCorner().toString(), new TrommelAsyncTask(struct), 0);
 						}
 						if (struct.getUpdateEvent().equals("quarry_process")) {
-							if (!CivGlobal.quarriesEnabled) {
-								continue;
-							}
+							if (!CivGlobal.quarriesEnabled) { continue; }
 							TaskMaster.asyncTask("quarry-"+struct.getCorner().toString(), new QuarryAsyncTask(struct), 0);
 						}
 					}
-					
 					struct.onUpdate();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -85,7 +77,6 @@ public class UpdateEventTimer extends CivAsyncTask {
 			for (Wonder wonder : CivGlobal.getWonders()) {
 				wonder.onUpdate();
 			}
-		
 		} finally {
 			lock.unlock();
 		}
