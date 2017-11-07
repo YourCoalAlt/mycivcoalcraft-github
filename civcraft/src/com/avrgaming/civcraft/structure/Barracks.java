@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
@@ -497,25 +498,31 @@ public class Barracks extends Structure {
 				String out = "";
 				
 				if (t.hasEnough(u.cost)) {
-					out += CivColor.Green+"Cost: "+CivColor.LightGreen+u.cost+" Coins;";
+					out += CivColor.GreenBold+"Cost: "+CivColor.LightGreen+u.cost+" Coins;";
 				} else {
-					out += CivColor.Red+"Cost: "+CivColor.Rose+u.cost+" Coins;";
+					out += CivColor.RedBold+"Cost: "+CivColor.Rose+u.cost+" Coins;";
 				}
 				
 				out += CivColor.LightGreen+"       "+u.hammer_cost+" Hammers;";
 				
 				ConfigTech tech = CivSettings.techs.get(u.require_tech);
 				if (tech == null) {
-					out += CivColor.Green+"Required Tech: "+CivColor.YellowItalic+"None;";
+					out += CivColor.GreenBold+"Required Tech: "+CivColor.YellowItalic+"None;";
 				} else {
 					if (!res.getCiv().hasTechnology(tech.id)) {
 						out += CivColor.Red+"Required Tech: "+CivColor.Rose+tech.name+";";
 					} else {
-						out += CivColor.Green+"Required Tech: "+CivColor.LightGreen+tech.name+";";
+						out += CivColor.GreenBold+"Required Tech: "+CivColor.LightGreen+tech.name+";";
 					}
 				}
 				
-				out += CivColor.Gold+"<Click To Train>";
+				out += CivColor.GreenBold+"Description:;";
+				List<String> des = u.description;
+				for (String s : des) {
+					out += CivColor.LightGreen+CivColor.colorize(s)+";";
+				}
+				
+				out += CivColor.GoldBold+"<Click To Train>";
 				
 				ItemStack si = LoreGuiItem.build(u.name, u.item_id, u.item_data, out.split(";"));
 				si = LoreGuiItem.setAction(si, "UnitTrainBarracks");
@@ -584,7 +591,7 @@ public class Barracks extends Structure {
 		CivGlobal.addStructureVillager(v);
 	}
 	
-	public void openUnitUpgradeGUI(Player p, Town t) {
+	public void openUnitUpgradeGUI_DISABLED_UNTIL_CODED(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Barracks Unit Upgrade Menu");
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Barracks Unit Upgrade Menu.",

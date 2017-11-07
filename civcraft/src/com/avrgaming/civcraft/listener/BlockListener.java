@@ -1265,7 +1265,8 @@ public class BlockListener implements Listener {
 					b.openUnitTrainGUI(p, b.getTown());
 				}
 				if (vn.contains("Barracks Unit Upgrader")) {
-					b.openUnitUpgradeGUI(p, b.getTown());
+//					b.openUnitUpgradeGUI(p, b.getTown());
+					CivMessage.sendError(resident, "Unit Upgrading is a future feature.");
 				}
 				if (vn.contains("Barracks Repair Master")) {
 					b.openRepairGUI(p, b.getTown());
@@ -1291,7 +1292,7 @@ public class BlockListener implements Listener {
 					wh.openToggleGUI(p, wh.getTown());
 				}
 			} else {
-				CivMessage.sendError(resident, "It appears you are trying to access an illegal villager...?");
+				CivMessage.sendError(resident, "It appears you are trying to access an illegal villager...? Not connected to anything.");
 				CivLog.warning("error with "+buildable.getName()+", villager at "+v.getLocation());
 				return;
 			}

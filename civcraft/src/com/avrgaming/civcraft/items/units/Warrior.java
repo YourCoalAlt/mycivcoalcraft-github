@@ -7,6 +7,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
@@ -30,10 +31,9 @@ public class Warrior extends UnitMaterial {
 		AttributeUtil attrs = new AttributeUtil(is);
 		attrs.addEnhancement("LoreEnhancementSoulBound", null, null);
 		attrs.addLore(CivColor.Gold+"Soulbound");
-		attrs.addLore(CivColor.LightGreen+"Level 1");
-		attrs.addLore(CivColor.LightGray+"+25% Attack with Sword");
-		attrs.addLore(CivColor.LightGray+"-10% Attack with Bow");
-//		attrs.addLore(CivColor.LightGray+"-10% Defense on Armor");
+		
+		ConfigUnit u = CivSettings.units.get(Unit.getUnit(is).id);
+		for (String d : u.description) { attrs.addLore(CivColor.colorize(d)); }
 		is = attrs.getStack();
 		
 		if (!Unit.addItemNoStack(inv, is)) {

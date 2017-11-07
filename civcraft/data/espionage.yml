@@ -17,9 +17,9 @@ espionage:
     exposure_per_scout: 4
 
     # Seconds for exposure removal to occur
-    exposure_time: 2
+    reduce_time: 2
     # Exposure removed per exposure drain tick
-    exposure_removed: 3
+    reduce_amount: 3
 
     # Town Warning exposure limit (in percent)
     # When the exposure level of a spy exceeds this percent, the town is notified they are being spied on.

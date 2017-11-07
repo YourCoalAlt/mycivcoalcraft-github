@@ -3637,7 +3637,7 @@ public class Town extends SQLObject {
 					if (type == CivData.AIR) {
 						if (canSupport > 0) {
 							// Set block to dirt
-							Bukkit.getWorld("world").getBlockAt(absX, y, absZ).setType(Material.DIRT);
+							Bukkit.getWorld("world").getBlockAt(absX, y, absZ).setType(Material.COBBLESTONE);
 							canSupport--;
 							supported++;
 						} else {

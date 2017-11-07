@@ -44,6 +44,7 @@ units:
     description: 
         - '<lightgreen>Trained Level 1'
         - '<lightgrayi>   Founds a Town'
+        - '<rosei>   « Price Increases When Trained »'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -73,8 +74,8 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Warrior'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +25% Attk on Swords'
-        - '<lightgrayi>   -10% Attk on Bows'
+        - '<lightgrayi>   +25% Atk on Swords'
+        - '<lightgrayi>   -10% Atk on Bows'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -89,8 +90,8 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Archer'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   -10% Attk on Swords'
-        - '<lightgrayi>   +25% Attk on Bows'
+        - '<lightgrayi>   -10% Atk on Swords'
+        - '<lightgrayi>   +25% Atk on Bows'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -105,9 +106,9 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Berserker'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +5% Attk on Swords'
-        - '<lightgrayi>   +10% Attk on Bows'
-        - '<lightgrayi>   +15% Dfse on Armor'
+        - '<lightgrayi>   +5% Atk on Swords'
+        - '<lightgrayi>   +10% Atk on Bows'
+        - '<lightgrayi>   +15% Def on Armor'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -122,8 +123,8 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Swordsman'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +40% Attk on Swords'
-        - '<lightgrayi>   -20% Attk on Bows'
+        - '<lightgrayi>   +40% Atk on Swords'
+        - '<lightgrayi>   -20% Atk on Bows'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -138,8 +139,8 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Crossbowman'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   -20% Attk on Swords'
-        - '<lightgrayi>   +40% Attk on Bows'
+        - '<lightgrayi>   -20% Atk on Swords'
+        - '<lightgrayi>   +40% Atk on Bows'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -154,9 +155,9 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Spearman'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +10% Attk on Swords'
-        - '<lightgrayi>   +20% Attk on Bows'
-        - '<lightgrayi>   +30% Dfse on Armor'
+        - '<lightgrayi>   +10% Atk on Swords'
+        - '<lightgrayi>   +20% Atk on Bows'
+        - '<lightgrayi>   +30% Def on Armor'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -171,9 +172,9 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Musketman'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +65% Attk on Swords'
-        - '<lightgrayi>   -30% Attk on Bows'
-        - '<lightgrayi>   +10% Dfse on Armor'
+        - '<lightgrayi>   +65% Atk on Swords'
+        - '<lightgrayi>   -30% Atk on Bows'
+        - '<lightgrayi>   +10% Def on Armor'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -188,9 +189,9 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Slinger'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   -30% Attk on Swords'
-        - '<lightgrayi>   +65% Attk on Bows'
-        - '<lightgrayi>   +10% Dfse on Armor'
+        - '<lightgrayi>   -30% Atk on Swords'
+        - '<lightgrayi>   +65% Atk on Bows'
+        - '<lightgrayi>   +10% Def on Armor'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
@@ -205,9 +206,9 @@ units:
     class_name: 'com.avrgaming.civcraft.items.units.Knight'
     description: 
         - '<lightgreen>Trained Level 1'
-        - '<lightgrayi>   +25% Attk on Swords'
-        - '<lightgrayi>   +50% Attk on Bows'
-        - '<lightgrayi>   +75% Dfse on Armor'
+        - '<lightgrayi>   +25% Atk on Swords'
+        - '<lightgrayi>   +50% Atk on Bows'
+        - '<lightgrayi>   +75% Def on Armor'
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:

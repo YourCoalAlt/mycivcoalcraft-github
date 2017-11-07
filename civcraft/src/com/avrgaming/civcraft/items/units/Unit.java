@@ -98,10 +98,7 @@ public abstract class Unit {
 	}
 	
 	public static ConfigUnit getUnit(ItemStack stack) {
-		if (stack == null) {
-			return null;
-		}
-		
+		if (stack == null) { return null; }
 		LoreMaterial material = LoreMaterial.getMaterial(stack);
 		if (material != null && (material instanceof UnitMaterial)) {
 			return ((UnitMaterial)material).getUnit();
@@ -110,10 +107,7 @@ public abstract class Unit {
 	}
 	
 	public static boolean isUnit(ItemStack stack) {
-		if (stack == null) {
-			return false;
-		}
-		
+		if (stack == null) { return false; }
 		LoreMaterial material = LoreMaterial.getMaterial(stack);
 		if (material != null && (material instanceof UnitMaterial)) {
 			return true;

@@ -171,7 +171,7 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.syncTimer("UnitTrainTimer", new UnitTrainTimer(), TimeTools.toTicks(1));
 
 		try {
-			final int exposure_time = (int)CivSettings.getInteger(CivSettings.espionageConfig, "reduce_time");
+			final int exposure_time = (int)CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
 			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));
 			
 			double arrow_firerate = CivSettings.getDouble(CivSettings.warConfig, "arrow_tower.fire_rate");

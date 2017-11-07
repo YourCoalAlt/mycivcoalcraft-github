@@ -32,7 +32,7 @@ public class ReduceExposureTimer implements Runnable {
 					Resident resident = CivGlobal.getResident(name);
 					int removeAmt = 3;
 					try {
-						removeAmt = CivSettings.getInteger(CivSettings.espionageConfig, "exposure_removed");
+						removeAmt = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_amount");
 					} catch (InvalidConfiguration e) {
 						removeAmt = 3;
 						CivLog.warning("Could not get Espionage exposure_removed.");

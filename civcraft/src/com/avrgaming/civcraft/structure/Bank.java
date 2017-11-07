@@ -59,6 +59,7 @@ public class Bank extends Structure {
 		} else {
 			rate = 0.4;
 			CivLog.warning("null exchange rate .:. cannot find level: "+level+" for town "+this.getTown().getName());
+			CivMessage.sendTown(this.getTown(), "null exchange rate .:. cannot find level: "+level+" for your bank. Contact an admin.");
 		}
 		
 		rate += this.getTown().getBuffManager().getEffectiveDouble(Buff.BARTER);
@@ -186,7 +187,7 @@ public class Bank extends Structure {
 	}
 	
 	public void openToolGUI(Player p, Town town) {
-		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Bank Desk");
+		Inventory inv = Bukkit.createInventory(null, 9*4, town.getName()+"'s Bank Desk");
 		
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Bank Desk. You can use it to sell",
