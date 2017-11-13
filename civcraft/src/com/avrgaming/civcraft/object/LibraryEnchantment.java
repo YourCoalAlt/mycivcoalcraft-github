@@ -28,11 +28,11 @@ public class LibraryEnchantment {
 	public Enchantment enchant;
 	public LoreEnhancement enhancement;
 	public int level;
-	public double price;
+	public Integer price;
 	public String name;
 	public String displayName;
 
-	public LibraryEnchantment(String name, int lvl, double p) throws CivException {
+	public LibraryEnchantment(String name, int lvl, int p) throws CivException {
 		enchant = Library.getEnchantFromString(name.toLowerCase().replace(" ", "_"));
 		if (enchant == null)  {
 			if (!name.contains("LoreEnhancement")) name = "LoreEnhancement"+name;

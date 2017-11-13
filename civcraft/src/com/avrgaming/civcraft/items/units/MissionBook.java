@@ -500,8 +500,7 @@ public class MissionBook extends UnitItemMaterial {
 		}
 		
 		if(processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
-			
-			double amount = (int)(tc.getTown().getTreasury().getBalance()*0.2);
+			int amount = (int)(tc.getTown().getTreasury().getBalance()*0.2);
 			if (amount > 0) {
 				tc.getTown().getTreasury().withdraw(amount);
 				resident.getTown().getTreasury().deposit(amount);

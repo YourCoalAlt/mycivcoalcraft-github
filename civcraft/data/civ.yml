@@ -29,7 +29,7 @@ global:
    # Exchange rate you get using /resident exchange instead of using a bank.
    exchange_rate: 0.4
 
-   starting_coins: 375.0
+   starting_coins: 375
 
    # Number of hours that must pass before a resident can join a different civ
    join_civ_cooldown: 1

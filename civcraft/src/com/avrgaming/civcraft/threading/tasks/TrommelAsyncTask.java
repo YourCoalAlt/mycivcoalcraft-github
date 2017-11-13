@@ -280,10 +280,10 @@ public class TrommelAsyncTask extends CivAsyncTask {
 	
 	private ItemStack getUselessDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(4);
-		if (uselessDrop == 1) {
+		int uselessDrop = rand.nextInt(6);
+		if (uselessDrop == 1 || uselessDrop == 2) {
 			return ItemManager.createItemStack(CivData.DIRT, 1);
-		} else if (uselessDrop == 2) {
+		} else if (uselessDrop == 3 || uselessDrop == 4) {
 			return ItemManager.createItemStack(CivData.GRAVEL, 1);
 		} else {
 			return ItemManager.createItemStack(CivData.AIR, 1);
@@ -387,6 +387,18 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						dc *= 0.9;
 					} else if (d.loot_type.contains("junk")) {
 						dc *= 0.8;
+					} else {
+						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type);
+					}
+				} else if (trommel.getModifyChance() < 1.0) {
+					if (d.loot_type.contains("rare")) {
+						dc *= 0.8;
+					} else if (d.loot_type.contains("uncommon")) {
+						dc *= 0.9;
+					} else if (d.loot_type.contains("common")) {
+						dc *= 1.05;
+					} else if (d.loot_type.contains("junk")) {
+						dc *= 1.1;
 					} else {
 						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type);
 					}

@@ -123,7 +123,7 @@ public class Bank extends Structure {
 	@Override
 	public void onDailyEvent() {
 		double effectiveInterestRate = interestRate;
-		if (effectiveInterestRate == 0.0) {
+		if (effectiveInterestRate == 0) {
 			this.getTown().getTreasury().setPrincipalAmount(0);
 			return;
 		}

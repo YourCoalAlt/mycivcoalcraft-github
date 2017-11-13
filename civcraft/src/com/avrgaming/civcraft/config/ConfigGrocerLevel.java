@@ -31,7 +31,7 @@ public class ConfigGrocerLevel {
 	public int itemId;
 	public int itemData;
 	public int amount;
-	public double price;
+	public Integer price;
 	
 	public static void loadConfig(FileConfiguration cfg, Map<Integer, ConfigGrocerLevel> levels) {
 		levels.clear();
@@ -43,7 +43,7 @@ public class ConfigGrocerLevel {
 			grocer_level.itemId = (Integer)level.get("itemId");
 			grocer_level.itemData = (Integer)level.get("itemData");
 			grocer_level.amount = (Integer)level.get("amount");
-			grocer_level.price = (Double)level.get("price");
+			grocer_level.price = (Integer)level.get("price");
 			
 			levels.put(grocer_level.level, grocer_level);
 		}

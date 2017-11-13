@@ -20,10 +20,10 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 750000.0
-    upkeep: 0.0
+    cost: 750000
+    upkeep: 0
     # 168 = one week
-    hammer_cost: 508000.0
+    hammer_cost: 508000
     max_hitpoints: 5000
     points: 190000
     regen_rate: 6
@@ -39,10 +39,10 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 500000.0
-    upkeep: 0.0
+    cost: 500000
+    upkeep: 0
     # 168 = one week
-    hammer_cost: 448000.0
+    hammer_cost: 448000
     points: 220000
     max_hitpoints: 5000
     regen_rate: 6
@@ -58,10 +58,10 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 1000000.0
-    upkeep: 0.0
+    cost: 1000000
+    upkeep: 0
     # 336 = two weeks
-    hammer_cost: 666000.0
+    hammer_cost: 666000
     points: 220000
     max_hitpoints: 5000
     regen_rate: 6
@@ -77,9 +77,9 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 750000.0
-    upkeep: 0.0
-    hammer_cost: 625000.0
+    cost: 750000
+    upkeep: 0
+    hammer_cost: 625000
     points: 235000
     max_hitpoints: 5000
     regen_rate: 6
@@ -95,9 +95,9 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 1750000.0
-    upkeep: 0.0
-    hammer_cost: 805000.0
+    cost: 1750000
+    upkeep: 0
+    hammer_cost: 805000
     points: 275000
     max_hitpoints: 5000
     regen_rate: 6
@@ -113,9 +113,9 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 800000.0
-    upkeep: 0.0
-    hammer_cost: 550000.0
+    cost: 800000
+    upkeep: 0
+    hammer_cost: 550000
     points: 250000
     max_hitpoints: 5000
     regen_rate: 6
@@ -131,9 +131,9 @@ wonders:
     update_event:
     onBuild_event:
     limit: 1
-    cost: 2000000.0
-    upkeep: 0.0
-    hammer_cost: 900000.0
+    cost: 2000000
+    upkeep: 0
+    hammer_cost: 900000
     points: 250000
     max_hitpoints: 5000
     regen_rate: 6

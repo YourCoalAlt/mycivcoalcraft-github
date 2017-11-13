@@ -47,7 +47,7 @@ import com.avrgaming.civcraft.structure.Warehouse;
 public class ConfigTownUpgrade {
 	public String id;
 	public String name;
-	public double cost;
+	public Integer cost;
 	public String action;
 	public String require_upgrade = null;
 	public String require_tech = null;
@@ -64,7 +64,7 @@ public class ConfigTownUpgrade {
 			
 			town_upgrade.id = (String)level.get("id");
 			town_upgrade.name = (String)level.get("name");
-			town_upgrade.cost = (Double)level.get("cost");
+			town_upgrade.cost = (Integer)level.get("cost");
 			town_upgrade.action = (String)level.get("action");
 			town_upgrade.require_upgrade = (String)level.get("require_upgrade");
 			town_upgrade.require_tech = (String)level.get("require_tech");
@@ -158,7 +158,7 @@ public class ConfigTownUpgrade {
 			if (struct != null && (struct instanceof Library)) {
 				Library library = (Library)struct;
 				LibraryEnchantment removeEnchant = null;
-				LibraryEnchantment enchant = new LibraryEnchantment(args[1].trim(), Integer.valueOf(args[2].trim()), Double.valueOf(args[3].trim()));
+				LibraryEnchantment enchant = new LibraryEnchantment(args[1].trim(), Integer.valueOf(args[2].trim()), Integer.valueOf(args[3].trim()));
 				boolean addEnch = false;
 				boolean newEnch = true;
 				for (LibraryEnchantment e : library.getEnchants()) {

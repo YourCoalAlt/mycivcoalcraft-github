@@ -178,10 +178,10 @@ public class Barracks extends Structure {
 		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
 		try {
-			double totalCost;
+			int totalCost;
 			if (craftMat.hasComponent("RepairCost")) {
 				RepairCost getRepairCost = (RepairCost)craftMat.getComponent("RepairCost");
-				double repairCost = getRepairCost.getDouble("value");
+				int repairCost = getRepairCost.getInt("value");
 				
 				double duraCost = 0;
 				if (!LoreEnhancement.isWeaponOrArmor(repair)) {
@@ -190,8 +190,8 @@ public class Barracks extends Structure {
 					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
 				}
 				
-				double subTotal = (repairCost + duraCost);
-				totalCost = Math.round(subTotal);
+				int subTotal = (int) (repairCost + duraCost);
+				totalCost = subTotal;
 			} else {
 				double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
 				
@@ -207,7 +207,7 @@ public class Barracks extends Structure {
 				}
 				
 				double subTotal = (fromTier + duraCost);
-				totalCost = Math.round(subTotal);
+				totalCost = (int) subTotal;
 			}
 			
 			InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), repair);
@@ -220,7 +220,7 @@ public class Barracks extends Structure {
 		}
 	}
 	
-	public static void repairItem(double cost, String playerName, ItemStack stack) {
+	public static void repairItem(int cost, String playerName, ItemStack stack) {
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(playerName);
@@ -488,6 +488,14 @@ public class Barracks extends Structure {
 		
 		Resident res = CivGlobal.getResident(p);
 		for (ConfigUnit u : CivSettings.units.values()) {
+			try { @SuppressWarnings("unused")
+			Class<?> ctest = Class.forName(u.class_name);
+			} catch (ClassNotFoundException e) {
+				ItemStack is = LoreGuiItem.build(u.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+" « Coming Soon / Invalid » ");
+				inv.setItem(u.position, is);
+				continue;
+			}
+			
 			if (!res.hasTown()) {
 				ItemStack is = LoreGuiItem.build(u.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town build a structure.");
 				inv.setItem(u.position, is);
@@ -515,6 +523,8 @@ public class Barracks extends Structure {
 						out += CivColor.GreenBold+"Required Tech: "+CivColor.LightGreen+tech.name+";";
 					}
 				}
+				
+				out += CivColor.GreenBold+"On Death Destroy Chance: "+CivColor.LightGreen+u.destroy_chance+"%;";
 				
 				out += CivColor.GreenBold+"Description:;";
 				List<String> des = u.description;

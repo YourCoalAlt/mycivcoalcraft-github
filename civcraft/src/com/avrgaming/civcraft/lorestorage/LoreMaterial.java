@@ -302,5 +302,10 @@ public abstract class LoreMaterial {
 	public void onDefense(EntityDamageByEntityEvent event, ItemStack stack) {}
 	public int onStructureBlockBreak(BuildableDamageBlock dmgBlock, int damage) { return damage; }
 	public void onInventoryOpen(InventoryOpenEvent event, ItemStack stack) {}
+
+	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

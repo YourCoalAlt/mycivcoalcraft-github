@@ -30,7 +30,7 @@ public class ConfigEnchant {
 	public String id;
 	public String name;
 	public String description;
-	public double cost;
+	public Integer cost;
 	public String enchant_id;
 	
 	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigEnchant> enchant_map) {
@@ -42,7 +42,7 @@ public class ConfigEnchant {
 			enchant.id = (String)level.get("id");
 			enchant.name = (String)level.get("name");
 			enchant.description = (String)level.get("description");
-			enchant.cost = (Double)level.get("cost");
+			enchant.cost = (Integer)level.get("cost");
 			enchant.enchant_id = (String)level.get("enchant_id");			
 			enchant_map.put(enchant.id, enchant);
 		}

@@ -28,6 +28,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
@@ -323,6 +324,16 @@ public class CustomItemManager implements Listener {
 		Player defendingPlayer = null;
 		if (event.getEntity() instanceof Player) {
 			defendingPlayer = (Player)event.getEntity();
+		}
+		
+		if (event.getDamager() instanceof Snowball) {
+			LivingEntity shooter = (LivingEntity) ((Snowball)event.getDamager()).getShooter();
+			if (shooter instanceof Player) {
+				ItemStack inHand = ((Player)shooter).getInventory().getItemInMainHand();
+				if (LoreMaterial.isCustom(inHand)) {
+					LoreMaterial.getMaterial(inHand).onBulletAttack(event, inHand);
+				}
+			}
 		}
 		
 		if (event.getDamager() instanceof Arrow) {

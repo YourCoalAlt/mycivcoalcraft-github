@@ -218,8 +218,8 @@ public abstract class Wonder extends Buildable {
 		CivMessage.global("The "+CivColor.LightGreen+this.getDisplayName()+CivColor.White+" has been unbuilt by "+this.getTown().getName()
 				+"("+this.getTown().getCiv().getName()+") with the undo command.");
 				
-		double refund = this.getCost();
-		this.getTown().depositDirect(refund);
+		int refund = this.getCost();
+		this.getTown().deposit(refund);
 		CivMessage.sendTown(getTown(), "Town refunded "+refund+" coins.");
 		
 		try {
@@ -446,7 +446,7 @@ public abstract class Wonder extends Buildable {
 		
 		double coinsPerCulture = Double.valueOf(CivSettings.buffs.get("buff_colossus_coins_from_culture").value);
 		
-		double total = coinsPerCulture*cultureCount;
+		int total = (int) (coinsPerCulture*cultureCount);
 		this.getCiv().getTreasury().deposit(total);
 		
 		CivMessage.sendCiv(this.getCiv(), CivColor.LightGreen+"The Colossus generated "+CivColor.Yellow+total+CivColor.LightGreen+" coins from culture.");

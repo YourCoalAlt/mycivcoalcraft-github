@@ -93,9 +93,9 @@ quarry_drops:
 trommel_items:
    - item: 4
      level: 1
-   - item: 1
-     item_data: 1
-     level: 2
+#   - item: 1
+#     item_data: 1
+#     level: 2
 # Rare, Uncommon, Common, Junk
 trommel_drops:
 #====> Cobblestone <====#
@@ -103,26 +103,26 @@ trommel_drops:
     input: 4
     type_id: 263
     loot_type: 'junk'
-    drop_chance: 0.0625
+    drop_chance: 0.04
 #
   - type: IronCobble
     input: 4
     type_id: 265
     loot_type: 'common'
-    drop_chance: 0.035
+    drop_chance: 0.025
 #
   - type: GoldCobble
     input: 4
     type_id: 266
     loot_type: 'uncommon'
-    drop_chance: 0.0175
+    drop_chance: 0.0125
 #
   - type: RedstoneCobble
     input: 4
     type_id: 331
     amount: 3
     loot_type: 'common'
-    drop_chance: 0.02
+    drop_chance: 0.0095
 #
   - type: LapisCobble
     input: 4
@@ -130,158 +130,26 @@ trommel_drops:
     type_data: 4
     amount: 3
     loot_type: 'common'
-    drop_chance: 0.02
+    drop_chance: 0.0095
 #
   - type: DiamondCobble
     input: 4
     type_id: 264
     loot_type: 'rare'
-    drop_chance: 0.004
+    drop_chance: 0.003
 #
   - type: EmeraldCobble
     input: 4
     type_id: 388
     loot_type: 'rare'
-    drop_chance: 0.0025
+    drop_chance: 0.0015
 #
 #====> Granite <====#
-  - type: CoalGranite
-    input: 4
-    type_id: 263
-    loot_type: 'junk'
-    drop_chance: 0.0425
-#
-  - type: IronGranite
-    input: 4
-    type_id: 265
-    loot_type: 'common'
-    drop_chance: 0.04
-#
-  - type: GoldGranite
-    input: 4
-    type_id: 266
-    loot_type: 'uncommon'
-    drop_chance: 0.02
-#
-  - type: RedstoneGranite
-    input: 4
-    type_id: 331
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.015
-#
-  - type: LapisGranite
-    input: 4
-    type_id: 351
-    type_data: 4
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.025
-#
-  - type: DiamondGranite
-    input: 4
-    type_id: 264
-    loot_type: 'rare'
-    drop_chance: 0.005
-#
-  - type: EmeraldGranite
-    input: 4
-    type_id: 388
-    loot_type: 'rare'
-    drop_chance: 0.002
-#
+
 #====> Diorite <====#
-  - type: CoalDiorite
-    input: 4
-    type_id: 263
-    loot_type: 'junk'
-    drop_chance: 0.075
-#
-  - type: IronDiorite
-    input: 4
-    type_id: 265
-    loot_type: 'common'
-    drop_chance: 0.025
-#
-  - type: GoldDiorite
-    input: 4
-    type_id: 266
-    loot_type: 'uncommon'
-    drop_chance: 0.025
-#
-  - type: RedstoneDiorite
-    input: 4
-    type_id: 331
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.04
-#
-  - type: LapisDiorite
-    input: 4
-    type_id: 351
-    type_data: 4
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.015
-#
-  - type: DiamondDiorite
-    input: 4
-    type_id: 264
-    loot_type: 'rare'
-    drop_chance: 0.003
-#
-  - type: EmeraldDiorite
-    input: 4
-    type_id: 388
-    loot_type: 'rare'
-    drop_chance: 0.004
-#
+
 #====> Andesite <====#
-  - type: CoalAndesite
-    input: 4
-    type_id: 263
-    loot_type: 'junk'
-    drop_chance: 0.05
-#
-  - type: IronAndesite
-    input: 4
-    type_id: 265
-    loot_type: 'common'
-    drop_chance: 0.045
-#
-  - type: GoldAndesite
-    input: 4
-    type_id: 266
-    loot_type: 'uncommon'
-    drop_chance: 0.01
-#
-  - type: RedstoneAndesite
-    input: 4
-    type_id: 331
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.03
-#
-  - type: LapisAndesite
-    input: 4
-    type_id: 351
-    type_data: 4
-    amount: 3
-    loot_type: 'common'
-    drop_chance: 0.03
-#
-  - type: DiamondAndesite
-    input: 4
-    type_id: 264
-    loot_type: 'rare'
-    drop_chance: 0.0045
-#
-  - type: EmeraldAndesite
-    input: 4
-    type_id: 388
-    loot_type: 'rare'
-    drop_chance: 0.002
-#
+
 #======================================#
 #======== > Cottage Settings < ========#
 #======================================#

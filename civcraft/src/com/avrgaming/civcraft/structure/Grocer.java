@@ -102,7 +102,7 @@ public class Grocer extends Structure {
 		return null;
 	}
 	
-	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, double price) {
+	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, int price) {
 		Resident resident;
 		int payToTown = (int) Math.round(price*this.getNonResidentFee());
 		try {
@@ -118,7 +118,7 @@ public class Grocer extends Structure {
 				} else {
 					// Pay non-resident taxes
 					resident.buyItem(itemName, id, data, price + payToTown, amount);
-					getTown().depositDirect(payToTown);
+					getTown().deposit(payToTown);
 					CivMessage.send(player, CivColor.LightGreen + "Bought "+amount+" "+itemName+" for "+ price+ " coins.");
 					CivMessage.send(player, CivColor.Yellow + "Paid "+ payToTown+" coins in non-resident taxes.");
 				}

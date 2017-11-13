@@ -12,7 +12,7 @@ public class ConfigHappinessState {
 	public int level;
 	public String name;
 	public String color;
-	public double amount;
+	public Integer amount;
 	
 	public double hammer_rate;
 	public double beaker_rate;
@@ -29,7 +29,7 @@ public class ConfigHappinessState {
 			happy_level.level = (Integer)cl.get("level");
 			happy_level.name = (String)cl.get("name");
 			happy_level.color = (String)cl.get("color");
-			happy_level.amount = (Double)cl.get("amount");
+			happy_level.amount = (Integer)cl.get("amount");
 			happy_level.hammer_rate = (Double)cl.get("hammer_rate");
 			happy_level.beaker_rate = (Double)cl.get("beaker_rate");
 			happy_level.culture_rate = (Double)cl.get("culture_rate");

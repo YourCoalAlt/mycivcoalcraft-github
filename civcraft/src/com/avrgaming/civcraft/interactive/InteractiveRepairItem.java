@@ -18,11 +18,11 @@ import gpl.AttributeUtil;
 
 public class InteractiveRepairItem implements InteractiveResponse {
 
-	double cost;
+	Integer cost;
 	String playerName;
 	ItemStack stack;
 	
-	public InteractiveRepairItem(double cost, String playerName, ItemStack stack) {
+	public InteractiveRepairItem(int cost, String playerName, ItemStack stack) {
 		this.cost = cost;
 		this.playerName = playerName;
 		this.stack = stack;

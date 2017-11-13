@@ -12,14 +12,14 @@ import com.avrgaming.civcraft.util.CivColor;
 
 import gpl.AttributeUtil;
 
-public class Warrior extends UnitMaterial {
+public class Archer extends UnitMaterial {
 	
-	public Warrior(String id, ConfigUnit configUnit) {
+	public Archer(String id, ConfigUnit configUnit) {
 		super(id, configUnit);
 	}
 	
 	public static void spawn(Inventory inv, Town town) throws CivException {
-		ItemStack is = LoreMaterial.spawn(Unit.WARRIOR_UNIT);
+		ItemStack is = LoreMaterial.spawn(Unit.ARCHER_UNIT);
 		UnitMaterial.setOwningTown(town, is);
 		
 		AttributeUtil attrs = new AttributeUtil(is);

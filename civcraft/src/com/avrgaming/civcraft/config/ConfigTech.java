@@ -33,7 +33,7 @@ public class ConfigTech {
 	public String id;
 	public String name;
 	public double beaker_cost;
-	public double cost;
+	public Integer cost;
 	public String require_techs;
 	public Integer points;
 	
@@ -46,7 +46,7 @@ public class ConfigTech {
 			tech.id = (String)confTech.get("id");
 			tech.name = (String)confTech.get("name");
 			tech.beaker_cost = (Double)confTech.get("beaker_cost");
-			tech.cost = (Double)confTech.get("cost");
+			tech.cost = (Integer)confTech.get("cost");
 			tech.require_techs = (String)confTech.get("require_techs");
 			tech.points = (Integer)confTech.get("points");
 			

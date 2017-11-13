@@ -216,7 +216,7 @@ public class PlotCommand extends CommandBase {
 		}
 		
 		try {
-			double price = Double.valueOf(args[1]);
+			int price = Integer.valueOf(args[1]);
 			tc.setForSale(true);
 			tc.setPrice(price);
 			tc.save();

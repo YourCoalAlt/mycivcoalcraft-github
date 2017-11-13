@@ -185,7 +185,7 @@ public abstract class Buildable extends SQLObject {
 	}
 
 	
-	public double getCost() {
+	public Integer getCost() {
 		return info.cost;
 	}
 	
@@ -207,7 +207,7 @@ public abstract class Buildable extends SQLObject {
 	}
 	
 	
-	public double getUpkeepCost() {
+	public int getUpkeepCost() {
 		return info.upkeep;
 	}
 	

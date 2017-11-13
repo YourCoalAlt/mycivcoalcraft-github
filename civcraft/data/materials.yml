@@ -26,6 +26,39 @@ materials:
     shaped: false
     category: 'Special'
 #
+# Gun Testing  ===========================================
+# Checked 25 August 2017
+  - id: 'civ_pistol'
+    item_id: 359
+    item_data: 0
+    name: 'Pistol'
+    craftable: true
+    required_not_techs: 'tech_fletching'
+    shaped: true
+    category: '<lightpurple>Guns'
+    components:
+       - name: 'BulletAttack'
+         value: '10'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_mega_molding'
+         letter: 'm'
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_composite_stick'
+         letter: 's'
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_mega_varnish'
+         letter: 'v'
+    shape:
+       - " vs"
+       - "msm"
+       - "s  "
 # Enchanting Recipes  ===========================================
 ## Checked 25 August 2017
 #  - id: 'civ_sharpness'
@@ -55,7 +88,7 @@ materials:
        - name: 'Damage'
          value: '2.5'
        - name: 'RepairCost'
-         value: '1500.0'
+         value: '1500'
     ingredients:
        - type_id: 280
          data: 0
@@ -905,7 +938,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Damage'
-         value: '2'
+         value: '1'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -930,7 +963,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Damage'
-         value: '3.5'
+         value: '2'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1293,7 +1326,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Damage'
-         value: '5'
+         value: '3'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1556,7 +1589,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Damage'
-         value: '6.5'
+         value: '4.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1819,7 +1852,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Damage'
-         value: '8'
+         value: '6'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'

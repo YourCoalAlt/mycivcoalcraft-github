@@ -276,7 +276,7 @@ public class Library extends Structure {
 		
 		// Send money to town for non-resident fee
 		if (payToTown != 0) {
-			getTown().depositDirect(payToTown);
+			getTown().deposit(payToTown);
 			
 			CivMessage.send(player, CivColor.Yellow + "Paid "+ payToTown+" coins in non-resident taxes.");
 		}

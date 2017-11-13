@@ -362,7 +362,7 @@ public class Cottage extends Structure {
 		
 	//	this.getTown().depositTaxed(total_coins);
 	//	attrComp.setValue(total_coins);
-		double taxesPaid = total_coins*this.getTown().getDepositCiv().getIncomeTaxRate();
+		int taxesPaid = (int) (total_coins*this.getTown().getDepositCiv().getIncomeTaxRate());
 
 		String stateMessage = "";
 		switch (result) {

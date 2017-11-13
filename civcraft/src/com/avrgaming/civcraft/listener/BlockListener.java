@@ -1212,6 +1212,7 @@ public class BlockListener implements Listener {
 		Player p = event.getPlayer();
 		Resident resident = CivGlobal.getResident(p.getName());
 		if (resident == null) {
+			CivMessage.sendError(p, "Resident error? Contact an admin. (BlockListener.OnPlayerInteractEntityEvent())");
 			return;
 		}
 		

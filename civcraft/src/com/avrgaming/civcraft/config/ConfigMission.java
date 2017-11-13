@@ -33,7 +33,7 @@ public class ConfigMission {
 	public Integer position = 0;
 	public String name;
 	public List<String> description;
-	public Double cost;
+	public Integer cost;
 	public Double range;
 	public Double cooldown;
 	public Integer intel;
@@ -66,7 +66,7 @@ public class ConfigMission {
 			mission.position = (Integer)b.get("position");
 			mission.name = (String)b.get("name");
 			mission.description = (List<String>) b.get("description");
-			mission.cost = (Double)b.get("cost");
+			mission.cost = (Integer)b.get("cost");
 			mission.range = (Double)b.get("range");
 			mission.cooldown = (Double)b.get("cooldown");
 			mission.intel = (Integer)b.get("intel");

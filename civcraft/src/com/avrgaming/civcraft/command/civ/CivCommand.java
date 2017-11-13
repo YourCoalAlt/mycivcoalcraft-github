@@ -168,7 +168,7 @@ public class CivCommand extends CommandBase {
 		}
 		
 		
-		double revolutionFee = motherCiv.getRevolutionFee();
+		int revolutionFee = motherCiv.getRevolutionFee();
 		
 		if (args.length < 2 || !args[1].equalsIgnoreCase("yes")) {
 			CivMessage.send(sender, CivColor.Yellow+ChatColor.BOLD+"For a measly "+revolutionFee+" we could fund a revolution and get our old civ back!");
@@ -419,7 +419,7 @@ public class CivCommand extends CommandBase {
 			}
 			amount = Math.floor(amount);
 			
-			civ.depositFromResident(resident, Double.valueOf(args[1]));			
+			civ.depositFromResident(resident, Integer.valueOf(args[1]));			
 			
 		} catch (NumberFormatException e) {
 			throw new CivException(args[1]+" is not a valid number.");
@@ -450,7 +450,7 @@ public class CivCommand extends CommandBase {
 			}
 			amount = Math.floor(amount);
 			
-			if(!civ.getTreasury().payTo(resident.getTreasury(), Double.valueOf(args[1]))) {
+			if(!civ.getTreasury().payTo(resident.getTreasury(), Integer.valueOf(args[1]))) {
 				throw new CivException("The civ does not have that much.");
 			}
 		} catch (NumberFormatException e) {

@@ -716,9 +716,9 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 					CivColor.Green+"Flat Tax: "+CivColor.LightGreen+t.getFlatTax()+" Coins",
 					"",
 					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
-					CivColor.Green+"Upkeep: "+CivColor.LightGreen+t.getTotalUpkeep()+" Coins/Day",
-					CivColor.Green+"Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%",
-					CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+t.getTreasury().getPrincipalAmount()+" Coins/Day"
+					CivColor.Green+"Upkeep: "+CivColor.LightGreen+"-"+t.getTotalUpkeep()+" Coins/Day",
+					CivColor.Green+"Treasury Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%",
+					CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+((int) (t.getTreasury().getPrincipalAmount()*((Bank)bank).getInterestRate()))+" Coins/Day"
 					));
 		} else {
 			inv.setItem(19, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
@@ -735,7 +735,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		//		));
 		ConfigHappinessState state = t.getHappinessState();
 		inv.setItem(21, LoreGuiItem.build(CivColor.GreenBold+"Happiness", CivData.OTHER_FLOWERS, 8, 
-				CivColor.Green+"Stat: "+CivColor.LightGreen+df.format(Math.floor(t.getHappinessPercentage()*100))+"%",
+				CivColor.Green+"Stat: "+CivColor.LightGreen+df.format(Math.floor(t.getHappiness())),
 				CivColor.Green+"State: "+CivColor.valueOf(state.color)+state.name
 				));
 		

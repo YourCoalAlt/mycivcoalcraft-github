@@ -148,7 +148,7 @@ public class DailyTimer implements Runnable {
 			for (Town t : civ.getTowns()) {
 				try {
 					double taxrate = t.getDepositCiv().getIncomeTaxRate();
-					double townTotal = 0;
+					int townTotal = 0;
 					
 					townTotal += t.collectPlotTax();
 					townTotal += t.collectFlatTax();

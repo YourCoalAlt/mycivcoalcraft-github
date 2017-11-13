@@ -1066,7 +1066,7 @@ public class InventoryDisplaysListener implements Listener {
 				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
 				giveToPlayer -= giveToTown;
 				
-				bTown.depositDirect(giveToTown);
+				bTown.deposit(giveToTown);
 				res.getTreasury().deposit(giveToPlayer);
 				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+iiGiven+" Iron Ingots for "+ giveToPlayer+ " coins.");
 				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
@@ -1083,7 +1083,7 @@ public class InventoryDisplaysListener implements Listener {
 				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
 				giveToPlayer -= giveToTown;
 				
-				bTown.depositDirect(giveToTown);
+				bTown.deposit(giveToTown);
 				res.getTreasury().deposit(giveToPlayer);
 				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+giGiven+" Gold Ingots for "+ giveToPlayer+ " coins.");
 				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
@@ -1100,7 +1100,7 @@ public class InventoryDisplaysListener implements Listener {
 				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
 				giveToPlayer -= giveToTown;
 				
-				bTown.depositDirect(giveToTown);
+				bTown.deposit(giveToTown);
 				res.getTreasury().deposit(giveToPlayer);
 				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+diGiven+" Diamonds for "+ giveToPlayer+ " coins.");
 				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
@@ -1117,7 +1117,7 @@ public class InventoryDisplaysListener implements Listener {
 				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
 				giveToPlayer -= giveToTown;
 				
-				bTown.depositDirect(giveToTown);
+				bTown.deposit(giveToTown);
 				res.getTreasury().deposit(giveToPlayer);
 				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+eiGiven+" Emeralds for "+ giveToPlayer+ " coins.");
 				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");

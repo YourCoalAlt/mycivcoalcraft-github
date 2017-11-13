@@ -54,9 +54,9 @@ public class PayCommand implements CommandExecutor {
 				throw new CivException("Don't pay yourself.");
 			}
 			
-			Double amount;
+			Integer amount;
 			try {
-				amount = Double.valueOf(args[1]);
+				amount = Integer.valueOf(args[1]);
 				if (!resident.getTreasury().hasEnough(amount)) {
 					throw new CivException("You do not have enough coins.");
 				}
@@ -67,7 +67,6 @@ public class PayCommand implements CommandExecutor {
 			if (amount < 1) {
 				throw new CivException("Cannot pay someone less than one coin.");
 			}
-			amount = Math.floor(amount);
 			
 			resident.getTreasury().withdraw(amount);
 			payTo.getTreasury().deposit(amount);

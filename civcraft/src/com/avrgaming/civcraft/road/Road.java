@@ -48,7 +48,7 @@ public class Road extends Structure {
 	private static final int RECURSION_LIMIT = 350;
 	public static double ROAD_PLAYER_SPEED = 1.5;
 	public static double ROAD_HORSE_SPEED = 1.1;
-	public static double ROAD_COST_PER_SEGMENT = 1;
+	public static Integer ROAD_COST_PER_SEGMENT = 1;
 	public static final int HEIGHT = 4;
 	private Date nextRaidDate;
 	
@@ -83,7 +83,7 @@ public class Road extends Structure {
 			ROAD_HORSE_SPEED = CivSettings.getDouble(CivSettings.structureConfig, "road.horse_speed");
 			MAX_SEGMENT = CivSettings.getInteger(CivSettings.structureConfig, "road.max_segment");
 			this.raidLength = CivSettings.getInteger(CivSettings.structureConfig, "road.raid_length");
-			ROAD_COST_PER_SEGMENT = CivSettings.getDouble(CivSettings.structureConfig, "road.cost_per_segment");
+			ROAD_COST_PER_SEGMENT = CivSettings.getInteger(CivSettings.structureConfig, "road.cost_per_segment");
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
 		}
@@ -129,7 +129,7 @@ public class Road extends Structure {
 			}
 		}
 		
-		double totalCost = this.getTotalCost();
+		int totalCost = this.getTotalCost();
 		this.getTown().getTreasury().deposit(totalCost);
 		CivMessage.sendTown(this.getTown(), CivColor.Yellow+"Refunded "+totalCost+" coins from road construction.");
 		
@@ -250,7 +250,7 @@ public class Road extends Structure {
 			simpleBlocks.remove(sb.getKey());
 		}
 		
-		double totalCost = this.getTotalCost();
+		int totalCost = this.getTotalCost();
 		if (!this.getTown().getTreasury().hasEnough(totalCost)) {
 			throw new CivException("You do not have the required "+totalCost+" coins in the town treasury to build this road.");
 		}
@@ -307,9 +307,8 @@ public class Road extends Structure {
 	}
 
 	
-	private double getTotalCost() {
-		double total;
-		total = this.segmentsBuilt*Road.ROAD_COST_PER_SEGMENT;
+	private Integer getTotalCost() {
+		int total = this.segmentsBuilt*Road.ROAD_COST_PER_SEGMENT;
 		return total;
 	}
 

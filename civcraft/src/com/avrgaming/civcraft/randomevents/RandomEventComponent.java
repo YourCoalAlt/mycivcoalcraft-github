@@ -25,6 +25,10 @@ public abstract class RandomEventComponent {
 		return Double.valueOf(attributes.get(key));
 	}
 	
+	public Integer getInteger(String key) {
+		return Integer.valueOf(attributes.get(key));
+	}
+	
 	public void setAttribute(String key, String value) {
 		attributes.put(key, value);
 	}

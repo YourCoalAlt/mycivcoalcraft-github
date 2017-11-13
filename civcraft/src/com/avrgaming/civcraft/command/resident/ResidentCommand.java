@@ -237,7 +237,7 @@ public class ResidentCommand extends CommandBase {
 		
 		stack.setAmount(amount);
 		player.getInventory().removeItem(stack);
-		double coins = amount*rate*exchangeRate;
+		int coins = (int) (amount*rate*exchangeRate);
 		
 		resident.getTreasury().deposit(coins);
 		CivMessage.sendSuccess(player, "Exchanged "+amount+" "+type+" for "+coins+" coins.");

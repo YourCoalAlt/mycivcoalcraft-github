@@ -73,7 +73,7 @@ public class NotreDame extends Wonder {
 	}
 
 	public void processPeaceTownCoins() {
-		double totalCoins = 0;
+		int totalCoins = 0;
 		
 		double coinsPerTown = this.getTown().getBuffManager().getEffectiveInt("buff_notre_dame_coins_from_peace");
 		

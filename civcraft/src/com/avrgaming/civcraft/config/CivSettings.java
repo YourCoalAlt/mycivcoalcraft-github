@@ -205,7 +205,7 @@ public class CivSettings {
 	public static double gold_rate;
 	public static double diamond_rate;
 	public static double emerald_rate;
-	public static double startingCoins;
+	public static Integer startingCoins;
 	
 	public static ArrayList<String> kitItems = new ArrayList<String>();
 	public static HashMap<Integer, ConfigRemovedRecipes> removedRecipies = new HashMap<Integer, ConfigRemovedRecipes>();
@@ -281,7 +281,7 @@ public class CivSettings {
 		gold_rate = CivSettings.getDouble(civConfig, "ore_rates.gold");
 		diamond_rate = CivSettings.getDouble(civConfig, "ore_rates.diamond");
 		emerald_rate = CivSettings.getDouble(civConfig, "ore_rates.emerald");
-		startingCoins = CivSettings.getDouble(civConfig, "global.starting_coins");
+		startingCoins = CivSettings.getInteger(civConfig, "global.starting_coins");
 		
 		alwaysCrumble.add(CivData.BEDROCK);
 		alwaysCrumble.add(ItemManager.getId(Material.GOLD_BLOCK));
@@ -766,12 +766,11 @@ public class CivSettings {
 		return null;
 	}
 
-	public static ConfigHappinessState getHappinessState(double amount) {
+	public static ConfigHappinessState getHappinessState(int amount) {
 		ConfigHappinessState closestState = happinessStates.get(0);
 		
 		for (int i = 0; i < happinessStates.size(); i++) {
 			ConfigHappinessState state = happinessStates.get(i);
-			amount = (double) Math.round(amount * 100) / 100;
 			if (amount >= state.amount) {
 				closestState = state;
 			}

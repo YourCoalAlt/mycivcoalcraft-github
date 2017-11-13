@@ -124,9 +124,9 @@ public class Stable extends Structure {
 
 		class buyHorseAction implements SignSelectionActionInterface {
 			int horse_id;
-			double cost;
+			int cost;
 			
-			public buyHorseAction(int horse_id, double cost) {
+			public buyHorseAction(int horse_id, int cost) {
 				this.horse_id = horse_id;
 				this.cost = cost;
 			}
@@ -201,9 +201,9 @@ public class Stable extends Structure {
 		class buyItemAction implements SignSelectionActionInterface {
 
 			int item_id;
-			double cost;
+			int cost;
 			
-			public buyItemAction(int item_id, double cost) {
+			public buyItemAction(int item_id, int cost) {
 				this.item_id = item_id;
 				this.cost = cost;
 			}
@@ -258,12 +258,12 @@ public class Stable extends Structure {
 		}
 	}
 	
-	private double getItemCost(double cost) {
+	private Integer getItemCost(int cost) {
 		return cost + getFeeToTown(cost);
 	}
 	
-	private double getFeeToTown(double cost) {
-		return cost*this.nonMemberFeeComponent.getFeeRate();
+	private Integer getFeeToTown(int cost) {
+		return (int) (cost*this.nonMemberFeeComponent.getFeeRate());
 	}
 	
 	@Override

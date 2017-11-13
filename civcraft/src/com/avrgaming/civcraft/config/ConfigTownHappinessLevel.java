@@ -8,8 +8,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.avrgaming.civcraft.main.CivLog;
 
 public class ConfigTownHappinessLevel {
-	public int level;
-	public double happiness;
+	public Integer level;
+	public Integer happiness;
 	
 	public static void loadConfig(FileConfiguration cfg, Map<Integer, ConfigTownHappinessLevel> town_happiness_levels) {
 		town_happiness_levels.clear();
@@ -18,7 +18,7 @@ public class ConfigTownHappinessLevel {
 			
 			ConfigTownHappinessLevel happy_level = new ConfigTownHappinessLevel();
 			happy_level.level = (Integer)cl.get("level");
-			happy_level.happiness = (Double)cl.get("happiness");
+			happy_level.happiness = (Integer)cl.get("happiness");
 			
 			town_happiness_levels.put(happy_level.level, happy_level);
 			

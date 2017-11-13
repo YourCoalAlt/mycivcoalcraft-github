@@ -68,7 +68,7 @@ missions:
           - 'Plunges the target civ into Anarchy.'
           - 'Emerges them in a random government.'
           - 'Must be at civilization capital town.'
-      cost: 300000.0
+      cost: 300000
       range: 100.0
       cooldown: 2.0
       fail_chance: 0.40
@@ -85,7 +85,7 @@ missions:
           - 'Remove tech being researched in target civ.'
           - 'This civ loses all progress with it.'
           - 'Must be less than 75% completed.'
-      cost: 225000.0
+      cost: 225000
       range: 100.0
       cooldown: 2.0
       fail_chance: 0.65
@@ -101,7 +101,7 @@ missions:
       description: 
           - 'Provides a report on the target town.'
           - 'Includes information of strategic value.'
-      cost: 7500.0
+      cost: 7500
       range: 512.0
       cooldown: 2.0
       fail_chance: 0.1
@@ -116,7 +116,7 @@ missions:
       name: 'Steal Treasury'
       description: 
           - 'Steals 20% of the target towns treasury.'
-      cost: 25000.0
+      cost: 25000
       range: 50.0
       cooldown: 2.0
       fail_chance: 0.25
@@ -132,7 +132,7 @@ missions:
       description: 
           - 'Incites riots inside the target town.'
           - 'Causes between 5-10 unhappiness for 3 days.'
-      cost: 20000.0
+      cost: 20000
       range: 50.0
       cooldown: 2.0
       fail_chance: 0.3
@@ -148,7 +148,7 @@ missions:
       description: 
           - 'Destroys the nearest structure.'
           - 'Structure must be completed.'
-      cost: 200000.0
+      cost: 200000
       range: 50.0
       cooldown: 2.0
       fail_chance: 0.35
@@ -164,7 +164,7 @@ missions:
       description: 
           - 'Destroys the nearest wonder.'
           - 'Wonder still must be in progress, not completed.'
-      cost: 400000.0
+      cost: 400000
       range: 50.0
       cooldown: 2.0
       fail_chance: 0.0
@@ -181,7 +181,7 @@ missions:
           - 'Allows you to take a goodie from a trade outpost.'
           - 'The goodie must be in the trade pillar, not a town hall.'
       range: 10.0
-      cost: 2500.0
+      cost: 2500
       cooldown: 2.0
       fail_chance: 0.01
       compromise_chance: 0.0
@@ -197,7 +197,7 @@ missions:
           - 'Causes all cottages to starve for 6 to 48 hours.'
           - '5% chance to famine and down level all cottages.'
       range: 50.0
-      cost: 25000.0
+      cost: 25000
       cooldown: 2.0
       fail_chance: 0.15
       compromise_chance: 0.1

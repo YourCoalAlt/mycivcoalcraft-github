@@ -198,9 +198,9 @@ public class TradeGood extends SQLObject {
 	public void setCoord(BlockCoord coord) {
 		this.coord = coord;
 	}
-	public static double getBaseValue(TradeGood good) {
+	public static Integer getBaseValue(TradeGood good) {
 		ConfigTradeGood configTradeGood = good.getInfo();
-		double value = configTradeGood.value;
+		int value = configTradeGood.value;
 		return value;
 	}
 	
@@ -245,10 +245,9 @@ public class TradeGood extends SQLObject {
 		return 0;
 	}
 	
-	public static double getTradeGoodValue(BonusGoodie goodie, Town town) {
-		
+	public static Integer getTradeGoodValue(BonusGoodie goodie, Town town) {
 		TradeGood good = goodie.getOutpost().getGood();
-		double value = getBaseValue(good);
+		int value = getBaseValue(good);
 		int goodMax;
 		try {
 			goodMax = (Integer)CivSettings.getInteger(CivSettings.goodsConfig, "trade_good_multiplier_max");
@@ -269,12 +268,12 @@ public class TradeGood extends SQLObject {
 		rate += getTradeGoodIncomeBonus(good, town);
 		
 		value *= rate;
-		return value;
+		return (int) value;
 	}
 	
-	public static double getTownBaseGoodPaymentViaGoodie(Town town) {
+	public static Integer getTownBaseGoodPaymentViaGoodie(Town town) {
 		// Find trade goods from goodies in town hall.
-		double total_payment = 0.0;
+		int total_payment = 0;
 		
 		for (BonusGoodie goodie : town.getBonusGoodies()) {
 			TradeOutpost outpost = (TradeOutpost)goodie.getOutpost();
@@ -291,20 +290,17 @@ public class TradeGood extends SQLObject {
 				continue;
 			}
 			
-			double payment = getTradeGoodValue(goodie, town);
+			int payment = getTradeGoodValue(goodie, town);
 			total_payment += payment;
 		}
 		
 		return total_payment;
 	}
 	
-	public static double getTownTradePayment(Town town) {
-		double total_payment = getTownBaseGoodPaymentViaGoodie(town);
+	public static Integer getTownTradePayment(Town town) {
+		int total_payment = getTownBaseGoodPaymentViaGoodie(town);
 		total_payment *= town.getTradeRate();
-		
-
-		
-		return total_payment;
+		return (int) total_payment;
 	}
 
 

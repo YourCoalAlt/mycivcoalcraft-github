@@ -320,7 +320,7 @@ public class Resident extends SQLObject {
 		}
 		
 		this.treasury = new EconObject(this);
-		this.getTreasury().setBalance(rs.getDouble("coins"), false);
+		this.getTreasury().setBalance(rs.getInt("coins"), false);
 		this.setGivenKit(rs.getBoolean("givenKit"));
 		this.setTimezone(rs.getString("timezone"));
 		this.loadFlagSaveString(rs.getString("flags"));
@@ -363,7 +363,7 @@ public class Resident extends SQLObject {
 		this.setLastOnline(rs.getLong("lastOnline"));
 		this.setRegistered(rs.getLong("registered"));
 		this.setDaysTilEvict(rs.getInt("daysTilEvict"));
-		this.getTreasury().setDebt(rs.getDouble("debt"));
+		this.getTreasury().setDebt(rs.getInt("debt"));
 		this.loadFriendsFromSaveString(rs.getString("friends"));
 		
 	}
@@ -593,8 +593,8 @@ public class Resident extends SQLObject {
 		this.save();
 	}
 	
-	public double getPropertyTaxOwed() {
-		double total = 0;
+	public Integer getPropertyTaxOwed() {
+		int total = 0;
 		
 		if (this.getTown() == null) {
 			return total;
@@ -834,8 +834,7 @@ public class Resident extends SQLObject {
 		return amount - leftoverAmount;
 	}
 	
-	public boolean buyItem(String itemName, int id, byte data, double price, int amount) throws CivException {
-		
+	public boolean buyItem(String itemName, int id, byte data, int price, int amount) throws CivException {
 		if (!this.getTreasury().hasEnough(price)) {
 			throw new CivException("Not enough coins.");
 		}

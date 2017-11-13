@@ -93,6 +93,10 @@ public abstract class ItemComponent {
 	public boolean onBlockPlaced(BlockPlaceEvent event) { return false;	}
 	public void onInventoryOpen(InventoryOpenEvent event, ItemStack stack) {	}
 	public void onHold(PlayerItemHeldEvent event) {	}
-
 	public void onItemDrop(PlayerDropItemEvent event) { }
+
+	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
+		// TODO Auto-generated method stub
+		
+	}
 }

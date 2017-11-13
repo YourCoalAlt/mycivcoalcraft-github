@@ -11,8 +11,11 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainAttack;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
@@ -62,10 +65,29 @@ public class RangedAttack extends ItemComponent {
 					return;
 				}
 				
-				ItemStack a = MinecraftListener.getArrowStack(attacker);
+				ConfigUnit u = Unit.getPlayerUnit(attacker);
+				ItemStack unit = Unit.getPlayerUnitStack(attacker);
+				AttributeUtil a = new AttributeUtil(unit);
+				
+				double unitper = 1.0;
+				if (u != null) { 
+					if (u.id.equals("u_warrior")) { dmg *= 0.9; }
+					else if (u != null && u.id.equals("u_archer")) { dmg *= 1.25; }
+					// Additional attack dmg always gets added, reguardless of unit type.
+					for (LoreEnhancement enh : a.getEnhancements()) {
+						CivMessage.global(enh.getDisplayName());
+						if (enh instanceof LoreEnhancementUnitGainAttack) {
+							unitper += (enh.getLevel(a)*0.05);
+						}
+					}
+				}
+				
+				dmg *= unitper;
+				
+				ItemStack ar = MinecraftListener.getArrowStack(attacker);
 				String an = null;
-				if (a != null && a.hasItemMeta() && a.getItemMeta().hasDisplayName()) {
-					an = a.getItemMeta().getDisplayName();
+				if (ar != null && ar.hasItemMeta() && ar.getItemMeta().hasDisplayName()) {
+					an = ar.getItemMeta().getDisplayName();
 				} else {
 					Resident r = CivGlobal.getResident(attacker);
 					if (r.lastShotArrow != null) {
@@ -128,26 +150,20 @@ public class RangedAttack extends ItemComponent {
 		
 		Vector vel = event.getDamager().getVelocity();
 		double magnitudeSquared = Math.pow(vel.getX(), 2) + Math.pow(vel.getY(), 2) + Math.pow(vel.getZ(), 2);
-		
 		double percentage = magnitudeSquared / ARROW_MAX_VEL;
 		double totalDmg = percentage * dmg;
-		
-		if (totalDmg > dmg) {
-			totalDmg = dmg;
-		}
+		if (totalDmg > dmg) { totalDmg = dmg; }
 		
 		if (event.getDamager() instanceof Arrow) {
 			Arrow arrow = (Arrow)event.getDamager();
 			if (arrow.getShooter() instanceof Player) {
 				Resident resident = CivGlobal.getResident(((Player)arrow.getShooter()));
-				if (!resident.hasTechForItem(inHand)) {
-					totalDmg = totalDmg / 2;
-				}
+				if (!resident.hasTechForItem(inHand)) { dmg = dmg/2; }
 			}
 		}
 		
-		if (totalDmg < 0.3) {
-			totalDmg = 0.3;
+		if (totalDmg < 0.2) {
+			totalDmg = 0.2;
 		}
 		event.setDamage(totalDmg);
 	}

@@ -49,8 +49,8 @@ public class TownChunk extends SQLObject {
 	 * Price vs value, price is what the owner is currently selling it for,
 	 * value is the amount that it was last purchased at, used for taxes.
 	 */
-	private double value;
-	private double price;
+	private Integer value;
+	private Integer price;
 	private boolean outpost;
 	
 	public PlotPermissions perms = new PlotPermissions();
@@ -133,8 +133,8 @@ public class TownChunk extends SQLObject {
 		}
 			
 		this.forSale = rs.getBoolean("for_sale");
-		this.value = rs.getDouble("value");
-		this.price = rs.getDouble("price");
+		this.value = rs.getInt("value");
+		this.price = rs.getInt("price");
 		this.outpost = rs.getBoolean("outpost");
 		
 		if (!this.outpost) {
@@ -208,7 +208,7 @@ public class TownChunk extends SQLObject {
 		this.chunkLocation = chunkLocation;
 	}
 	
-	public static double getNextPlotCost(Town town) {
+	public static Integer getNextPlotCost(Town town) {
 		
 		ConfigTownLevel effectiveTownLevel = CivSettings.townLevels.get(CivSettings.townLevels.size());
 		int currentPlotCount = town.getTownChunks().size();
@@ -220,8 +220,6 @@ public class TownChunk extends SQLObject {
 				}
 			}
 		}
-		
-		
 		return effectiveTownLevel.plot_cost;		
 	}
 
@@ -230,8 +228,7 @@ public class TownChunk extends SQLObject {
 			throw new CivException("This plot is already claimed.");
 		}
 		
-		double cost;	
-		cost = getNextPlotCost(town);
+		int cost = getNextPlotCost(town);
 		
 		if (!town.hasEnough(cost)) {
 			throw new CivException("The town does not have the required "+cost+" coins to claim this plot.");
@@ -303,7 +300,7 @@ public class TownChunk extends SQLObject {
 		
 		tc.setOutpost(outpost);
 		tc.save();
-		town.withdraw(cost);			
+		town.getTreasury().withdraw(cost);			
 		CivGlobal.addTownChunk(tc);
 		CivGlobal.processCulture();
 		return tc;
@@ -447,7 +444,6 @@ public class TownChunk extends SQLObject {
 	}
 
 	public void purchase(Resident resident) throws CivException {
-
 		if (!resident.getTreasury().hasEnough(this.price)) {
 			throw new CivException("You do not have the required "+this.price+" coins to purchase this plot.");
 		}
@@ -467,11 +463,11 @@ public class TownChunk extends SQLObject {
 		this.save();
 	}
 
-	public double getPrice() {
+	public Integer getPrice() {
 		return price;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 	

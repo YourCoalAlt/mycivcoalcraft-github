@@ -103,8 +103,10 @@ public class Damage extends ItemComponent {
 			AttributeUtil a = new AttributeUtil(unit);
 			
 			double unitper = 1.0;
-			if (u != null && u.id.equals("u_warrior")) {
-				dmg *= 1.25;
+			if (u != null) { 
+				if (u.id.equals("u_warrior")) { dmg *= 1.25; }
+				else if (u != null && u.id.equals("u_archer")) { dmg *= 0.9; }
+				// Additional attack dmg always gets added, reguardless of unit type.
 				for (LoreEnhancement enh : a.getEnhancements()) {
 					CivMessage.global(enh.getDisplayName());
 					if (enh instanceof LoreEnhancementUnitGainAttack) {
@@ -116,14 +118,10 @@ public class Damage extends ItemComponent {
 			dmg *= unitper;
 			
 			Resident resident = CivGlobal.getResident(p);
-			if (!resident.hasTechForItem(inHand)) {
-				dmg = dmg/2;
-			}
+			if (!resident.hasTechForItem(inHand)) { dmg = dmg/2; }
 		}
 		
-		if (dmg < 0.1) {
-			dmg = 0.1;
-		}
+		if (dmg < 0.2) { dmg = 0.2; }
 		event.setDamage(dmg);
 	}
 }

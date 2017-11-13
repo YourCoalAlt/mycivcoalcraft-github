@@ -22,9 +22,9 @@ package com.avrgaming.civcraft.object;
 public class EconObject {
 
 	private String econName;
-	private Double coins = 0.0;
-	private Double debt = 0.0;
-	private Double principalAmount = 0.0;
+	private Integer coins = 0;
+	private Integer debt = 0;
+	private Integer principalAmount = 0;
 	private SQLObject holder;
 	
 	public EconObject(SQLObject holder) {
@@ -39,24 +39,20 @@ public class EconObject {
 		this.econName = name;
 	}
 	
-	public double getBalance() {
-		coins = Math.floor(coins);
-
+	public Integer getBalance() {
 		synchronized (coins) {
 			return coins;
 		}
 	}
 	
-	
-	public void setBalance(double amount) {
+	public void setBalance(int amount) {
 		this.setBalance(amount, true);
 	}
 	
-	public void setBalance(double amount, boolean save) {
+	public void setBalance(int amount, boolean save) {
 		if (amount < 0) {
 			amount = 0;
 		}
-		amount = Math.floor(amount);
 		
 		synchronized (coins) {
 			coins = amount;
@@ -67,19 +63,17 @@ public class EconObject {
 		}
 	}
 	
-	public void deposit(double amount) {
+	public void deposit(int amount) {
 		if (amount < 0) {
 			amount = 0;
 		}
-		amount = Math.floor(amount);
 		this.deposit(amount, true);
 	}
 	
-	public void deposit(double amount, boolean save) {
+	public void deposit(int amount, boolean save) {
 		if (amount < 0) {
 			amount = 0;
 		}
-		amount = Math.floor(amount);
 		
 		synchronized (coins) {
 			coins += amount;
@@ -88,33 +82,27 @@ public class EconObject {
 		if (save) {
 			holder.save();
 		}
-
 	}
 	
-	public void withdraw(double amount) {
+	public void withdraw(int amount) {
 		if (amount < 0) {
 			amount = 0;
 		}
-		amount = Math.floor(amount);
-		
 		this.withdraw(amount, true);
 	}
 	
-	public void withdraw(double amount, boolean save) {
+	public void withdraw(int amount, boolean save) {
 		if (amount < 0) {
 			amount = 0;
 		}
-		amount = Math.floor(amount);
 		
-		/*
-		 * Update the principal we use to calculate interest,
+		/* Update the principal we use to calculate interest,
 		 * if our current balance dips below the principal,
-		 * then we subtract from the principal.
-		 */
+		 * then we subtract from the principal. */
 		synchronized(principalAmount) {
 			if (principalAmount > 0) {
-				double currentBalance = this.getBalance();
-				double diff = currentBalance - principalAmount;
+				int currentBalance = this.getBalance();
+				int diff = currentBalance - principalAmount;
 				diff -= amount;
 				
 				if (diff < 0) {
@@ -130,18 +118,9 @@ public class EconObject {
 		if (save) {
 			holder.save();
 		}
-		
-		
-//		EconomyResponse resp;
-//		resp = CivGlobal.econ.withdrawPlayer(getEconomyName(), amount);
-//		if (resp.type == EconomyResponse.ResponseType.FAILURE) {
-//			throw new EconomyException(resp.errorMessage);
-//		}
 	}
 	
-	public boolean hasEnough(double amount) {
-		amount = Math.floor(amount);
-
+	public boolean hasEnough(int amount) {
 		synchronized (coins) {
 			if (coins >= amount) {
 				return true;
@@ -149,10 +128,9 @@ public class EconObject {
 				return false;
 			}
 		}
-	//	return CivGlobal.econ.has(getEconomyName(), amount);
 	}
-		
-	public boolean payTo(EconObject objToPay, double amount) {
+	
+	public boolean payTo(EconObject objToPay, int amount) {
 		if (!this.hasEnough(amount)) {
 			return false;
 		} else {
@@ -162,8 +140,8 @@ public class EconObject {
 		}
 	}
 	
-	public double payToCreditor(EconObject objToPay, double amount) {
-		double total = 0;
+	public int payToCreditor(EconObject objToPay, int amount) {
+		int total = 0;
 		
 		if (this.hasEnough(amount)) {
 			this.withdraw(amount);
@@ -171,41 +149,34 @@ public class EconObject {
 			return amount;
 		}
 		
-		/* Do not have enough to pay, pay what we can and put the rest into debt. */
+		// Do not have enough to pay, pay what we can and put the rest into debt.
 		this.debt += amount - this.getBalance();
 		objToPay.deposit(this.getBalance());
 		this.withdraw(this.getBalance());
-		
 		return total;
 	}
 	
-	
 	public boolean inDebt() {
-		debt = Math.floor(debt);
-
 		if (debt > 0) {
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 	
-	public double getDebt() {
-		debt = Math.floor(debt);
+	public int getDebt() {
 		return debt;
 	}
-
-	public void setDebt(double debt) {
-		debt = Math.floor(debt);
+	
+	public void setDebt(int debt) {
 		this.debt = debt;
 	}
-
-	public double getPrincipalAmount() {
+	
+	public int getPrincipalAmount() {
 		return principalAmount;
 	}
-
-	public void setPrincipalAmount(double interestAmount) {
+	
+	public void setPrincipalAmount(int interestAmount) {
 		this.principalAmount = interestAmount;
 	}
-
-	
 }

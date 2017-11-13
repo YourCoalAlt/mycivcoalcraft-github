@@ -537,7 +537,15 @@ public class LoreCraftableMaterial extends LoreMaterial {
 			comp.onDefense(event, stack);
 		}
 	}
-
+	
+	@Override
+	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack stack) {
+		/* Search components for bullet attack value. */
+		for (ItemComponent comp : this.components.values()) {
+			comp.onBulletAttack(event, stack);
+		}
+	}
+	
 	public void onItemDurabilityChange(PlayerItemDamageEvent event) {
 		for (ItemComponent comp : this.components.values()) {
 			comp.onDurabilityChange(event);

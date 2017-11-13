@@ -593,14 +593,14 @@ public class Structure extends Buildable {
 		
 		CivMessage.sendTown(getTown(), CivColor.LightGreen+getDisplayName()+" was unbuilt with the undo command.");
 				
-		double refund = this.getCost();
-		this.getTown().depositDirect(refund);
+		int refund = this.getCost();
+		this.getTown().deposit(refund);
 		CivMessage.sendTown(getTown(), "Town refunded "+refund+" coins.");
 		
 		this.unbindStructureComponents();
 	}
 
-	public double getRepairCost() {
+	public Integer getRepairCost() {
 		return (int)this.getCost()/2;
 	}
 
@@ -648,7 +648,7 @@ public class Structure extends Buildable {
 			throw new CivException("Town halls and capitols cannot be repaired.");
 		}
 		
-		double cost = getRepairCost();
+		int cost  = getRepairCost();
 		if (!getTown().getTreasury().hasEnough(cost)) {
 			throw new CivException("Your town cannot not afford the "+cost+" coins to build a "+getDisplayName());
 		}

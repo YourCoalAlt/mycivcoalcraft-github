@@ -36,12 +36,14 @@ public abstract class Unit {
 	public static Spy SPY_UNIT;
 	public static Settler SETTLER_UNIT;
 	public static Warrior WARRIOR_UNIT;
+	public static Archer ARCHER_UNIT;
 	
 	public static void init() {
 		SPY_UNIT = new Spy("u_spy", CivSettings.units.get("u_spy"));
 		SETTLER_UNIT = new Settler("u_settler", CivSettings.units.get("u_settler"));
 		
 		WARRIOR_UNIT = new Warrior("u_warrior", CivSettings.units.get("u_warrior"));
+		ARCHER_UNIT = new Archer("u_archer", CivSettings.units.get("u_archer"));
 	}
 	
 	public Unit() {

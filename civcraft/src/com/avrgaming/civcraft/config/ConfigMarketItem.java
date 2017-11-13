@@ -278,8 +278,8 @@ public class ConfigMarketItem {
 	public void buy(Resident resident, Player player, int amount) {
 		int total_items = 0;
 		
-		double coins = resident.getTreasury().getBalance();
-		double cost = getBuyCostForAmount(amount);
+		int coins = resident.getTreasury().getBalance();
+		int cost = getBuyCostForAmount(amount);
 		
 		if (coins < cost) {
 			CivMessage.sendError(player, "You do not have the required "+cost);

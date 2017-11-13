@@ -98,10 +98,10 @@ public class Civilization extends SQLObject {
 	public static final int HEX_COLOR_TOLERANCE = 40;
 
 	/* Store information to display about last upkeep paid. */
-	public HashMap<String, Double> lastUpkeepPaidMap = new HashMap<String, Double>();
+	public HashMap<String, Integer> lastUpkeepPaidMap = new HashMap<String, Integer>();
 	
 	/* Store information about last tick's taxes */
-	public HashMap<String, Double> lastTaxesPaidMap = new HashMap<String, Double>();
+	public HashMap<String, Integer> lastTaxesPaidMap = new HashMap<String, Integer>();
 	
 	/* Used to prevent spam of tech % complete message. */
 	private int lastTechPercentage = 0;
@@ -230,8 +230,8 @@ public class Civilization extends SQLObject {
 		}
 		
 		this.setTreasury(new EconObject(this));
-		this.getTreasury().setBalance(rs.getDouble("coins"), false);
-		this.getTreasury().setDebt(rs.getDouble("debt"));
+		this.getTreasury().setBalance(rs.getInt("coins"), false);
+		this.getTreasury().setDebt(rs.getInt("debt"));
 	}
 
 	@Override
@@ -329,7 +329,7 @@ public class Civilization extends SQLObject {
 		return out;
 	}
 
-	private void loadKeyValueString(String string, HashMap<String, Double> map) {
+	private void loadKeyValueString(String string, HashMap<String, Integer> map) {
 		
 		String[] keyvalues = string.split(";");
 		
@@ -338,7 +338,7 @@ public class Civilization extends SQLObject {
 				String key = keyvalue.split(":")[0];
 				String value = keyvalue.split(":")[1];
 				
-				map.put(key, Double.valueOf(value));
+				map.put(key,Integer.valueOf(value));
 			} catch (ArrayIndexOutOfBoundsException e) {
 				// forget it then.
 			}
@@ -346,11 +346,11 @@ public class Civilization extends SQLObject {
 		
 	}
 	
-	private String saveKeyValueString(HashMap<String, Double> map) {
+	private String saveKeyValueString(HashMap<String, Integer> map) {
 		String out = "";
 		
 		for (String key : map.keySet()) {
-			double value = map.get(key);
+			int value = map.get(key);
 			out += key+":"+value+";";
 		}
 		return out;
@@ -852,8 +852,8 @@ public class Civilization extends SQLObject {
 		return null;		
 	}
 	
-	public double payUpkeep() throws InvalidConfiguration, CivException {
-		double upkeep = 0;
+	public Integer payUpkeep() throws InvalidConfiguration, CivException {
+		int upkeep = 0;
 		this.lastUpkeepPaidMap.clear();
 		
 		Town capitol = this.getTown(capitolName);
@@ -883,7 +883,7 @@ public class Civilization extends SQLObject {
 			this.getTreasury().withdraw(upkeep);
 		} else {
 			/* Doh! We dont have enough money to pay for our upkeep, go into debt. */
-			double diff = upkeep - this.getTreasury().getBalance();
+			int diff = upkeep - this.getTreasury().getBalance();
 			this.getTreasury().setDebt(this.getTreasury().getDebt()+diff);
 			this.getTreasury().withdraw(this.getTreasury().getBalance());
 		}
@@ -1164,9 +1164,8 @@ public class Civilization extends SQLObject {
 		return out;
 	}
 
-	public void taxPayment(Town town, double amount) {
-
-		Double townPaid = this.lastTaxesPaidMap.get(town.getName());
+	public void taxPayment(Town town, int amount) {
+		Integer townPaid = this.lastTaxesPaidMap.get(town.getName());
 		if (townPaid == null) {
 			townPaid = amount;
 		} else {
@@ -1235,7 +1234,7 @@ public class Civilization extends SQLObject {
 		return this.techs.values();
 	}
 
-	public void depositFromResident(Resident resident, Double amount) throws CivException, SQLException {
+	public void depositFromResident(Resident resident, Integer amount) throws CivException, SQLException {
 
 		if (resident.getTreasury().hasEnough(amount) == false) {
 			throw new CivException("You do not have enough.");
@@ -1246,7 +1245,7 @@ public class Civilization extends SQLObject {
 				this.getTreasury().setDebt(this.getTreasury().getDebt() - amount);
 				resident.getTreasury().withdraw(amount);
 			} else if (this.getTreasury().getDebt() < amount) {
-				double leftAmount = amount - this.getTreasury().getDebt();
+				int leftAmount = amount - this.getTreasury().getDebt();
 				this.getTreasury().setDebt(0);
 				this.getTreasury().deposit(leftAmount);				
 				resident.getTreasury().withdraw(amount);
@@ -1408,7 +1407,7 @@ public class Civilization extends SQLObject {
 		return false;
 	}
 
-	public double getForSalePriceFromCivOnly() {
+	public Integer getForSalePriceFromCivOnly() {
 		int effectivePoints = 0;
 		effectivePoints = this.getTechScore();
 		double coins_per_point;
@@ -1418,11 +1417,11 @@ public class Civilization extends SQLObject {
 			e.printStackTrace();
 			return 0;
 		}
-		return coins_per_point*effectivePoints;
+		return (int) (coins_per_point*effectivePoints);
 	}
 
-	public double getTotalSalePrice() {
-		double price = getForSalePriceFromCivOnly();
+	public Integer getTotalSalePrice() {
+		int price = getForSalePriceFromCivOnly();
 		for (Town town : this.getTowns()) {
 			price += town.getForSalePrice();
 		}
@@ -1430,7 +1429,6 @@ public class Civilization extends SQLObject {
 	}
 	
 	public void buyCiv(Civilization civ) throws CivException {
-		
 		if (!this.getTreasury().hasEnough(civ.getTotalSalePrice())) {
 			throw new CivException("Your civilization treasury does not have enough money.");
 		}
@@ -1505,7 +1503,6 @@ public class Civilization extends SQLObject {
 	}
 	
 	public void buyTown(Town town) throws CivException {
-
 		if (!this.getTreasury().hasEnough(town.getForSalePrice())) {
 			throw new CivException("Your civilization treasury does not have enough money.");
 		}
@@ -1521,7 +1518,7 @@ public class Civilization extends SQLObject {
 
 	}
 	
-	public double getRevolutionFee() {
+	public Integer getRevolutionFee() {
 		
 		try {
 			double base_coins = CivSettings.getDouble(CivSettings.warConfig, "revolution.base_cost");
@@ -1545,11 +1542,11 @@ public class Civilization extends SQLObject {
 				total_coins = max_fee;
 			}
 			
-			return total_coins;
+			return (int) total_coins;
 		
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
-			return Double.MAX_VALUE;
+			return Integer.MAX_VALUE;
 		}
 	}
 

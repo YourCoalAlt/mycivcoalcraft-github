@@ -46,9 +46,9 @@ public class ConfigBuildableInfo {
 	public String onBuild_event = "";
 	public int limit = 0;
 	public ArrayList<String> signs = new ArrayList<String>();
-	public double cost = 0;
-	public double upkeep = 0;
-	public double hammer_cost = 0;
+	public Integer cost = 0;
+	public Integer upkeep = 0;
+	public Integer hammer_cost = 0;
 	public int max_hitpoints = 0;
 	public Boolean destroyable = false;
 	public Boolean allow_outside_town = false;
@@ -107,9 +107,9 @@ public class ConfigBuildableInfo {
 			sinfo.onBuild_event = (String)obj.get("onBuild_event");
 			sinfo.limit = (Integer)obj.get("limit");
 			//TODO handle signs
-			sinfo.cost = (Double)obj.get("cost");
-			sinfo.upkeep = (Double)obj.get("upkeep");
-			sinfo.hammer_cost = (Double)obj.get("hammer_cost");
+			sinfo.cost = (Integer)obj.get("cost");
+			sinfo.upkeep = (Integer)obj.get("upkeep");
+			sinfo.hammer_cost = (Integer)obj.get("hammer_cost");
 			sinfo.max_hitpoints = (Integer)obj.get("max_hitpoints");
 			sinfo.destroyable = (Boolean)obj.get("destroyable");
 			sinfo.allow_outside_town = (Boolean)obj.get("allow_outside_town");

@@ -111,7 +111,7 @@ public class Town extends SQLObject {
 	
 	private int level;
 	private double taxRate;
-	private double flatTax;
+	private Integer flatTax;
 	private Civilization civ;
 	private Civilization motherCiv;
 	private int daysInDebt;
@@ -179,7 +179,7 @@ public class Town extends SQLObject {
 	public int saved_granary_level = 1;
 	
 	public int saved_bank_level = 1;
-	public double saved_bank_interest_amount = 0;
+	public double saved_bank_interest_amount = 0.0;
 	
 	/* Happiness Stuff */
 	private double baseHappy = 0.0;
@@ -277,7 +277,7 @@ public class Town extends SQLObject {
 			throw new CivException("Failed to load town, bad data.");
 		}
 		this.setDaysInDebt(rs.getInt("daysInDebt"));
-		this.setFlatTax(rs.getDouble("flat_tax"));
+		this.setFlatTax(rs.getInt("flat_tax"));
 		this.setTaxRate(rs.getDouble("tax_rate"));
 		this.setUpgradesFromString(rs.getString("upgrades"));
 		
@@ -292,8 +292,8 @@ public class Town extends SQLObject {
 		assistantGroupName = "assistants";
 
 		this.setTreasury(new EconObject(this));
-		this.getTreasury().setBalance(rs.getDouble("coins"), false);
-		this.setDebt(rs.getDouble("debt"));
+		this.getTreasury().setBalance(rs.getInt("coins"), false);
+		this.setDebt(rs.getInt("debt"));
 		
 		String outlawRaw = rs.getString("outlaws");
 		if (outlawRaw != null) {
@@ -421,7 +421,7 @@ public class Town extends SQLObject {
 		this.setName(name);
 		this.setLevel(1);
 		this.setTaxRate(0.0);
-		this.setFlatTax(0.0);
+		this.setFlatTax(0);
 		this.setCiv(civ);
 		
 		this.setDaysInDebt(0);
@@ -591,11 +591,11 @@ public class Town extends SQLObject {
 		return ""+rounded+"%";	
 	}
 	
-	public double getFlatTax() {
+	public Integer getFlatTax() {
 		return flatTax;
 	}
 
-	public void setFlatTax(double flatTax) {
+	public void setFlatTax(int flatTax) {
 		this.flatTax = flatTax;
 	}
 
@@ -945,13 +945,8 @@ public class Town extends SQLObject {
 		return treasury;
 	}
 	
-	public void depositDirect(double amount) {
-		this.treasury.deposit(amount);
-	}
-	
-	public void depositTaxed(double amount) {
-		
-		double taxAmount = amount*this.getDepositCiv().getIncomeTaxRate();
+	public void depositTaxed(int amount) {
+		int taxAmount = (int) (amount*this.getDepositCiv().getIncomeTaxRate());
 		amount -= taxAmount;
 		
 		if (this.getMotherCiv() != null) {
@@ -963,7 +958,7 @@ public class Town extends SQLObject {
 				return;
 			}
 			
-			double capturePayment = amount * capturedPenalty;
+			int capturePayment = (int) (amount * capturedPenalty);
 			CivMessage.sendTown(this, CivColor.Yellow+"Your town paid "+(amount - capturePayment)+" coins due to being captured by "+this.getCiv().getName());
 			amount = capturePayment;
 		}
@@ -971,9 +966,13 @@ public class Town extends SQLObject {
 		this.treasury.deposit(amount);	
 		this.getDepositCiv().taxPayment(this, taxAmount);
 	}
-
-	public void withdraw(double amount)  {
-		this.treasury.withdraw(amount);
+	
+	public void deposit(int amt) {
+		this.treasury.deposit(amt);
+	}
+	
+	public void withdraw(int amt) {
+		this.treasury.withdraw(amt);
 	}
 	
 	public boolean inDebt() {
@@ -984,15 +983,15 @@ public class Town extends SQLObject {
 		return this.treasury.getDebt();
 	}
 	
-	public void setDebt(double amount) {
+	public void setDebt(int amount) {
 		this.treasury.setDebt(amount);
 	}
 	
-	public double getBalance() {
+	public int getBalance() {
 		return this.treasury.getBalance();
 	}
 	
-	public boolean hasEnough(double amount) {
+	public boolean hasEnough(int amount) {
 		return this.treasury.hasEnough(amount);
 	}
 	
@@ -1095,7 +1094,7 @@ public class Town extends SQLObject {
 	}
 
 	public double collectPlotTax() {	
-		double total = 0;
+		int total = 0;
 		for (Resident resident : this.residents.keySet()) {
 			if (!resident.hasTown()) {
 				CivLog.warning("Resident in town list but doesnt have a town! Resident:"+resident.getName()+" town:"+this.getName());
@@ -1105,7 +1104,7 @@ public class Town extends SQLObject {
 			if (resident.isTaxExempt()) {
 				continue;
 			}
-			double tax = resident.getPropertyTaxOwed();
+			int tax = resident.getPropertyTaxOwed();
 			boolean wasInDebt = resident.getTreasury().inDebt();
 
 			total += resident.getTreasury().payToCreditor(this.getTreasury(), tax);
@@ -1119,7 +1118,7 @@ public class Town extends SQLObject {
 	}
 
 	public double collectFlatTax() {
-		double total = 0;
+		int total = 0;
 		for (Resident resident : this.residents.keySet()) {
 			if (!resident.hasTown()) {
 				CivLog.warning("Resident in town list but doesnt have a town! Resident:"+resident.getName()+" town:"+this.getName());
@@ -1167,9 +1166,9 @@ public class Town extends SQLObject {
 		return null;
 	}
 	
-	public double getTotalUpkeep() {
+	public Integer getTotalUpkeep() {
 //		return this.getBaseUpkeep() + this.getStructureUpkeep() + this.getSpreadUpkeep() + this.getOutpostUpkeep();
-		double basic = this.getBaseUpkeep() + this.getStructureUpkeep() + this.getOutpostUpkeep();
+		int basic = this.getBaseUpkeep() + this.getStructureUpkeep() + this.getOutpostUpkeep();
 		basic *= this.getGovernment().upkeep_rate;
 		return basic;
 	}
@@ -1183,15 +1182,15 @@ public class Town extends SQLObject {
 		
 		//upkeep *= getGovernment().upkeep_rate;
 		
-		double upkeep = getTotalUpkeep();
+		int upkeep = getTotalUpkeep();
 		
 		if (this.getBuffManager().hasBuff("buff_colossus_reduce_upkeep")) {
-			upkeep = upkeep - (upkeep*this.getBuffManager().getEffectiveDouble("buff_colossus_reduce_upkeep"));
+			upkeep = (int) (upkeep - (upkeep*this.getBuffManager().getEffectiveDouble("buff_colossus_reduce_upkeep")));
 		}
 		
 		if (this.getBuffManager().hasBuff("debuff_colossus_leech_upkeep")) {
 			double rate = this.getBuffManager().getEffectiveDouble("debuff_colossus_leech_upkeep");
-			double amount = upkeep*rate;
+			int amount = (int) (upkeep*rate);
 			
 			Wonder colossus = CivGlobal.getWonderByConfigId("w_colossus");
 			if (colossus != null) {
@@ -1209,7 +1208,7 @@ public class Town extends SQLObject {
 			
 			/* Couldn't pay the bills. Add to this town's debt, 
 			 * civ may pay it later. */
-			double diff = upkeep - this.getTreasury().getBalance();
+			int diff = upkeep - this.getTreasury().getBalance();
 			
 			if (this.isCapitol()) {
 				/* Capitol towns cannot be in debt, must pass debt on to civ. */
@@ -1231,14 +1230,13 @@ public class Town extends SQLObject {
 		return upkeep;
 	}
 
-	public double getBaseUpkeep() {
+	public Integer getBaseUpkeep() {
 		ConfigTownLevel level = CivSettings.townLevels.get(this.level);
 		return level.upkeep;
 	}
 	
-	public double getStructureUpkeep() {
-		double upkeep = 0;
-		
+	public Integer getStructureUpkeep() {
+		int upkeep = 0;
 		for (Structure struct : getStructures()) {
 			upkeep += struct.getUpkeepCost();
 		}
@@ -1417,7 +1415,7 @@ public class Town extends SQLObject {
 			}
 		}
 		
-		double cost = wonder.getCost();
+		int cost = wonder.getCost();
 		if (!this.getTreasury().hasEnough(cost)) {
 			throw new CivException("Your town cannot not afford the "+cost+" coins to build "+wonder.getDisplayName());
 		}
@@ -1479,7 +1477,7 @@ public class Town extends SQLObject {
 			}
 		}
 		
-		double cost = struct.getCost();
+		int cost = struct.getCost();
 		if (!this.getTreasury().hasEnough(cost)) {
 			throw new CivException("Your town cannot not afford the "+cost+" coins to build a "+struct.getDisplayName());
 		}
@@ -2071,14 +2069,14 @@ public class Town extends SQLObject {
 		return false;
 	}
 
-	public double getForSalePrice() {
+	public Integer getForSalePrice() {
 		int points = this.getScore();
 		try {
 			double coins_per_point = CivSettings.getDouble(CivSettings.scoreConfig, "coins_per_point");
-			return coins_per_point*points;
+			return (int) (coins_per_point*points);
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
-			return 0.0;
+			return 0;
 		}		
 	}
 	
@@ -2132,7 +2130,7 @@ public class Town extends SQLObject {
 		return outposts.values();
 	}
 
-	public double getOutpostUpkeep() {
+	public Integer getOutpostUpkeep() {
 //		double outpost_upkeep;
 //		try {
 //			outpost_upkeep = CivSettings.getDouble(CivSettings.townConfig, "town.outpost_upkeep");
@@ -2276,7 +2274,7 @@ public class Town extends SQLObject {
 		this.daysInDebt = daysInDebt;
 	}
 
-	public void depositFromResident(Double amount, Resident resident) throws CivException {
+	public void depositFromResident(Integer amount, Resident resident) throws CivException {
 		if (!resident.getTreasury().hasEnough(amount)) {
 			throw new CivException("You do not have enough coins for that.");
 		}
@@ -2286,7 +2284,7 @@ public class Town extends SQLObject {
 				this.getTreasury().setDebt(this.getTreasury().getDebt() - amount);
 				resident.getTreasury().withdraw(amount);
 			} else {
-				double leftAmount = amount - this.getTreasury().getDebt();
+				int leftAmount = amount - this.getTreasury().getDebt();
 				this.getTreasury().setDebt(0);
 				this.getTreasury().deposit(leftAmount);				
 				resident.getTreasury().withdraw(amount);
@@ -3388,7 +3386,7 @@ public class Town extends SQLObject {
 	}
 	
 	//XXX Happiness
-	public AttrSource getHappiness() {
+	public AttrSource getAverageHappiness() {
 		HashMap<String, Double> sources = new HashMap<String, Double>();
 		double total = 0;
 		
@@ -3466,7 +3464,7 @@ public class Town extends SQLObject {
 	
 	//XXX Unhappiness
 	
-	public AttrSource getUnhappiness() {
+	public AttrSource getAverageUnhappiness() {
 		HashMap<String, Double> sources = new HashMap<String, Double>();
 		double total = 0;
 		
@@ -3563,15 +3561,21 @@ public class Town extends SQLObject {
 		return as;
 	}
 
-	public double getHappinessPercentage() {
-		double total_happiness = getHappiness().total;
-		double total_unhappiness = getUnhappiness().total;
+	public double getHappiness11Percentage() {
+		double total_happiness = getAverageHappiness().total;
+		double total_unhappiness = getAverageUnhappiness().total;
 		double total = total_happiness + total_unhappiness;
 		return total_happiness/total;
 	}
 	
+	public Integer getHappiness() {
+		int total_happiness = (int) getAverageHappiness().total;
+		int total_unhappiness = (int) getAverageUnhappiness().total;
+		return total_happiness - total_unhappiness;
+	}
+	
 	public ConfigHappinessState getHappinessState() {
-		return CivSettings.getHappinessState(this.getHappinessPercentage());
+		return CivSettings.getHappinessState(this.getHappiness());
 	}
 
 	public void setBaseHappiness(double happy) {

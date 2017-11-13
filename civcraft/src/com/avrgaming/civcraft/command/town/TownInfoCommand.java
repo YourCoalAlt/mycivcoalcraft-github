@@ -168,7 +168,7 @@ public class TownInfoCommand extends CommandBase {
 		ArrayList<String> out = new ArrayList<String>();
 
 		out.add(CivMessage.buildSmallTitle("Happiness Sources"));
-		AttrSource happySources = town.getHappiness();
+		AttrSource happySources = town.getAverageHappiness();
 
 		DecimalFormat df = new DecimalFormat();
 		df.applyPattern("###,###");
@@ -180,7 +180,7 @@ public class TownInfoCommand extends CommandBase {
 
 		
 		out.add(CivMessage.buildSmallTitle("Unhappiness Sources"));
-		AttrSource unhappySources = town.getUnhappiness();
+		AttrSource unhappySources = town.getAverageUnhappiness();
 		for (String source : unhappySources.sources.keySet()) {
 			Double value = unhappySources.sources.get(source);
 			out.add(CivColor.Green+source+": "+CivColor.LightGreen+value);
@@ -189,7 +189,7 @@ public class TownInfoCommand extends CommandBase {
 
 		out.add(CivMessage.buildSmallTitle("Total"));
 		ConfigHappinessState state = town.getHappinessState();
-		out.add(CivColor.LightGreen+df.format(town.getHappinessPercentage()*100)+"%"+CivColor.Green+" Happiness. State: "+CivColor.valueOf(state.color)+state.name);
+		out.add(CivColor.LightGreen+df.format(town.getHappiness())+CivColor.Green+" Happiness. State: "+CivColor.valueOf(state.color)+state.name);
 		CivMessage.send(sender, out);	
 
 		
@@ -355,9 +355,9 @@ public class TownInfoCommand extends CommandBase {
 			}
 		}
 			
-		HashMap<String, Double> structsByName = new HashMap<String, Double>();
+		HashMap<String, Integer> structsByName = new HashMap<String, Integer>();
 		for (Structure struct : town.getStructures()) {
-			Double upkeep = structsByName.get(struct.getConfigId());
+			Integer upkeep = structsByName.get(struct.getConfigId());
 			if (upkeep == null) {
 				structsByName.put(struct.getDisplayName(), struct.getUpkeepCost());
 			} else {
@@ -368,7 +368,7 @@ public class TownInfoCommand extends CommandBase {
 				
 		CivMessage.sendHeading(sender, town.getName()+" Structure Info");
 		for (String structName : structsByName.keySet()) {
-			Double upkeep = structsByName.get(structName);
+			Integer upkeep = structsByName.get(structName);
 			CivMessage.send(sender, CivColor.Green+structName+" Upkeep: "+CivColor.LightGreen+upkeep);
 			
 		}
@@ -549,7 +549,7 @@ public class TownInfoCommand extends CommandBase {
 //			info.put("Happiness", CivColor.White+"("+CivColor.LightGreen+"H"+CivColor.Yellow+town.getHappinessTotal()
 //					+CivColor.White+"/"+CivColor.Rose+"U"+CivColor.Yellow+town.getUnhappinessTotal()+CivColor.White+") = "+
 //					CivColor.LightGreen+df.format(town.getHappinessPercentage()*100)+"%");
-			info.put("Happiness", CivColor.LightGreen+df.format(Math.floor(town.getHappinessPercentage()*100))+"%");
+			info.put("Happiness", CivColor.LightGreen+df.format(Math.floor(town.getHappiness())));
 			ConfigHappinessState state = town.getHappinessState();
 			info.put("State", ""+CivColor.valueOf(state.color)+state.name);	
 			CivMessage.send(sender, parent.makeInfoString(info, CivColor.Green, CivColor.LightGreen));

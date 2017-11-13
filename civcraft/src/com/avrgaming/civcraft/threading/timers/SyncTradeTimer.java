@@ -32,11 +32,11 @@ public class SyncTradeTimer implements Runnable {
 	}
 	
 	public void processTownsTradePayments(Town town) {
-		double payment = TradeGood.getTownTradePayment(town);
+		int payment = TradeGood.getTownTradePayment(town);
 		DecimalFormat df = new DecimalFormat();
 		
 		if (payment > 0) {
-			double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
+			int taxesPaid = (int) (payment*town.getDepositCiv().getIncomeTaxRate());
 			if (taxesPaid > 0) {
 				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade."+
 					CivColor.Yellow+" (Paid "+df.format(taxesPaid)+" in taxes to "+town.getDepositCiv().getName()+")");
