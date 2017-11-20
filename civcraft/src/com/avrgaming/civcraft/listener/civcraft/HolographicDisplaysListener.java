@@ -23,7 +23,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 public class HolographicDisplaysListener {
 	
 	public static void generateTradeGoodHolograms() {
-		if (CivSettings.hasHolographicDisplays == false) {
+		if (!CivSettings.hasHolographicDisplays) {
 			CivLog.warning("A person tried generating Trade Good Holograms without HolographicDisplays plugin! This is fine, but no holograms can generate for items.");
 			return;
 		}
@@ -61,7 +61,7 @@ public class HolographicDisplaysListener {
 	}
 	
 	public static void updateBarracksHolo(Location loc, String title, String per) {
-		if (CivSettings.hasHolographicDisplays == false) {
+		if (!CivSettings.hasHolographicDisplays) {
 			return;
 		}
 		
@@ -82,7 +82,7 @@ public class HolographicDisplaysListener {
 	}
 	
 	public static void generateBankHolograms() {
-		if (CivSettings.hasHolographicDisplays == false) {
+		if (!CivSettings.hasHolographicDisplays) {
 			CivLog.warning("A person tried generating Bank Holograms without HolographicDisplays plugin! This is fine, but no holograms can generate for items.");
 			return;
 		}

@@ -19,8 +19,10 @@
 package com.avrgaming.civcraft.listener;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -35,6 +37,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.BrewEvent;
@@ -44,8 +47,9 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -58,6 +62,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
 import com.avrgaming.civcraft.items.units.Unit;
@@ -85,30 +90,84 @@ import com.avrgaming.civcraft.war.WarStats;
 
 public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerPickup(PlayerPickupItemEvent event) {
-		ItemStack i = event.getItem().getItemStack();
-		
-		String name;
-		boolean rare = false;
-		if (i.getItemMeta().hasDisplayName()) {
-			name = i.getItemMeta().getDisplayName();
-			rare = true;
-		} else {
-			name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
-			//name = event.getItem().getItemStack().getType().name().replace("_", " ").toLowerCase();
+	public void onPlayerPickup(EntityPickupItemEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player p = (Player) event.getEntity();
+			ItemStack i = event.getItem().getItemStack();
+			
+			String name;
+			boolean rare = false;
+			if (i.getItemMeta().hasDisplayName()) {
+				name = i.getItemMeta().getDisplayName();
+				rare = true;
+			} else {
+				name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
+				//name = event.getItem().getItemStack().getType().name().replace("_", " ").toLowerCase();
+			}
+			
+			Resident resident = CivGlobal.getResident(p);
+			if (resident.getItemMode().equals("all")) {
+				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
+			} else if (resident.getItemMode().equals("rare") && rare) {
+				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		Player p = event.getPlayer();
+		CivLog.info("Scheduling Player Login Task for:"+p.getName());
+		Resident res = CivGlobal.getResident(p);
+		if (res == null) event.allow();
+		else
+		if (res.isBanned()) {
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
+			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
+			Date date = new Date(res.getBannedLength());
+			String msg = (" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
+					"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
+					" "+"\n"+
+					" "+"\n"+
+					"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
+					"§7§o[You are banned, cannot rejoin server.]"+"\n");
+			event.disallow(Result.KICK_OTHER, msg);
+			CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
 		}
 		
-		Resident resident = CivGlobal.getResident(event.getPlayer());
-		if (resident.getItemMode().equals("all")) {
-			CivMessage.send(event.getPlayer(), CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
-		} else if (resident.getItemMode().equals("rare") && rare) {
-			CivMessage.send(event.getPlayer(), CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
+		if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
+			String msg = (" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lReason §r§8»§ §fKicked: The server is currently on lockdown... Try again in a few minutes.\n");
+			event.disallow(Result.KICK_OTHER, msg);
+			CivLog.info("Denied Player Join Task for:"+p.getName()+" (Server Lockdown)");
+		}
+		
+		if (War.isWarTime() && War.isOnlyWarriors()) {
+			if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
+				//Allowed to connect since player is OP or mini admin.
+			} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
+				SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
+				sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
+				Date date = new Date(War.getEnd().getTime());
+				String msg = (" §b§l« CivilizationCraft »"+"\n"+
+						" "+"\n"+
+						"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+						"§c§lReason §r§8»§ §fKicked: Currently WarTime, only players at-war can join.\n"+
+						"§c§lWar Ends At §r§8»§ §f"+sdf.format(date)+"\n");
+				event.disallow(Result.KICK_OTHER, msg);
+				CivLog.info("Denied Player Join Task for:"+p.getName()+" (Not War Participant)");
+			}
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		CivLog.info("Scheduling on player login task for player:"+event.getPlayer().getName());
+		CivLog.info("Scheduling Player Join Task for:"+event.getPlayer().getName());
 		TaskMaster.asyncTask("onPlayerLogin-"+event.getPlayer().getName(), new PlayerLoginAsyncTask(event.getPlayer().getUniqueId()), 0);
 		
 		CivGlobal.playerFirstLoginMap.put(event.getPlayer().getName(), new Date());

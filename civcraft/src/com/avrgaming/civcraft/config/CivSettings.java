@@ -303,7 +303,7 @@ public class CivSettings {
 		if (CivSettings.plugin.hasPlugin("HolographicDisplays")) {
 			hasHolographicDisplays = true;
 		} else {
-			CivLog.warning("We could not detect the plugin Hologrpahic. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
+			CivLog.warning("We could not detect the plugin HolographicDisplays. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
 		}
 		
 		if (CivSettings.plugin.hasPlugin("TitleAPI")) {

@@ -236,16 +236,16 @@ structures:
     limit: 2
     cost: 160000
     upkeep: 0
-    hammer_cost: 200
-    points: 6000
-    max_hitpoints: 2000
+    hammer_cost: 250
+    points: 90
+    max_hitpoints: 2500
     allow_demolish: false
     strategic: true
     components:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '5.0'
+          value: '10.0'
 #
   - id: s_townhall
     itemId: 330
@@ -259,16 +259,16 @@ structures:
     limit: 2
     cost: 40000
     upkeep: 0
-    hammer_cost: 200
-    points: 1000
-    max_hitpoints: 1000
+    hammer_cost: 250
+    points: 40
+    max_hitpoints: 2500
     allow_demolish: false
     strategic: true
     components:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '2.0'
+          value: '4.0'
 #
   - id: s_shipyard
     itemId: 333
@@ -417,9 +417,9 @@ structures:
     update_event: trommel_process
     limit: 4
     cost: 5000
-    upkeep: 750
+    upkeep: 500
     hammer_cost: 350
-    points: 20
+    points: 5
     max_hitpoints: 200
 #
   - id: s_quarry
@@ -448,9 +448,9 @@ structures:
     require_tech: 'tech_blacksmithing'
     limit: 1
     cost: 30000
-    upkeep: 1500
-    hammer_cost: 800
-    points: 40
+    upkeep: 1000
+    hammer_cost: 850
+    points: 30
     max_hitpoints: 350
     components:
         - name: 'AttributeStatic'
@@ -460,11 +460,11 @@ structures:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'GROWTHRATE'
-          value: '-0.15'
+          value: '-0.1'
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'HAMMERS'
-          value: '40.0'
+          value: '15.0'
 # Row 3
   - id: ti_mine
     itemId: 274
@@ -560,7 +560,7 @@ structures:
     itemData: 0
     position: 27
     template: farm
-    template_y_shift: -2
+    template_y_shift: -1
     displayName: Farm
     require_tech: 'tech_irrigation'
     onBuild_event: build_farm
@@ -571,7 +571,7 @@ structures:
     cost: 2500
     upkeep: 250
     hammer_cost: 100
-    points: 25
+    points: 5
     max_hitpoints: 50
     components:
         - name: 'AttributeBiome'
@@ -715,13 +715,13 @@ structures:
     require_tech: 'tech_armory'
     limit: 1
     cost: 10000
-    upkeep: 750
+    upkeep: 500
     hammer_cost: 750
-    points: 25
+    points: 15
     max_hitpoints: 500
     components:
         - name: 'AttributeWarUnhappiness'
-          value: '-2.0'
+          value: '-2.5'
 #
   - id: s_scouttower
     itemId: 381

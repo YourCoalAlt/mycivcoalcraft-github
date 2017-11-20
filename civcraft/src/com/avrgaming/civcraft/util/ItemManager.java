@@ -161,10 +161,11 @@ public class ItemManager {
 		block.setTypeIdAndData(type, (byte)data, update);
 	}
 	
-	public static ItemStack spawnPlayerHead(String playerName, String itemDisplayName) {		
+	public static ItemStack spawnPlayerHead(Player p, String itemDisplayName) {		
 		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
 		SkullMeta meta = (SkullMeta) skull.getItemMeta();
-		meta.setOwner(playerName);
+		meta.setOwningPlayer(p); // TODO Test if this fix from 1.11 to 1.12 works
+//		meta.setOwner(p.getName());
 		meta.setDisplayName(itemDisplayName);
 		skull.setItemMeta(meta);
 		return skull;

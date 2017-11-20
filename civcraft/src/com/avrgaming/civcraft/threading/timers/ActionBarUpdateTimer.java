@@ -40,17 +40,14 @@ public class ActionBarUpdateTimer implements Runnable {
 			if (res != null) {
 				int exposure = (int) res.getSpyExposure();
 				if (exposure > 0) {
-					ActionBar abl = new ActionBar(
-							borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.LightGreenItalic+exposure);
-					abl.sendToPlayer(p);
+					String msg = borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.LightGreenItalic+exposure;
+					ActionBar.sendActionbar(p, msg);
 				} else {
-					ActionBar abl = new ActionBar(borders);
-					abl.sendToPlayer(p);
+					ActionBar.sendActionbar(p, borders);
 				}
 			} else {
-				ActionBar abl = new ActionBar(
-						borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.RoseItalic+"null");
-				abl.sendToPlayer(p);
+				String msg = borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.RoseItalic+"null";
+				ActionBar.sendActionbar(p, msg);
 			}
 		}
 	}

@@ -35,8 +35,8 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.siege.Cannon;
@@ -453,7 +453,7 @@ public class War {
 	}
 	
 	public static boolean isCivAggressor(Civilization civ) {
-		for (Relation relation : civ.getDiplomacyManager().getRelations()) {
+		for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
 			if (relation.getStatus() == Status.WAR) {
 				if (relation.getAggressor() == civ) {
 					return true;
@@ -464,10 +464,10 @@ public class War {
 	}
 	
 	public static boolean isCivAggressorToAlly(Civilization enemy, Civilization ourCiv) {
-		for (Relation relation : ourCiv.getDiplomacyManager().getRelations()) {
+		for (DiplomaticRelation relation : ourCiv.getDiplomacyManager().getRelations()) {
 			if (relation.getStatus() == Status.ALLY) {
 				Civilization ally = relation.getOtherCiv();
-				Relation allyRelation = ally.getDiplomacyManager().getRelation(enemy);
+				DiplomaticRelation allyRelation = ally.getDiplomacyManager().getRelation(enemy);
 				if (allyRelation == null) { continue; }
 				
 				if (allyRelation.getStatus() == Status.WAR && (allyRelation.getAggressor() == enemy)) {

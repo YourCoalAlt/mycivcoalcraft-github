@@ -36,25 +36,29 @@ happiness:
   # Static Happiness Levels per town
   town_levels:
     - level: 1
-      happiness: 14
+      happiness: 15
     - level: 2
-      happiness: 13
+      happiness: 14
     - level: 3
-      happiness: 12
+      happiness: 13
     - level: 4
-      happiness: 11
+      happiness: 12
     - level: 5
-      happiness: 10
+      happiness: 11
     - level: 6
-      happiness: 9
+      happiness: 10
     - level: 7
-      happiness: 8
+      happiness: 9
     - level: 8
-      happiness: 7
+      happiness: 8
     - level: 9
-      happiness: 6
+      happiness: 7
     - level: 10
+      happiness: 6
+    - level: 11
       happiness: 5
+    - level: 12
+      happiness: 4
     
     #
     # Happiness States

@@ -41,72 +41,90 @@ town:
 town_levels:
     - level: 1
       title: 'Settlement'
-      upkeep: 500
+      upkeep: 200
       plots: 32
-      plot_cost: 500
+      plot_cost: 200
       tile_improvements: 4
-
+#
     - level: 2
       title: 'Hamlet'
-      upkeep: 750
+      upkeep: 500
       plots: 64
-      plot_cost: 1000
+      plot_cost: 500
       tile_improvements: 6
-
+#
     - level: 3
+      title: 'Large Hamlet'
+      upkeep: 750
+      plots: 128
+      plot_cost: 750
+      tile_improvements: 8
+#
+    - level: 4
       title: 'Village'
       upkeep: 1250
-      plots: 80
-      plot_cost: 2000
-      tile_improvements: 8
-    
-    - level: 4
+      plots: 192
+      plot_cost: 1500
+      tile_improvements: 11
+#
+    - level: 5
       title: 'Large Village'
       upkeep: 2000
-      plots: 128
-      plot_cost: 3500
-      tile_improvements: 12
-
-    - level: 5
+      plots: 256
+      plot_cost: 3250
+      tile_improvements: 14
+#
+    - level: 6
       title: 'Town'
       upkeep: 3500
-      plots: 256
+      plots: 384
       plot_cost: 5000
-      tile_improvements: 15
-
-
-    - level: 6
-      title: 'Large Town'
-      upkeep: 5500
-      plots: 512
-      plot_cost: 7500
       tile_improvements: 17
-
-
+#
     - level: 7
-      title: 'City'
-      upkeep: 7000
-      plots: 1024
-      plot_cost: 15000
+      title: 'Large Town'
+      upkeep: 5000
+      plots: 512
+      plot_cost: 9000
       tile_improvements: 20
-
-
+#
     - level: 8
-      title: 'Large City'
-      upkeep: 8000
-      plots: 2048
-      plot_cost: 20000
-      tile_improvements: 25
-
-
+      title: 'City'
+      upkeep: 7500
+      plots: 768
+      plot_cost: 15000
+      tile_improvements: 24
+#
     - level: 9
+      title: 'Large City'
+      upkeep: 12500
+      plots: 1024
+      plot_cost: 22500
+      tile_improvements: 28
+#
+    - level: 10
       title: 'Metropolis'
       upkeep: 25000
+      plots: 2048
+      plot_cost: 37500
+      tile_improvements: 32
+#
+    - level: 11
+      title: 'Large Metropolis'
+      upkeep: 40000
       plots: 4096
-      plot_cost: 30000
-      tile_improvements: 30
-
-
+      plot_cost: 50000
+      tile_improvements: 36
+#
+    - level: 12
+      title: 'Megapolis'
+      upkeep: 67500
+      plots: 8192
+      plot_cost: 80000
+      tile_improvements: 40
+#
+#
+#
 
 # Town Upgrades
 # These are upgrades available to towns.
@@ -264,43 +282,52 @@ upgrades:
       require_tech: 'tech_scientific_method'
       require_structure: 's_bank'
       category: 'Bank'
-
+#
     - id: 'upgrade_bank_interest_level_1'
       name: 'Bank Interest I'
-      cost: 2000
+      cost: 2500
       action: 'set_bank_interest,0.0075'
       require_upgrade: 'upgrade_bank_level_2'
       require_tech: 'tech_writing'
       require_structure: 's_bank'
       category: 'Bank'
-    
+#
     - id: 'upgrade_bank_interest_level_2'
       name: 'Bank Interest II'
-      cost: 4000
+      cost: 5000
       action: 'set_bank_interest,0.0125'
       require_upgrade: 'upgrade_bank_interest_level_1'
       require_tech: 'tech_currency'
       require_structure: 's_bank'
       category: 'Bank'
-    
+#
     - id: 'upgrade_bank_interest_level_3'
       name: 'Bank Interest III'
-      cost: 8000
-      action: 'set_bank_interest,0.0250'
+      cost: 10000
+      action: 'set_bank_interest,0.02'
       require_upgrade: 'upgrade_bank_interest_level_2'
       require_tech: 'tech_nationalism'
       require_structure: 's_bank'
       category: 'Bank'
-    
+#
     - id: 'upgrade_bank_interest_level_4'
       name: 'Bank Interest IV'
-      cost: 16000
-      action: 'set_bank_interest,0.040'
+      cost: 20000
+      action: 'set_bank_interest,0.035'
       require_upgrade: 'upgrade_bank_interest_level_3'
       require_tech: 'tech_innovation'
       require_structure: 's_bank'
       category: 'Bank'
-
+#
+    - id: 'upgrade_bank_interest_level_5'
+      name: 'Bank Interest V'
+      cost: 40000
+      action: 'set_bank_interest,0.0575'
+      require_upgrade: 'upgrade_bank_interest_level_4'
+      require_tech: 'tech_enlightenment'
+      require_structure: 's_bank'
+      category: 'Bank'
+#
    # Store upgrades
    # Level 1 upgrades...
 #    - id: 'upgrade_store_material_dirt'

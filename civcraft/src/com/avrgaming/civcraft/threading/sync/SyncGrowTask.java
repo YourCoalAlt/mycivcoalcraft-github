@@ -45,58 +45,38 @@ public class SyncGrowTask implements Runnable {
 	
 	@Override
 	public void run() {
-		if (!CivGlobal.growthEnabled) {
-			return;
-		}
-		
+		if (!CivGlobal.growthEnabled) return;
 		HashSet<FarmChunk> unloadedFarms = new HashSet<FarmChunk>();
-		
 		if (lock.tryLock()) {
 			try {
 				for (int i = 0; i < UPDATE_LIMIT; i++) {
 					GrowRequest request = requestQueue.poll();
-					if (request == null) {
-						return;
-					}
-					
-					if (request.farmChunk == null) {
-						request.result = false;
-					} else if (!request.farmChunk.getChunk().isLoaded()) {
-						// This farm's chunk isn't loaded so we can't update 
-						// the crops. Add the missed growths to the farms to
-						// process later.
+					if (request == null) return;
+					if (request.farmChunk == null) request.result = false;
+					 else if (!request.farmChunk.getChunk().isLoaded()) {
+						// This farm's chunk isn't loaded so we can't update the crops. Add the missed growths to the farms to process later.
 						unloadedFarms.add(request.farmChunk);
 						request.result = false;
-
 					} else {
-						
 						for (GrowBlock growBlock : request.growBlocks) {
 							switch (growBlock.typeId) {
 							case CivData.WHEAT_CROP:
 							case CivData.CARROT_CROP:
 							case CivData.POTATO_CROP:
 							case CivData.BEETROOT_CROP:
-								if ((growBlock.data-1) != ItemManager.getData(growBlock.bcoord.getBlock())) {
-									// replanted??
-									continue;
-								}
+								if ((growBlock.data-1) != ItemManager.getData(growBlock.bcoord.getBlock())) continue; // Replanted?
 								break;
 							}
 							
-							if (!growBlock.spawn && ItemManager.getId(growBlock.bcoord.getBlock()) != growBlock.typeId) {
-								continue;
-							} else {
-								if (growBlock.spawn) {
-									// Only allow block to change its type if its marked as spawnable.
-									ItemManager.setTypeId(growBlock.bcoord.getBlock(), growBlock.typeId);
-								}
+							if (!growBlock.spawn && ItemManager.getId(growBlock.bcoord.getBlock()) != growBlock.typeId) continue;
+							else {
+								// Only allow block to change its type if its marked as spawnable.
+								if (growBlock.spawn) ItemManager.setTypeId(growBlock.bcoord.getBlock(), growBlock.typeId);
 								ItemManager.setData(growBlock.bcoord.getBlock(), growBlock.data);
 								request.result = true;
 							}
-							
 						}
 					}
-					
 					request.finished = true;
 					request.condition.signalAll();
 				}
@@ -107,8 +87,6 @@ public class SyncGrowTask implements Runnable {
 					Farm farm = (Farm)fc.getStruct();
 					farm.saveMissedGrowths();
 				}
-				
-				
 			} finally {
 				lock.unlock();
 			}
@@ -117,4 +95,3 @@ public class SyncGrowTask implements Runnable {
 		}
 	}
 }
-

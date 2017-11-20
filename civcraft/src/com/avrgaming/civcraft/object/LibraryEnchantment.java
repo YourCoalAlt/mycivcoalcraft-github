@@ -38,19 +38,13 @@ public class LibraryEnchantment {
 			if (!name.contains("LoreEnhancement")) name = "LoreEnhancement"+name;
 			if (name.contains("Soulbound")) name = "LoreEnhancementSoulBound";
 			enhancement = LoreEnhancement.enhancements.get(name);
-			if (enhancement == null) {
-				throw new CivException("Could not create CivEnchantment:"+name+". Couldn't find enchantment or enhancement.");
-			}
+			if (enhancement == null) throw new CivException("Could not create CivEnchantment:"+name+". Couldn't find enchantment or enhancement.");
 		}
 		level = lvl;
 		price = p;
 		
 		this.name = name;
-		if (enchant != null) {
-			displayName = name.replace("_", " ");
-		} else {
-			displayName = enhancement.getDisplayName();
-		}
-		
+		if (enchant != null) displayName = name.replace("_", " ");
+		else displayName = enhancement.getDisplayName();
 	}
 }

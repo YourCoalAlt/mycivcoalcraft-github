@@ -39,45 +39,33 @@ public class SyncGetChestInventory implements Runnable {
 	
 	public static Queue<GetChestRequest> requestQueue = new LinkedList<GetChestRequest>();
 	
-	public static boolean add(GetChestRequest request)  
-	{
-		//XXX is this needed anymore?
-		return requestQueue.offer(request);
-	}
-	
 	public SyncGetChestInventory() {
 		lock = new ReentrantLock();
 	}
 	
 	@Override
 	public void run() {
-		
 		if (lock.tryLock()) {
 			try {	
 				for (int i = 0; i < UPDATE_LIMIT; i++) {
 					GetChestRequest request = requestQueue.poll();
-					if (request == null) {
-						return;
-					}
-					
+					if (request == null) return;
 					Block b = Bukkit.getWorld(request.worldName).getBlockAt(request.block_x, request.block_y, request.block_z);
 					Chest chest = null;
-
 					// We will return NULL if the chunk was not loaded.
 					if (b.getChunk().isLoaded()) {
 						try {
 							chest = (Chest)b.getState();
 						} catch (ClassCastException e) {
-							/* The block wasn't a chest, but force it. */
+							// The block wasn't a chest, but force it.
 							ItemManager.setTypeId(b, CivData.CHEST);
 							ItemManager.setTypeId(b.getState(), CivData.CHEST);
 							b.getState().update();
 							chest = (Chest)b.getState();
-							
 						}
-					} 
-			
-					/* Set the result and signal all threads we're complete. */					
+					}
+					
+					// Set the result and signal all threads we're complete.				
 					request.result = chest.getBlockInventory();
 					request.finished = true;
 					request.condition.signalAll();

@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +31,7 @@ public class ModeratorCommand extends CommandBase {
 		command = "/mod";
 		displayName = "Moderator Controls";
 		
-		commands.put("alertmsg", "Sends a global message alerting players.");
+		commands.put("alert", "Sends a global message alerting players.");
 		commands.put("helpmsg", "Sends a global message for helping players.");
 		
 		commands.put("check", "[player] Displays information on a player's current ban status, reason, mute status, reason, and warning points.");
@@ -53,7 +55,7 @@ public class ModeratorCommand extends CommandBase {
 		commands.put("toggleglobal", "Changes whether or not global chat is disabled or not.");
 	}
 	
-	public void alertmsg_cmd() throws CivException {
+	public void alert_cmd() throws CivException {
 		valMod();
 		if (args.length < 2) {
 			throw new CivException("Please enter your message.");
@@ -65,7 +67,7 @@ public class ModeratorCommand extends CommandBase {
 		}
 		
 		String message = buffer.toString();
-		CivMessage.globalModerator(CivColor.RedBold+"[Alert] "+message);
+		CivMessage.globalModerator(CivColor.RedBold+"[Alert] "+CivColor.RESET+message);
 	}
 	
 	public void helpmsg_cmd() throws CivException {
@@ -79,7 +81,7 @@ public class ModeratorCommand extends CommandBase {
 		}
 		
 		String message = buffer.toString();
-		CivMessage.globalModerator(CivColor.GoldBold+"[Help/Tip] "+message);
+		CivMessage.globalModerator(CivColor.GoldBold+"[Help/Tip] "+CivColor.RESET+message);
 	}
 	
 	public void check_cmd() throws CivException, SQLException {
@@ -181,8 +183,18 @@ public class ModeratorCommand extends CommandBase {
 		
 		Resident res = CivGlobal.getResident(args[1]);
 		if (res != null) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Banned", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" banned by "+name);
+			}
+			res.setBanned(true);
+			res.setBannedMessage(message);
+			res.setBannedLength(sec, min, hours);
+			try {
+				res.saveNow();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			TaskMaster.syncTask(new PlayerModerationBan(res.getName(), sender.getName(), message, hours, min, sec));
-			
 			CivMessage.globalModerator(CivColor.RoseBold+"[Banned] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" has been banned by "+name+CivColor.RESET+
 					". Length: "+CivColor.LightGreenItalic+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+CivColor.RESET+". Reason:"+CivColor.LightGreenItalic+message);
 		} else {
@@ -205,6 +217,9 @@ public class ModeratorCommand extends CommandBase {
 		
 		Resident res = CivGlobal.getResident(args[1]);
 		if (res != null && res.isBanned()) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unbanned", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" unbanned by "+name);
+			}
 			res.resetBannedLength();
 			res.setBanned(false);
 			res.setBannedMessage("null");
@@ -249,6 +264,10 @@ public class ModeratorCommand extends CommandBase {
 		
 		Resident res = CivGlobal.getResident(args[1]);
 		if (res != null) {
+			CivMessage.sendSound(res, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Muted", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" muted by "+name);
+			}
 			res.setMuted(true);
 			res.setMutedMessage(message);
 			res.setMutedLength(sec, min, hours);
@@ -263,15 +282,15 @@ public class ModeratorCommand extends CommandBase {
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy h:mm:ss a z");
 			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
 			Date date = new Date(res.getMutedLength());
-			String out = CivColor.LightBlueBold+"Â« CivilizationCraft Â»;"+
+			String out = CivColor.LightBlueBold+"§« CivilizationCraft §»;"+
 					" ;"+
-					CivColor.RoseBold+"Muted By "+CivColor.GrayBold+"Â» "+CivColor.RESET+name+";"+
-					CivColor.RoseBold+"Reason "+CivColor.GrayBold+"Â» "+CivColor.RESET+message+";"+
-					CivColor.RoseBold+"Length "+CivColor.GrayBold+"Â» "+CivColor.RESET+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+";"+
-					CivColor.RoseBold+"Unmuted At "+CivColor.GrayBold+"Â» "+CivColor.RESET+sdf.format(date)+";"+
+					CivColor.RoseBold+"Muted By "+CivColor.GrayBold+"§» "+CivColor.RESET+name+";"+
+					CivColor.RoseBold+"Reason "+CivColor.GrayBold+"§» "+CivColor.RESET+message+";"+
+					CivColor.RoseBold+"Length "+CivColor.GrayBold+"§» "+CivColor.RESET+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+";"+
+					CivColor.RoseBold+"Unmuted At "+CivColor.GrayBold+"§» "+CivColor.RESET+sdf.format(date)+";"+
 					" ;"+
 					" ;"+
-					CivColor.YellowBold+"Appeal at "+CivColor.GrayBold+"Â» "+CivColor.GoldBold+"http://coalcivcraft.enjin.com/forum;";
+					CivColor.YellowBold+"Appeal at "+CivColor.GrayBold+"§» "+CivColor.GoldBold+"http://coalcivcraft.enjin.com/forum;";
 			Player p = CivGlobal.getPlayer(res);
 			CivMessage.send(p, out.split(";"));
 		} else {
@@ -294,6 +313,10 @@ public class ModeratorCommand extends CommandBase {
 		
 		Resident res = CivGlobal.getResident(args[1]);
 		if (res != null && res.isMuted()) {
+			CivMessage.sendSound(res, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unmuted", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" unmuted by "+name);
+			}
 			res.resetMutedLength();
 			res.setMuted(false);
 			res.setMutedMessage("null");

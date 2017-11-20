@@ -1,28 +1,35 @@
 package com.avrgaming.civcraft.listener;
 
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
+import java.lang.reflect.Constructor;
 
-import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutChat;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class ActionBar {
 	
-	private PacketPlayOutChat packet;
-	
-	public ActionBar(String text) {
-		PacketPlayOutChat packet = new PacketPlayOutChat(ChatSerializer.a("{\"text\":\"" + text + "\"}"), (byte) 2);
-		this.packet = packet;
-	}
-   
-	public void sendToPlayer(Player p) {
-		((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
-	}
-	
-	public void sendToAll() {
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+	public static void sendActionbar(Player player, String msg) {
+		try {
+			Constructor<?> constructor = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), getNMSClass("ChatMessageType"));
+			Object icbc = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + msg + "\"}");
+			Object packet = constructor.newInstance(icbc, getNMSClass("ChatMessageType").getEnumConstants()[2]);
+			Object entityPlayer= player.getClass().getMethod("getHandle").invoke(player);
+			Object playerConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
+			playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+		} catch (Exception e) {
+			  e.printStackTrace();
 		}
+	}
+
+	public static Class<?> getNMSClass(String name) {
+		try {
+			return Class.forName("net.minecraft.server." + getVersion() + "." + name);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+		 
+	public static String getVersion() {
+		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 	}
 }

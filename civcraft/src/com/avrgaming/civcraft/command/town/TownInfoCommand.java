@@ -40,8 +40,8 @@ import com.avrgaming.civcraft.object.AttrSource;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TradeGood;
@@ -605,7 +605,7 @@ public class TownInfoCommand extends CommandBase {
 			}
 			
 			String wars = "";
-			for (Relation relation : town.getCiv().getDiplomacyManager().getRelations()) {
+			for (DiplomaticRelation relation : town.getCiv().getDiplomacyManager().getRelations()) {
 				if (relation.getStatus() == Status.WAR) {
 					wars += relation.getOtherCiv().getName()+", ";
 				}

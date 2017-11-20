@@ -27,15 +27,12 @@ import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest;
 
 public class SyncUpdateInventory implements Runnable {
 	
-//	public static final int QUEUE_SIZE = 4096;
 	public static final int UPDATE_LIMIT = 200;
 	
-	/*
-	 * Performs the desired action on a provided multi-inventory.
-	 */
+	// Performs the desired action on a provided multi-inventory.
 	public static Queue<UpdateInventoryRequest> requestQueue = new LinkedList<UpdateInventoryRequest>();	
 	public static ReentrantLock lock;
-		
+	
 	public SyncUpdateInventory() {
 		lock = new ReentrantLock();
 	}

@@ -37,14 +37,13 @@ public class PlayerLocationCacheUpdate implements Runnable {
 		try {
 			for (int i = 0; i < UPDATE_LIMIT; i++) {
 				String playerName = playerQueue.poll();
-				if (playerName == null) { return; }
+				if (playerName == null) return;
 				
 				try {
 					Player player = CivGlobal.getPlayer(playerName);
 					PlayerLocationCache.updateLocation(player);
 					playerQueue.add(playerName);
-				} catch (CivException e) {
-					// player not online. remove from queue by not re-adding.
+				} catch (CivException e) { // player not online. remove from queue by not re-adding.
 					PlayerLocationCache.remove(playerName);
 					continue;
 				}

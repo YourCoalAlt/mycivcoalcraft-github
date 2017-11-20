@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
@@ -36,7 +35,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.Relation;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -162,46 +161,14 @@ public class PlayerLoginAsyncTask implements Runnable {
 				return;
 			}
 			
-			if (resident != null && resident.isBanned()) {
-				final Resident r = resident;
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							Thread.sleep(750);
-							TaskMaster.syncTask(new PlayerModerationKickBan(getPlayer().getName(), "Console", r.getBannedMessage()));
-						} catch (InterruptedException | CivException e) {
-							e.printStackTrace();
-						}
-					}
-				}).start();
-				return;
-			}
-			if (AdminCommand.isLockdown() && !getPlayer().isOp() && !getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							Thread.sleep(750);
-							TaskMaster.syncTask(new PlayerModerationKick(getPlayer().getName(), "Console", "The server is currently on lockdown... Try again in a few minutes."));
-						} catch (InterruptedException | CivException e) {
-							e.printStackTrace();
-						}
-					}
-				}).start();
-				return;
-			}
+			// if (resident != null && resident.isBanned()) // Now saved in PlayerListener
+			// if (AdminCommand.isLockdown() && !getPlayer().isOp() && !getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {  // Now saved in PlayerListener
 			
 			if (!resident.isGivenKit()) {
 				TaskMaster.syncTask(new GivePlayerStartingKit(resident.getName()));
 			}
 					
-			if (War.isWarTime() && War.isOnlyWarriors()) {
-				if (getPlayer().isOp() || getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {
-					//Allowed to connect since player is OP or mini admin.
-				} else if (!resident.hasTown() || !resident.getTown().getCiv().getDiplomacyManager().isAtWar()) {
-					TaskMaster.syncTask(new PlayerKickBan(getPlayer().getName(), true, false, "Only players in civilizations at war can connect right now. Sorry."));
-					return;
-				}
-			}
+			// if (War.isWarTime() && War.isOnlyWarriors()) { // Now saved in PlayerListener
 			
 			/* turn on allchat by default for admins. */
 			if (getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {
@@ -216,11 +183,11 @@ public class PlayerLoginAsyncTask implements Runnable {
 			if (!getPlayer().isOp()) {
 				CultureChunk cc = CivGlobal.getCultureChunk(new ChunkCoord(getPlayer().getLocation()));
 				if (cc != null && cc.getCiv() != resident.getCiv()) {
-					Relation.Status status = cc.getCiv().getDiplomacyManager().getRelationStatus(getPlayer());
+					DiplomaticRelation.Status status = cc.getCiv().getDiplomacyManager().getRelationStatus(getPlayer());
 					String color = PlayerChunkNotifyAsyncTask.getNotifyColor(cc, status, getPlayer());
 					String relationName = status.name();
 					
-					if (War.isWarTime() && status.equals(Relation.Status.WAR)) {
+					if (War.isWarTime() && status.equals(DiplomaticRelation.Status.WAR)) {
 						/* 
 						 * Test for players who were not logged in when war time started.
 						 * If they were not logged in, they are enemies, and are inside our borders

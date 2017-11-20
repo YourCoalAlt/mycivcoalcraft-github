@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
@@ -23,7 +24,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -210,6 +210,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 			
 			if (loreMat.isShaped()) {
 				ItemStack[] matrix = new ItemStack[9];
+				@SuppressWarnings("deprecation")
 				ShapedRecipe recipe = new ShapedRecipe(stack);
 				recipe.shape(configMaterial.shape[0], configMaterial.shape[1], configMaterial.shape[2]);
 				
@@ -261,6 +262,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 				Bukkit.getServer().addRecipe(recipe);
 			} else {
 				/* Shapeless Recipe */
+				@SuppressWarnings("deprecation")
 				ShapelessRecipe recipe = new ShapelessRecipe(stack);
 				LinkedList<ItemStack> items = new LinkedList<ItemStack>();
 				ItemStack[] matrix = new ItemStack[9];
@@ -414,7 +416,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 	}
 
 	@Override
-	public void onItemPickup(PlayerPickupItemEvent event) {
+	public void onItemPickup(EntityPickupItemEvent event) {
 		// TODO Auto-generated method stub
 		
 	}

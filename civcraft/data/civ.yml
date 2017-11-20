@@ -5,7 +5,7 @@
 
 global:
    # Hour at which daily upkeep occurs.
-   daily_upkeep_hour: 20
+   daily_upkeep_hour: 15
 
    hourly_tick: 3600
 
@@ -29,13 +29,13 @@ global:
    # Exchange rate you get using /resident exchange instead of using a bank.
    exchange_rate: 0.4
 
-   starting_coins: 375
+   starting_coins: 750
 
    # Number of hours that must pass before a resident can join a different civ
    join_civ_cooldown: 1
 
    # Distance things must be built away from spawn.
-   distance_from_spawn: 750.0
+   distance_from_spawn: 640.0
 
    # max distance players can be apart for trading
    max_trade_distance: 10.0

@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTech;
@@ -41,6 +42,13 @@ public class LoreCraftableMaterialListener implements Listener {
 				if (resultStack == null) {
 					return;
 				}
+				
+//				ConfigRemovedRecipes removedItem = CivSettings.removedRecipies.get(ItemManager.getId(resultStack));
+//				if (removedItem != null && !LoreMaterial.isCustom(resultStack)) {
+//					CivMessage.sendError((Player)event.getWhoClicked(), "You cannot craft removed recipes.");
+//					event.setCancelled(true);
+//					return;
+//				}
 				
 				/* Disable notch apples */
 				if (resultStack.getType().equals(Material.GOLDEN_APPLE)) {
@@ -237,7 +245,7 @@ public class LoreCraftableMaterialListener implements Listener {
 			
 			event.getInventory().setResult(newStack);
 			
-		} else {
+		} else if (event.getRecipe() instanceof ShapelessRecipe) {
 			String key = LoreCraftableMaterial.getShapelessRecipeKey(event.getInventory().getMatrix());
 			LoreCraftableMaterial loreMat = LoreCraftableMaterial.shapelessKeys.get(key);
 						
@@ -262,7 +270,6 @@ public class LoreCraftableMaterialListener implements Listener {
 				}
 			}
 			
-			
 			ItemStack newStack;
 			if (!loreMat.isVanilla()) {
 				newStack = LoreMaterial.spawn(loreMat);
@@ -271,7 +278,7 @@ public class LoreCraftableMaterialListener implements Listener {
 				newStack.setAmount(loreMat.getCraftAmount());
 			} else {
 				newStack = ItemManager.createItemStack(loreMat.getTypeID(), loreMat.getCraftAmount());
-			}	
+			}
 			
 			event.getInventory().setResult(newStack);
 		}

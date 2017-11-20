@@ -28,8 +28,8 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.questions.CapitulateRequest;
@@ -173,7 +173,7 @@ public class CivDiplomacyCommand extends CommandBase {
 		CivMessage.sendHeading(sender, "Global Relations");
 
 		for (Civilization civ : CivGlobal.getCivs()) {
-			for (Relation relation : civ.getDiplomacyManager().getRelations()) {
+			for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
 				CivMessage.send(sender, civ.getName()+": "+relation.toString());
 			}
 		}
@@ -184,7 +184,7 @@ public class CivDiplomacyCommand extends CommandBase {
 		HashSet<String> usedRelations = new HashSet<String>();
 		
 		for (Civilization civ : CivGlobal.getCivs()) {
-			for (Relation relation : civ.getDiplomacyManager().getRelations()) {
+			for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
 				if (relation.getStatus().equals(Status.WAR)) {
 					if (!usedRelations.contains(relation.getPairKey())) {
 						CivMessage.send(sender, 
@@ -246,8 +246,8 @@ public class CivDiplomacyCommand extends CommandBase {
 		}
 		
 		try {
-			Relation.Status status = Relation.Status.valueOf(args[2].toUpperCase());
-			Relation.Status currentStatus = ourCiv.getDiplomacyManager().getRelationStatus(otherCiv);
+			DiplomaticRelation.Status status = DiplomaticRelation.Status.valueOf(args[2].toUpperCase());
+			DiplomaticRelation.Status currentStatus = ourCiv.getDiplomacyManager().getRelationStatus(otherCiv);
 
 			if (currentStatus == status) {
 				throw new CivException("Already "+status.name()+" with "+otherCiv.getName());
@@ -320,8 +320,8 @@ public class CivDiplomacyCommand extends CommandBase {
 		}
 		
 		try {
-			Relation.Status status = Relation.Status.valueOf(args[2].toUpperCase());
-			Relation.Status currentStatus = ourCiv.getDiplomacyManager().getRelationStatus(otherCiv);
+			DiplomaticRelation.Status status = DiplomaticRelation.Status.valueOf(args[2].toUpperCase());
+			DiplomaticRelation.Status currentStatus = ourCiv.getDiplomacyManager().getRelationStatus(otherCiv);
 			//boolean aidingAlly = false;
 
 			if (currentStatus == status) {
@@ -330,7 +330,7 @@ public class CivDiplomacyCommand extends CommandBase {
 			
 			switch (status) {
 			case HOSTILE:
-				if (currentStatus == Relation.Status.WAR) {
+				if (currentStatus == DiplomaticRelation.Status.WAR) {
 					throw new CivException("Cannot declare "+status.name()+" when at war.");
 				}
 			break;
@@ -394,8 +394,8 @@ public class CivDiplomacyCommand extends CommandBase {
 	public void show(Civilization civ) {
 		CivMessage.sendHeading(sender, "Diplomatic Relations for "+CivColor.Yellow+civ.getName());
 		
-		for (Relation relation : civ.getDiplomacyManager().getRelations()) {
-			if (relation.getStatus() == Relation.Status.NEUTRAL) {
+		for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
+			if (relation.getStatus() == DiplomaticRelation.Status.NEUTRAL) {
 				continue;
 			}
 			CivMessage.send(sender, relation.toString());

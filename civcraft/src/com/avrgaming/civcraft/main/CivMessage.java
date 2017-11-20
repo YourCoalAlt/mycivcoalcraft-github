@@ -82,6 +82,30 @@ public class CivMessage {
 		CivLog.info(line);	
 	}
 	
+	public static void sendSound(Object sender, Sound sound, float v, float p) {
+		if ((sender instanceof Player)) {
+			((Player) sender).playSound(((Player) sender).getLocation(), sound, v, p);
+		} else if (sender instanceof CommandSender) {
+			CivLog.error("Cannot send sound to cmd sender!");
+		} else if (sender instanceof ResidentExperience) {
+			try {
+				CivGlobal.getPlayerE(((ResidentExperience) sender)).playSound(((Player) sender).getLocation(), sound, v, p);
+			} catch (CivException e) {
+				// No player online
+			}
+		} else if (sender instanceof Resident) {
+			try {
+				CivGlobal.getPlayer(((Resident) sender)).playSound(CivGlobal.getPlayer(((Resident) sender)).getLocation(), sound, v, p);
+			} catch (CivException e) {
+				// No player online
+			}
+		} else if (sender == null) {
+			return;
+		} else {
+			CivLog.warning("Could not send sound to '"+sender+"' with sound: '"+sound.name()+"' of "+sound.getDeclaringClass());
+		}
+	}
+	
 	public static void send(Object sender, String line) {
 		if ((sender instanceof Player)) {
 			((Player) sender).sendMessage(line);

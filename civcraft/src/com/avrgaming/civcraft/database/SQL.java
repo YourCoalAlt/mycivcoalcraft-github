@@ -41,7 +41,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.MissionLogger;
 import com.avrgaming.civcraft.object.NamedObject;
 import com.avrgaming.civcraft.object.ProtectedBlock;
-import com.avrgaming.civcraft.object.Relation;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.SQLObject;
@@ -157,7 +157,7 @@ public class SQL {
 		Town.init();
 		Resident.init();
 		ResidentExperience.init();
-		Relation.init();
+		DiplomaticRelation.init();
 		TownChunk.init();
 		Structure.init();
 		Wonder.init();

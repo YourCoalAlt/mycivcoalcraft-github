@@ -261,9 +261,10 @@ public class DebugCommand extends CommandBase {
 	public void skull_cmd() throws CivException {
 		Player player = getPlayer();
 		String playerName = getNamedString(1, "Enter a player name");
+		Player playerNamed = CivGlobal.getPlayer(playerName);
 		String message = getNamedString(2, "Enter a title.");
 		
-		ItemStack skull = ItemManager.spawnPlayerHead(playerName, message);
+		ItemStack skull = ItemManager.spawnPlayerHead(playerNamed, message);
 		player.getInventory().addItem(skull);
 		CivMessage.sendSuccess(player, "Added skull item.");
 	}

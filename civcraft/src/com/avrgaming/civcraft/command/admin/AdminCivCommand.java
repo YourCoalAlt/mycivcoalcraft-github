@@ -33,8 +33,8 @@ import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.CivColor;
@@ -228,7 +228,7 @@ public class AdminCivCommand extends CommandBase {
 		Civilization civ = getNamedCiv(1);
 		Civilization otherCiv = getNamedCiv(2);
 		
-		Relation.Status status = Relation.Status.valueOf(args[3].toUpperCase());
+		DiplomaticRelation.Status status = DiplomaticRelation.Status.valueOf(args[3].toUpperCase());
 		
 		CivGlobal.setRelation(civ, otherCiv, status);
 		if (status.equals(Status.WAR)) {

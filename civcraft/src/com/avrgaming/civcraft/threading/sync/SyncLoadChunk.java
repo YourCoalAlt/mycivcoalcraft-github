@@ -29,9 +29,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.threading.sync.request.LoadChunkRequest;
 
 public class SyncLoadChunk implements Runnable {
-	/*
-	 * Loads a chunk synchronously and notifies the thread that was waiting on it when it is loaded.
-	 */
+	/* Loads a chunk synchronously and notifies the thread that was waiting on it when it is loaded. */
 	public static final int UPDATE_LIMIT = 2048;
 	
 	public static Queue<LoadChunkRequest> requestQueue = new LinkedList<LoadChunkRequest>();
@@ -40,18 +38,14 @@ public class SyncLoadChunk implements Runnable {
 	public SyncLoadChunk() {
 		lock = new ReentrantLock();
 	}
-
+	
 	@Override
 	public void run() {
-		
 		if (lock.tryLock()) {
 			try {
 				for (int i = 0; i < UPDATE_LIMIT; i++) {
 					LoadChunkRequest request = requestQueue.poll();
-					if (request == null) {
-						return;
-					}
-					
+					if (request == null) return;
 					Chunk chunk = Bukkit.getWorld(request.worldName).getChunkAt(request.x, request.z);
 					if (!chunk.isLoaded()) {
 						if (!chunk.load()) {
@@ -71,7 +65,4 @@ public class SyncLoadChunk implements Runnable {
 			//CivLog.warning("SyncLoadChunk: lock was busy, try again next tick.");
 		}
 	}
-	
-	
-	
 }

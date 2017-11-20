@@ -35,7 +35,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.Relation;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.ChunkCoord;
@@ -156,7 +156,7 @@ public class ScoutTower extends Structure {
 				}
 				
 				/* Only announce hostile, war, and neutral players */
-				Relation.Status relation = this.getCiv().getDiplomacyManager().getRelationStatus(player);
+				DiplomaticRelation.Status relation = this.getCiv().getDiplomacyManager().getRelationStatus(player);
 				switch (relation) {
 				case PEACE:
 				case ALLY:
@@ -169,7 +169,7 @@ public class ScoutTower extends Structure {
 				}
 				
 				relationName = relation.name();
-				relationColor = Relation.getRelationColor(relation);
+				relationColor = DiplomaticRelation.getRelationColor(relation);
 			} else {
 				relationName = "OUTLAW";
 				relationColor = CivColor.Yellow;

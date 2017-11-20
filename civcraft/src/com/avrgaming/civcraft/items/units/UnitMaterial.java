@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -36,7 +37,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -217,37 +217,41 @@ public class UnitMaterial extends LoreMaterial {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void onItemPickup(PlayerPickupItemEvent event) {
-				
-		if(!validateUnitUse(event.getPlayer(), event.getItem().getItemStack())) {
-			CivMessage.sendErrorNoRepeat(event.getPlayer(), "You cannot use this unit because it does not belong to your civilization.");
-			event.setCancelled(true);
-			return;
-		}
-		
-		ConfigUnit unit = Unit.getPlayerUnit(event.getPlayer());
-		if (unit != null) {
-			CivMessage.sendErrorNoRepeat(event.getPlayer(), "Already a "+unit.name+" cannot pickup another unit item.");
-			event.setCancelled(true);
-		} else {
-			// Reposition item to the last quickbar slot
-			
-			// Check that the inventory is not full, clear out the
-			// the required slot, and then re-add what was in there.
-			Inventory inv = event.getPlayer().getInventory();
-			
-			ItemStack lastSlot = inv.getItem(LAST_SLOT);
-			if (lastSlot != null) {
-				inv.setItem(LAST_SLOT, event.getItem().getItemStack());
-				inv.addItem(lastSlot);
-				event.getPlayer().updateInventory();
-			} else {
-				inv.setItem(LAST_SLOT, event.getItem().getItemStack());
+	public void onItemPickup(EntityPickupItemEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player p = (Player) event.getEntity();
+			if(!validateUnitUse(p, event.getItem().getItemStack())) {
+				CivMessage.sendErrorNoRepeat(p, "You cannot use this unit because it does not belong to your civilization.");
+				event.setCancelled(true);
+				return;
 			}
 			
-			
-			this.onItemToPlayer(event.getPlayer(), event.getItem().getItemStack());
-			event.getItem().remove();
+			ConfigUnit unit = Unit.getPlayerUnit(p);
+			if (unit != null) {
+				CivMessage.sendErrorNoRepeat(p, "Already a "+unit.name+" cannot pickup another unit item.");
+				event.setCancelled(true);
+			} else {
+				// Reposition item to the last quickbar slot
+				
+				// Check that the inventory is not full, clear out the
+				// the required slot, and then re-add what was in there.
+				Inventory inv = p.getInventory();
+				
+				ItemStack lastSlot = inv.getItem(LAST_SLOT);
+				if (lastSlot != null) {
+					inv.setItem(LAST_SLOT, event.getItem().getItemStack());
+					inv.addItem(lastSlot);
+					p.updateInventory();
+				} else {
+					inv.setItem(LAST_SLOT, event.getItem().getItemStack());
+				}
+				
+				
+				this.onItemToPlayer(p, event.getItem().getItemStack());
+				event.getItem().remove();
+				event.setCancelled(true);
+			}
+		} else {
 			event.setCancelled(true);
 		}
 	}

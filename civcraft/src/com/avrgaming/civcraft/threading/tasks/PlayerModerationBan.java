@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.threading.tasks;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -38,15 +37,6 @@ public class PlayerModerationBan implements Runnable {
 			return;
 		}
 		Resident res = CivGlobal.getResident(p);
-		res.setBanned(true);
-		res.setBannedMessage(reason);
-		res.setBannedLength(sec, min, hours);
-		try {
-			res.saveNow();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 		sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
 		Date date = new Date(res.getBannedLength());

@@ -51,7 +51,7 @@ import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.structure.Capitol;
 import com.avrgaming.civcraft.structure.RespawnLocationHolder;
@@ -683,7 +683,7 @@ public class Civilization extends SQLObject {
 		boolean doublePenalty = false;
 		
 		/* calculate war upkeep from being an aggressor. */
-		for (Relation relation : this.getDiplomacyManager().getRelations()) {
+		for (DiplomaticRelation relation : this.getDiplomacyManager().getRelations()) {
 			if (relation.getStatus() == Status.WAR) {
 				if (relation.getAggressor() == this) {
 					double thisWarUpkeep = 0;
@@ -711,7 +711,7 @@ public class Civilization extends SQLObject {
 					/* Try to find notredame in ourenemies buff list or their allies list. */
 					ArrayList<Civilization> allies = new ArrayList<Civilization>();
 					allies.add(relation.getOtherCiv());
-					for (Relation relation2 : relation.getOtherCiv().getDiplomacyManager().getRelations()) {
+					for (DiplomaticRelation relation2 : relation.getOtherCiv().getDiplomacyManager().getRelations()) {
 						if (relation2.getStatus() == Status.ALLY) {
 							allies.add(relation2.getOtherCiv());
 						}
@@ -742,7 +742,7 @@ public class Civilization extends SQLObject {
 		double happy = 0;
 		
 		/* calculate war upkeep from being an aggressor. */
-		for (Relation relation : this.getDiplomacyManager().getRelations()) {
+		for (DiplomaticRelation relation : this.getDiplomacyManager().getRelations()) {
 			if (relation.getStatus() == Status.WAR) {
 				if (relation.getAggressor() == this) {
 					double thisWarUpkeep = 0;
@@ -1293,11 +1293,11 @@ public class Civilization extends SQLObject {
 		}
 		
 		/* Remove any old relationships this civ may have had. */
-		LinkedList<Relation> deletedRelations = new LinkedList<Relation>();
-		for (Relation relation : this.getDiplomacyManager().getRelations()) {
+		LinkedList<DiplomaticRelation> deletedRelations = new LinkedList<DiplomaticRelation>();
+		for (DiplomaticRelation relation : this.getDiplomacyManager().getRelations()) {
 			deletedRelations.add(relation);
 		}
-		for (Relation relation : deletedRelations) {
+		for (DiplomaticRelation relation : deletedRelations) {
 			try {
 				relation.delete();
 			} catch (SQLException e) {
@@ -1821,16 +1821,16 @@ public class Civilization extends SQLObject {
 
 	public void clearAggressiveWars() {
 		/* If this civ is the aggressor in any wars. Cancel the, this happens when civs go into debt. */
-		LinkedList<Relation> removeUs = new LinkedList<Relation>();
-		for (Relation relation : this.getDiplomacyManager().getRelations()) {
-			if (relation.getStatus().equals(Relation.Status.WAR)) {
+		LinkedList<DiplomaticRelation> removeUs = new LinkedList<DiplomaticRelation>();
+		for (DiplomaticRelation relation : this.getDiplomacyManager().getRelations()) {
+			if (relation.getStatus().equals(DiplomaticRelation.Status.WAR)) {
 				if (relation.getAggressor() == this) {
 					removeUs.add(relation);
 				}
 			}
 		}
 		
-		for (Relation relation : removeUs) {
+		for (DiplomaticRelation relation : removeUs) {
 			this.getDiplomacyManager().deleteRelation(relation);
 			CivMessage.global(this.getName()+" was in debt too long and can no longer maintain it's aggressive war with "+relation.getOtherCiv().getName()+".");
 		}
@@ -1876,12 +1876,18 @@ public class Civilization extends SQLObject {
 			}
 		}
 		
-		String leader = "";
+		ItemStack stack = null;
 		if (resident != null) {
-			leader = resident.getName();
+			try {
+				Player p = CivGlobal.getPlayer(resident);
+				stack = ItemManager.spawnPlayerHead(p, message+" ("+resident.getName()+")");
+			} catch (CivException e) {
+				stack = new ItemStack(Material.DIRT);
+				e.printStackTrace();
+			}
+		} else {
+			stack = new ItemStack(Material.GRASS);
 		}
-		
-		ItemStack stack = ItemManager.spawnPlayerHead(leader, message+" ("+leader+")");
 		return stack;
 	}
 	

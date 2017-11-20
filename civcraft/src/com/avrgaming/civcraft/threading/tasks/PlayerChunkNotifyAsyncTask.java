@@ -29,7 +29,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.Relation;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
@@ -51,7 +51,7 @@ public class PlayerChunkNotifyAsyncTask implements Runnable {
 		this.playerName = playerName;
 	}
 	
-	public static String getNotifyColor(CultureChunk toCc, Relation.Status status, Player player) {
+	public static String getNotifyColor(CultureChunk toCc, DiplomaticRelation.Status status, Player player) {
 
 		String color = CivColor.White;
 		switch (status) {
@@ -180,7 +180,7 @@ public class PlayerChunkNotifyAsyncTask implements Runnable {
 			return;
 		}
 		
-		Relation.Status status = toCc.getCiv().getDiplomacyManager().getRelationStatus(player);
+		DiplomaticRelation.Status status = toCc.getCiv().getDiplomacyManager().getRelationStatus(player);
 		String color = getNotifyColor(toCc, status, player);
 		String relationName = status.name();
 		

@@ -38,6 +38,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
@@ -52,7 +53,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -284,10 +284,12 @@ public class CustomItemManager implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void OnPlayerItemPickup(PlayerPickupItemEvent event) {
-		ItemStack stack = event.getItem().getItemStack();
-		if (LoreMaterial.isCustom(stack)) {
-			LoreMaterial.getMaterial(stack).onItemPickup(event);
+	public void OnPlayerItemPickup(EntityPickupItemEvent event) {
+		if (event.getEntity() instanceof Player) {
+			ItemStack stack = event.getItem().getItemStack();
+			if (LoreMaterial.isCustom(stack)) {
+				LoreMaterial.getMaterial(stack).onItemPickup(event);
+			}
 		}
 	}
 	

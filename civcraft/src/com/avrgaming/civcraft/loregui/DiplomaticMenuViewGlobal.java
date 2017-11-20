@@ -13,8 +13,8 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -36,14 +36,14 @@ public class DiplomaticMenuViewGlobal implements GuiAction {
 		int stored = 0;
 		HashSet<String> usedRelations = new HashSet<String>();
 		for (Civilization civ : CivGlobal.getCivs()) {
-			for (Relation relation : civ.getDiplomacyManager().getRelations()) {
+			for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
 				if (relation.getStatus().equals(Status.NEUTRAL)) {
 					continue;
 				}
 				
 				if (!usedRelations.contains(relation.getPairKey())) {
 					usedRelations.add(relation.getPairKey());
-					ItemStack is = LoreGuiItem.build(Relation.getRelationColor(relation.getStatus())+relation.getStatus().toString(), ItemManager.getId(Material.QUARTZ_BLOCK), 0,
+					ItemStack is = LoreGuiItem.build(DiplomaticRelation.getRelationColor(relation.getStatus())+relation.getStatus().toString(), ItemManager.getId(Material.QUARTZ_BLOCK), 0,
 							CivColor.White+relation.getCiv().getName(),
 							CivColor.White+relation.getOtherCiv().getName());
 					guiInventory.setItem(stored, is);

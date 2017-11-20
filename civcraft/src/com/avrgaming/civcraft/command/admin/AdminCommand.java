@@ -105,6 +105,7 @@ public class AdminCommand extends CommandBase {
 		commands.put("perk", "Admin perk management.");
 		
 		commands.put("holo", "Reloads all holograms.");
+		commands.put("savesql", "Saves all databases to SQL server.");
 		commands.put("lockdown", "Toggles if the server is joinable to players or admins only.");
 		commands.put("testc", "Unformal, quick test command.");
 		
@@ -454,28 +455,6 @@ public class AdminCommand extends CommandBase {
 		
 		CivMessage.sendSuccess(sender, "Set to:"+args[1]);
 		
-	}
-	
-	@SuppressWarnings("deprecation")
-	public void unban_cmd() throws CivException {
-		if (args.length < 2) {
-			throw new CivException("Enter a player name to ban");
-		}
-		
-		Resident r = CivGlobal.getResident(args[1]);
-		
-		OfflinePlayer offplayer = Bukkit.getOfflinePlayer(r.getUUID());
-		if (offplayer != null && offplayer.isBanned()) {
-			offplayer.setBanned(false);
-			Resident resident = CivGlobal.getResident(offplayer.getName());
-			if (resident != null) {
-				resident.setBanned(false);
-				resident.save();
-			}
-			CivMessage.sendSuccess(sender, "Unbanned "+args[1]);
-		} else {
-			CivMessage.sendSuccess(sender, "Couldn't find "+args[1]+" or he is not banned.");
-		}
 	}
 	
 	public void res_cmd() {

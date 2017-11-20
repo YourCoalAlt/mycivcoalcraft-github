@@ -64,8 +64,8 @@ import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.ProtectedBlock;
-import com.avrgaming.civcraft.object.Relation;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.StructureBlock;
@@ -366,13 +366,13 @@ public class CivGlobal {
 		
 		try {
 			context = SQL.getGameConnection();		
-			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+Relation.TABLE_NAME);
+			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+DiplomaticRelation.TABLE_NAME);
 			rs = ps.executeQuery();
 			int count = 0;
 			
 			while(rs.next()) {
 				try {
-					new Relation(rs);
+					new DiplomaticRelation(rs);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1544,16 +1544,16 @@ public class CivGlobal {
 	public static void checkForExpiredRelations() {
 		Date now = new Date();
 
-		ArrayList<Relation> deletedRelations = new ArrayList<Relation>();
+		ArrayList<DiplomaticRelation> deletedRelations = new ArrayList<DiplomaticRelation>();
 		for (Civilization civ : CivGlobal.getCivs()) {
-			for (Relation relation : civ.getDiplomacyManager().getRelations()) {
+			for (DiplomaticRelation relation : civ.getDiplomacyManager().getRelations()) {
 				if (relation.getExpireDate() != null && now.after(relation.getExpireDate())) {					
 					deletedRelations.add(relation);
 				}
 			}
 		}
 		
-		for (Relation relation : deletedRelations) {
+		for (DiplomaticRelation relation : deletedRelations) {
 		//	relation.getCiv().getDiplomacyManager().deleteRelation(relation);
 			try {
 				relation.delete();
@@ -1629,7 +1629,7 @@ public class CivGlobal {
 		if (namedRes.getTown().getCiv() == playerRes.getTown().getCiv()) {
 			color = CivColor.LightPurple;
 		} else {
-			Relation.Status status = playerRes.getTown().getCiv().getDiplomacyManager().getRelationStatus(namedRes.getTown().getCiv());
+			DiplomaticRelation.Status status = playerRes.getTown().getCiv().getDiplomacyManager().getRelationStatus(namedRes.getTown().getCiv());
 			switch (status) {
 			case PEACE:
 				color = CivColor.LightBlue;

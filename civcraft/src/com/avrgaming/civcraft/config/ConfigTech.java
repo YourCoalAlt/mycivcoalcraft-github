@@ -45,7 +45,7 @@ public class ConfigTech {
 			
 			tech.id = (String)confTech.get("id");
 			tech.name = (String)confTech.get("name");
-			tech.beaker_cost = (Double)confTech.get("beaker_cost");
+			tech.beaker_cost = (Integer)confTech.get("beaker_cost")+.0;
 			tech.cost = (Integer)confTech.get("cost");
 			tech.require_techs = (String)confTech.get("require_techs");
 			tech.points = (Integer)confTech.get("points");

@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.main.CivGlobal;
-import com.avrgaming.civcraft.object.Relation.Status;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 
 public class DiplomacyManager {
 	
@@ -44,7 +44,7 @@ public class DiplomacyManager {
 	/*
 	 * List of our relationships, hashed by civ id.
 	 */
-	private HashMap<Integer, Relation> relations = new HashMap<Integer, Relation>();
+	private HashMap<Integer, DiplomaticRelation> relations = new HashMap<Integer, DiplomaticRelation>();
 	
 	/* Number of civ's at war with us, will maintain this for fast isWar() lookups */
 	private int warCount = 0;
@@ -59,8 +59,8 @@ public class DiplomacyManager {
 			return false;
 		}
 				
-		Relation relation = relations.get(other.getId());
-		if (relation != null && relation.getStatus() == Relation.Status.WAR) {
+		DiplomaticRelation relation = relations.get(other.getId());
+		if (relation != null && relation.getStatus() == DiplomaticRelation.Status.WAR) {
 			return true;
 		}
 		return false;
@@ -70,9 +70,9 @@ public class DiplomacyManager {
 		return (warCount != 0);
 	}
 
-	public void deleteRelation(Relation relation) {
+	public void deleteRelation(DiplomaticRelation relation) {
 		
-		if (relation.getStatus() == Relation.Status.WAR && 
+		if (relation.getStatus() == DiplomaticRelation.Status.WAR && 
 				relations.containsKey(relation.getOtherCiv().getId())) {
 			warCount--;
 			if (warCount < 0) {
@@ -81,7 +81,7 @@ public class DiplomacyManager {
 		}
 		relations.remove(relation.getOtherCiv().getId());
 		
-		Relation theirRelation = relation.getOtherCiv().getDiplomacyManager().getRelation(ourCiv);
+		DiplomaticRelation theirRelation = relation.getOtherCiv().getDiplomacyManager().getRelation(ourCiv);
 		if (theirRelation != null) {
 			try {
 				relation.getOtherCiv().getDiplomacyManager().relations.remove(theirRelation.getOtherCiv().getId());
@@ -99,13 +99,13 @@ public class DiplomacyManager {
 	}
 	
 	public void deleteAllRelations() {
-		LinkedList<Relation> removeUs = new LinkedList<Relation>();
+		LinkedList<DiplomaticRelation> removeUs = new LinkedList<DiplomaticRelation>();
 		
-		for (Relation relation : relations.values()) {
+		for (DiplomaticRelation relation : relations.values()) {
 			removeUs.add(relation);
 		}
 		
-		for (Relation relation : removeUs) {
+		for (DiplomaticRelation relation : removeUs) {
 			this.deleteRelation(relation);
 		}
 		
@@ -113,24 +113,24 @@ public class DiplomacyManager {
 	}
 	
 	public void setAggressor(Civilization aggressor, Civilization otherCiv) {
-		Relation relation = relations.get(otherCiv.getId());
+		DiplomaticRelation relation = relations.get(otherCiv.getId());
 		if (relation != null) {
 			relation.setAggressor(aggressor);
 			relation.save();
 		}		
 	}
 	
-	public void setRelation(Civilization otherCiv, Relation.Status status, Date expires) {
-		Relation relation = relations.get(otherCiv.getId());
+	public void setRelation(Civilization otherCiv, DiplomaticRelation.Status status, Date expires) {
+		DiplomaticRelation relation = relations.get(otherCiv.getId());
 		
 		if (relation == null) {
-			relations.put(otherCiv.getId(), new Relation(ourCiv, otherCiv, status, expires));
+			relations.put(otherCiv.getId(), new DiplomaticRelation(ourCiv, otherCiv, status, expires));
 		} else {
 			if (relation.getStatus() == status) { 
 				return;
 			}
 			
-			if (relation.getStatus() == Relation.Status.WAR) {
+			if (relation.getStatus() == DiplomaticRelation.Status.WAR) {
 				//Status was war, new status is not the same, so reduce our warcount.
 				warCount--;
 			}
@@ -155,39 +155,39 @@ public class DiplomacyManager {
 //			}
 		}
 		
-		if (status == Relation.Status.WAR) {
+		if (status == DiplomaticRelation.Status.WAR) {
 			warCount++;
 		}
 	}
 		
-	public Relation.Status getRelationStatus(Civilization otherCiv) {
+	public DiplomaticRelation.Status getRelationStatus(Civilization otherCiv) {
 		if (otherCiv.getId() == ourCiv.getId()) {
-			return Relation.Status.ALLY;
+			return DiplomaticRelation.Status.ALLY;
 		}
 		
-		Relation relation = relations.get(otherCiv.getId());
+		DiplomaticRelation relation = relations.get(otherCiv.getId());
 		if (relation == null) {
-			return Relation.Status.NEUTRAL;
+			return DiplomaticRelation.Status.NEUTRAL;
 		}
 		return relation.getStatus();
 	}
 
-	public Relation getRelation(Civilization otherCiv) {
+	public DiplomaticRelation getRelation(Civilization otherCiv) {
 		return relations.get(otherCiv.getId());
 	}
 	
-	public void addRelation(Relation relation) {
-		Relation currentRelation = relations.get(relation.getOtherCiv().getId());
+	public void addRelation(DiplomaticRelation relation) {
+		DiplomaticRelation currentRelation = relations.get(relation.getOtherCiv().getId());
 		
-		if (relation.getStatus() == Relation.Status.WAR) {
-			if (currentRelation == null || currentRelation.getStatus() != Relation.Status.WAR) {
+		if (relation.getStatus() == DiplomaticRelation.Status.WAR) {
+			if (currentRelation == null || currentRelation.getStatus() != DiplomaticRelation.Status.WAR) {
 				warCount++;
 			}
 		} 
 		relations.put(relation.getOtherCiv().getId(), relation);
 	}
 
-	public Collection<Relation> getRelations() {
+	public Collection<DiplomaticRelation> getRelations() {
 		return relations.values();
 	}
 	
@@ -207,7 +207,7 @@ public class DiplomacyManager {
 		return atWarWith(resident.getTown().getCiv());
 	}
 
-	public Relation.Status getRelationStatus(Player player) {
+	public DiplomaticRelation.Status getRelationStatus(Player player) {
 		Resident resident = CivGlobal.getResident(player);
 		if (resident == null) {
 			return Status.NEUTRAL;
@@ -234,7 +234,7 @@ public class DiplomacyManager {
 	}
 	
 	public boolean isHostileWith(Civilization civ) {
-		Relation relation = this.relations.get(civ.getId());
+		DiplomaticRelation relation = this.relations.get(civ.getId());
 		if (relation == null) {
 			return false;
 		}

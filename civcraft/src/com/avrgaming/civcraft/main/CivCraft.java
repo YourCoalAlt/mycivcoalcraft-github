@@ -106,7 +106,6 @@ import com.avrgaming.civcraft.threading.sync.SyncBuildUpdateTask;
 import com.avrgaming.civcraft.threading.sync.SyncGetChestInventory;
 import com.avrgaming.civcraft.threading.sync.SyncGrowTask;
 import com.avrgaming.civcraft.threading.sync.SyncLoadChunk;
-import com.avrgaming.civcraft.threading.sync.SyncUpdateChunks;
 import com.avrgaming.civcraft.threading.sync.SyncUpdateInventory;
 import com.avrgaming.civcraft.threading.tasks.ArrowProjectileTask;
 import com.avrgaming.civcraft.threading.tasks.BuildUndoTask;
@@ -138,7 +137,7 @@ import pvptimer.PvPListener;
 import pvptimer.PvPTimer;
 
 public final class CivCraft extends JavaPlugin {
-
+	
 	private boolean isError = false;
 	private static JavaPlugin plugin;
 	public static boolean isDisable = false;
@@ -150,7 +149,6 @@ public final class CivCraft extends JavaPlugin {
 		
 		// Sync Timers
 		TaskMaster.syncTimer(SyncBuildUpdateTask.class.getName(), new SyncBuildUpdateTask(), 0, 1);
-		TaskMaster.syncTimer(SyncUpdateChunks.class.getName(), new SyncUpdateChunks(), 0, TimeTools.toTicks(1));
 		TaskMaster.syncTimer(SyncLoadChunk.class.getName(), new SyncLoadChunk(), 0, 1);
 		TaskMaster.syncTimer(SyncGetChestInventory.class.getName(), new SyncGetChestInventory(), 0, 1);
 		TaskMaster.syncTimer(SyncUpdateInventory.class.getName(), new SyncUpdateInventory(), 0, 1);
@@ -310,7 +308,7 @@ public final class CivCraft extends JavaPlugin {
 		if (hasPlugin("NoCheatPlus")) {
 			registerNPCHooks();
 		} else {
-			CivLog.warning("NoCheatPlus not found, not registering NCP hooks. This is fine if you're not using NCP.");
+			CivLog.warning("NoCheatPlus not found, not registering NCP hooks. It is fine if you're not using NCP.");
 		}
 		
 		startTimers();
@@ -319,7 +317,11 @@ public final class CivCraft extends JavaPlugin {
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
 				isStarted = true;
-				HolographicDisplaysListener.generateTradeGoodHolograms();
+				if (hasPlugin("HolographicDisplays")) {
+					HolographicDisplaysListener.generateTradeGoodHolograms();
+				} else {
+					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
+				}
 				BuildUndoTask.resumeUndoTasks();
 			}
 		});

@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 
-import net.minecraft.server.v1_11_R1.PacketPlayOutMultiBlockChange;
+import net.minecraft.server.v1_12_R1.PacketPlayOutMultiBlockChange;
 
 public class PlayerBlockChangeUtil {
 	/*

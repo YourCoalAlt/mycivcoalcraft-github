@@ -26,8 +26,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigEXPMining;
@@ -326,18 +324,16 @@ public class MinecraftListener implements Listener {
 		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
 			if (cc.getChunkCoord().getChunk() == teleportLocation.getChunk()) {
 				CivMessage.sendError(p, "We accidently tried teleporting you to a civilization's culture borders. Recalculating new placement...");
-				x = -(rX/2) + (rand.nextInt(rX)) - (rX/10);
-				z = -(rZ/2) + (rand.nextInt(rZ)) - (rZ/10);
+				x = -(rX/2) + (rand.nextInt(rX)) - (rand.nextInt(rX)/10);
+				z = -(rZ/2) + (rand.nextInt(rZ)) - (rand.nextInt(rZ)/10);
 				isOnLand = false;
 				isClearAbove = false;
 			}
 		}
 		
 		p.setInvulnerable(true);
-		p.removePotionEffect(PotionEffectType.REGENERATION);
-		p.removePotionEffect(PotionEffectType.SATURATION);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (20*20), 255));
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, (20*20), 255));
+		p.setSaturation(20f);
+		p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
 		p.teleport(teleportLocation);
 		p.setInvulnerable(false);
 		CivMessage.sendSuccess(p, "You have been randomly teleported to "+x+", "+y+", "+z+"!");

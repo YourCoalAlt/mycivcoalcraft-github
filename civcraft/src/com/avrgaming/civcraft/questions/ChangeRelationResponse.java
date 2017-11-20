@@ -21,7 +21,7 @@ package com.avrgaming.civcraft.questions;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.Relation;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
 
@@ -29,7 +29,7 @@ public class ChangeRelationResponse implements QuestionResponseInterface {
 
 	public Civilization fromCiv;
 	public Civilization toCiv;
-	public Relation.Status status;
+	public DiplomaticRelation.Status status;
 	
 	@Override
 	public void processResponse(String param) {
