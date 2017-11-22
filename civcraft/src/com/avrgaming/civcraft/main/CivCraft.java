@@ -34,6 +34,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.AcceptCommand;
 import com.avrgaming.civcraft.command.BackpackCommand;
 import com.avrgaming.civcraft.command.BuildCommand;
@@ -386,6 +387,11 @@ public final class CivCraft extends JavaPlugin {
 	public void disableCivGlobal() {
 		for (Location loc : ParticleEffectTimer.externalParticleBlocks.keySet()) {
 			ParticleEffectTimer.externalParticleBlocks.remove(loc);
+		}
+		
+		for (AccountLogger al : CivGlobal.getAccounts()) {
+			al.save();
+			CivGlobal.removeAccount(al);
 		}
 		
 		for (Civilization civ : CivGlobal.getCivs()) {

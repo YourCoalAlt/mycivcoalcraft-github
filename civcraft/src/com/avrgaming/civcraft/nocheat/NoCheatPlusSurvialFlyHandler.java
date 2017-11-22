@@ -20,27 +20,23 @@ public class NoCheatPlusSurvialFlyHandler extends AbstractNCPHook {
 	public String getHookName() {
 		return "CivCraft:"+this.getClass().getSimpleName();
 	}
-
+	
 	@Override
 	public String getHookVersion() {
 		return "1.0";
 	}
-
-    @Override
-    public boolean onCheckFailure(final CheckType checkType, final Player player, final IViolationInfo info) {
-    	double violationGrace;
+	
+	@Override
+	public boolean onCheckFailure(final CheckType checkType, final Player player, final IViolationInfo info) {
+		double violationGrace;
 		try {
 			violationGrace = CivSettings.getDouble(CivSettings.nocheatConfig, "nocheatplus.survivalfly.violation_grace");
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
 			return false;
 		}
-    	
-    	if (info.getAddedVl() < violationGrace) {
-    		return true;
-    	}
-    	
-    	return false;
-    }
-	
+		
+		if (info.getAddedVl() < violationGrace) return true;
+		return false;
+	}
 }

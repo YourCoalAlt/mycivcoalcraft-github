@@ -34,6 +34,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.command.ReportChestsTask;
 import com.avrgaming.civcraft.command.ReportPlayerInventoryTask;
@@ -182,34 +183,16 @@ public class AdminCommand extends CommandBase {
 	
 	public void savesql_cmd() {
 		try {
-			for (Civilization c : CivGlobal.getCivs()) {
-				c.saveNow();
-			}
-			for (Town t : CivGlobal.getTowns()) {
-				t.saveNow();
-			}
-			for (Resident r : CivGlobal.getResidents()) {
-				r.saveNow();
-			}
-			for (TownChunk tc : CivGlobal.getTownChunks()) {
-				tc.saveNow();
-			}
-			for (Structure s : CivGlobal.getStructures()) {
-				s.saveNow();
-			}
-			for (Wonder w : CivGlobal.getWonders()) {
-				w.saveNow();
-			}
-			for (TradeGood tg : CivGlobal.getTradeGoods()) {
-				tg.saveNow();
-			}
-			for (BonusGoodie bg : CivGlobal.getBonusGoodies()) {
-				bg.saveNow();
-			}
-			for (StructureSign ss : CivGlobal.getStructureSigns()) {
-				ss.saveNow();
-			}
-			
+			for (AccountLogger al : CivGlobal.getAccounts()) al.saveNow();
+			for (Civilization c : CivGlobal.getCivs()) c.saveNow();
+			for (Town t : CivGlobal.getTowns()) t.saveNow();
+			for (Resident r : CivGlobal.getResidents()) r.saveNow();
+			for (TownChunk tc : CivGlobal.getTownChunks()) tc.saveNow();
+			for (Structure s : CivGlobal.getStructures()) s.saveNow();
+			for (Wonder w : CivGlobal.getWonders()) w.saveNow();
+			for (TradeGood tg : CivGlobal.getTradeGoods()) tg.saveNow();
+			for (BonusGoodie bg : CivGlobal.getBonusGoodies()) bg.saveNow();
+			for (StructureSign ss : CivGlobal.getStructureSigns()) ss.saveNow();
 			CivMessage.sendSuccess(sender, "Saved All SQL Information.");
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -52,6 +52,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.session.SessionDatabase;
@@ -63,9 +64,9 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
+import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.StructureBlock;
@@ -122,6 +123,7 @@ public class CivGlobal {
 	private static Map<String, QuestionBaseTask> questions = new ConcurrentHashMap<String, QuestionBaseTask>();
 	public static Map<String, CivQuestionTask> civQuestions = new ConcurrentHashMap<String, CivQuestionTask>();
 	
+	private static Map<String, AccountLogger> accounts = new ConcurrentHashMap<String, AccountLogger>();
 	private static Map<String, Resident> residents = new ConcurrentHashMap<String, Resident>();
 	private static Map<UUID, Resident> residentsViaUUID = new ConcurrentHashMap<UUID, Resident>();
 	private static Map<String, ResidentExperience> residentsE = new ConcurrentHashMap<String, ResidentExperience>();
@@ -201,6 +203,7 @@ public class CivGlobal {
 		loadCivs();
 		loadRelations();
 		loadTowns();
+		loadAccounts();
 		loadResidents();
 		loadResidentsExperience();
 		loadPermissionGroups();
@@ -432,6 +435,32 @@ public class CivGlobal {
 			}
 	
 			CivLog.info("Loaded "+residents.size()+" Residents");
+		} finally {
+			SQL.close(rs, ps, context);
+		}
+	}
+	
+	public static void loadAccounts() throws SQLException {
+		Connection context = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		
+		try {
+			context = SQL.getGameConnection();		
+			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+AccountLogger.TABLE_NAME);
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				AccountLogger al;
+				try {
+					al = new AccountLogger(rs);
+					CivGlobal.addAccount(al);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+	
+			CivLog.info("Loaded "+accounts.size()+" Accounts");
 		} finally {
 			SQL.close(rs, ps, context);
 		}
@@ -677,6 +706,13 @@ public class CivGlobal {
 		return player;
 	}
 	
+	public static OfflinePlayer getOfflinePlayer(Resident resident) throws CivException {
+		OfflinePlayer player = Bukkit.getOfflinePlayer(resident.getUUID());
+		if (player == null)
+			throw new CivException("No offline player named "+resident.getName());
+		return player;
+	}
+	
 	public static Player getPlayerE(ResidentExperience re) throws CivException {
 		Player player = Bukkit.getPlayer(re.getUUID());
 		if (player == null)
@@ -692,6 +728,26 @@ public class CivGlobal {
 			}
 		}
 		return null;
+	}
+	
+	public static AccountLogger getAccount(String uid) {
+		return accounts.get(uid);
+	}
+	
+	public static boolean hasAccount(String uid) {
+		return accounts.containsKey(uid);
+	}
+
+	public static void addAccount(AccountLogger al) {
+		accounts.put(al.getUUIDString(), al);
+	}
+	
+	public static void removeAccount(AccountLogger al) {
+		accounts.remove(al.getUUIDString());
+	}
+	
+	public static Collection<AccountLogger> getAccounts() {
+		return accounts.values();
 	}
 	
 	// Resident
@@ -719,6 +775,10 @@ public class CivGlobal {
 	public static void removeResident(Resident res) {
 		residents.remove(res.getName());
 		residentsViaUUID.remove(res.getUUID());
+	}
+	
+	public static Collection<Resident> getResidents() {
+		return residents.values();
 	}
 	
 	public static Resident getResidentViaUUID(UUID uuid) {
@@ -866,10 +926,6 @@ public class CivGlobal {
 
 	public static Collection<Town> getTowns() {
 		return towns.values();
-	}
-
-	public static Collection<Resident> getResidents() {
-		return residents.values();
 	}
 	
 	public static Collection<ResidentExperience> getResidentsExperience() {

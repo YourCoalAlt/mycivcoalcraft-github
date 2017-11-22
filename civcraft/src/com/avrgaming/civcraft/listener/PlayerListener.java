@@ -62,9 +62,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
+import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.items.units.UnitItemMaterial;
 import com.avrgaming.civcraft.items.units.UnitMaterial;
@@ -115,52 +117,90 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerLogin(PlayerLoginEvent event) {
+	public void onPlayerLogin(PlayerLoginEvent event) throws InvalidNameException {
 		Player p = event.getPlayer();
-		CivLog.info("Scheduling Player Login Task for:"+p.getName());
 		Resident res = CivGlobal.getResident(p);
+		CivLog.info("Scheduling Player Login Task for:"+p.getName());
+		
+		String ip = event.getAddress().getHostAddress();
+		if (ip == null) {
+			String msg = (" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lReason §r§8»§ §fKicked: Your IP is invalid? Contact an admin if this continues.\n");
+			event.disallow(Result.KICK_OTHER, msg);
+			CivLog.error("Null IP? Kicking player for potential problems.");
+		} else {
+			AccountLogger track = CivGlobal.getAccount(p.getUniqueId().toString());
+			if (track == null) {
+				track = new AccountLogger(p.getUniqueId(), ip);
+				CivGlobal.addAccount(track);
+				track.save();
+				event.disallow(Result.KICK_OTHER, "Rejoin");
+			}
+			
+			boolean isSaved = false;
+			for (String trackIP : track.getIPsFromString()) {
+				if (trackIP.equals(ip) && trackIP != null && ip != null) isSaved = true;
+			}
+			if (!isSaved) track.addIPFromString(ip);
+			
+			for (AccountLogger al : CivGlobal.getAccounts()) {
+				if (!al.getUUID().equals(p.getUniqueId())) {
+					for (String ipal : al.getIPsFromString()) {
+						if (ipal.equals(ip)) {
+							Resident found_al = al.getResident();
+							found_al.addAlt(res.getUUIDString());
+							res.addAlt(found_al.getUUIDString());
+						}
+					}
+				}
+			}
+		}
+		
 		if (res == null) event.allow();
-		else
-		if (res.isBanned()) {
-			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
-			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-			Date date = new Date(res.getBannedLength());
-			String msg = (" §b§l« CivilizationCraft »"+"\n"+
-					" "+"\n"+
-					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-					"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
-					"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
-					" "+"\n"+
-					" "+"\n"+
-					"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
-					"§7§o[You are banned, cannot rejoin server.]"+"\n");
-			event.disallow(Result.KICK_OTHER, msg);
-			CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
-		}
-		
-		if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
-			String msg = (" §b§l« CivilizationCraft »"+"\n"+
-					" "+"\n"+
-					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-					"§c§lReason §r§8»§ §fKicked: The server is currently on lockdown... Try again in a few minutes.\n");
-			event.disallow(Result.KICK_OTHER, msg);
-			CivLog.info("Denied Player Join Task for:"+p.getName()+" (Server Lockdown)");
-		}
-		
-		if (War.isWarTime() && War.isOnlyWarriors()) {
-			if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
-				//Allowed to connect since player is OP or mini admin.
-			} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
+		else {
+			if (res.isBanned()) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 				sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-				Date date = new Date(War.getEnd().getTime());
+				Date date = new Date(res.getBannedLength());
 				String msg = (" §b§l« CivilizationCraft »"+"\n"+
 						" "+"\n"+
 						"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-						"§c§lReason §r§8»§ §fKicked: Currently WarTime, only players at-war can join.\n"+
-						"§c§lWar Ends At §r§8»§ §f"+sdf.format(date)+"\n");
+						"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
+						"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
+						" "+"\n"+
+						" "+"\n"+
+						"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
+						"§7§o[You are banned, cannot rejoin server.]"+"\n");
 				event.disallow(Result.KICK_OTHER, msg);
-				CivLog.info("Denied Player Join Task for:"+p.getName()+" (Not War Participant)");
+				CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
+			}
+			
+			if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
+				String msg = (" §b§l« CivilizationCraft »"+"\n"+
+						" "+"\n"+
+						"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+						"§c§lReason §r§8»§ §fKicked: The server is currently on lockdown... Try again in a few minutes.\n");
+				event.disallow(Result.KICK_OTHER, msg);
+				CivLog.info("Denied Player Join Task for:"+p.getName()+" (Server Lockdown)");
+			}
+			
+			if (War.isWarTime() && War.isOnlyWarriors()) {
+				if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
+					//Allowed to connect since player is OP or mini admin.
+				} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
+					SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
+					sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
+					Date date = new Date(War.getEnd().getTime());
+					String msg = (" §b§l« CivilizationCraft »"+"\n"+
+							" "+"\n"+
+							"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+							"§c§lReason §r§8»§ §fKicked: Currently WarTime, only players at-war can join.\n"+
+							"§c§lWar Ends At §r§8»§ §f"+sdf.format(date)+"\n");
+					event.disallow(Result.KICK_OTHER, msg);
+					CivLog.info("Denied Player Join Task for:"+p.getName()+" (Not War Participant)");
+				}
 			}
 		}
 	}

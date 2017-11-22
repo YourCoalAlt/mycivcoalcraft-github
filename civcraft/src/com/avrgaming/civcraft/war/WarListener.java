@@ -22,28 +22,17 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.ItemManager;
 
 public class WarListener implements Listener {
-
+	
 	ChunkCoord coord = new ChunkCoord();
 	@EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		
-		if (!War.isWarTime()) {
-			return;
-		}
+		if (event.isCancelled()) return;
+		if (!War.isWarTime()) return;
 		
 		coord.setFromLocation(event.getBlock().getLocation());
 		CultureChunk cc = CivGlobal.getCultureChunk(coord);
-		
-		if (cc == null) {
-			return;
-		}
-		
-		if (!cc.getCiv().getDiplomacyManager().isAtWar()) {
-			return;
-		}
+		if (cc == null) return;
+		if (!cc.getCiv().getDiplomacyManager().isAtWar()) return;
 				
 		if (event.getBlock().getType().equals(Material.DIRT) || 
 			event.getBlock().getType().equals(Material.GRASS) ||
@@ -67,25 +56,14 @@ public class WarListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		
-		if (!War.isWarTime()) {
-			return;
-		}
+		if (event.isCancelled()) return;
+		if (!War.isWarTime()) return;
 		
 		coord.setFromLocation(event.getBlock().getLocation());
 		CultureChunk cc = CivGlobal.getCultureChunk(coord);
+		if (cc == null) return;
+		if (!cc.getCiv().getDiplomacyManager().isAtWar()) return;
 		
-		if (cc == null) {
-			return;
-		}
-		
-		if (!cc.getCiv().getDiplomacyManager().isAtWar()) {
-			return;
-		}
-				
 		if (event.getBlock().getType().equals(Material.DIRT) || 
 			event.getBlock().getType().equals(Material.GRASS) ||
 			event.getBlock().getType().equals(Material.SAND) ||
@@ -98,13 +76,9 @@ public class WarListener implements Listener {
 			event.getBlock().getType().equals(Material.VINE) ||
 			event.getBlock().getType().equals(Material.TNT)) {
 			
-			if (event.getBlock().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
-				return;
-			}
-			
-			event.getBlock().getWorld().spawnFallingBlock(event.getBlock().getLocation(), event.getBlock().getType(), (byte) 0);
+			if (event.getBlock().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR) return;
+			event.getBlock().getWorld().spawnFallingBlock(event.getBlock().getLocation(), event.getBlock().getType(), ItemManager.getData(event.getBlock()));
 			event.getBlock().setType(Material.AIR);
-			
 			return;
 		}
 		
@@ -114,41 +88,25 @@ public class WarListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onEntityExplode(EntityExplodeEvent event) {
-			
-		if (event.isCancelled()) {
-			return;
-		}
+		if (event.isCancelled()) return;
+		if (!War.isWarTime()) return;
+		if (event.getEntity() == null) return;
+		if (event.getEntityType().equals(EntityType.UNKNOWN)) return;
 		
-		if (!War.isWarTime()) {
-			return;
-		}
-		
-		if (event.getEntity() == null) {
-			return;
-		}
-		
-		if (event.getEntityType().equals(EntityType.UNKNOWN)) {
-			return;
-		}
-		
-		if (event.getEntityType().equals(EntityType.PRIMED_TNT) ||
-				event.getEntityType().equals(EntityType.MINECART_TNT)) {
-						
-			int yield;
+		if (event.getEntityType().equals(EntityType.PRIMED_TNT) || event.getEntityType().equals(EntityType.MINECART_TNT)) {
+			int yield = 8;
 			try {
 				yield = CivSettings.getInteger(CivSettings.warConfig, "cannon.yield");
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
 			}
-		
+			
 			yield = yield / 2;
-		
 			for (int y = -yield; y <= yield; y++) {
 				for (int x = -yield; x <= yield; x++) {
 					for (int z = -yield; z <= yield; z++) {
 						Location loc = event.getLocation().clone().add(new Vector(x,y,z));
-					
 						if (loc.distance(event.getLocation()) < yield) {
 							WarRegen.saveBlock(loc.getBlock(), Cannon.RESTORE_NAME, false);
 							ItemManager.setTypeIdAndData(loc.getBlock(), CivData.AIR, 0, false);
@@ -159,6 +117,5 @@ public class WarListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
 }
 

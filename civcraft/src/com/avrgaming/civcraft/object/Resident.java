@@ -97,6 +97,8 @@ public class Resident extends SQLObject {
 	private boolean adminChat = false;
 	private boolean combatInfo = false;
 	
+	private ArrayList<String> alts = new ArrayList<String>();
+	
 	public static HashSet<String> allchatters = new HashSet<String>();
 	
 	/* Town or civ to chat in besides your own. */
@@ -222,6 +224,7 @@ public class Resident extends SQLObject {
 					"`last_ip` mediumtext DEFAULT NULL,"+
 					"`debug_town` mediumtext DEFAULT NULL,"+
 					"`debug_civ` mediumtext DEFAULT NuLL,"+
+					"`alts` mediumtext DEFAULT NULL," +
 					"UNIQUE KEY (`name`), " +
 					"PRIMARY KEY (`id`)" + ")";
 			
@@ -290,12 +293,17 @@ public class Resident extends SQLObject {
 				SQL.addColumn(TABLE_NAME, "`debug_town` mediumtext default null");
 			}
 			
+			if (!SQL.hasColumn(TABLE_NAME, "alts")) {
+				CivLog.info("\tCouldn't find `alts` for resident.");
+				SQL.addColumn(TABLE_NAME, "`alts` mediumtext DEFAULT NULL");
+			}
+			
 			SQL.makeCol("flags", "mediumtext", TABLE_NAME);
 			SQL.makeCol("savedInventory", "mediumtext", TABLE_NAME);
 			SQL.makeCol("isProtected", "bool NOT NULL DEFAULT '0'", TABLE_NAME);
 		}		
 	}
-
+	
 	@Override
 	public void load(ResultSet rs) throws SQLException, InvalidNameException {
 		this.setId(rs.getInt("id"));
@@ -365,9 +373,27 @@ public class Resident extends SQLObject {
 		this.setDaysTilEvict(rs.getInt("daysTilEvict"));
 		this.getTreasury().setDebt(rs.getInt("debt"));
 		this.loadFriendsFromSaveString(rs.getString("friends"));
-		
+		if (rs.getString("alts") != null) this.setAlts(rs.getString("alts")); // split
 	}
-
+	
+	private void setAlts(String uid) {
+		String[] split = uid.split(",");
+		for (String str : split) {
+			synchronized (str) {
+				if (str == null || str.equals("")) continue;
+				this.alts.add(str);
+			}
+		}
+	}
+	
+	public void addAlt(String uid) {
+		this.alts.add(uid);
+	}
+	
+	public ArrayList<String> getAlts() {
+		return this.alts;
+	}
+	
 	private void setTimezoneToServerDefault() {
 		this.timezone = EventTimer.getCalendarInServerTimeZone().getTimeZone().getID();
 	}
@@ -458,9 +484,7 @@ public class Resident extends SQLObject {
 		if (this.getTown() != null) {
 			hashmap.put("town_id", this.getTown().getId());
 		} else {
-			if (!dontSaveTown) {
-				hashmap.put("town_id", null);
-			}
+			if (!dontSaveTown) hashmap.put("town_id", null);
 		}
 		
 		hashmap.put("pvptag", this.pvptag);
@@ -485,15 +509,19 @@ public class Resident extends SQLObject {
 		hashmap.put("last_ip", this.getLastIP());
 		hashmap.put("savedInventory", this.savedInventory);
 		hashmap.put("isProtected", this.isProtected);
-		
-		if (this.getTown() != null) {
-			hashmap.put("debug_town", this.getTown().getName());
-
-			if (this.getTown().getCiv() != null) {
-				hashmap.put("debug_civ", this.getCiv().getName());
+		if (this.getAlts() != null) {
+			String finalalts = "";
+			for (String s : this.getAlts()) {
+				if (s!= null && !finalalts.contains(s)) {
+					finalalts += s+",";
+				}
 			}
+			hashmap.put("alts", finalalts);
 		}
 		
+		if (this.getTown() != null) { hashmap.put("debug_town", this.getTown().getName());
+		if (this.getTown().getCiv() != null) hashmap.put("debug_civ", this.getCiv().getName());
+		}
 		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	

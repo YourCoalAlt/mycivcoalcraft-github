@@ -152,7 +152,7 @@ cannon:
     template: cannon
 
     # amount of blocks to destroy per shot
-    yield: 8.0
+    yield: 8
 
     # TNT cost, number of TNT blocks it costs per shot.
     tnt_cost: 5

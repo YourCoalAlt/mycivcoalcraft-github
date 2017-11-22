@@ -23,10 +23,12 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
@@ -321,8 +323,25 @@ public class ResidentCommand extends CommandBase {
 		
 		CivMessage.send(sender, CivColor.Green+"Groups: "+resident.getGroupsString());
 		
+		String alts = "";
+		if (resident.getAlts() != null) {
+			for (String s : resident.getAlts()) {
+				AccountLogger al = CivGlobal.getAccount(s);
+				if (!alts.contains(al.getOfflinePlayer().getName()))
+					alts += al.getOfflinePlayer().getName()+", ";
+			}
+		}
+		
+		if (alts != "") {
+			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alts -- ");
+			CivMessage.send(sender, CivColor.Yellow+alts);
+		} else {
+			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alts -- ");
+			CivMessage.send(sender, CivColor.Yellow+" None ");
+		}
+		
 		try {
-			Player p = CivGlobal.getPlayer(resident);
+			OfflinePlayer p = CivGlobal.getOfflinePlayer(resident);
 			if (p.isOnline()) {
 				CivMessage.send(sender, CivColor.LightGreen+"Currently Online and validated.");
 			} else {
