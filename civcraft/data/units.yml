@@ -1,33 +1,6 @@
-# 
 # Unit configuration
-#
 
-# Base rates and information for items without any units attached.
-#
-base:
-    # T1 Leather speed bonus, greater than 1 is an increase
-    T1_leather_speed: 15
-
-    # T2 Leather speed bonus, greater than 1 is an increase
-    T2_leather_speed: 1.1
-
-    # T3 Leather speed bonus, greater than 1 is an increase
-    T3_leather_speed: 1.15
-
-    # T4 Leather speed bonus, greater than 1 is an increase
-    T4_leather_speed: 1.2
-
-    # T1 'Metal' speed bonus
-    T1_metal_speed: 0.975
-
-    # T2 'Metal' speed bonus
-    T2_metal_speed: 0.95
-
-    # T3 'Metal' speed bonus
-    T3_metal_speed: 0.925
-
-    # T4 'Metal' speed bonus
-    T4_metal_speed: 0.9
+# TODO Update unit info to actually grab from code
 
 # Special information per unit
 unit_info:

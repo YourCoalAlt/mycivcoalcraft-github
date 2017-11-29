@@ -525,47 +525,46 @@ public class Backpack {
 				guiInventory.setItem(0, playerInfo);
 			}
 			
-			ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
-			newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
-			guiInventory.setItem(1, newsInfo);
+			ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+			guiInventory.setItem(2, resMail);
 			
 			ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
 			craftRec = LoreGuiItem.setAction(craftRec, "OpenInventory");
 			craftRec = LoreGuiItem.setActionData(craftRec, "invType", "showCraftingHelp");
-			guiInventory.setItem(3, craftRec);
+			guiInventory.setItem(4, craftRec);
 			
 			ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", ItemManager.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
 			gameInfo = LoreGuiItem.setAction(gameInfo, "OpenInventory");
 			gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
 			guiInventory.setItem(8, gameInfo);
 			
+			ItemStack civMenu = LoreGuiItem.build("Civilization Menu", ItemManager.getId(Material.BLAZE_ROD), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+//			civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
+//			civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
+			guiInventory.setItem(9, civMenu);
+			
 			ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", ItemManager.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
 			civDip = LoreGuiItem.setAction(civDip, "DiplomaticMenu");
-			guiInventory.setItem(9, civDip);
+			guiInventory.setItem(14, civDip);
 			
-			ItemStack civDebt = LoreGuiItem.build("Debt Listings", ItemManager.getId(Material.COAL), 0, CivColor.Gold+"<Click to View>");
-			civDebt = LoreGuiItem.setAction(civDebt, "DebtMenu");
-			guiInventory.setItem(10, civDebt);
-			
-			ItemStack perkMenu = LoreGuiItem.build("Perk Menu", ItemManager.getId(Material.BOOK_AND_QUILL), 0, CivColor.Gold+"<Click to View>");
+//			ItemStack perkMenu = LoreGuiItem.build("Perk Menu", ItemManager.getId(Material.BOOK_AND_QUILL), 0, CivColor.Gold+"<Click to View>");
 //			perkMenu = LoreGuiItem.setAction(perkMenu, "ShowPerkPage");
-			guiInventory.setItem(15, perkMenu);
+//			guiInventory.setItem(15, perkMenu);
+			
+			ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
+			townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
+			townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
+			guiInventory.setItem(18, townMenu);
 			
 			ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
 			buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
-			guiInventory.setItem(18, buildMenu);
+			guiInventory.setItem(20, buildMenu);
 			
-			ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.LEATHER_HELMET), 0, CivColor.Gold+"<Click to View>");
-			townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
-			townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
-			guiInventory.setItem(19, townMenu);
+			ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
+			newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
+			guiInventory.setItem(25, newsInfo);
 			
-			ItemStack civMenu = LoreGuiItem.build("Civilization Menu", ItemManager.getId(Material.GOLD_HELMET), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-//			civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
-//			civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
-			guiInventory.setItem(20, civMenu);
-			
-			ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Gold+"<Click to View>", "wiki_tag000_COMING_SOON");
+			ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
 //			turorialMenu = LoreGuiItem.setAction(turorialMenu, "BuildTutorialMenu");
 			guiInventory.setItem(26, turorialMenu);
 			

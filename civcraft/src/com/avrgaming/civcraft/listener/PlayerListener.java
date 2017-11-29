@@ -67,7 +67,6 @@ import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
 import com.avrgaming.civcraft.exception.InvalidNameException;
-import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.items.units.UnitItemMaterial;
 import com.avrgaming.civcraft.items.units.UnitMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
@@ -91,23 +90,22 @@ import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarStats;
 
 public class PlayerListener implements Listener {
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPickup(EntityPickupItemEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			ItemStack i = event.getItem().getItemStack();
+			Resident resident = CivGlobal.getResident(p);
+			if (resident.getItemMode().equals("none")) return;
 			
-			String name;
+			ItemStack i = event.getItem().getItemStack();
+			String name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
 			boolean rare = false;
 			if (i.getItemMeta().hasDisplayName()) {
 				name = i.getItemMeta().getDisplayName();
 				rare = true;
-			} else {
-				name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
-				//name = event.getItem().getItemStack().getType().name().replace("_", " ").toLowerCase();
 			}
 			
-			Resident resident = CivGlobal.getResident(p);
 			if (resident.getItemMode().equals("all")) {
 				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
 			} else if (resident.getItemMode().equals("rare") && rare) {
@@ -136,22 +134,31 @@ public class PlayerListener implements Listener {
 				track = new AccountLogger(p.getUniqueId(), ip);
 				CivGlobal.addAccount(track);
 				track.save();
-				event.disallow(Result.KICK_OTHER, "Rejoin");
+				event.disallow(Result.KICK_OTHER, "Setting up pre-account data... Please re-join the server.");
 			}
 			
 			boolean isSaved = false;
 			for (String trackIP : track.getIPsFromString()) {
 				if (trackIP.equals(ip) && trackIP != null && ip != null) isSaved = true;
 			}
-			if (!isSaved) track.addIPFromString(ip);
+			if (!isSaved) {
+				track.addIPFromString(ip); track.save();
+			}
 			
 			for (AccountLogger al : CivGlobal.getAccounts()) {
 				if (!al.getUUID().equals(p.getUniqueId())) {
 					for (String ipal : al.getIPsFromString()) {
 						if (ipal.equals(ip)) {
 							Resident found_al = al.getResident();
-							found_al.addAlt(res.getUUIDString());
-							res.addAlt(found_al.getUUIDString());
+							found_al.addAlt(res.getUUIDString()); found_al.save();
+							res.addAlt(found_al.getUUIDString()); res.save();
+							
+							if (!al.getIPsFromString().contains(ip)) {
+								al.addIPFromString(ip); al.save();
+							}
+							if (!track.getIPsFromString().contains(ip)) {
+								track.addIPFromString(ip); track.save();
+							}
 						}
 					}
 				}
@@ -237,44 +244,11 @@ public class PlayerListener implements Listener {
 	}
 		
 	private void setModifiedMovementSpeed(Player player) {
-		/* Change move speed based on armor. */
+		// Get player's current speed. Will be grabbing armor with it.
 		double speed = CivSettings.normal_speed;
 		
-		/* Set speed from armor. */
-		if (Unit.isWearingFullComposite(player)) {
-			speed *= CivSettings.T4_leather_speed;
-		}
-		
-		if (Unit.isWearingFullHardened(player)) {
-			speed *= CivSettings.T3_leather_speed;
-		}
-		
-		if (Unit.isWearingFullRefined(player)) {
-			speed *= CivSettings.T2_leather_speed;
-		}
-		
-		if (Unit.isWearingFullBasicLeather(player)) {
-			speed *= CivSettings.T1_leather_speed;
-		}
-		
-		if (Unit.isWearingAnyIron(player)) {
-			speed *= CivSettings.T1_metal_speed;
-		}
-		
-		if (Unit.isWearingAnyChain(player)) {
-			speed *= CivSettings.T2_metal_speed;
-		}
-		
-		if (Unit.isWearingAnyGold(player)) {
-			speed *= CivSettings.T3_metal_speed;
-		}
-		
-		if (Unit.isWearingAnyDiamond(player)) {
-			speed *= CivSettings.T4_metal_speed;
-		}
-		
 		Resident resident = CivGlobal.getResident(player);
-		if (resident != null && resident.isOnRoad()) {	
+		if (resident != null && resident.isOnRoad()) {
 			if (player.getVehicle() != null && player.getVehicle().getType().equals(EntityType.HORSE)) {
 				Vector vec = player.getVehicle().getVelocity();
 				double yComp = vec.getY();
@@ -293,9 +267,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event) {
-		/*
-		 * Abort if we havn't really moved
-		 */
+		// Abort if we havn't really moved
 		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && 
 			event.getFrom().getBlockZ() == event.getTo().getBlockZ() && 
 			event.getFrom().getBlockY() == event.getTo().getBlockY()) {

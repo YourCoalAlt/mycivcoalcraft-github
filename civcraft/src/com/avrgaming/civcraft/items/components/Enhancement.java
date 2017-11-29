@@ -24,7 +24,7 @@ public class Enhancement extends ItemComponent {
 		String enhStr = this.getString("enhancement");
 		LoreEnhancement enhance = LoreEnhancement.enhancements.get(enhStr);
 		if (enhance == null) {
-			CivLog.error("Couldn't find enhancement titled:"+enhStr);
+			CivLog.error("Couldn't find enhancement titled: "+enhStr);
 			return null;
 		}
 		
@@ -43,7 +43,7 @@ public class Enhancement extends ItemComponent {
 		String enhStr = this.getString("enhancement");
 		LoreEnhancement enhance = LoreEnhancement.enhancements.get(enhStr);
 		if (enhance == null) {
-			CivLog.error("Couldn't find enhancement titled:"+enhStr);
+			CivLog.error("Couldn't find enhancement titled: "+enhStr);
 			return 0;
 		}
 		return (int)enhance.getLevel(new AttributeUtil(stack));

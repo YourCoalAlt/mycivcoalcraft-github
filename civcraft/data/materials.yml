@@ -59,22 +59,6 @@ materials:
        - " vs"
        - "msm"
        - "s  "
-# Enchanting Recipes  ===========================================
-## Checked 25 August 2017
-#  - id: 'civ_sharpness'
-#    item_id: 403
-#    item_data: 0
-#    name: 'Enhanced Book'
-#    craftable: false
-#    shaped: false
-#    category: '<lightpurple>Enhancements'
-#    components:
-#     - name: 'EnhancedBook'
-#       type: 'Sharpness'
-#       lvl: '1'
-#      - name: 'Enhancement'
-#        enhancement: 'LoreEnhancementSharpness'
-#        amount: '1'
 # Resource Recipes  ===========================================
 # Checked 25 August 2017
   - id: 'civ_vanilla_diamond_pickaxe'
@@ -2045,7 +2029,7 @@ materials:
          value: '7'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
-         value: '0.05'
+         value: '0.5'
     ingredients:
        - type_id: 0
          data: 0

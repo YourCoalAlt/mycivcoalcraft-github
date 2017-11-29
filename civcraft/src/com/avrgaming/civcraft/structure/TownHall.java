@@ -82,19 +82,12 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public static int MAX_GOODIE_FRAMES = 8;
 	
 	private BlockCoord[] techbar = new BlockCoord[10];
-	private BlockCoord[] civicbar = new BlockCoord[10];
 	
 	private BlockCoord technameSign;
 	private byte technameSignData; //Hold the sign's orientation
 	
 	private BlockCoord techdataSign;
 	private byte techdataSignData; //Hold the sign's orientation
-	
-	private BlockCoord civicnameSign;
-	private byte civicnameSignData; //Hold the sign's orientation
-	
-	private BlockCoord civicdataSign;
-	private byte civicdataSignData; //Hold the sign's orientation
 	
 	private ArrayList<ItemFrameStorage> goodieFrames = new ArrayList<ItemFrameStorage>();
 	private ArrayList<BlockCoord> respawnPoints = new ArrayList<BlockCoord>();
@@ -191,67 +184,15 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void setTechnameSignData(byte technameSignData) {
 		this.technameSignData = technameSignData;
 	}
-	
-	public void addCivicBarBlock(BlockCoord coord, int index) {
-		civicbar[index] = coord;
-	}
-	
-	public int getCivicBarSize() {
-		return civicbar.length;
-	}
-	
-	public BlockCoord getCivicBarBlockCoord(int i) {
-		if (civicbar[i] == null) return null;
-		return civicbar[i];
-	}
-	
-	public BlockCoord getCivicBar(int i) {
-		return civicbar[i];
-	}
-	
-	public BlockCoord getCivicnameSign() {
-		return civicnameSign;
-	}
-
-	public void setCivicnameSign(BlockCoord civicnameSign) {
-		this.civicnameSign = civicnameSign;
-	}
-
-	public BlockCoord getCivicdataSign() {
-		return civicdataSign;
-	}
-
-	public void setCivicdataSign(BlockCoord civicdataSign) {
-		this.civicdataSign = civicdataSign;
-	}
-
-	public byte getCivicdataSignData() {
-		return civicdataSignData;
-	}
-
-	public void setCivicdataSignData(byte civicdataSignData) {
-		this.civicdataSignData = civicdataSignData;
-	}
-
-	public byte getCivicnameSignData() {
-		return civicnameSignData;
-	}
-
-	public void setCivicnameSignData(byte civicnameSignData) {
-		this.civicnameSignData = civicnameSignData;
-	}
 
 	public void createGoodieItemFrame(BlockCoord absCoord, int slotId, int direction) {
-		if (slotId >= MAX_GOODIE_FRAMES) {
-			return;
-		}
+		if (slotId >= MAX_GOODIE_FRAMES) return;
 		
 		/* Make sure there isn't another frame here. We have the position of the sign, but the entity's
 		 * position is the block it's attached to. We'll use the direction from the sign data to determine
 		 * which direction to look for the entity. */
 		Block attachedBlock;
 		BlockFace facingDirection;
-
 		switch (direction) {
 		case CivData.DATA_SIGN_EAST:
 			attachedBlock = absCoord.getBlock();
@@ -298,27 +239,22 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		}
 		itemStore.setBuildable(this);
 		goodieFrames.add(itemStore);
-		
 	}
-
+	
 	public ArrayList<ItemFrameStorage> getGoodieFrames() {
 		return this.goodieFrames;
 	}
-
+	
 	public void setRespawnPoint(BlockCoord absCoord) {
 		this.respawnPoints.add(absCoord);
 	}
 	
 	public BlockCoord getRandomRespawnPoint() {
-		if (this.respawnPoints.size() == 0) {
-			return null;
-		}
-		
+		if (this.respawnPoints.size() == 0) return null;
 		Random rand = new Random();
 		return this.respawnPoints.get(rand.nextInt(this.respawnPoints.size()));
-		
 	}
-
+	
 	public int getRespawnTime() {
 		try {
 			int baseRespawn = CivSettings.getInteger(CivSettings.warConfig, "war.respawn_time");	
@@ -350,7 +286,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		}
 		return 30;
 	}
-
+	
 	public void setRevivePoint(BlockCoord absCoord) {
 		this.revivePoints.add(absCoord);
 	}
@@ -364,18 +300,15 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		return this.revivePoints.get(index);
 		
 	}
-
+	
 	public void createControlPoint(BlockCoord absCoord) {
 		Location centerLoc = absCoord.getLocation();
 		
 		/* Build the bedrock tower. */
-		//for (int i = 0; i < 1; i++) {
 		Block b = centerLoc.getBlock();
 		ItemManager.setTypeId(b, CivData.FENCE); ItemManager.setData(b, 0);
-		
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
-		//}
 		
 		/* Build the control block. */
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
@@ -390,7 +323,6 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			e.printStackTrace();
 			townhallControlHitpoints = 100;
 		}
-		
 		BlockCoord coord = new BlockCoord(b);
 		this.controlPoints.put(coord, new ControlPoint(coord, this, townhallControlHitpoints));
 	}
@@ -416,7 +348,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		boolean allDestroyed = true;
 		for (ControlPoint c : this.controlPoints.values()) {
-			if (c.isDestroyed() == false) {
+			if (!c.isDestroyed()) {
 				allDestroyed = false;
 				break;
 			}
@@ -454,13 +386,11 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			CivMessage.sendCiv(attacker.getTown().getCiv(), CivColor.LightGreen+"We've destroyed a control block in "+hit.getTown().getName()+"!");
 			CivMessage.sendCiv(hit.getTown().getCiv(), CivColor.Rose+"A control block in "+hit.getTown().getName()+" has been destroyed!");
 		}
-		
 	}
 	
 	public void onControlBlockHit(ControlPoint cp, World world, Player player, StructureBlock hit) {
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.25F, 0.75F);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-		
 		CivMessage.send(player, CivColor.LightGray+"Damaged Control Block ("+cp.getHitpoints()+" / "+cp.getMaxHitpoints()+")");
 		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"One of our Town Hall's Control Points is under attack!");
 	}
@@ -469,7 +399,6 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void onDamage(int amount, World world, Player player, BlockCoord coord, BuildableDamageBlock hit) {
 		ControlPoint cp = this.controlPoints.get(coord);
 		Resident resident = CivGlobal.getResident(player);
-		
 		if (!resident.canDamageControlBlock()) {
 			CivMessage.send(player, CivColor.Rose+"Cannot damage control blocks due to missing/invalid Town Hall or Capitol structure.");
 			return;
@@ -477,13 +406,12 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		if (cp != null) {
 			if (!cp.isDestroyed()) {
-			
 				if (resident.isControlBlockInstantBreak()) {
 					cp.damage(cp.getHitpoints());
 				} else{
 					cp.damage(amount);
 				}
-				 
+				
 				if (cp.isDestroyed()) {
 					onControlBlockDestroy(cp, world, player, (StructureBlock)hit);
 				} else {
@@ -492,16 +420,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			} else {
 				CivMessage.send(player, CivColor.Rose+"Control Block already destroyed.");
 			}
-			
 		} else {
 			CivMessage.send(player, CivColor.Rose+"Cannot Damage " +this.getDisplayName()+ ", go after the control points!");
 		}
 	}
-
+	
 	public void regenControlBlocks() {
 		for (BlockCoord coord : this.controlPoints.keySet()) { 
 			ItemManager.setTypeId(coord.getBlock(), CivData.OBSIDIAN);
-			
 			ControlPoint cp = this.controlPoints.get(coord);
 			cp.setHitpoints(cp.getMaxHitpoints());
 		}
@@ -594,20 +520,17 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	}*/
 	
 	public void onCannonDamage(int damage) {
+		if (!this.getCiv().getDiplomacyManager().isAtWar() || !War.isWarTime()) return;
 		this.hitpoints -= damage;
 		if (hitpoints <= 0) {
 			CivMessage.sendCiv(getCiv(), "Our "+this.getDisplayName()+" is out of hitpoints, walls can be destroyed by cannon blasts!");
 			hitpoints = 0;
 		}
-		
 		CivMessage.sendCiv(getCiv(), "Our "+this.getDisplayName()+" has been hit by a cannon! ("+this.hitpoints+"/"+this.getMaxHitPoints()+")");
 	}
 	
 	public void onTNTDamage(int damage) {
-		if (!this.getCiv().getDiplomacyManager().isAtWar() || !War.isWarTime()) {
-			return;
-		}
-		
+		if (!this.getCiv().getDiplomacyManager().isAtWar() || !War.isWarTime()) return;
 		if (hitpoints >= damage+1) {
 			this.hitpoints -= damage;
 			CivMessage.sendCiv(getCiv(), "Our "+this.getDisplayName()+" has been hit by TNT! ("+this.hitpoints+"/"+this.getMaxHitPoints()+")");
@@ -648,7 +571,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void openMainInfoGUI(Player p, Town t) {
 		DecimalFormat df = new DecimalFormat();
 		ConfigTownLevel level = CivSettings.townLevels.get(t.getLevel());
-		Inventory inv = Bukkit.createInventory(null, 9*5, t.getName()+"'s Town Info");
+		Inventory inv = Bukkit.createInventory(null, 9*3, t.getName()+"'s Town Info");
 		
 		String colorTile = CivColor.LightGreen;
 		if (t.getTileImprovementCount() >= level.tile_improvements) {
@@ -664,24 +587,24 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			colorPlot = CivColor.Yellow;
 		}
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+/*		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Town Hall Guide Menu. You can use it",
 				CivColor.RESET+"to view different stats within the town, or if",
 				CivColor.RESET+"you are a high enough level, use it to change.",
 				CivColor.RESET+"settings within the town. Civilization leaders",
 				CivColor.RESET+"also have access to additonal options."
-				));
+				));*/
 		
 		inv.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"Town Location", CivData.FILLED_MAP, 0, 
 				CivColor.LightGreen+"X: "+t.getTownHall().getCenterLocation().getX()+"",
 				CivColor.LightGreen+"Y: "+t.getTownHall().getCorner().getY()+"",
 				CivColor.LightGreen+"Z: "+t.getTownHall().getCenterLocation().getZ()+""
 				));
-		inv.setItem(3, LoreGuiItem.build(CivColor.GreenBold+"Score Points", CivData.EMPTY_MAP, 0, 
+		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"Score Points", CivData.EMPTY_MAP, 0, 
 				CivColor.LightGreen+t.getScore()
 				));
 		
-		inv.setItem(5, LoreGuiItem.build(CivColor.GreenBold+"Town Level", CivData.GOLD_NUGGET, 0, 
+		inv.setItem(6, LoreGuiItem.build(CivColor.GreenBold+"Town Level", CivData.GOLD_NUGGET, 0, 
 				CivColor.LightGreen+t.getLevel()+" ("+t.getLevelTitle()+")"
 				));
 		inv.setItem(7, LoreGuiItem.build(CivColor.GreenBold+"Level Information", CivData.SHULKER_SHELL, 0, 
@@ -690,74 +613,72 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.Green+"Tiles: "+CivColor.LightGreen+"("+colorTile+t.getTileImprovementCount()+"/"+level.tile_improvements+CivColor.LightGreen+")"
 				));
 		
-		inv.setItem(10, LoreGuiItem.build(CivColor.GreenBold+"Growth", CivData.WHEAT_ITEM, 0, 
+		inv.setItem(9, LoreGuiItem.build(CivColor.GreenBold+"Growth", CivData.WHEAT_ITEM, 0, 
 				CivColor.LightGreen+df.format(t.getGrowth().total),
 				CivColor.LightGray+"« Click for More Options »"
 				));
-		inv.setItem(12, LoreGuiItem.build(CivColor.GreenBold+"Hammers", CivData.COBBLESTONE_WALL, 0, 
+		inv.setItem(10, LoreGuiItem.build(CivColor.GreenBold+"Hammers", CivData.COBBLESTONE_WALL, 0, 
 				CivColor.LightGreen+df.format(t.getHammers().total),
 				CivColor.LightGray+"« Click for More Options »"
 				));
-		inv.setItem(14, LoreGuiItem.build(CivColor.GreenBold+"Beakers", CivData.EMPTY_BOTTLE, 0, 
+		inv.setItem(11, LoreGuiItem.build(CivColor.GreenBold+"Beakers", CivData.EMPTY_BOTTLE, 0, 
 				CivColor.LightGreen+df.format(t.getBeakers().total),
 				CivColor.LightGray+"« Click for More Options »"
 				));
+		
 		ConfigCultureLevel clc = CivSettings.cultureLevels.get(t.getCultureLevel());	
-		inv.setItem(16, LoreGuiItem.build(CivColor.GreenBold+"Culture", CivData.NETHERWART_ITEM, 0, 
+		inv.setItem(18, LoreGuiItem.build(CivColor.GreenBold+"Culture", CivData.NETHERWART_ITEM, 0, 
 				CivColor.Green+"Level: "+CivColor.LightGreen+clc.level,
 				CivColor.Green+"Amount: "+CivColor.LightGreen+t.getAccumulatedCulture()+" / "+clc.amount,
 				CivColor.LightGray+"« Click for More Options »"
 				));
-		
-		Structure bank = t.getStructureByType("s_bank");
-		if (bank != null) {
-			inv.setItem(19, LoreGuiItem.build(CivColor.GreenBold+"Money & Taxes", CivData.GOLD_INGOT, 0, 
-					CivColor.Green+"Tax Rate: "+CivColor.LightGreen+t.getTaxRateString(),
-					CivColor.Green+"Flat Tax: "+CivColor.LightGreen+t.getFlatTax()+" Coins",
-					"",
-					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
-					CivColor.Green+"Upkeep: "+CivColor.LightGreen+"-"+t.getTotalUpkeep()+" Coins/Day",
-					CivColor.Green+"Treasury Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%",
-					CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+((int) (t.getTreasury().getPrincipalAmount()*((Bank)bank).getInterestRate()))+" Coins/Day"
-					));
-		} else {
-			inv.setItem(19, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
-					CivColor.Green+"Tax Rate: "+CivColor.LightGreen+t.getTaxRateString(),
-					CivColor.Green+"Flat Tax: "+CivColor.LightGreen+t.getFlatTax()+" Coins",
-					"",
-					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
-					CivColor.Green+"Upkeep: "+CivColor.LightGreen+t.getTotalUpkeep()+" Coins/Day"
-					));
-		}
-		//inv.setItem(21, LoreGuiItem.build(CivColor.GreenBold+"Taxes", CivData.PAPER, 0, 
-		//		CivColor.Green+"Tax Rate: "+CivColor.LightGreen+t.getTaxRateString(),
-		//		CivColor.Green+"Flat Tax: "+CivColor.LightGreen+t.getFlatTax()+" Coins"
-		//		));
 		ConfigHappinessState state = t.getHappinessState();
-		inv.setItem(21, LoreGuiItem.build(CivColor.GreenBold+"Happiness", CivData.OTHER_FLOWERS, 8, 
+		inv.setItem(19, LoreGuiItem.build(CivColor.GreenBold+"Happiness", CivData.OTHER_FLOWERS, 8, 
 				CivColor.Green+"Stat: "+CivColor.LightGreen+df.format(Math.floor(t.getHappiness())),
 				CivColor.Green+"State: "+CivColor.valueOf(state.color)+state.name
 				));
 		
-		inv.setItem(23, LoreGuiItem.build(CivColor.GreenBold+"Trade Goods", CivData.ITEMFRAME, 0,
+		
+		Structure bank = t.getStructureByType("s_bank");
+		if (bank != null) {
+			inv.setItem(13, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
+					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
+					CivColor.Green+"Upkeep: "+CivColor.LightGreen+"-"+t.getTotalUpkeep()+" Coins/Day",
+					" ",
+					CivColor.Green+"Treasury Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%",
+					CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+((int) (t.getTreasury().getPrincipalAmount()*((Bank)bank).getInterestRate()))+" Coins/Day"
+					));
+		} else {
+			inv.setItem(13, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
+					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
+					CivColor.Green+"Upkeep: "+CivColor.LightGreen+t.getTotalUpkeep()+" Coins/Day"
+					));
+		}
+		
+		inv.setItem(22, LoreGuiItem.build(CivColor.GreenBold+"Taxes", CivData.PAPER, 0, 
+				CivColor.Green+"Tax Rate: "+CivColor.LightGreen+t.getTaxRateString(),
+				CivColor.Green+"Flat Tax: "+CivColor.LightGreen+t.getFlatTax()+" Coins"
+				));
+		
+		
+		inv.setItem(15, LoreGuiItem.build(CivColor.GreenBold+"Trade Goods", CivData.ITEMFRAME, 0,
 				t.getGoodiesNameAndColor().split(";")
 				));
 		
-		inv.setItem(25, LoreGuiItem.build(CivColor.GreenBold+"Members", CivData.BOOK_AND_QUILL, 0,
+		inv.setItem(17, LoreGuiItem.build(CivColor.GreenBold+"Members", CivData.BOOK_AND_QUILL, 0,
 				t.getResidentsNameAndColor().split(";")
 				));
 		
-		inv.setItem(30, LoreGuiItem.build(CivColor.GreenBold+"Building Support", CivData.BEACON, 0, 
-				CivColor.Green+"Currently Storing: "+CivColor.LightGreen+t.getSupportDeposit()+" Blocks",
-				CivColor.LightGray+"« Click to Deposit Blocks »"
-				));
 		
-		inv.setItem(32, LoreGuiItem.build(CivColor.RoseBold+"In Development", CivData.BEDROCK, 0, 
+		inv.setItem(24, LoreGuiItem.build(CivColor.RoseBold+"In Development", CivData.BEDROCK, 0, 
 				CivColor.LightGray+"« Check Back Later »"
 				));
 		
-		inv.setItem(40, LoreGuiItem.build(CivColor.RoseBold+"More Soon!", CivData.BARRIER, 0, 
-				CivColor.LightGray+"« More Soon »"
+		inv.setItem(26, LoreGuiItem.build(CivColor.GreenBold+"Structure Support", CivData.BEACON, 0, 
+				CivColor.Yellow+"Use the command '/build supportnearest' on a",
+				CivColor.Yellow+"structure to use & fill in invalid blocks!",
+				CivColor.Green+"Currently Storing: "+CivColor.LightGreen+t.getSupportDeposit()+" Blocks",
+				CivColor.LightGray+"« Click to Deposit Blocks »"
 				));
 		
 		p.openInventory(inv);
@@ -768,17 +689,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Growth Stat Information");
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.GreenBold+"Sources", CivData.SNOW_BLOCK, 0, 
-				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"Rates", CivData.CLAY_BLOCK, 0, 
-				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"Totals", CivData.WHEAT_ITEM, 0, 
 				CivColor.Green+"Growth Amount: "+CivColor.LightGreen+t.getGrowth().total,
-				CivColor.Green+"   Growth Rate: "+CivColor.LightGreen+(t.getGrowthRate().total*100)+"%"
-				));
+				CivColor.Green+"   Growth Rate: "+CivColor.LightGreen+(t.getGrowthRate().total*100)+"%"));
 		
 		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
@@ -789,17 +707,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Hammer Stat Information");
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.GreenBold+"Sources", CivData.SNOW_BLOCK, 0, 
-				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"Rates", CivData.CLAY_BLOCK, 0, 
-				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"Totals", CivData.COBBLESTONE_WALL, 0, 
 				CivColor.Green+"Hammer Amount: "+CivColor.LightGreen+t.getHammers().total,
-				CivColor.Green+"   Hammer Rate: "+CivColor.LightGreen+(t.getHammerRate().total*100)+"%"
-				));
+				CivColor.Green+"   Hammer Rate: "+CivColor.LightGreen+(t.getHammerRate().total*100)+"%"));
 		
 		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
@@ -810,17 +725,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Beaker Stat Information");
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.GreenBold+"Sources", CivData.SNOW_BLOCK, 0, 
-				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"Rates", CivData.CLAY_BLOCK, 0, 
-				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"Totals", CivData.EMPTY_BOTTLE, 0, 
 				CivColor.Green+"Beaker Amount: "+CivColor.LightGreen+t.getBeakers().total,
-				CivColor.Green+"   Beaker Rate: "+CivColor.LightGreen+(t.getBeakerRate().total*100)+"%"
-				));
+				CivColor.Green+"   Beaker Rate: "+CivColor.LightGreen+(t.getBeakerRate().total*100)+"%"));
 		
 		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
@@ -831,17 +743,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Culture Stat Information");
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.GreenBold+"Sources", CivData.SNOW_BLOCK, 0, 
-				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getSourceDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"Rates", CivData.CLAY_BLOCK, 0, 
-				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")
-				));
+				sources.getRateDisplayString(CivColor.Green, CivColor.LightGreen).split(";")));
 		
 		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"Totals", CivData.NETHERWART_ITEM, 0, 
 				CivColor.Green+"Culture Amount: "+CivColor.LightGreen+t.getCulture().total+"/hr",
-				CivColor.Green+"   Culture Rate: "+CivColor.LightGreen+(t.getCultureRate().total*100)+"%"
-				));
+				CivColor.Green+"   Culture Rate: "+CivColor.LightGreen+(t.getCultureRate().total*100)+"%"));
 		
 		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
@@ -849,13 +758,10 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	
 	public void openTownBuffsListGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*6, t.getName()+"'s Town-Applied Buffs");
-		
 		for (Buff b : this.getTown().getBuffManager().getAllBuffs()) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+b.getDisplayName(), CivData.IRON_NUGGET, 0, 
-					CivColor.colorize(CivColor.RESET+b.getDescription())
-					));
+					CivColor.colorize(CivColor.RESET+b.getDescription())));
 		}
-		
 		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
@@ -905,48 +811,35 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		if (t.getStructureByType("ti_mine") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Mine Tasks", CivData.STONE_PICKAXE, 0, 
-					CivColor.LightGray+"« Click to View »"
-					));
+					CivColor.LightGray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Mine Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »",
-					CivColor.Rose+"« Structure Not Found »"
-					));
+					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_lab") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Lab Tasks", CivData.EMPTY_BOTTLE, 0, 
-					CivColor.LightGray+"« Click to View »"
-					));
+					CivColor.LightGray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Lab Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »",
-					CivColor.Rose+"« Structure Not Found »"
-					));
+					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_monument") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Monument Tasks", CivData.SKULL, 4, 
-					CivColor.LightGray+"« Click to View »"
-					));
+					CivColor.LightGray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Monument Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »",
-					CivColor.Rose+"« Structure Not Found »"
-					));
+					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_cottage") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Cottage Tasks", CivData.REDSTONE_LAMP, 0, 
-					CivColor.LightGray+"« Click to View »"
-					));
+					CivColor.LightGray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Cottage Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »",
-					CivColor.Rose+"« Structure Not Found »"
-					));
+					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
-		
 		p.openInventory(inv);
 	}
 }

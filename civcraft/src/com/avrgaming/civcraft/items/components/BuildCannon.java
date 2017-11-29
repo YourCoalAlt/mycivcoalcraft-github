@@ -21,14 +21,10 @@ public class BuildCannon extends ItemComponent {
 
 	public void onInteract(PlayerInteractEvent event) {
 		try {
-			if (!War.isWarTime()) {
-				throw new CivException("Cannons can only be deployed during WarTime.");
-			}
+			if (!War.isWarTime()) throw new CivException("Cannons can only be deployed during WarTime.");
 			
 			ConfigUnit unit = Unit.getPlayerUnit(event.getPlayer());
-			if (unit == null || !unit.id.equals("u_engineer")) {
-				throw new CivException("Cannons can only be deployed from Engineer Units!");
-			}
+			if (unit == null || !unit.id.equals("u_engineer")) throw new CivException("Cannons can only be deployed from Engineer Units!");
 			
 			Resident resident = CivGlobal.getResident(event.getPlayer());
 			Cannon.newCannon(resident);
@@ -44,7 +40,7 @@ public class BuildCannon extends ItemComponent {
 			CivMessage.sendError(event.getPlayer(), e.getMessage());
 		}
 	}
-
+	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrUtil) {
 		attrUtil.addLore(ChatColor.RESET+CivColor.Gold+"Deploys War Cannon");

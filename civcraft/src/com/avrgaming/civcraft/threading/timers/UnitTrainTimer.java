@@ -31,7 +31,7 @@ public class UnitTrainTimer implements Runnable {
 	@Override
 	public void run() {
 		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			Structure struct = iter.next().getValue();
 			if (struct instanceof Barracks) {
 				((Barracks)struct).updateTraining();

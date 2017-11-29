@@ -59,11 +59,6 @@ public class BulletAttack extends ItemComponent {
 		}
 	}*/
 	
-//	@EventHandler
-//	public void onProjectileHit(ProjectileHitEvent event) {
-//		event.getEntity().
-//	}
-	
 	@Override
 	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
 		double dmg = this.getDouble("value");

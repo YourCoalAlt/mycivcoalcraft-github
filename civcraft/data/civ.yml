@@ -61,55 +61,16 @@ global:
    # Attempt to validate structures to make sure they're not floating.
    structure_validation: 'true'
 
-platinum:
-### DAILY EVENTS ######
-      # amount of plat ervry day
-    - name: 'loginDaily'
-      amount: 5
-      occurs: 'daily'
-
-      # platinum for being in town during the upkeep tick
-    - name: 'inTownDuringUpkeep'
-      amount: 5
-      occurs: 'daily'
-
-### SPAM EVENTS (can happen whenever) ###
-
-    - name: 'winningWar'
-      amount: 25
-      occurs: 'any'
-    
-    - name: 'craft100Items'
-      amount: 1
-      occurs: 'any'
-
-    - name: 'randomEventSuccess'
-      amount: 25
-      occurs: 'any'
-    
-#### ACHEIVEMENTS (only once) ####
-     # amount of plat on first login with verification.
-    - name: 'loginFirstVerified'
-      amount: 50
-      occurs: 'once'
-    
-    - name: 'buildCamp'
-      amount: 100
-      occurs: 'once'
-    
-    - name: 'buildCiv'
-      amount: 250
-      occurs: 'once'
 civ:
     # Amount of static upkeep civ's pay for each new town (minus the capital)
-    town_upkeep: 500.0
+    town_upkeep: 400
 
     # Formula for distance upkeep is:
     # upkeep = town_distance_base_upkeep * ( distance ^ town_distance_multiplier )
     #
 
     # Base amount of upkeep paid for town distance to capital
-    town_distance_base_upkeep: 100.0
+    town_distance_base_upkeep: 100
 
     # Multiplier used to make distance upkeep expoential, greater = higher upkeep
     town_distance_multiplier: 0.2
@@ -118,7 +79,7 @@ civ:
     town_distance_multiplier_outside_culture: 0.75
 
     # Maximum amount of distance upkeep anybody can pay per town
-    town_distance_upkeep_max: 500000.0
+    town_distance_upkeep_max: 500000
 
     # Base beaker rate, usually set to 1, increase to make research faster.
     base_beaker_rate: 1.0
@@ -145,10 +106,10 @@ civ:
     gift_cooldown_hours: 24
 
 ore_rates:
-    iron: 20.0
-    gold: 200.0
-    diamond: 400.0
-    emerald: 500.0
+    iron: 20
+    gold: 200
+    diamond: 400
+    emerald: 500
 
 # These are end condition configurations...
 end_conditions:

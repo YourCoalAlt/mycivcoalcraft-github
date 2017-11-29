@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.endgame.EndGameCheckTask;
 import com.avrgaming.civcraft.event.DailyEvent;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -38,7 +37,6 @@ import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.global.perks.PlatinumManager;
 
 public class DailyTimer implements Runnable {
 	
@@ -180,22 +178,16 @@ public class DailyTimer implements Runnable {
 		//TODO convert this from a countdown into a "days in debt" like civs have.
 		LinkedList<Resident> residentsToGive = new LinkedList<Resident>();
 		for (Resident resident : CivGlobal.getResidents()) {
-			if (!resident.hasTown()) { continue; }
+			if (!resident.hasTown()) continue;
 			
 			try {
 				if (resident.getDaysTilEvict() > 0) {
 					resident.decrementGraceCounters();
 				}
-				
 				residentsToGive.add(resident);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
-		PlatinumManager.giveManyPlatinumDaily(residentsToGive, 
-				CivSettings.platinumRewards.get("inTownDuringUpkeep").name,
-				CivSettings.platinumRewards.get("inTownDuringUpkeep").amount,
-				"Town taxes were collected, but its not all bad. You've earned %d!");
 	}
 }

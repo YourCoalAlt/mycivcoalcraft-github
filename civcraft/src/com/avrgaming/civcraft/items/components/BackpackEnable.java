@@ -18,7 +18,6 @@ public class BackpackEnable extends ItemComponent {
 	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
-//		attrs.addLore(CivColor.PurpleBold+"<CivCraft Backpack>");
 		attrs.addLore(CivColor.Purple+"<Right Click to Open>");
 	}
 	
@@ -27,11 +26,9 @@ public class BackpackEnable extends ItemComponent {
 		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			event.setUseItemInHand(Result.DENY);
 			return;
-		}
-		try {
+		} try {
 			Backpack.spawnGuiBook(event.getPlayer());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -40,7 +37,6 @@ public class BackpackEnable extends ItemComponent {
 	public void onItemDrop(PlayerDropItemEvent event) {
 		CivMessage.sendError(event.getPlayer(), "Cannot drop your Backpack, it is bounded to your body.");
 		event.setCancelled(true);
-//		event.getPlayer().updateInventory();
 	}
 	
 	public void onItemSpawn(ItemSpawnEvent event) {

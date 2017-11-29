@@ -42,7 +42,6 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.siege.Cannon;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.camp.WarCamp;
-import com.avrgaming.global.perks.PlatinumManager;
 
 public class War {
 	
@@ -73,9 +72,8 @@ public class War {
 		
 		for (Town town : master.getTowns()) {
 			for (Resident resident : town.getResidents()) {
-				PlatinumManager.givePlatinum(resident, 
-						CivSettings.platinumRewards.get("winningWar").amount, 
-						"Spoils to the victor! You've earned %d");	
+				CivMessage.send(resident, "You won WarTime!");
+				// Win War
 			}
 		}
 		

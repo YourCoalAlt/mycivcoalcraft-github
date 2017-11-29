@@ -43,7 +43,6 @@ public class Damage extends ItemComponent {
 		damage.set("UUIDMost", new NBTTagInt(2872));
 		damage.set("Slot", new NBTTagString("mainhand"));
 		modifiers.add(damage);
-		
 		compound.set("AttributeModifiers", modifiers);
 		attrs.nmsStack.setTag(compound);
 		item = CraftItemStack.asBukkitCopy(attrs.nmsStack);

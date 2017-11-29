@@ -143,6 +143,7 @@ public final class CivCraft extends JavaPlugin {
 	private static JavaPlugin plugin;
 	public static boolean isDisable = false;
 	public static boolean isStarted = false;
+	public static String worldName;
 	
 	private void startTimers() {
 		
@@ -170,8 +171,11 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.syncTimer("UnitTrainTimer", new UnitTrainTimer(), TimeTools.toTicks(1));
 
 		try {
-			final int exposure_time = (int)CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
+			int exposure_time = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
 			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));
+			
+			int tips_timer = CivSettings.getInteger(CivSettings.gameConfig, "tips.amount");
+			TaskMaster.asyncTimer("announcer", new AnnouncementTimer("tips.txt"), 0, TimeTools.toTicks(60*(4*tips_timer)));
 			
 			double arrow_firerate = CivSettings.getDouble(CivSettings.warConfig, "arrow_tower.fire_rate");
 			TaskMaster.syncTimer("arrowTower", new ProjectileComponentTimer(), (int)(arrow_firerate*20));	
@@ -186,8 +190,6 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.syncTimer("FarmCropCache", new FarmPreCachePopulateTimer(), TimeTools.toTicks(30));
 	
 		TaskMaster.asyncTimer("FarmGrowthTimer", new FarmGrowthSyncTask(), TimeTools.toTicks(Farm.GROW_TICK_RATE));
-
-		TaskMaster.asyncTimer("announcer", new AnnouncementTimer("tips.txt"), 0, TimeTools.toTicks(60*60));
 		
 		TaskMaster.asyncTimer("ChangeGovernmentTimer", new ChangeGovernmentTimer(), TimeTools.toTicks(60));
 		TaskMaster.asyncTimer("CalculateScoreTimer", new CalculateScoreTimer(), 0, TimeTools.toTicks(60));
@@ -200,7 +202,7 @@ public final class CivCraft extends JavaPlugin {
 			TaskMaster.asyncTimer(PlatinumManager.class.getName(), new PlatinumManager(), TimeTools.toTicks(5));
 		}
 		
-		TaskMaster.syncTimer("WindmillTimer", new WindmillTimer(), TimeTools.toTicks(60));
+		TaskMaster.syncTimer("WindmillTimer", new WindmillTimer(), TimeTools.toTicks(45));
 		TaskMaster.asyncTimer("EndGameNotification", new EndConditionNotificationTask(), TimeTools.toTicks(3600));
 				
 		TaskMaster.asyncTask(new StructureValidationChecker(), TimeTools.toTicks(120));
@@ -258,21 +260,14 @@ public final class CivCraft extends JavaPlugin {
 		
 		//Load World Populators
 		BukkitObjects.getWorlds().get(0).getPopulators().add(new TradeGoodPopulator());
-				
+		
 		try {
 			CivSettings.init(this);
 			SQL.initialize();
 			SQL.initCivObjectTables();
 			ChunkCoord.buildWorldList();
 			CivGlobal.loadGlobals();
-			
-			try {
-				SLSManager.init();
-			} catch (CivException e1) {
-				e1.printStackTrace();
-			} catch (InvalidConfiguration e1) {
-				e1.printStackTrace();
-			}
+			SLSManager.init();
 		} catch (InvalidConfiguration | SQLException | IOException | InvalidConfigurationException | CivException | ClassNotFoundException e) {
 			e.printStackTrace();
 			setError(true);
@@ -318,6 +313,13 @@ public final class CivCraft extends JavaPlugin {
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
 				isStarted = true;
+				try {
+					worldName = CivSettings.getString(CivSettings.gameConfig, "world_name");
+				} catch (InvalidConfiguration e) {
+					worldName = "world";
+					CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to 'world'");
+				}
+				
 				if (hasPlugin("HolographicDisplays")) {
 					HolographicDisplaysListener.generateTradeGoodHolograms();
 				} else {

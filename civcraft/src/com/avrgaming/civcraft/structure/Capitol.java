@@ -55,25 +55,22 @@ public class Capitol extends TownHall {
 	private HashMap<Integer, ProjectileArrowComponent> arrowTowers = new HashMap<Integer, ProjectileArrowComponent>();
 	private StructureSign respawnSign;
 	private int index = 0;
-
+	
 	public Capitol(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 	}
 	
-
-	protected Capitol(Location center, String id, Town town)
-			throws CivException {
+	protected Capitol(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
 	}
 	
 	private RespawnLocationHolder getSelectedHolder() {
-		ArrayList<RespawnLocationHolder> respawnables =  this.getTown().getCiv().getAvailableRespawnables();	
+		ArrayList<RespawnLocationHolder> respawnables = this.getTown().getCiv().getAvailableRespawnables();	
 		return respawnables.get(index);
 	}
-
+	
 	private void changeIndex(int newIndex) {
-		ArrayList<RespawnLocationHolder> respawnables =  this.getTown().getCiv().getAvailableRespawnables();
-			
+		ArrayList<RespawnLocationHolder> respawnables = this.getTown().getCiv().getAvailableRespawnables();
 		if (this.respawnSign != null) {
 			try {
 				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(newIndex).getRespawnName());
@@ -83,7 +80,6 @@ public class Capitol extends TownHall {
 					this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(0).getRespawnName());
 					index = 0;
 				}
-				//this.unitNameSign.setText(getUnitSignText(index));
 			}
 			this.respawnSign.update();
 		} else {
@@ -93,16 +89,9 @@ public class Capitol extends TownHall {
 	
 	@Override
 	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
-		//int special_id = Integer.valueOf(sign.getAction());
+		if (!War.isWarTime()) return;
 		Resident resident = CivGlobal.getResident(player);
-		
-		if (resident == null) {
-			return;
-		}
-		
-		if (!War.isWarTime()) {
-			return;
-		}
+		if (resident == null) return;
 		
 		switch (sign.getAction()) {
 		case "prev":
@@ -123,7 +112,6 @@ public class Capitol extends TownHall {
 			RespawnLocationHolder holder = getSelectedHolder();
 			int respawnTimeSeconds = this.getRespawnTime();
 			Date now = new Date();
-			
 			if (resident.getLastKilledTime() != null) {
 				long secondsLeft = (resident.getLastKilledTime().getTime() + (respawnTimeSeconds*1000)) - now.getTime();
 				if (secondsLeft > 0) {
@@ -140,18 +128,15 @@ public class Capitol extends TownHall {
 			} else {
 				loc = revive.getLocation();
 			}
-			
 			CivMessage.send(player, CivColor.LightGreen+"Respawning...");
 			player.teleport(loc);		
 			break;
 		}
 	}
 	
-	
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock commandBlock) {
 		StructureSign structSign;
-		
 		if (commandBlock.command.equals("/guideinfo")) {
 			spawnInfoVillager(absCoord.getLocation(), (byte)commandBlock.getData());
 		} else if (commandBlock.command.equals("/questinfo")) {
@@ -203,7 +188,6 @@ public class Capitol extends TownHall {
 	@Override
 	public void createControlPoint(BlockCoord absCoord) {
 		Location centerLoc = absCoord.getLocation();
-		
 		/* Build the bedrock tower. */
 		//for (int i = 0; i < 1; i++) {
 		Block b = centerLoc.getBlock();
@@ -211,7 +195,6 @@ public class Capitol extends TownHall {
 		
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
-		//}
 		
 		/* Build the control block. */
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
@@ -226,7 +209,6 @@ public class Capitol extends TownHall {
 			e.printStackTrace();
 			capitolControlHitpoints = 100;
 		}
-		
 		BlockCoord coord = new BlockCoord(b);
 		this.controlPoints.put(coord, new ControlPoint(coord, this, capitolControlHitpoints));
 	}
@@ -240,28 +222,19 @@ public class Capitol extends TownHall {
 			e.printStackTrace();
 			return;
 		}
-		
 		CivMessage.sendTown(this.getTown(), CivColor.Rose+CivColor.BOLD+"Our civ's capitol cannot be supported by the blocks underneath!"+
 				" It will take us an extra "+invalid_respawn_penalty+" mins to respawn during war if its not fixed in time!");
 	}
 	
 	@Override
 	public boolean isValid() {
-		if (this.getCiv().isAdminCiv()) {
-			return true;
-		}
-		
-		/* 
-		 * Validate that all of the towns in our civ have town halls. If not, then 
-		 * we need to punish by increasing respawn times.
-		 */
+		if (this.getCiv().isAdminCiv()) return true;
+		/* Validate that all of the towns in our civ have town halls. If not, then 
+		 * we need to punish by increasing respawn times. */
 		for (Town town : this.getCiv().getTowns()) {
 			TownHall townhall = town.getTownHall();
-			if (townhall == null) {
-				return false;
-			}
+			if (townhall == null) return false;
 		}
-		
 		return super.isValid();
 	}
 	

@@ -5,7 +5,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import gpl.AttributeUtil;
 
 public class AllowBlockPlace extends ItemComponent {
-
+	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrUtil) {}
 	
@@ -13,5 +13,4 @@ public class AllowBlockPlace extends ItemComponent {
 	public boolean onBlockPlaced(BlockPlaceEvent event) { 
 		return true; 
 	}
-
 }

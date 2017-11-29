@@ -43,11 +43,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -97,6 +92,7 @@ public class Resident extends SQLObject {
 	private boolean adminChat = false;
 	private boolean combatInfo = false;
 	
+	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
 	
 	public static HashSet<String> allchatters = new HashSet<String>();
@@ -126,8 +122,6 @@ public class Resident extends SQLObject {
 	private boolean givenKit;
 	private ConcurrentHashMap<String, Integer> friends = new ConcurrentHashMap<String, Integer>();
 	private EconObject treasury;
-//	private boolean muted;
-//	private Date muteExpires = null;
 	
 	private boolean interactiveMode = false;
 	private InteractiveResponse interactiveResponse = null;
@@ -139,7 +133,6 @@ public class Resident extends SQLObject {
 	
 	private Town selectedTown = null;
 	
-	private Scoreboard scoreboard = null;
 	public String desiredCivName;
 	public String desiredCapitolName;
 	public String desiredTownName;
@@ -401,44 +394,21 @@ public class Resident extends SQLObject {
 	public String getFlagSaveString() {
 		String flagString = "";
 		
-		if (this.isShowMap()) {
-			flagString += "map,";
-		}
+		if (this.isShowMap()) flagString += "map,";
+		if (this.isShowTown()) flagString += "showtown,";
+		if (this.isShowCiv()) flagString += "showciv,";
+		if (this.isShowScout()) flagString += "showscout,";
+		if (this.isShowInfo()) flagString += "info,";
+		if (this.combatInfo) flagString += "combatinfo,";
 		
-		if (this.isShowTown()) {
-			flagString += "showtown,";
-		}
-		
-		if (this.isShowCiv()) {
-			flagString += "showciv,";
-		}
-		
-		if (this.isShowScout()) {
-			flagString += "showscout,";
-		}
-		
-		if (this.isShowInfo()) {
-			flagString += "info,";
-		}
-		
-		if (this.combatInfo) {
-			flagString += "combatinfo,";
-		}
-		
-		if (this.itemMode.equals("rare")) {
-			flagString += "itemModeRare,";
-		} else if (this.itemMode.equals("none")) {
-			flagString += "itemModeNone,";
-		}
+		if (this.itemMode.equals("rare")) flagString += "itemModeRare,";
+		else if (this.itemMode.equals("none")) flagString += "itemModeNone,";
 		
 		return flagString;
 	}
 	
 	public void loadFlagSaveString(String str) {
-		if (str == null) {
-			return;
-		}
-		
+		if (str == null) return;
 		String[] split = str.split(",");
 		
 		for (String s : split) {
@@ -897,60 +867,6 @@ public class Resident extends SQLObject {
 		if (town != null) return town.getCiv() != null;
 		else return false;
 	}
-	
-	@SuppressWarnings("deprecation")
-	public void setScoreboardName(String name, String key) {
-		if (this.scoreboard == null) {
-			this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-			Team team = this.scoreboard.registerNewTeam("team");
-			team.addPlayer(CivGlobal.getFakeOfflinePlayer(key));
-			team.setDisplayName(name);
-		} else {
-			Team team = this.scoreboard.getTeam("team");
-			team.setDisplayName(name);
-		}
-		
-	}
-	
-	@SuppressWarnings("deprecation")
-	public void setScoreboardValue(String name, String key, int value) {
-		if (this.scoreboard == null) {
-			return;
-		}
-		
-		Objective obj = scoreboard.getObjective("obj:"+key);
-		if (obj == null) {
-			obj = scoreboard.registerNewObjective(name, "dummy");
-			obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-			Score score = obj.getScore(CivGlobal.getFakeOfflinePlayer(key));
-			score.setScore(value);
-		} else {
-			Score score = obj.getScore(CivGlobal.getFakeOfflinePlayer(key));
-			score.setScore(value);
-		}
-	}
-	
-	public void showScoreboard() {
-		if (this.scoreboard != null) {
-			Player player;
-			try {
-				player = CivGlobal.getPlayer(this);
-				player.setScoreboard(this.scoreboard);
-			} catch (CivException e) {
-				e.printStackTrace();
-			}
-		} 
-	}
-	
-	public void hideScoreboard() {
-		Player player;
-		try {
-			player = CivGlobal.getPlayer(this);
-			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		} catch (CivException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public boolean isGivenKit() {
 		return givenKit;
@@ -1193,19 +1109,13 @@ public class Resident extends SQLObject {
 							return;
 						}
 						
-						CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+"Hey! You're in-game account is not registered! Register it at "+url);
+						CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+"Hey! Your in-game account is not registered! Register it at "+url);
 						CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+"You'll be unable to earn Platinum until you register.");	
 						return;
 					}	
 				} catch (CivException e1) {
 					return;
 				}
-				
-				/* User was verified, lets see if it was the first time. */
-				PlatinumManager.givePlatinumOnce(resident,
-				CivSettings.platinumRewards.get("loginFirstVerified").name, 
-				CivSettings.platinumRewards.get("loginFirstVerified").amount, 
-				"Achievement! First time you've logged in while verified! %d");
 			}
 		}
 		

@@ -53,7 +53,7 @@ public class EffectEventTimer extends CivAsyncTask {
 		//HashMap<Town, Integer> cultureGenerated = new HashMap<Town, Integer>();
 		// Loop through each structure, if it has an update function call it in another async process
 		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			Structure struct = iter.next().getValue();
 			TownHall townhall = struct.getTown().getTownHall();
 			if (townhall == null) continue;

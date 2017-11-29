@@ -71,7 +71,7 @@ import com.avrgaming.civcraft.util.SimpleBlock;
 import gpl.AttributeUtil;
 
 public class Barracks extends Structure {
-
+	
 	private static final long SAVE_INTERVAL = 60*1000;
 	
 	private ConfigUnit trainingUnit = null;
@@ -80,17 +80,15 @@ public class Barracks extends Structure {
 	private TreeMap<Integer, StructureSign> progressBar = new TreeMap<Integer, StructureSign>();
 	private Date lastSave = null;
 	
-	protected Barracks(Location center, String id, Town town)
-			throws CivException {
+	protected Barracks(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
 	}
-
+	
 	public Barracks(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 	}
 	
 	public void train(Resident r, String id) {
-		//ArrayList<ConfigUnit> unitList = getTown().getAvailableUnits();
 		ConfigUnit unit = CivSettings.units.get(id);
 		if (unit == null) {
 			CivMessage.sendError(r, "Unknown unit type "+id+".");
@@ -125,7 +123,6 @@ public class Barracks extends Structure {
 		}
 		
 		getTown().getTreasury().withdraw(unit.cost);
-		
 		this.setCurrentHammers(0.0);
 		this.setTrainingUnit(unit);
 		CivMessage.sendTown(getTown(), "We've begun training a "+unit.name+"!");
@@ -133,36 +130,22 @@ public class Barracks extends Structure {
 	}
 	
 	public boolean canRepairItem(ItemStack repair) {
-		if (repair == null || repair.getType().equals(Material.AIR)) {
-			return false;
-		}
-		
-		if (repair.getType().getMaxDurability() == 0) {
-			return false;
-		}
-		
-		if (repair.getDurability() == 0) {
-			return false;
-		}
+		if (repair == null || repair.getType().equals(Material.AIR)) return false;
+		if (repair.getType().getMaxDurability() == 0) return false;
+		if (repair.getDurability() == 0) return false;
 		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
-		if (craftMat == null) {
-			return false;
-		}
+		if (craftMat == null) return false;
 		
 		for (String ritems : CivSettings.repairableItems) {
 			String[] split = ritems.split(":");
 			try {
 				Integer type = Integer.valueOf(split[0]);
 				int data = Integer.valueOf(split[1]);
-				if (type == ItemManager.getId(repair) && data == ItemManager.getData(repair)) {
-					return true;
-				}
+				if (type == ItemManager.getId(repair) && data == ItemManager.getData(repair)) return true;
 			} catch (NumberFormatException e) {
 				String custMatID = split[0];
-				if (craftMat == null || craftMat.getConfigId() != custMatID) {
-					continue;
-				}
+				if (craftMat == null || craftMat.getConfigId() != custMatID) continue;
 				return true;
 			}
 		}
@@ -189,7 +172,6 @@ public class Barracks extends Structure {
 					double maxDura = repair.getType().getMaxDurability();
 					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
 				}
-				
 				int subTotal = (int) (repairCost + duraCost);
 				totalCost = subTotal;
 			} else {
@@ -205,7 +187,6 @@ public class Barracks extends Structure {
 					double maxDura = repair.getType().getMaxDurability();
 					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
 				}
-				
 				double subTotal = (fromTier + duraCost);
 				totalCost = (int) subTotal;
 			}
@@ -225,6 +206,7 @@ public class Barracks extends Structure {
 		try {
 			player = CivGlobal.getPlayer(playerName);
 		} catch (CivException e) {
+			CivMessage.sendError(playerName, "Cannot find player: "+playerName);
 			return;
 		}
 		
@@ -246,7 +228,6 @@ public class Barracks extends Structure {
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
 		StructureSign structSign;
-
 		switch (sb.command) {
 		case "/trainer":
 			spawnTrainingVillager(absCoord.getLocation(), (byte)sb.getData());
@@ -268,15 +249,6 @@ public class Barracks extends Structure {
 			break;
 		case "/repair":
 			spawnRepairVillager(absCoord.getLocation(), (byte)sb.getData());
-//			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-//			ItemManager.setData(absCoord.getBlock(), sb.getData());
-//			structSign = new StructureSign(absCoord, this);
-//			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Repair Item");
-//			structSign.setDirection(sb.getData());
-//			structSign.setAction("repair_item");
-//			structSign.update();
-//			this.addStructureSign(structSign);
-//			CivGlobal.addStructureSign(structSign);
 			break;
 		}
 	}
@@ -284,28 +256,23 @@ public class Barracks extends Structure {
 	public ConfigUnit getTrainingUnit() {
 		return trainingUnit;
 	}
-
+	
 	public void setTrainingUnit(ConfigUnit trainingUnit) {
 		this.trainingUnit = trainingUnit;
 	}
-
+	
 	public double getCurrentHammers() {
 		return currentHammers;
 	}
-
+	
 	public void setCurrentHammers(double currentHammers) {
 		this.currentHammers = currentHammers;
 	}
-
+	
 	public void createUnit(ConfigUnit unit) {
-		// Find the chest inventory
 		ArrayList<StructureChest> chests = this.getAllChestsById(0);
-		if (chests.size() == 0) {
-			return;
-		}
-		
+		if (chests.size() == 0) return;
 		Chest chest = (Chest)chests.get(0).getCoord().getBlock().getState();
-		
 		try {
 			Class<?> c = Class.forName(unit.class_name);
 			Method m = c.getMethod("spawn", Inventory.class, Town.class);
@@ -316,9 +283,7 @@ public class Barracks extends Structure {
 			this.currentHammers = 0.0;
 			
 			CivGlobal.getSessionDB().delete_all(getSessionKey());
-			
-		} catch (ClassNotFoundException | SecurityException | 
-				IllegalAccessException | IllegalArgumentException | NoSuchMethodException e) {
+		} catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException e) {
 			this.trainingUnit = null;
 			this.currentHammers = 0.0;
 			CivMessage.sendTown(getTown(), CivColor.Red+"ERROR couldn't find class?:"+e.getMessage());
@@ -328,11 +293,9 @@ public class Barracks extends Structure {
 			if (this.currentHammers < 0.0) {
 				this.currentHammers = 0.0;
 			}
-		//	e.getCause().getMessage()
 			//e.printStackTrace();
 		//	CivMessage.sendTown(getTown(), CivColor.Rose+e.getMessage());
 		}
-		
 	}
 	
 	public void updateProgressBar() {
@@ -381,13 +344,12 @@ public class Barracks extends Structure {
 	public String getSessionKey() {
 		return this.getTown().getName()+":"+"barracks"+":"+this.getId();
 	}
-
+	
 	public void saveProgress() {
 		if (this.getTrainingUnit() != null) {
 			String key = getSessionKey();
 			String value = this.getTrainingUnit().id+":"+this.currentHammers; 
 			ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(key);
-
 			if (entries.size() > 0) {
 				SessionEntry entry = entries.get(0);
 				CivGlobal.getSessionDB().update(entry.request_id, key, value);
@@ -400,7 +362,6 @@ public class Barracks extends Structure {
 			} else {
 				this.sessionAdd(key, value);
 			}
-			
 			lastSave = new Date();
 		}	
 	}
@@ -414,20 +375,16 @@ public class Barracks extends Structure {
 	public void onLoad() {
 		String key = getSessionKey();
 		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(key);
-	
 		if (entries.size() > 0) {
 			SessionEntry entry = entries.get(0);
 			String[] values = entry.value.split(":");
-			
 			this.trainingUnit = CivSettings.units.get(values[0]);
-			
 			if (trainingUnit == null) {
 				CivLog.error("Couldn't find in-progress unit id:"+values[0]+" for town "+this.getTown().getName());
 				return;
 			}
 			
 			this.currentHammers = Double.valueOf(values[1]);
-			
 			/* delete any bad extra entries. */
 			for (int i = 1; i < entries.size(); i++) {
 				SessionEntry bad_entry = entries.get(i);
@@ -441,7 +398,6 @@ public class Barracks extends Structure {
 			// Hammers are per hour, this runs per min. We need to adjust the hammers we add.
 			double addedHammers = (getTown().getHammers().total / 60) / 60;
 			this.currentHammers += addedHammers;
-			
 			
 			this.updateProgressBar();
 			Date now = new Date();
@@ -505,32 +461,22 @@ public class Barracks extends Structure {
 			} else {
 				String out = "";
 				
-				if (t.hasEnough(u.cost)) {
-					out += CivColor.GreenBold+"Cost: "+CivColor.LightGreen+u.cost+" Coins;";
-				} else {
-					out += CivColor.RedBold+"Cost: "+CivColor.Rose+u.cost+" Coins;";
-				}
+				if (t.hasEnough(u.cost)) out += CivColor.GreenBold+"Cost: "+CivColor.LightGreen+u.cost+" Coins;";
+				else out += CivColor.RedBold+"Cost: "+CivColor.Rose+u.cost+" Coins;";
 				
 				out += CivColor.LightGreen+"       "+u.hammer_cost+" Hammers;";
 				
 				ConfigTech tech = CivSettings.techs.get(u.require_tech);
-				if (tech == null) {
-					out += CivColor.GreenBold+"Required Tech: "+CivColor.YellowItalic+"None;";
-				} else {
-					if (!res.getCiv().hasTechnology(tech.id)) {
-						out += CivColor.Red+"Required Tech: "+CivColor.Rose+tech.name+";";
-					} else {
-						out += CivColor.GreenBold+"Required Tech: "+CivColor.LightGreen+tech.name+";";
-					}
-				}
+				if (tech == null) out += CivColor.GreenBold+"Required Tech: "+CivColor.YellowItalic+"None;";
+				else
+					if (!res.getCiv().hasTechnology(tech.id)) out += CivColor.Red+"Required Tech: "+CivColor.Rose+tech.name+";";
+					else out += CivColor.GreenBold+"Required Tech: "+CivColor.LightGreen+tech.name+";";
 				
 				out += CivColor.GreenBold+"On Death Destroy Chance: "+CivColor.LightGreen+u.destroy_chance+"%;";
 				
 				out += CivColor.GreenBold+"Description:;";
 				List<String> des = u.description;
-				for (String s : des) {
-					out += CivColor.LightGreen+CivColor.colorize(s)+";";
-				}
+				for (String s : des) out += CivColor.LightGreen+CivColor.colorize(s)+";";
 				
 				out += CivColor.GoldBold+"<Click To Train>";
 				
@@ -630,25 +576,30 @@ public class Barracks extends Structure {
 			return;
 		}
 		
-		int lvl = 1;
 		ConfigUnit u = Unit.getUnit(unit);
-		AttributeUtil a = new AttributeUtil(unit);
-		for (LoreEnhancement enh : a.getEnhancements()) {
-			if (enh instanceof LoreEnhancementUnitGainAttack) {
-				lvl = enh.getLevel(a);
-			}
-		}
-		
-		lvl++;
+		AttributeUtil attr = new AttributeUtil(unit);
 		p.getInventory().removeItem(Unit.getPlayerUnitStack(p));
 		if (u.id.equals("u_warrior")) {
-			a.addEnhancement("LoreEnhancementUnitGainAttack", "level", String.valueOf(lvl));
-			a.addLore(CivColor.LightGreen+"Upgrade Level "+lvl);
-			a.addLore(CivColor.LightGrayItalic+"   +5% Attack Damage");
-			p.getInventory().addItem(a.getStack());
-			CivMessage.sendSuccess(p, "Unit upgraded to level "+lvl+"!");
+			if (attr.hasEnhancement("LoreEnhancementUnitGainAttack")) {
+				int lvl = 1;
+				for (LoreEnhancement enh : attr.getEnhancements()) {
+					if (enh instanceof LoreEnhancementUnitGainAttack) lvl += enh.getLevel(attr);
+				}
+				
+				attr.setEnhancementData("LoreEnhancementUnitGainAttack", "level", String.valueOf(lvl));
+				attr.addLore(CivColor.LightGreen+"Upgrade Level "+lvl);
+				attr.addLore(CivColor.LightGrayItalic+"   +5% Attack Damage");
+				p.getInventory().addItem(attr.getStack());
+				CivMessage.sendSuccess(p, "Unit upgraded to level "+lvl+"!");
+			} else {
+				attr.addEnhancement("LoreEnhancementUnitGainAttack", "level", "1");
+				attr.addLore(CivColor.LightGreen+"Upgrade Level 1");
+				attr.addLore(CivColor.LightGrayItalic+"   +5% Attack Damage");
+				p.getInventory().addItem(attr.getStack());
+				CivMessage.sendSuccess(p, "Unit upgraded to level 1!");
+			}
 		} else {
-			p.getInventory().addItem(a.getStack());
+			p.getInventory().addItem(attr.getStack());
 			CivMessage.sendError(p, "No unit found, or this unit cannot be upgraded. Please try again.");
 		}
 	}

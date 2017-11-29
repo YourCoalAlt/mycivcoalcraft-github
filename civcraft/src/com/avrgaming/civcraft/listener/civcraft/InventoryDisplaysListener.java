@@ -180,9 +180,9 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
-		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
-			event.setCancelled(true);
-		}
+//		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+//			event.setCancelled(true);
+//		}
 		
 		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
 		if (th == null) {

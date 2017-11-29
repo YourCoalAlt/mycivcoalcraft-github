@@ -110,13 +110,9 @@ import com.avrgaming.civcraft.war.WarRegen;
 import com.avrgaming.civcraft.war.camp.WarCamp;
 import com.avrgaming.global.perks.PerkManager;
 
-import net.milkbowl.vault.economy.Economy;
-
 public class CivGlobal {
-
-	public static final double MIN_FRAME_DISTANCE = 3.0;
 	
-	public static Economy econ;
+	public static final double MIN_FRAME_DISTANCE = 3.0;
 	
 	public static Map<Villager, Location> structureVillagers = new ConcurrentHashMap<Villager, Location>();
 	

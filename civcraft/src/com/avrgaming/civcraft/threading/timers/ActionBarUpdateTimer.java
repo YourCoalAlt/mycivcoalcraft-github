@@ -18,9 +18,7 @@ public class ActionBarUpdateTimer implements Runnable {
 	
 	@Override
 	public void run() {
-		if (CivCraft.isDisable || War.isWarTime()) {
-			return;
-		}
+		if (CivCraft.isDisable || War.isWarTime()) return;
 		
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Resident res = CivGlobal.getResident(p);

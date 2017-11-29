@@ -1,6 +1,8 @@
 name: CivCraft
 main: com.avrgaming.civcraft.main.CivCraft
-version: 1.8.1
+softdepends: [HolographicDisplays, NametagEdit, TitleAPI, VanishNoPacket, WorldBorder]
+author: YourCoal
+version: 1.8.3
 
 commands:
     cmat:
@@ -18,9 +20,9 @@ commands:
     dbg:
         aliases:
     accept:
-        aliases: [yes]
+        aliases:
     deny:
-        aliases: [no]
+        aliases:
     civ:
         aliases: [c]
     tc:

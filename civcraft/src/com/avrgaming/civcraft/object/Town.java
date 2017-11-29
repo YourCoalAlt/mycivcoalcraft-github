@@ -608,17 +608,21 @@ public class Town extends SQLObject {
 	}
 
 	public double getAccumulatedCulture() {
+		DecimalFormat df = new DecimalFormat("0.00");
+		this.culture = Double.valueOf(df.format(culture));
 		return culture;
 	}
 
 	public void setAccumulatedCulture(double culture) {
-		this.culture = culture;
+		DecimalFormat df = new DecimalFormat("0.00");
+		this.culture = Double.valueOf(df.format(culture));
 	}
 	
 	public void addAccumulatedCulture(double generated) {
 		ConfigCultureLevel clc = CivSettings.cultureLevels.get(this.getCultureLevel());
-				
-		this.culture += generated;
+		
+		DecimalFormat df = new DecimalFormat("0.00");
+		this.culture += Double.valueOf(df.format(generated));
 		this.save();
 		if (this.getCultureLevel() < CivSettings.getMaxCultureLevel()) {
 			if (this.culture >= clc.amount) {
@@ -1307,7 +1311,6 @@ public class Town extends SQLObject {
 	}
 
 	public int getCultureLevel() {
-		
 		/* Get the first level */
 		int bestLevel = 0;
 		ConfigCultureLevel level = CivSettings.cultureLevels.get(0);

@@ -63,32 +63,19 @@ import com.avrgaming.global.perks.Perk;
 public class CivSettings {
 	
 	public static CivCraft plugin;
-	public static final long MOB_REMOVE_INTERVAL = 5000;
-	/* Number of days that you can remain in debt before an action occurs. */
-
+	
 	//TODO make this configurable.
 	public static final int GRACE_DAYS = 3; 
 	
-	public static final int CIV_DEBT_GRACE_DAYS = 7;
-	public static final int CIV_DEBT_SELL_DAYS = 14;
-	public static final int CIV_DEBT_TOWN_SELL_DAYS = 21;
-	public static final int TOWN_DEBT_GRACE_DAYS = 7;
-	public static final int TOWN_DEBT_SELL_DAYS = 14;
-
+	public static final int CIV_DEBT_GRACE_DAYS = 14;
+	public static final int CIV_DEBT_SELL_DAYS = 21;
+	public static final int CIV_DEBT_TOWN_SELL_DAYS = 28;
 	
-	/* cached for faster access. */
-	//public static float leather_speed;
-	//public static float metal_speed;
-	public static float T1_leather_speed;
-	public static float T2_leather_speed;
-	public static float T3_leather_speed;
-	public static float T4_leather_speed;
-	public static float T1_metal_speed;
-	public static float T2_metal_speed;
-	public static float T3_metal_speed;
-	public static float T4_metal_speed;
+	public static final int TOWN_DEBT_GRACE_DAYS = 14;
+	public static final int TOWN_DEBT_SELL_DAYS = 21;
+	
+	// cached for faster access.
 	public static float normal_speed;
-	public static double highjump;
 	
 	public static FileConfiguration townConfig; /* town.yml */
 	public static Map<Integer, ConfigTownLevel> townLevels = new HashMap<Integer, ConfigTownLevel>();
@@ -96,7 +83,6 @@ public class CivSettings {
 	
 	public static FileConfiguration civConfig; /* civ.yml */
 	public static Map<String, ConfigEndCondition> endConditions = new HashMap<String, ConfigEndCondition>();
-	public static Map<String, ConfigPlatinumReward> platinumRewards = new HashMap<String, ConfigPlatinumReward>();
 	
 	public static FileConfiguration cultureConfig; /* culture.yml */
 	public static Map<Integer, ConfigCultureLevel> cultureLevels = new HashMap<Integer, ConfigCultureLevel>();
@@ -196,23 +182,25 @@ public class CivSettings {
 	public static ArrayList<String> randomEventIDs = new ArrayList<String>();
 	
 	public static FileConfiguration nocheatConfig; /* nocheatConfig.yml */
-	public static HashMap<String, ConfigValidMod> validMods = new HashMap<String, ConfigValidMod>();
 	
 	public static FileConfiguration fishingConfig; /* fishing.yml */
 	public static ArrayList<ConfigFishing> fishingDrops = new ArrayList<ConfigFishing>();
 		
-	public static double iron_rate;
-	public static double gold_rate;
-	public static double diamond_rate;
-	public static double emerald_rate;
+	public static int iron_rate;
+	public static int gold_rate;
+	public static int diamond_rate;
+	public static int emerald_rate;
 	public static Integer startingCoins;
 	
 	public static ArrayList<String> kitItems = new ArrayList<String>();
 	public static HashMap<Integer, ConfigRemovedRecipes> removedRecipies = new HashMap<Integer, ConfigRemovedRecipes>();
 	public static HashSet<Material> restrictedUndoBlocks = new HashSet<Material>();
+	
 	public static boolean hasHolographicDisplays = false;
-	public static boolean hasVanishNoPacket = false;
+	public static boolean hasNametagEdit = false;
 	public static boolean hasTitleAPI = false;
+	public static boolean hasVanishNoPacket = false;
+	public static boolean hasWorldBorder = false;
 	
 	public static final String ADMIN = "civ.admin";
 	public static final String MINI_ADMIN = "civ.mini_admin";
@@ -220,9 +208,6 @@ public class CivSettings {
 	public static final String HELPER = "civ.helper";
 	public static final String FREE_PERKS = "civ.freeperks";
 	public static final String ECON = "civ.econ";
-	public static final int MARKET_COIN_STEP = 5;
-	public static final int MARKET_BUYSELL_COIN_DIFF = 30;
-	public static final int MARKET_STEP_THRESHOLD = 2;
 	
 	public static void init(JavaPlugin plugin) throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.plugin = (CivCraft)plugin;
@@ -243,16 +228,6 @@ public class CivSettings {
 		Perk.init();
 		Unit.init();
 		
-		//CivSettings.leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.leather_speed");
-		//CivSettings.metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.metal_speed");
-		CivSettings.T1_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T1_leather_speed");
-		CivSettings.T2_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T2_leather_speed");
-		CivSettings.T3_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T3_leather_speed");
-		CivSettings.T4_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T4_leather_speed");
-		CivSettings.T1_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T1_metal_speed");
-		CivSettings.T2_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T2_metal_speed");
-		CivSettings.T3_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T3_metal_speed");
-		CivSettings.T4_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T4_metal_speed");
 		CivSettings.normal_speed = 0.2f;	
 		
 		for (Object obj : civConfig.getList("global.start_kit")) {
@@ -277,10 +252,10 @@ public class CivSettings {
 		CivGlobal.banWords.add("http");
 		CivGlobal.banWords.add("cunt");
 		
-		iron_rate = CivSettings.getDouble(civConfig, "ore_rates.iron");
-		gold_rate = CivSettings.getDouble(civConfig, "ore_rates.gold");
-		diamond_rate = CivSettings.getDouble(civConfig, "ore_rates.diamond");
-		emerald_rate = CivSettings.getDouble(civConfig, "ore_rates.emerald");
+		iron_rate = CivSettings.getInteger(civConfig, "ore_rates.iron");
+		gold_rate = CivSettings.getInteger(civConfig, "ore_rates.gold");
+		diamond_rate = CivSettings.getInteger(civConfig, "ore_rates.diamond");
+		emerald_rate = CivSettings.getInteger(civConfig, "ore_rates.emerald");
 		startingCoins = CivSettings.getInteger(civConfig, "global.starting_coins");
 		
 		alwaysCrumble.add(CivData.BEDROCK);
@@ -294,22 +269,34 @@ public class CivSettings {
 		LoreCraftableMaterial.buildRecipes();
 		Template.initAttachableTypes();
 		
-		if (CivSettings.plugin.hasPlugin("VanishNoPacket")) {
-			hasVanishNoPacket = true;
-		} else {
-			CivLog.warning("We could not detect the plugin VanishNoPacket. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
-		
 		if (CivSettings.plugin.hasPlugin("HolographicDisplays")) {
 			hasHolographicDisplays = true;
 		} else {
 			CivLog.warning("We could not detect the plugin HolographicDisplays. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
 		}
 		
+		if (CivSettings.plugin.hasPlugin("NametagEdit")) {
+			hasNametagEdit = true;
+		} else {
+			CivLog.warning("We could not detect the plugin NametagEdit. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
+		}
+		
 		if (CivSettings.plugin.hasPlugin("TitleAPI")) {
 			hasTitleAPI = true;
 		} else {
 			CivLog.warning("We could not detect the plugin TitleAPI. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
+		}
+		
+		if (CivSettings.plugin.hasPlugin("VanishNoPacket")) {
+			hasVanishNoPacket = true;
+		} else {
+			CivLog.warning("We could not detect the plugin VanishNoPacket. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
+		}
+		
+		if (CivSettings.plugin.hasPlugin("WorldBorder")) {
+			hasWorldBorder = true;
+		} else {
+			CivLog.warning("We could not detect the plugin WorldBorder. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
 		}
 	}
 	
@@ -515,10 +502,7 @@ public class CivSettings {
 		ConfigMaterial.loadConfig(materialsConfig, materials);
 		ConfigRandomEvent.loadConfig(randomEventsConfig, randomEvents, randomEventIDs);
 		ConfigEndCondition.loadConfig(civConfig, endConditions);
-		ConfigPlatinumReward.loadConfig(civConfig, platinumRewards);
-		ConfigValidMod.loadConfig(nocheatConfig, validMods);
 		ConfigFishing.loadConfig(fishingConfig, fishingDrops);
-	
 		ConfigRemovedRecipes.removeRecipes(materialsConfig, removedRecipies );
 		CivGlobal.preGenerator.preGenerate();
 		Wall.init_settings();

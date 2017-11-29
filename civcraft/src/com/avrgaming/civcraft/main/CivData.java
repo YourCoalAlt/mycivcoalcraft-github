@@ -128,7 +128,10 @@ public class CivData {
 	public static final int IRON_DOOR = 71;
 	public static final int WOOD_PLATE = 72;
 	public static final int REDSTONE_ORE = 73;
+	public static final int REDSTONE_ORE_GLOW = 74;
 	public static final int REDSTONE_TORCH_OFF = 75;
+	public static final int REDSTONE_TORCH_ON = 76;
+	public static final int STONE_BUTTON = 77;
 	
 	public static final int ICE = 79;
 	public static final int SNOW_BLOCK = 80;
@@ -227,6 +230,7 @@ public class CivData {
 	public static final int IRON_SHOVEL = 256;
 	public static final int IRON_PICKAXE = 257;
 	public static final int IRON_AXE = 258;
+	public static final int FLINT_AND_STEEL = 259;
 	public static final int APPLE = 260;
 	public static final int BOW = 261;
 	public static final int ARROW = 262;
@@ -248,13 +252,14 @@ public class CivData {
 	public static final int DIAMOND_PICKAXE = 278;
 	public static final int DIAMOND_AXE = 279;
 	public static final int STICK = 280;
+	public static final int BOWL = 281;
 	
 	public static final int GOLD_SWORD = 283;
 	public static final int GOLD_SHOVEL = 284;
 	public static final int GOLD_PICKAXE = 285;
 	public static final int GOLD_AXE = 286;
 	public static final int STRING = 287;
-	
+	public static final int FEATHER = 288;
 	public static final int GUNPOWDER = 289;
 	public static final int WOOD_HOE = 290;
 	public static final int STONE_HOE = 291;
@@ -496,6 +501,14 @@ public class CivData {
 		if (id == STONE_PLATE) return "Stone Pressure Plate";
 		if (id == WOOD_PLATE) return "Wood Pressure Plate";
 		if (id == REDSTONE_ORE) return "Redstone Ore";
+		if (id == STONE_BUTTON) return "Stone Button";
+		if (id == ICE) return "Ice";
+		if (id == SNOW_BLOCK) return "Snow Block";
+		if (id == CACTUS) return "Cactus";
+		if (id == CLAY_BLOCK) return "Clay Block";
+		if (id == FENCE) return "Oak Fence";
+		if (id == PUMPKIN) return "Pumpkin";
+		if (id == NETHERRACK) return "Netherrack";
 		
 		if (id == STAINED_GLASS && data == DATA_0) return "White Stained Glass";
 		if (id == STAINED_GLASS && data == DATA_1) return "Orange Stained Glass";
@@ -531,6 +544,10 @@ public class CivData {
 		if (id == STAINED_CLAY && data == DATA_14) return "Red Hardened Clay";
 		if (id == STAINED_CLAY && data == DATA_15) return "Black Hardened Clay";
 		
+		if (id == FLINT_AND_STEEL) return "Flint and Steel";
+		if (id == APPLE) return "Apple";
+		if (id == BOW) return "Minecraft Bow";
+		if (id == ARROW) return "Arrow";
 		if (id == COAL && data == DATA_0) return "Coal";
 		if (id == COAL && data == DATA_1) return "Charcoal";
 		if (id == DIAMOND) return "Diamond";
@@ -538,8 +555,16 @@ public class CivData {
 		if (id == GOLD_INGOT) return "Gold Ingot";
 		
 		if (id == STICK) return "Stick";
+		if (id == BOWL) return "Bowl";
 		
 		if (id == STRING) return "String";
+		if (id == FEATHER) return "Feather";
+		if (id == GUNPOWDER) return "Gunpowder";
+		
+		if (id == WHEAT_SEED) return "Wheat Seed";
+		if (id == WHEAT_ITEM) return "Wheat";
+		if (id == BREAD) return "Bread";
+		
 		
 		if (id == DYE && data == DATA_4) return "Lapis Lazuli";
 		
@@ -593,10 +618,8 @@ public class CivData {
 				hasAir = true;
 			}
 			
-			if ((nextBs.getTypeId() == CivData.MELON && 
-					bs.getTypeId() == CivData.MELON_STEM) ||
-					(nextBs.getTypeId() == CivData.PUMPKIN &&
-							bs.getTypeId() == CivData.PUMPKIN_STEM)) {
+			if ((nextBs.getTypeId() == CivData.MELON && bs.getTypeId() == CivData.MELON_STEM) ||
+					(nextBs.getTypeId() == CivData.PUMPKIN && bs.getTypeId() == CivData.PUMPKIN_STEM)) {
 				return false;
 			}
 		}
@@ -664,12 +687,9 @@ public class CivData {
 	
 	public static byte getNextCocoaValue(BlockSnapshot bs) {
 		byte bits = (byte) (bs.getData() & 0xC);
-		if (bits == 0x0)
-			return 0x4;
-		else if (bits == 0x4)
-			return 0x8;
-		else
-			return 0x8;
+		if (bits == 0x0) return 0x4;
+		else if (bits == 0x4) return 0x8;
+		else return 0x8;
 	}
 	
 	public static boolean canGrow(BlockSnapshot bs) {
@@ -718,14 +738,13 @@ public class CivData {
 	
 	public static byte convertSignDataToChestData(byte data) {
 		/* Chests are 
-		 * 0x2: Facing north (for ladders and signs, attached to the north side of a block)
-		 * 0x3: Facing south
-		 * 0x4: Facing west
-		 * 0x5: Facing east
-		 */
+			0x2: Facing north (for ladders and signs, attached to the north side of a block)
+			0x3: Facing south
+			0x4: Facing west
+			0x5: Facing east
 		
-		/* Signposts are
-		 * 0x0: south
+			Signposts are
+			0x0: south
 			0x4: west
 			0x8: north
 			0xC: east
@@ -741,17 +760,6 @@ public class CivData {
 		case 4:
 			return CHEST_WEST;
 		}
-		
-//		switch (data) {
-//		case 0x0:
-//			return 0x3;
-//		case 0x4:
-//			return 0x4;
-//		case 0x8:
-//			return 0x2;
-//		case 0xC:
-//			return 0x5;
-//		}
 		
 		System.out.println("Warning, unknown sign post direction: "+data);
 		return CHEST_SOUTH;

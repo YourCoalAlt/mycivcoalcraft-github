@@ -25,7 +25,7 @@ import net.minecraft.server.v1_12_R1.NBTTagList;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 
 public class Armor extends ItemComponent {
-
+	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
 		ItemStack item = attrs.getStack();
@@ -59,7 +59,6 @@ public class Armor extends ItemComponent {
 						 item.getItemMeta().setLore(lore);
 		}
 		modifiers.add(damage);
-		
 		compound.set("AttributeModifiers", modifiers);
 		attrs.nmsStack.setTag(compound);
 		item = CraftItemStack.asBukkitCopy(attrs.nmsStack);

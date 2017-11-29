@@ -245,7 +245,7 @@ structures:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '10.0'
+          value: '3.0'
 #
   - id: s_townhall
     itemId: 330
@@ -268,7 +268,7 @@ structures:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '4.0'
+          value: '2.0'
 #
   - id: s_shipyard
     itemId: 333

@@ -14,9 +14,12 @@ public class WarAntiCheat {
 
 	
 	public static void kickUnvalidatedPlayers() {
-		if (CivGlobal.isCasualMode()) { return; }
+		if (CivGlobal.isCasualMode()) return;
+//		if (!ACManager.isEnabled()) return;
+		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.isOp()) { continue; }
+			if (player.isOp()) continue;
+			if (player.hasPermission("civ.ac_exempt")) continue;
 			Resident resident = CivGlobal.getResident(player);
 			onWarTimePlayerCheck(resident);
 		}

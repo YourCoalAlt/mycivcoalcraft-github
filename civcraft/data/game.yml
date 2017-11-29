@@ -18,6 +18,12 @@ inventory:
 farm:
    grow_tick_rate: 20
 
+# Tips Accouncing Settings
+tips:
+   # How many lines of tips there is to display.
+   # This controls the timer for it, so a wrong value will mess up the display rate for tips.
+   amount: 7
+
 # Amount of Tungston to drop from Lapis Ore
 tungsten_min_drop: 0
 tungsten_max_drop: 1

@@ -43,7 +43,6 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.War;
-import com.avrgaming.global.perks.PlatinumManager;
 
 public class PlayerLoginAsyncTask implements Runnable {
 	
@@ -213,7 +212,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 			//TODO set default modes?
 			resident.showWarnings(getPlayer());
 			resident.loadPerks();
-	
+			
 			try {
 				if (CivSettings.getString(CivSettings.perkConfig, "system.free_perks").equalsIgnoreCase("true")) {
 					resident.giveAllFreePerks();
@@ -244,12 +243,6 @@ public class PlayerLoginAsyncTask implements Runnable {
 			
 			try {
 				Player p = CivGlobal.getPlayer(resident);
-				PlatinumManager.givePlatinumDaily(resident,
-						CivSettings.platinumRewards.get("loginDaily").name, 
-						CivSettings.platinumRewards.get("loginDaily").amount, 
-						"Welcome back to CivCraft! Here is %d for logging in today!" );			
-		
-				
 				ArrayList<SessionEntry> deathEvents = CivGlobal.getSessionDB().lookup("pvplogger:death:"+resident.getName());
 				if (deathEvents.size() != 0) {
 					CivMessage.send(resident, CivColor.Rose+CivColor.BOLD+"You were killed while offline because you logged out while in PvP!");
@@ -272,7 +265,6 @@ public class PlayerLoginAsyncTask implements Runnable {
 							}
 						}
 					}
-					
 					TaskMaster.syncTask(new SyncTask(p.getName()));
 				}	
 			} catch (CivException e1) {

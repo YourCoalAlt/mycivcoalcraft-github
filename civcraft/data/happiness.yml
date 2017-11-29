@@ -7,7 +7,7 @@ happiness:
   
   # Empire Unhappiness, how much unhappiness to add, per town, to the entire
   # civilization's towns.
-  per_town: 1.0
+  per_town: 0.5
   
   # Captured Town Unhappiness. Amount of unhappiness to add to each non-captured town
   # for each captured town in the civ.
@@ -23,7 +23,7 @@ happiness:
   distance_multiplier_outside_culture: 1.0
   
   # Maximum amount of distance unhappiness
-  distance_max: 8.0
+  distance_max: 10.0
   
   # Amount of happiness generated per war, as the aggressor
   per_war: 1.5
@@ -36,60 +36,39 @@ happiness:
   # Static Happiness Levels per town
   town_levels:
     - level: 1
-      happiness: 15
-    - level: 2
-      happiness: 14
-    - level: 3
-      happiness: 13
-    - level: 4
       happiness: 12
-    - level: 5
-      happiness: 11
-    - level: 6
+    - level: 2
       happiness: 10
-    - level: 7
-      happiness: 9
-    - level: 8
+    - level: 3
+      happiness: 10
+    - level: 4
       happiness: 8
-    - level: 9
-      happiness: 7
-    - level: 10
+    - level: 5
+      happiness: 8
+    - level: 6
       happiness: 6
-    - level: 11
-      happiness: 5
-    - level: 12
+    - level: 7
+      happiness: 6
+    - level: 8
       happiness: 4
+    - level: 9
+      happiness: 4
+    - level: 10
+      happiness: 2
+    - level: 11
+      happiness: 2
+    - level: 12
+      happiness: 0
     
-    #
-    # Happiness States
-    #
-    
-    # Old States
-    # Revolt: 0-19
-    # Unrest: 20-39
-    # Unhappy: 40-49
-    # Content: 50-69
-    # Happy: 70-84
-    # Elated: 85-91
-    # Estatic: 92-100
-    
-    # New States
-    # Revolt: 0-13, 40%
-    # Miserable: 14-25, 55%
-    # Disturbed: 26-37, 70%
-    # Unhappy: 38-49, 85%
-    # Content: 50-59, 100%
-    # Peaceful: 60-68, 110%
-    # Happy: 69-76, 120%
-    # Joyful: 77-84, 130%
-    # Elated: 86-92, 140%
-    # Ecstatic: 93-100, 150%
+   #
+   # Happiness States
+   #
     
   states:
     - level: 0
       name: 'Revolt'
       color: 'Red'
-      amount: -30
+      amount: -25
       hammer_rate: 0.25
       beaker_rate: 0.25
       culture_rate: 0.25
@@ -100,7 +79,7 @@ happiness:
     - level: 1
       name: 'Miserable'
       color: 'Rose'
-      amount: -24
+      amount: -20
       hammer_rate: 0.4
       beaker_rate: 0.4
       culture_rate: 0.4
@@ -111,7 +90,7 @@ happiness:
     - level: 2
       name: 'Disturbed'
       color: 'Gold'
-      amount: -18
+      amount: -15
       hammer_rate: 0.55
       beaker_rate: 0.55
       culture_rate: 0.55
@@ -122,7 +101,7 @@ happiness:
     - level: 3
       name: 'Hostility'
       color: 'Yellow'
-      amount: -12
+      amount: -10
       hammer_rate: 0.7
       beaker_rate: 0.7
       culture_rate: 0.7
@@ -133,7 +112,7 @@ happiness:
     - level: 4
       name: 'Unhappy'
       color: 'Gray'
-      amount: -6
+      amount: -5
       hammer_rate: 0.85
       beaker_rate: 0.85
       culture_rate: 0.85
@@ -187,7 +166,7 @@ happiness:
 #
     - level: 9
       name: 'Joyful'
-      color: 'LightBlue'
+      color: 'Blue'
       amount: 40
       hammer_rate: 1.4
       beaker_rate: 1.4
@@ -198,7 +177,7 @@ happiness:
 #
     - level: 10
       name: 'Elated'
-      color: 'LightPurple'
+      color: 'LightBlue'
       amount: 50
       hammer_rate: 1.5
       beaker_rate: 1.5
@@ -209,7 +188,7 @@ happiness:
 #
     - level: 11
       name: 'Ecstatic'
-      color: 'Purple'
+      color: 'LightPurple'
       amount: 60
       hammer_rate: 1.6
       beaker_rate: 1.6

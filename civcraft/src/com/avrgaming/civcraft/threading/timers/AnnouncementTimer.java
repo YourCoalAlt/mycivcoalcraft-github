@@ -63,11 +63,14 @@ public class AnnouncementTimer implements Runnable {
 	
 	@Override
 	public void run() {
+		int t = 0;
+		int o = announcements.size();
 		for (String str : announcements) {
-			CivMessage.sendAll(CivColor.Gold+"Tip: "+CivColor.White+str);
-			
-			try {
-				Thread.sleep(60*5*1000); //sleep for 5 mins
+			t++;
+			CivMessage.sendAll(CivColor.GoldBold+"[Tip "+CivColor.YellowItalic+t+" of "+o+CivColor.GoldBold+"]  "
+								+CivColor.RESET+CivColor.colorize(str));
+			try { // Only send 1 message every 4 minutes
+				Thread.sleep(60*4*1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return;

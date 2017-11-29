@@ -14,6 +14,7 @@ public class PlayerTagUpdateTimer implements Runnable {
 	
 	@Override
 	public void run() {
+		if (!CivSettings.hasNametagEdit) return;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Resident res = CivGlobal.getResident(p);
 			String suffix;

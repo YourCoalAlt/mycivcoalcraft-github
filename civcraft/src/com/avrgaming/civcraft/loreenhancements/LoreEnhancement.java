@@ -26,6 +26,7 @@ public abstract class LoreEnhancement {
 		
 		enhancements.put("LoreEnhancementUnitGainAttack", new LoreEnhancementUnitGainAttack());
 		
+		enhancements.put("LoreEnhancementItemLivesLeft", new LoreEnhancementItemLivesLeft());
 		enhancements.put("LoreEnhancementSoulBound", new LoreEnhancementSoulBound());
 		enhancements.put("LoreEnhancementAttack", new LoreEnhancementAttack());
 		enhancements.put("LoreEnhancementDefense", new LoreEnhancementDefense());

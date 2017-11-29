@@ -16,14 +16,11 @@ import org.bukkit.World;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.StructureChest;
-import com.avrgaming.civcraft.object.StructureTables;
 import com.avrgaming.civcraft.structure.Barracks;
-import com.avrgaming.civcraft.structure.Granary;
+import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
-import com.avrgaming.civcraft.structure.Temple;
 import com.avrgaming.civcraft.structure.Trommel;
-import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -39,7 +36,7 @@ public class ParticleEffectTimer extends CivAsyncTask {
 		while(iter.hasNext()) {
 			ArrayList<Location> allLocations = new ArrayList<Location>();
 			Structure struct = iter.next().getValue();
-			if (!struct.isActive()) { continue; }
+			if (!struct.isActive()) continue;
 			
 			for (Location bc : externalParticleBlocks.keySet()) {
 				if (bc != null) {
@@ -56,7 +53,7 @@ public class ParticleEffectTimer extends CivAsyncTask {
 				}
 			}
 			
-			if (struct instanceof Granary) {
+/*			if (struct instanceof Granary) {
 				Granary granary = (Granary) struct;
 				for (StructureChest chest : granary.structureChests.values()) {
 					if (chest.getChestId() == 1) {
@@ -65,6 +62,15 @@ public class ParticleEffectTimer extends CivAsyncTask {
 				}
 				for (StructureTables table : granary.structureTables.values()) {
 					allLocations.add(new Location(Bukkit.getWorld("world"), table.getCoord().getX()+0.5, table.getCoord().getY()+0.4, table.getCoord().getZ()+0.5));
+				}
+			}*/
+			
+			if (struct instanceof Lab) {
+				Lab lab = (Lab) struct;
+				for (StructureChest chest : lab.structureChests.values()) {
+					if (chest.getChestId() == 0) {
+						allLocations.add(new Location(Bukkit.getWorld("world"), chest.getCoord().getX()+0.5, chest.getCoord().getY()+0.4, chest.getCoord().getZ()+0.5));
+					}
 				}
 			}
 			
@@ -77,14 +83,14 @@ public class ParticleEffectTimer extends CivAsyncTask {
 				}
 			}
 			
-			if (struct instanceof Temple) {
+/*			if (struct instanceof Temple) {
 				Temple temple = (Temple) struct;
 				for (StructureChest chest : temple.structureChests.values()) {
 					if (chest.getChestId() == 1) {
 						allLocations.add(new Location(Bukkit.getWorld("world"), chest.getCoord().getX()+0.5, chest.getCoord().getY()+0.4, chest.getCoord().getZ()+0.5));
 					}
 				}
-			}
+			}*/
 			
 			if (struct instanceof Trommel) {
 				Trommel trommel = (Trommel) struct;
@@ -95,14 +101,14 @@ public class ParticleEffectTimer extends CivAsyncTask {
 				}
 			}
 			
-			if (struct instanceof Warehouse) {
+/*			if (struct instanceof Warehouse) {
 				Warehouse wh = (Warehouse) struct;
 				for (StructureChest chest : wh.structureChests.values()) {
 					if (chest.getChestId() <= wh.getLevel()) {
 						allLocations.add(new Location(Bukkit.getWorld("world"), chest.getCoord().getX()+0.5, chest.getCoord().getY()+0.5, chest.getCoord().getZ()+0.5));
 					}
 				}
-			}
+			}*/
 			
 			if (struct instanceof Windmill) {
 				Windmill windmill = (Windmill) struct;
@@ -112,7 +118,6 @@ public class ParticleEffectTimer extends CivAsyncTask {
 					}
 				}
 			}
-			
 			
 			//Execute the particles to these locations
 			for (Location loc : allLocations) {
@@ -128,7 +133,7 @@ public class ParticleEffectTimer extends CivAsyncTask {
 		while(iter.hasNext()) {
 			ArrayList<Location> specialLocations = new ArrayList<Location>();
 			Structure struct = iter.next().getValue();
-			if (!struct.isActive()) { continue; }
+			if (!struct.isActive()) continue;
 			
 			if (struct instanceof Trommel) {
 				Trommel trommel = (Trommel) struct;

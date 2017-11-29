@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.event;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -25,6 +26,9 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
+import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
@@ -32,7 +36,7 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.CultureProcessAsyncTask;
 import com.avrgaming.civcraft.threading.timers.EffectEventTimer;
-import com.avrgaming.civcraft.threading.timers.SyncTradeTimer;
+import com.avrgaming.civcraft.util.CivColor;
 
 public class HourlyEvent implements EventInterface {
 	
@@ -54,10 +58,31 @@ public class HourlyEvent implements EventInterface {
 			}
 		}
 		
-		TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
+		this.processTownsTradePayments();
 		TaskMaster.asyncTask("EffectEventTimer", new EffectEventTimer(), 0);
-		TaskMaster.syncTask(new SyncTradeTimer(), 0);
+		TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
 		CivLog.info("TimerEvent: Hourly Finished -----------------------------");
+	}
+	
+	public void processTownsTradePayments() {
+		if (!CivGlobal.tradeEnabled) return;
+		CivGlobal.checkForDuplicateGoodies();
+		for (Town town : CivGlobal.getTowns()) {
+			int payment = TradeGood.getTownTradePayment(town);
+			if (payment <= 0) continue;
+			
+			DecimalFormat df = new DecimalFormat();
+			int taxesPaid = (int) (payment*town.getDepositCiv().getIncomeTaxRate());
+			if (taxesPaid > 0) {
+				town.getTreasury().deposit(payment - taxesPaid);
+				town.getDepositCiv().taxPayment(town, taxesPaid);
+				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade."+
+					CivColor.Yellow+" (Paid "+df.format(taxesPaid)+" in taxes to "+town.getDepositCiv().getName()+")");
+			} else {
+				town.getTreasury().deposit(payment);
+				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade.");
+			}
+		}
 	}
 	
 	@Override

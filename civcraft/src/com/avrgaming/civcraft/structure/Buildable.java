@@ -900,12 +900,22 @@ public abstract class Buildable extends SQLObject {
 					if (rb != null) {
 						deletedRoadBlocks.add(rb);
 					}
-				
-					BorderData border = Config.Border(b.getWorld().getName());
-					if (border != null) {
-						if(!border.insideBorder(b.getLocation().getX(), b.getLocation().getZ(), Config.ShapeRound())) {
-							throw new CivException("Cannot build here. Part of the structure would sit beyond the world border.");
+					
+					World w = b.getWorld();
+					double bs = w.getWorldBorder().getSize() / 2;
+					if (Math.abs(b.getLocation().getX()) >= bs || Math.abs(b.getLocation().getZ()) >= bs) {
+						throw new CivException("Cannot build here. Part of the structure would sit beyond the world border.");
+					}
+					
+					if (CivSettings.hasWorldBorder) {
+						BorderData border = Config.Border(b.getWorld().getName());
+						if (border != null) {
+							if(!border.insideBorder(b.getLocation().getX(), b.getLocation().getZ(), Config.ShapeRound())) {
+								throw new CivException("Cannot build here. Part of the structure would sit beyond the world border.");
+							}
 						}
+					} else {
+						CivLog.info("Plguin 'WorldBorder' not found, which is fine. We will only be able to run Minecraft check for structure.");
 					}
 				}
 			}

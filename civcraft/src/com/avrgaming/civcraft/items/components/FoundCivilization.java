@@ -43,11 +43,11 @@ import gpl.AttributeUtil;
 public class FoundCivilization extends ItemComponent implements CallbackInterface{
 	
 	@Override
-	public void onPrepareCreate(AttributeUtil attrUtil) {
-		attrUtil.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
-		attrUtil.addLore(ChatColor.RESET+CivColor.Rose+"<Right Click To Use>");
-		attrUtil.addEnhancement("LoreEnhancementSoulBound", null, null);
-		attrUtil.addLore(CivColor.Gold+"Soulbound");
+	public void onPrepareCreate(AttributeUtil attrs) {
+		attrs.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
+		attrs.addLore(ChatColor.RESET+CivColor.Rose+"<Right Click To Use>");
+		attrs.addEnhancement("LoreEnhancementSoulBound", null, null);
+//		attrs.addLore(CivColor.Gold+"Soulbound");
 	}
 	
 	public void foundCiv(Player player) throws CivException {
