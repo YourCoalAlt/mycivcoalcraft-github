@@ -94,6 +94,7 @@ public class Resident extends SQLObject {
 	
 	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
+	public ArrayList<String> mailData = new ArrayList<String>();
 	
 	public static HashSet<String> allchatters = new HashSet<String>();
 	
@@ -218,6 +219,7 @@ public class Resident extends SQLObject {
 					"`debug_town` mediumtext DEFAULT NULL,"+
 					"`debug_civ` mediumtext DEFAULT NuLL,"+
 					"`alts` mediumtext DEFAULT NULL," +
+					"`mailData` longtext DEFAULT NULL," +
 					"UNIQUE KEY (`name`), " +
 					"PRIMARY KEY (`id`)" + ")";
 			
@@ -289,6 +291,11 @@ public class Resident extends SQLObject {
 			if (!SQL.hasColumn(TABLE_NAME, "alts")) {
 				CivLog.info("\tCouldn't find `alts` for resident.");
 				SQL.addColumn(TABLE_NAME, "`alts` mediumtext DEFAULT NULL");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "mailData")) {
+				CivLog.info("\tCouldn't find `mailData` for resident.");
+				SQL.addColumn(TABLE_NAME, "`mailData` longtext DEFAULT NULL");
 			}
 			
 			SQL.makeCol("flags", "mediumtext", TABLE_NAME);
@@ -367,6 +374,71 @@ public class Resident extends SQLObject {
 		this.getTreasury().setDebt(rs.getInt("debt"));
 		this.loadFriendsFromSaveString(rs.getString("friends"));
 		if (rs.getString("alts") != null) this.setAlts(rs.getString("alts")); // split
+		if (rs.getString("mailData") != null) this.setMailData(rs.getString("mailData")); // split
+	}
+	
+	@Override
+	public void save() {
+		SQLUpdate.add(this);
+	}
+	
+	@Override
+	public void saveNow() throws SQLException {
+		HashMap<String, Object> hashmap = new HashMap<String, Object>();
+		hashmap.put("name", this.getName());
+		hashmap.put("uuid", this.getUUIDString());
+		if (this.getTown() != null) {
+			hashmap.put("town_id", this.getTown().getId());
+		} else {
+			if (!dontSaveTown) hashmap.put("town_id", null);
+		}
+		
+		hashmap.put("pvptag", this.pvptag);
+		
+		hashmap.put("banned", this.isBanned());
+		hashmap.put("bannedMessage", this.getBannedMessage());
+		hashmap.put("bannedLength", this.getBannedLength());
+		
+		hashmap.put("muted", this.isMuted());
+		hashmap.put("mutedMessage", this.getMutedMessage());
+		hashmap.put("mutedLength", this.getMutedLength());
+		
+		hashmap.put("lastOnline", this.getLastOnline());
+		hashmap.put("registered", this.getRegistered());
+		hashmap.put("debt", this.getTreasury().getDebt());
+		hashmap.put("daysTilEvict", this.getDaysTilEvict());
+		hashmap.put("friends", this.getFriendsSaveString());
+		hashmap.put("givenKit", this.isGivenKit());
+		hashmap.put("coins", this.getTreasury().getBalance());
+		hashmap.put("timezone", this.getTimezone());
+		hashmap.put("flags", this.getFlagSaveString());
+		hashmap.put("last_ip", this.getLastIP());
+		hashmap.put("savedInventory", this.savedInventory);
+		hashmap.put("isProtected", this.isProtected);
+		if (this.getAlts() != null) {
+			String finalalts = "";
+			for (String s : this.getAlts()) {
+				if (s!= null && !finalalts.contains(s)) {
+					finalalts += s+",";
+				}
+			}
+			hashmap.put("alts", finalalts);
+		}
+		
+		if (this.getMailData() != null) {
+			String finalMail = "";
+			for (String s : this.getMailData()) {
+				if (s != null) {
+					finalMail += s+"=";
+				}
+			}
+			hashmap.put("mailData", finalMail);
+		}
+		
+		if (this.getTown() != null) { hashmap.put("debug_town", this.getTown().getName());
+		if (this.getTown().getCiv() != null) hashmap.put("debug_civ", this.getCiv().getName());
+		}
+		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	
 	private void setAlts(String uid) {
@@ -439,60 +511,6 @@ public class Resident extends SQLObject {
 				break;
 			}
 		}
-	}
-	
-	@Override
-	public void save() {
-		SQLUpdate.add(this);
-	}
-	
-	@Override
-	public void saveNow() throws SQLException {
-		HashMap<String, Object> hashmap = new HashMap<String, Object>();
-		hashmap.put("name", this.getName());
-		hashmap.put("uuid", this.getUUIDString());
-		if (this.getTown() != null) {
-			hashmap.put("town_id", this.getTown().getId());
-		} else {
-			if (!dontSaveTown) hashmap.put("town_id", null);
-		}
-		
-		hashmap.put("pvptag", this.pvptag);
-		
-		hashmap.put("banned", this.isBanned());
-		hashmap.put("bannedMessage", this.getBannedMessage());
-		hashmap.put("bannedLength", this.getBannedLength());
-		
-		hashmap.put("muted", this.isMuted());
-		hashmap.put("mutedMessage", this.getMutedMessage());
-		hashmap.put("mutedLength", this.getMutedLength());
-		
-		hashmap.put("lastOnline", this.getLastOnline());
-		hashmap.put("registered", this.getRegistered());
-		hashmap.put("debt", this.getTreasury().getDebt());
-		hashmap.put("daysTilEvict", this.getDaysTilEvict());
-		hashmap.put("friends", this.getFriendsSaveString());
-		hashmap.put("givenKit", this.isGivenKit());
-		hashmap.put("coins", this.getTreasury().getBalance());
-		hashmap.put("timezone", this.getTimezone());
-		hashmap.put("flags", this.getFlagSaveString());
-		hashmap.put("last_ip", this.getLastIP());
-		hashmap.put("savedInventory", this.savedInventory);
-		hashmap.put("isProtected", this.isProtected);
-		if (this.getAlts() != null) {
-			String finalalts = "";
-			for (String s : this.getAlts()) {
-				if (s!= null && !finalalts.contains(s)) {
-					finalalts += s+",";
-				}
-			}
-			hashmap.put("alts", finalalts);
-		}
-		
-		if (this.getTown() != null) { hashmap.put("debug_town", this.getTown().getName());
-		if (this.getTown().getCiv() != null) hashmap.put("debug_civ", this.getCiv().getName());
-		}
-		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	
 	public String getTownString() {
@@ -1627,5 +1645,73 @@ public class Resident extends SQLObject {
 	
 	public Long getBannedLength() {
 		return bannedLength;
+	}
+	
+	
+	
+	// Mail
+	
+	private void setMailData(String data) {
+		String[] split = data.split("=");
+		for (String str : split) {
+			synchronized (str) {
+				if (str == null) continue;
+				this.mailData.add(str);
+			}
+		}
+	}
+	
+	public void addMailData(String data) {
+		this.mailData.add(data);
+	}
+	
+	public ArrayList<String> getMailData() {
+		return this.mailData;
+	}
+	
+	public void openMainMailMenu(Player p, Resident res) {
+		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Menu");
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is Mail Menu. You can use this to",
+				CivColor.RESET+"send messages to players, as well as to",
+				CivColor.RESET+"collect items/recieve notices from your",
+				CivColor.RESET+"structures, town, civ, or game in general.",
+				CivColor.RESET+""
+				));
+		
+		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"View Mail", CivData.CHEST, 0));
+		
+		p.openInventory(inv);
+	}
+	
+	public void openMailMenu(Player p, Resident res) {
+		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
+		
+		for (String str : this.mailData) {
+			String[] packages = str.split("-");
+			
+			CivMessage.global(str);
+			String itemString = packages[0];
+			String givenLore = packages[2];
+			
+			LoreCraftableMaterial custMat = LoreCraftableMaterial.getCraftMaterialFromId(itemString);
+			if (custMat != null) {
+				String lore = "";
+				for (String convLore : custMat.getLore()) {
+					lore += convLore+";";
+				}
+				lore += givenLore.split(";");
+				
+				inv.addItem(LoreGuiItem.build(custMat.getName(), custMat.getTypeID(), custMat.getDamage(), lore.split(";")));
+			} else {
+				int id = Integer.valueOf(packages[0]);
+				int data = Short.valueOf(packages[1]);
+				inv.addItem(LoreGuiItem.build(CivData.getDisplayName(id, data), id, data, givenLore.split(";")));
+			}
+			
+		}
+		
+		
+		p.openInventory(inv);
 	}
 }

@@ -42,7 +42,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -216,8 +215,6 @@ public class PlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		CivLog.info("Scheduling Player Join Task for:"+event.getPlayer().getName());
 		TaskMaster.asyncTask("onPlayerLogin-"+event.getPlayer().getName(), new PlayerLoginAsyncTask(event.getPlayer().getUniqueId()), 0);
-		
-		CivGlobal.playerFirstLoginMap.put(event.getPlayer().getName(), new Date());
 		PlayerLocationCacheUpdate.playerQueue.add(event.getPlayer().getName());
 	}
 	
@@ -230,7 +227,7 @@ public class PlayerListener implements Listener {
 			}
 			resident.clearInteractiveMode();
 		}
-		CivGlobal.playerFirstLoginMap.put(event.getPlayer().getName(), new Date());
+		resident.setLastOnline(System.currentTimeMillis());
 		PlayerLocationCacheUpdate.playerQueue.remove(event.getPlayer().getName());
 	}
 	
@@ -282,13 +279,9 @@ public class PlayerListener implements Listener {
 		ChunkCoord toChunk = new ChunkCoord(event.getTo());
 		
 		// Haven't moved chunks.
-		if (fromChunk.equals(toChunk)) {
-			return;
-		}
+		if (fromChunk.equals(toChunk)) return;
 		
-		TaskMaster.asyncTask(PlayerChunkNotifyAsyncTask.class.getSimpleName(), 
-				new PlayerChunkNotifyAsyncTask(event.getFrom(), event.getTo(), event.getPlayer().getName()), 0);
-
+		TaskMaster.asyncTask(PlayerChunkNotifyAsyncTask.class.getSimpleName(), new PlayerChunkNotifyAsyncTask(event.getFrom(), event.getTo(), event.getPlayer().getName()), 0);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -364,36 +357,6 @@ public class PlayerListener implements Listener {
 		event.setCancelled(true);
 	}
 	
-//	@EventHandler(priority = EventPriority.NORMAL)
-//	public void OnCraftItemEvent(CraftItemEvent event) {
-//		if (event.getInventory() == null) {
-//			return;
-//		}
-//		
-//		ItemStack resultStack = event.getInventory().getResult();
-//		if (resultStack == null) {
-//			return;
-//		}
-//		
-//		if (CivSettings.techItems == null) {
-//			CivLog.error("tech items null???");
-//			return;
-//		}
-//
-//		//XXX Replaced via materials system.
-////		ConfigTechItem item = CivSettings.techItems.get(resultStack.getTypeId());
-////		if (item != null) {
-////			Resident resident = CivGlobal.getResident(event.getWhoClicked().getName());
-////			if (resident != null && resident.hasTown()) {
-////				if (resident.getCiv().hasTechnology(item.require_tech)) {
-////					return;
-////				}
-////			}	
-////			event.setCancelled(true);
-////			CivMessage.sendError((Player)event.getWhoClicked(), "You do not have the required technology to craft a "+item.name);
-////		}
-//	}
-	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerPortalEvent(PlayerPortalEvent event) {
 		if(event.getCause().equals(TeleportCause.END_PORTAL)) {
@@ -408,12 +371,6 @@ public class PlayerListener implements Listener {
 			return;
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		// THIS EVENT IS NOT RUN IN OFFLINE MODE
-	}
-
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnPlayerBucketEmptyEvent(PlayerBucketEmptyEvent event) {

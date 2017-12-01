@@ -185,7 +185,7 @@ public class CivMessage {
 			if (player != null && resident != null) {
 				TitleAPI.sendTitle(player, 10, 50, 10, title, subTitle);
 			} else {
-				CivLog.debug("Could not send PCN Title to player "+player);
+				CivLog.debug("Could not send PCN Title to player "+player+" {title: "+title+"}, {subtitle: "+subTitle+"}");
 			}
 		} else {
 			send(sender, subTitle+" "+title);

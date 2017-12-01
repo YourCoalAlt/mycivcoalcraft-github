@@ -68,6 +68,7 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
+		if (event.getInventory().getName().contains(res.getName()+"'s Mail Menu")) this.clickMainMailMenu(p, event);
 		if (event.getInventory().getName().contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
 		
@@ -1632,6 +1633,24 @@ public class InventoryDisplaysListener implements Listener {
 		}
 		
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+	}
+	
+	
+	
+	// Resident Mail System
+	
+	public void clickMainMailMenu(Player p, InventoryClickEvent event) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
+		
+		Resident res = CivGlobal.getResident(p);
+		switch (event.getCurrentItem().getType()) {
+		case CHEST:
+			res.openMailMenu(p, res);
+			break;
+		default:
+			break;
+		}
 	}
 }
 

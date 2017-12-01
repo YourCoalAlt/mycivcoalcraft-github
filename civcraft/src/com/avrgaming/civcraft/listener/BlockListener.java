@@ -1321,22 +1321,32 @@ public class BlockListener implements Listener {
 					}
 					break;
 				case PIG:
-					if (inHand.getType().equals(Material.CARROT_ITEM)) {
+					if (inHand.getType().equals(Material.CARROT_ITEM) || inHand.getType().equals(Material.POTATO_ITEM) ||
+							inHand.getType().equals(Material.BEETROOT)) {
 						denyBreeding = true;
 					}
 					break;
 				case HORSE:
-					if (inHand.getType().equals(Material.GOLDEN_APPLE) ||
-							inHand.getType().equals(Material.GOLDEN_CARROT)) {
+					if (inHand.getType().equals(Material.GOLDEN_APPLE) || inHand.getType().equals(Material.GOLDEN_CARROT)) {
 						CivMessage.sendError(p, "You cannot breed horses, buy them from the stable.");
 						event.setCancelled(true);
 						return;
 					}
 					break;
 				case CHICKEN:
-					if (inHand.getType().equals(Material.SEEDS) ||
-						inHand.getType().equals(Material.MELON_SEEDS) ||
-						inHand.getType().equals(Material.PUMPKIN_SEEDS)) {
+					if (inHand.getType().equals(Material.SEEDS) || inHand.getType().equals(Material.BEETROOT_SEEDS) ||
+						inHand.getType().equals(Material.MELON_SEEDS) || inHand.getType().equals(Material.PUMPKIN_SEEDS)) {
+						denyBreeding = true;
+					}
+					break;
+				case RABBIT:
+					if (inHand.getType().equals(Material.CARROT_ITEM) || inHand.getType().equals(Material.GOLDEN_CARROT) ||
+						inHand.getType().equals(Material.YELLOW_FLOWER)) {
+						denyBreeding = true;
+					}
+					break;
+				case LLAMA:
+					if (inHand.getType().equals(Material.HAY_BLOCK)) {
 						denyBreeding = true;
 					}
 					break;
@@ -1352,26 +1362,23 @@ public class BlockListener implements Listener {
 						CivMessage.sendError(p, "You cannot breed mobs in the wild, take them to a pasture.");
 						event.setCancelled(true);
 					} else {
-							int loveTicks;
-							NBTTagCompound tag = new NBTTagCompound();
-							((CraftEntity)event.getRightClicked()).getHandle().c(tag);
-							loveTicks = tag.getInt("InLove");
+						int loveTicks;
+						NBTTagCompound tag = new NBTTagCompound();
+						((CraftEntity)event.getRightClicked()).getHandle().c(tag);
+						loveTicks = tag.getInt("InLove");
 
-							if (loveTicks == 0) {	
-								if(!pasture.processMobBreed(event.getPlayer(), event.getRightClicked().getType())) {
-									event.setCancelled(true);
-								}
-							} else {
+						if (loveTicks == 0) {	
+							if(!pasture.processMobBreed(event.getPlayer(), event.getRightClicked().getType())) {
 								event.setCancelled(true);
 							}
+						} else {
+							event.setCancelled(true);
+						}
 					}
-
 					return;			
 				}
 			}
-		if (!(event.getRightClicked() instanceof ItemFrame) && !(event.getRightClicked() instanceof Painting)) {
-			return;
-		}
+		if (!(event.getRightClicked() instanceof ItemFrame) && !(event.getRightClicked() instanceof Painting)) return;
 
 		coord.setFromLocation(p.getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);

@@ -269,24 +269,24 @@ public class CivCommand extends CommandBase {
 	
 	public void top10_cmd() {	
 		CivMessage.sendHeading(sender, "Top 10 Civilizations");
+		int i = 1; int v = 0;
 		
 		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("endgame:winningCiv");
 		if (entries.size() != 0) {
-			CivMessage.sendHeading(sender, "Civilization Victories"); int i = 1;
+			CivMessage.sendHeading(sender, "Civilization Victories");
 			for (SessionEntry se : entries) {
 				Civilization civ = EndGameCondition.getCivFromSessionData(se.value);
 				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+civ.getScore()+" points  --  "+CivColor.BOLD+" VICTORY");
-				i++;
+				i++; v++;
 			}
 			return;
 		}
 		
 		synchronized(CivGlobal.civilizationScores) {
-			int i = 1;
 			for (Integer score : CivGlobal.civilizationScores.descendingKeySet()) {
 				CivMessage.send(sender, i+") "+CivColor.Gold+CivGlobal.civilizationScores.get(score).getName()+CivColor.White+" - "+score+" points");
 				i++;
-				if (i > 10) break;
+				if (i > 10+v) break;
 			}
 		}
 	}

@@ -122,7 +122,6 @@ public class CivSettings {
 	
 	public static FileConfiguration techsConfig; /* techs.yml */
 	public static Map<String, ConfigTech> techs = new HashMap<String, ConfigTech>();
-	public static Map<Integer, ConfigTechItem> techItems = new HashMap<Integer, ConfigTechItem>();
 	public static Map<Integer, ConfigTechPotion> techPotions = new HashMap<Integer, ConfigTechPotion>();
 
 	public static FileConfiguration goodsConfig; /* goods.yml */
@@ -159,10 +158,6 @@ public class CivSettings {
 
 	public static FileConfiguration enchantConfig; /* enchantments.yml */
 	public static Map<String, ConfigEnchant> enchants = new HashMap<String, ConfigEnchant>();
-	public static float speedtoe_speed;
-	public static double speedtoe_consume;
-	public static int thorhammerchance;
-	public static int punchoutchance;
 	
 	public static FileConfiguration marketConfig; /* market.yml */
 	public static Map<Integer, ConfigMarketItem> marketItems = new HashMap<Integer, ConfigMarketItem>();
@@ -479,7 +474,6 @@ public class CivSettings {
 		ConfigBuildableInfo.loadConfig(structureConfig, "structures", structures, false);
 		ConfigBuildableInfo.loadConfig(wonderConfig, "wonders", wonders, true);
 		ConfigTech.loadConfig(techsConfig, techs);
-		ConfigTechItem.loadConfig(techsConfig, techItems);
 		ConfigTechPotion.loadConfig(techsConfig, techPotions);
 		ConfigHemisphere.loadConfig(goodsConfig, hemispheres);
 		ConfigBuff.loadConfig(buffConfig, buffs);
@@ -535,6 +529,7 @@ public class CivSettings {
 		restrictedSpawns.put(EntityType.WITHER_SKELETON, 0);
 		restrictedSpawns.put(EntityType.ZOMBIE, 0);
 		restrictedSpawns.put(EntityType.ZOMBIE_VILLAGER, 0);
+		restrictedSpawns.put(EntityType.ILLUSIONER, 0);
 	}
 	
 	private static void initRestrictedItems() {

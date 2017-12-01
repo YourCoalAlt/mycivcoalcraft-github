@@ -434,29 +434,18 @@ public class Backpack {
 			String ua1 = ("{\"id\":\""+trimmedUUID+"\",\"name\":\""+p.getName()+"\",\"properties\":[{\"name\":\"textures\",\"value\":\""); String ua2 = ("\"}]}");
 			String newLine1 = inputLine.replace(ua1, "").replace(ua2, "");
 			String decode1 = new String(DatatypeConverter.parseBase64Binary(newLine1));
-////			CivMessage.global(decode1);
 			
-//			String ub1 = ("{\"timestamp\":"+System.currentTimeMillis()+",\"profileId\":\""+trimmedUUID+"\",\"profileName\":\""+p.getName()+"\",\"textures\":{\"SKIN\":{\"url\":\"");
 			String ub2 = ("\"}}}");
-//			String newLine2 = decode1.replace(ub1, "").replace(ub2, "");
 			int tosub = 103+p.getName().length();
-////			CivMessage.global(String.valueOf(tosub));
-			String newLine2 = decode1.substring(tosub).replace(ub2, "").replace("\"SKIN\":{\"url\":\"", "").replaceAll("}", ""); // using String ub1 did not work correctly, so we will hope this works always
-////			CivMessage.global(newLine2);
-			
-//			String skinURL = "http://textures.minecraft.net/texture/5e5613acda603e3dfee79e5a361b5b7fa5b1711e0a57df9e013387837fe6a";
-//			encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\""+newLine2+"\"}}}").getBytes());
-//			res.textureInfo = encodedData;
+			String newLine2 = decode1.substring(tosub).replace(ub2, "").replace("\"SKIN\":{\"url\":\"", "").replaceAll("}", "");
 			
 			if (decode1.contains(newLine2)) {
 				if (newLine2.length() > 0) {
-					if (newLine2.contains("\"CAPE\"")) {
+					if (newLine2.contains("\"CAPE\"")) { // TODO Figure out how to ignore capes and only get head data.
 						encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
 						CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, cape interference, setting to default.");
 						CivLog.warning("Warning! Cannot get player head for Backpack, cape interference, setting to default.");
 					} else {
-//						String ub2 = ("\"}}}");
-//						String newLine2 = decode1.replace(ub1, "").replace(ub2, "");
 						encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\""+newLine2+"\"}}}").getBytes());
 					}
 				} else {
@@ -526,6 +515,8 @@ public class Backpack {
 			}
 			
 			ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+			resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
+			resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
 			guiInventory.setItem(2, resMail);
 			
 			ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
@@ -558,7 +549,7 @@ public class Backpack {
 			
 			ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
 			buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
-			guiInventory.setItem(20, buildMenu);
+			guiInventory.setItem(19, buildMenu);
 			
 			ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
 			newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");

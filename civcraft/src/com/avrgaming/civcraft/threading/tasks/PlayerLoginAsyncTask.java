@@ -202,7 +202,9 @@ public class PlayerLoginAsyncTask implements Runnable {
 					CivMessage.sendCiv(cc.getCiv(), color+getPlayer().getDisplayName()+"("+relationName+") has logged-in to our borders.");
 				}
 			}
-					
+			
+			
+			resident.addMailData("339-0-This is a mail;Can you read, or not?"); // TODO Remove when done testing
 			resident.setLastOnline(System.currentTimeMillis());
 			resident.setLastIP(getPlayer().getAddress().getAddress().getHostAddress());
 			resident.setSpyExposure(resident.getSpyExposure());

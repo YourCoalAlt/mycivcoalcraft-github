@@ -158,11 +158,8 @@ public class CivGlobal {
 	//TODO fix the duplicate score issue...
 	public static TreeMap<Integer, Civilization> civilizationScores = new TreeMap<Integer, Civilization>();
 	public static TreeMap<Integer, Town> townScores = new TreeMap<Integer, Town>();
-
-	public static HashMap<String, Date> playerFirstLoginMap = new HashMap<String, Date>();
+	
 	public static HashSet<String> banWords = new HashSet<String>();
-			
-	//public static Scoreboard globalBoard;
 	
 	public static Integer maxPlayers = -1;
 	public static HashSet<String> betaPlayers = new HashSet<String>();
@@ -233,31 +230,10 @@ public class CivGlobal {
 		/* Check for orphan civs now */
 		for (Civilization civ : civs.values()) {
 			Town capitol = civ.getTown(civ.getCapitolName());
-			
 			if (capitol == null) {
 				orphanCivs.add(civ);
 			}
-			
 		}
-		
-	/*	ScoreboardManager manager = Bukkit.getScoreboardManager();
-		CivGlobal.globalBoard = manager.getNewScoreboard();
-		Team team = globalBoard.registerNewTeam("everybody");
-		team.setPrefix(":PREFIX:");
-		team.setSuffix(":SUFFIX:");
-		team.setDisplayName("EveryBody");
-		team.setCanSeeFriendlyInvisibles(false);
-		team.setAllowFriendlyFire(false);
-		
-		globalBoard.registerNewObjective("showciv", "dummy");
-		Objective objective = globalBoard.getObjective("showciv");
-		objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		objective.setDisplayName("OBJECTIVE NAME HERE");
-		
-		globalBoard.registerNewObjective("showciv2", "dummy");
-		Objective objective2 = globalBoard.getObjective("showciv2");
-		objective2.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		objective2.setDisplayName("OBJECTIVE2 NAME HERE");*/
 		
 		checkForInvalidStructures();
 		loadCompleted = true;

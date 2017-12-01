@@ -11,6 +11,7 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
+import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class OpenInventory implements GuiAction {
@@ -57,6 +58,10 @@ public class OpenInventory implements GuiAction {
 					break;
 				case "showTownMenu":
 					Backpack.showTownMenu(player);
+					break;
+				case "openResMail":
+					Resident res = CivGlobal.getResident(player);
+					res.openMainMailMenu(player, res);
 					break;
 				case "showGuiInv":
 					String invName = LoreGuiItem.getActionData(stack, "invName");

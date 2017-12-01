@@ -11,10 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
-import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigTech;
-import com.avrgaming.civcraft.config.ConfigTechItem;
 import com.avrgaming.civcraft.items.components.Tagged;
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
@@ -32,31 +30,22 @@ public class LoreCraftableMaterialListener implements Listener {
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(event.getInventory().getResult());
 			if (craftMat == null) {
 				ItemStack resultStack = event.getInventory().getResult();
-				if (resultStack == null) {
-					return;
-				}
+				if (resultStack == null) return;
 				
-//				ConfigRemovedRecipes removedItem = CivSettings.removedRecipies.get(ItemManager.getId(resultStack));
-//				if (removedItem != null && !LoreMaterial.isCustom(resultStack)) {
-//					CivMessage.sendError((Player)event.getWhoClicked(), "You cannot craft removed recipes.");
-//					event.setCancelled(true);
-//					return;
-//				}
-				
-				/* Disable notch apples */
+				// Disable notch apples
 				if (resultStack.getType().equals(Material.GOLDEN_APPLE)) {
 					CivMessage.sendError((Player)event.getWhoClicked(), "You cannot craft golden apples. Sorry.");
 					event.setCancelled(true);
 					return;
 				}
 				
-				ConfigTechItem restrictedTechItem = CivSettings.techItems.get(ItemManager.getId(resultStack));
+/*				ConfigTechItem restrictedTechItem = CivSettings.techItems.get(ItemManager.getId(resultStack));
 				if (restrictedTechItem != null) {
 					ConfigTech tech = CivSettings.techs.get(restrictedTechItem.require_tech);
 					CivMessage.sendError(player, "Your civilization doesn't have the required technology ("+tech.name+") to craft this item.");
 					event.setCancelled(true);
 					return;
-				}
+				}*/
 				return;
 			}
 			
@@ -112,11 +101,8 @@ public class LoreCraftableMaterialListener implements Listener {
 		return false;
 	}
 	
-
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW)
 	public void OnPrepareItemCraftEvent(PrepareItemCraftEvent event) {
-		
 		if (event.getRecipe() instanceof ShapedRecipe) {
 			String key = LoreCraftableMaterial.getShapedRecipeKey(event.getInventory().getMatrix());
 			LoreCraftableMaterial loreMat = LoreCraftableMaterial.shapedKeys.get(key);
@@ -124,11 +110,13 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
+					return;
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
+					return;
 				}
 				
 				return;
@@ -136,8 +124,10 @@ public class LoreCraftableMaterialListener implements Listener {
 				if(!LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is not custom, but recipie is. Set to blank. */
 					if (!loreMat.isVanilla()) {
-						event.getInventory().setResult(new ItemStack(CivData.AIR));
-						return;
+						if (!LoreEnhancement.isTool(event.getRecipe().getResult())) {
+							event.getInventory().setResult(new ItemStack(Material.AIR));
+							return;
+						}
 					}
 				}
 			}
@@ -151,7 +141,6 @@ public class LoreCraftableMaterialListener implements Listener {
 			} else {
 				newStack = ItemManager.createItemStack(loreMat.getTypeID(), loreMat.getCraftAmount());
 			}
-			
 			event.getInventory().setResult(newStack);
 			
 		} else if (event.getRecipe() instanceof ShapelessRecipe) {
@@ -161,11 +150,13 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
+					return;
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(CivData.AIR));
+					event.getInventory().setResult(new ItemStack(Material.AIR));
+					return;
 				}
 				
 				return;
@@ -173,7 +164,7 @@ public class LoreCraftableMaterialListener implements Listener {
 				if(!LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is not custom, but recipie is. Set to blank. */
 					if (!loreMat.isVanilla()) {
-						event.getInventory().setResult(new ItemStack(CivData.AIR));
+						event.getInventory().setResult(new ItemStack(Material.AIR));
 						return;
 					}
 				}

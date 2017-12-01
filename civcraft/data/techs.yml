@@ -1,16 +1,4 @@
-# ---- Tech restricted items
-# This is a list of items and which techs they are craftable at
-items:
-  - id: 417
-    name: 'Iron Horse Armor'
-    require_tech: 'tech_global_trade'
-  - id: 418
-    name: 'Gold Horse Armor'
-    require_tech: 'tech_global_trade'
-  - id: 419
-    name: 'Diamond Horse Armor'
-    require_tech: 'tech_global_trade'
-#
+# ---- Tech Restricted Potions
 potions:
   - name: 'Fire Resist'
     data: 8195

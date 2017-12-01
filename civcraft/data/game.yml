@@ -22,7 +22,7 @@ farm:
 tips:
    # How many lines of tips there is to display.
    # This controls the timer for it, so a wrong value will mess up the display rate for tips.
-   amount: 7
+   amount: 9
 
 # Amount of Tungston to drop from Lapis Ore
 tungsten_min_drop: 0
