@@ -203,12 +203,31 @@ public class PlayerLoginAsyncTask implements Runnable {
 				}
 			}
 			
+/*			Random rand = new Random();
+			ItemStack item = new ItemStack(ItemManager.getMaterial(CivData.DIAMOND_SWORD), 1);
+			List<String> lore = new ArrayList<String>();
+			lore.add("Sample A "+rand.nextInt(10));
+			lore.add("Sample B "+rand.nextInt(100));
+			ItemMeta im = item.getItemMeta();
+			im.setLore(lore);
+			item.setItemMeta(im);
+			item.addEnchantment(Enchantment.FIRE_ASPECT, 2);
+			item.addEnchantment(Enchantment.DAMAGE_ALL, 5);
 			
-			resident.addMailData("339-0-This is a mail;Can you read, or not?"); // TODO Remove when done testing
+			Map<String, Object> args = item.serialize();
+			
+			CivMessage.global(args.keySet().toString());
+			CivMessage.global(args.values().toString());
+			
+			CivMessage.global("Serialized: "+item.serialize().hashCode());
+			
+			CivData.itemToString(item);
+			
+			resident.addMailData(item+"~null~false"); // TODO Remove when done testing
 			resident.setLastOnline(System.currentTimeMillis());
 			resident.setLastIP(getPlayer().getAddress().getAddress().getHostAddress());
 			resident.setSpyExposure(resident.getSpyExposure());
-			resident.save();
+			resident.save();*/
 			
 			//TODO send town board messages?
 			//TODO set default modes?

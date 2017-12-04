@@ -3,8 +3,7 @@ package com.avrgaming.civcraft.command.admin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.Chunk;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -38,18 +37,26 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 	
 	public void killvillagers_cmd() {
 		int chunksSearched = 0;
+		int villagersRemoved = 0;
 		for (TownChunk tc : CivGlobal.getTownChunks()) {
-			chunksSearched++;
-			tc.getChunkCoord().getChunk().load();
-			for (World w : Bukkit.getWorlds()) {
-				for (Entity e : w.getEntities()) {
-					if (e instanceof Villager) {
+			Chunk chunk = tc.getChunkCoord().getChunk();
+			if (!chunk.isLoaded()) chunk.load();
+			
+			for (Entity e : chunk.getEntities()) {
+				if (e instanceof Villager) {
+					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
+					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+						villagersRemoved++;
+						v.setHealth(0);
 						e.remove();
 					}
 				}
 			}
+			
+			chunksSearched++;
+			chunk.unload();
 		}
-		CivMessage.send(sender, CivColor.Gold+"Removed all villagers from "+chunksSearched+" searched chunks.");
+		CivMessage.global(CivColor.Gold+"Removed "+villagersRemoved+" villagers from "+chunksSearched+" town chunks.");
 	}
 	
 	public void decformat_cmd() {

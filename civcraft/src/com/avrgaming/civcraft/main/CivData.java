@@ -18,13 +18,25 @@
  */
 package com.avrgaming.civcraft.main;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.exception.InvalidBlockLocation;
 import com.avrgaming.civcraft.util.BlockSnapshot;
 import com.avrgaming.civcraft.util.ItemManager;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class CivData {
 	
@@ -748,7 +760,7 @@ public class CivData {
 			0x4: west
 			0x8: north
 			0xC: east
-		 */
+			*/
 		
 		switch(data) {
 		case 8:
@@ -764,4 +776,361 @@ public class CivData {
 		System.out.println("Warning, unknown sign post direction: "+data);
 		return CHEST_SOUTH;
 	}
+	
+	
+	public static String enchNameToFriendlyName(String enchName) {
+		switch (enchName) {
+		case "PROTECTION_ENVIRONMENTAL":
+		return "protection";
+		case "PROTECTION_FIRE":
+		return "fire protection";
+		case "PROTECTION_FALL":
+		return "feather falling";
+		case "PROTECTION_EXPLOSIONS":
+		return "blast protection";
+		case "PROTECTION_PROJECTILE":
+		return "projectile protection";
+		case "OXYGEN":
+		return "respiration";
+		case "WATER_WORKER":
+		return "aqua affinity";
+		case "THORNS":
+		return "thorns";
+		case "DAMAGE_ALL":
+		return "sharpness";
+		case "DAMAGE_UNDEAD":
+		return "smite";
+		case "DAMAGE_ARTHROPODS":
+		return "bane of arthropods";
+		case "KNOCKBACK":
+		return "knockback";
+		case "FIRE_ASPECT":
+		return "fire aspect";
+		case "LOOT_BONUS_MOBS":
+		return "looting";
+		case "DIG_SPEED":
+		return "efficiency";
+		case "SILK_TOUCH":
+		return "silk touch";
+		case "DURABILITY":
+		return "unbreaking";
+		case "ARROW_DAMAGE":
+		return "power";
+		case "ARROW_KNOCKBACK":
+		return "punch";
+		case "ARROW_FIRE":
+		return "flame";
+		case "ARROW_INFINITE":
+		return "infinity";
+		case "LUCK":
+		return "luck of the sea";
+		case "LURE":
+		return "lure";
+		}
+		return "";
+	}
+	
+	
+	// converts an itemstack to a string
+	public static String itemToString(ItemStack item) {
+		if (item != null) {
+			String itemString = "";
+			String mat = item.getType().toString();
+			String amount = ((Integer) item.getAmount()).toString();
+			Map<Enchantment, Integer> enchants = item.getEnchantments();
+			String fullEnchantmentString = "";
+			// item meta
+			String displayName = "";
+			String loreString = "";
+			if (item.hasItemMeta()) {
+				// write display name to string
+				try {
+					displayName = item.getItemMeta().getDisplayName();
+					displayName = displayName.replaceAll(" ", "_");
+				}
+				catch (NullPointerException e) {
+					// if the item doesnt have a display name
+				}
+				// write lore to string
+				try {
+					List<String> lore = item.getItemMeta().getLore();
+					String loreString2 = "";
+					// for every string in the lore
+					for (int x = 0; x < lore.size(); x ++) {
+						loreString2 = loreString + lore.get(x);
+						// if it is not the last string in the lore
+						if (x != lore.size() - 1) {
+							// | = new line char in decoding method
+							loreString2 = loreString2 + "|";
+						}
+					}
+					loreString = loreString2;
+				}
+				catch (NullPointerException e) {
+					// if the item doesnt have a lore
+				}
+			}
+			
+			// Write enchants to string
+			Set<Entry<Enchantment, Integer>> exampleEntry = enchants.entrySet();
+			for (Entry<Enchantment, Integer> e : exampleEntry) {
+				Enchantment ench = e.getKey();
+				String lvl = ((Integer) e.getValue()).toString();
+				String enchName = enchNameToFriendlyName(ench.getName());
+				enchName = enchName.replaceAll(" ", "_");
+				fullEnchantmentString = fullEnchantmentString + " " + enchName + ":" + lvl;
+			}
+			
+			// ex: bow 1 name:SomeDisplayName lore:SomeLore
+			itemString = mat + " " + amount;
+			if (displayName != null)
+				itemString = itemString + " name:" + displayName;
+			if (loreString != null)
+				itemString = itemString + " lore:" + loreString;
+			if (fullEnchantmentString != null)
+				itemString = itemString + fullEnchantmentString;
+			return itemString;
+		}
+		return "";
+	}
+		
+		
+	public static ItemStack stringToItem(String item) {
+		// seperates each word in the item string into an array
+		String[] itemSplit = item.split(" ");
+		List<String> itemWordList = Arrays.asList(itemSplit);
+		// material
+		String materialName = itemWordList.get(0);
+		String named = materialName.toUpperCase().replace("ITEMSTACK{", "");
+		Material mat = Material.valueOf(named);
+		// amount
+		int amount = 0;
+		try {
+			String value = String.valueOf(itemWordList.get(1));
+			CivMessage.global(value);
+			amount = Integer.valueOf(value);
+		}
+		// if the config doesnt specify an amount (e.g. bow)
+		catch (ArrayIndexOutOfBoundsException e) {
+			amount = 1;
+		}
+		// display name
+		String name = null;
+		for (String word : itemWordList) {
+			// if config specifies a name in the word
+			// e.g. name:Test
+			if (word.contains("name:")) {
+				String[] nameArray = word.split(":");
+				name = ChatColor.translateAlternateColorCodes('&', nameArray[1]);
+				// allow spaces with the use of the character _
+				name = name.replaceAll("_", " ");
+			}
+		}
+		// lore
+		List<String> lore = null;
+		for (String word : itemWordList) {
+			// if config specifies a lore in the word
+			// e.g. lore:Test
+			if (word.contains("lore:")) {
+				// full lore array is lore, user-defined-lore
+				String[] fullLoreArray = word.split(":");
+				String loreString = ChatColor.translateAlternateColorCodes('&', fullLoreArray[1]);
+				// lorestring is the lore as a string, e.g. Test
+				// usage of an underscore adds a space
+				loreString = loreString.replaceAll("_", " ");
+				// vertical bar represents a new line
+				String[] loreArray = loreString.split("\\|");
+				// loreArray is a list of the lore
+				lore = Arrays.asList(loreArray);
+			}
+		}
+		/*
+		 * ENCHANTMENTS
+		 * ALOT OF THEM
+		 */
+		Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+		for (String word : itemWordList) {
+			// protection
+			if (word.contains("protection:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, lvl);
+			}
+			// fire protection
+			if (word.contains("fire_protection:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.PROTECTION_FIRE, lvl);
+			}
+			// fall protection
+			if (word.contains("feather_falling:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.PROTECTION_FALL, lvl);
+			}
+			// blast protection
+			if (word.contains("blast_protection:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.PROTECTION_EXPLOSIONS, lvl);
+			}
+			// fall protection
+			if (word.contains("projectile_protection:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.PROTECTION_PROJECTILE, lvl);
+			}
+			// respiration
+			if (word.contains("respiration:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.OXYGEN, lvl);
+			}
+			// aqua affinity
+			if (word.contains("aqua_affinity:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.WATER_WORKER, lvl);
+			}
+			// thorns
+			if (word.contains("thorns:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.THORNS, lvl);
+			}
+			// sharpness
+			if (word.contains("sharpness:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.DAMAGE_ALL, lvl);
+			}
+			// smite
+			if (word.contains("smite:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.DAMAGE_UNDEAD, lvl);
+			}
+			// bane of arthropods
+			if (word.contains("bane_of_arthropods:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.DAMAGE_ARTHROPODS, lvl);
+			}
+			// knockback
+			if (word.contains("knockback:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.KNOCKBACK, lvl);
+			}
+			// fire aspect
+			if (word.contains("fire_aspect:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.FIRE_ASPECT, lvl);
+			}
+			// looting
+			if (word.contains("looting:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.LOOT_BONUS_MOBS, lvl);
+			}
+			// efficiency
+			if (word.contains("efficiency:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.DIG_SPEED, lvl);
+			}
+			// silk touch
+			if (word.contains("silk_touch:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.SILK_TOUCH, lvl);
+			}
+			// unbreaking
+			if (word.contains("unbreaking:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.DURABILITY, lvl);
+			}
+			// fortune
+			if (word.contains("fortune:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.LOOT_BONUS_BLOCKS, lvl);
+			}
+			// power
+			if (word.contains("power:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.ARROW_DAMAGE, lvl);
+			}
+			// punch
+			if (word.contains("punch:")) {
+				String[] fullArray = word.split(":");
+		// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.ARROW_KNOCKBACK, lvl);
+			}
+			// flame
+			if (word.contains("flame:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.ARROW_FIRE, lvl);
+			}
+			// infinity
+			if (word.contains("infinity:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.ARROW_INFINITE, lvl);
+			}
+			// luck of the sea
+			if (word.contains("luck_of_the_sea:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.LUCK, lvl);
+			}
+			// lure
+			if (word.contains("lure:")) {
+				String[] fullArray = word.split(":");
+				// lvl of enchant
+				int lvl = Integer.valueOf(fullArray[1]);
+				enchantments.put(Enchantment.LURE, lvl);
+			}
+		}
+		
+		
+		ItemStack itemStack = new ItemStack(mat, amount);
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		// if config specifies a name
+		if (name != null)
+			itemMeta.setDisplayName(name);
+		if (lore != null)
+			itemMeta.setLore(lore);
+		itemStack.setItemMeta(itemMeta);
+		itemStack.addUnsafeEnchantments(enchantments);
+		return itemStack;
+	}
+	
 }

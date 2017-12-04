@@ -19,6 +19,7 @@
 package com.avrgaming.civcraft.command.debug;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.SQLException;
@@ -282,8 +283,13 @@ public class DebugCommand extends CommandBase {
 		CivMessage.send(sender, "Date bypass is now:"+CivGlobal.debugDateBypass);
 	}
 	
-	public void ping_cmd() {
-		CivMessage.send(sender, "test....");
+	// TODO Test, code from https://www.spigotmc.org/threads/getting-a-players-ping.276272/
+	public void ping_cmd() throws CivException, IllegalArgumentException, IllegalAccessException,
+	NoSuchFieldException, SecurityException, InvocationTargetException, NoSuchMethodException {
+		Player player = getPlayer();
+		Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+		int ping = (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
+		CivMessage.sendSuccess(player, "Your ping is: "+ping);
 	}
 	
 	public void matmap_cmd() throws CivException {

@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -129,10 +129,12 @@ import com.avrgaming.civcraft.threading.timers.UpdateEventTimer;
 import com.avrgaming.civcraft.threading.timers.WindmillTimer;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
 import com.avrgaming.sls.SLSManager;
+import com.nametagedit.plugin.NametagHandler;
 
 import pvptimer.PvPListener;
 import pvptimer.PvPTimer;
@@ -144,6 +146,7 @@ public final class CivCraft extends JavaPlugin {
 	public static boolean isDisable = false;
 	public static boolean isStarted = false;
 	public static String worldName;
+	public static NametagHandler handler;
 	
 	private void startTimers() {
 		
@@ -326,9 +329,26 @@ public final class CivCraft extends JavaPlugin {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
 				BuildUndoTask.resumeUndoTasks();
+//				CivCraft.prepareCivTags();
 			}
 		});
 	}
+	
+	// TODO cannot send to Nametag Handler.... so fix? idk how. comes null in console
+/*	public static void prepareCivTags() {
+		for (Civilization civ : CivGlobal.getCivs()) {
+			boolean hasIn = false;
+			for (GroupData groupData : CivCraft.handler.getGroupData()) {
+                if (!groupData.getGroupName().equalsIgnoreCase(civ.getName())) {
+                	hasIn = true;
+                	continue;
+                }
+			}
+			if (!hasIn) {
+				CivCraft.handler.addGroup(new GroupData(civ.getName(), "", StringUtils.left(civ.getName(), 4), "", new Permission("civ.tag.resciv", PermissionDefault.TRUE), -1));
+			}
+		}
+	}*/
 	
 	public boolean hasPlugin(String name) {
 		Plugin p;
@@ -339,19 +359,28 @@ public final class CivCraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
+		
 		int chunksSearched = 0;
+		int villagersRemoved = 0;
 		for (TownChunk tc : CivGlobal.getTownChunks()) {
-			chunksSearched++;
-			tc.getChunkCoord().getChunk().load();
-			for (World w : Bukkit.getWorlds()) {
-				for (Entity e : w.getEntities()) {
-					if (e instanceof Villager) {
+			Chunk chunk = tc.getChunkCoord().getChunk();
+			if (!chunk.isLoaded()) chunk.load();
+			
+			for (Entity e : chunk.getEntities()) {
+				if (e instanceof Villager) {
+					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
+					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+						villagersRemoved++;
+						v.setHealth(0);
 						e.remove();
 					}
 				}
 			}
+			
+			chunksSearched++;
+			chunk.unload();
 		}
-		CivMessage.global("Cleaned "+chunksSearched+" Chunks of villagers.");
+		CivMessage.global(CivColor.Gold+"Removed "+villagersRemoved+" villagers from "+chunksSearched+" town chunks.");
 		
 		isDisable = true;
 		SQLUpdate.save();

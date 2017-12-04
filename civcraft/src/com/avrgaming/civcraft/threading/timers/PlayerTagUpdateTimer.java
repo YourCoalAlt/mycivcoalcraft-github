@@ -15,6 +15,21 @@ public class PlayerTagUpdateTimer implements Runnable {
 	@Override
 	public void run() {
 		if (!CivSettings.hasNametagEdit) return;
+		
+/*//		if (War.isWarTime()) {
+			// TODO Fix with CivCraft.java issue of null
+		
+		if (CivCraft.handler.getGroupData() == null) return;
+			for (GroupData groupData : CivCraft.handler.getGroupData()) {
+				Civilization civ = CivGlobal.getCiv(groupData.getGroupName());
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					for (Resident civres : civ.getOnlineResidents()) {
+						groupData.setPrefix(CivGlobal.updateTag(p, Bukkit.getPlayer(civres.getUUID())));
+					}
+				}
+			}
+//		}*/
+		
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Resident res = CivGlobal.getResident(p);
 			String suffix;
@@ -23,8 +38,8 @@ public class PlayerTagUpdateTimer implements Runnable {
 			} else {
 				if (res.getCiv() != null) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
 					else suffix = CivColor.LightGrayBold+" [None]";
-				
 				NametagEdit.getApi().setSuffix(p, suffix);
+				
 				String prefix = "";
 				if (p.hasPermission(CivSettings.MINI_ADMIN)) {
 					prefix += CivColor.RedBold+"Admin ";

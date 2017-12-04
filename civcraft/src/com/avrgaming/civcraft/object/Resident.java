@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +44,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -429,7 +431,7 @@ public class Resident extends SQLObject {
 			String finalMail = "";
 			for (String s : this.getMailData()) {
 				if (s != null) {
-					finalMail += s+"=";
+					finalMail += s+"@";
 				}
 			}
 			hashmap.put("mailData", finalMail);
@@ -1652,7 +1654,7 @@ public class Resident extends SQLObject {
 	// Mail
 	
 	private void setMailData(String data) {
-		String[] split = data.split("=");
+		String[] split = data.split("@");
 		for (String str : split) {
 			synchronized (str) {
 				if (str == null) continue;
@@ -1684,31 +1686,93 @@ public class Resident extends SQLObject {
 		p.openInventory(inv);
 	}
 	
-	public void openMailMenu(Player p, Resident res) {
+//	https://gist.github.com/graywolf336/8153678
+// https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/inventory/ItemStack.java
+// https://github.com/LeviRosol/Vaults/tree/master/Vaults/src/org/vanillaworld/Vaults
+	
+/*	public void openMailMenu(Player p, Resident res) {
+		p.getInventory().setItemInOffHand(new ItemStack(Material.CACTUS));
 		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
-		
+		//CivMessage.global(p.getInventory().getItemInMainHand().serialize().toString()+" - item");
+		if (this.mailData == null || this.mailData.toString() == "") return;
 		for (String str : this.mailData) {
-			String[] packages = str.split("-");
+			String[] packages = str.split("~");
 			
-			CivMessage.global(str);
+//			CivMessage.global(str);
 			String itemString = packages[0];
-			String givenLore = packages[2];
+			Integer itemAmt = Integer.valueOf(packages[2]);
+			Object rawMeta = packages[3];
+			String addLore = "";	if (packages[4] != null) addLore = packages[4];
+			@SuppressWarnings("unused")
+			Boolean collect = Boolean.valueOf(packages[5]);
 			
 			LoreCraftableMaterial custMat = LoreCraftableMaterial.getCraftMaterialFromId(itemString);
 			if (custMat != null) {
-				String lore = "";
-				for (String convLore : custMat.getLore()) {
-					lore += convLore+";";
-				}
-				lore += givenLore.split(";");
-				
-				inv.addItem(LoreGuiItem.build(custMat.getName(), custMat.getTypeID(), custMat.getDamage(), lore.split(";")));
+				ItemStack item = LoreMaterial.spawn(custMat, itemAmt);
+				inv.addItem(item);
 			} else {
 				int id = Integer.valueOf(packages[0]);
 				int data = Short.valueOf(packages[1]);
-				inv.addItem(LoreGuiItem.build(CivData.getDisplayName(id, data), id, data, givenLore.split(";")));
+				List<String> exportLore = new ArrayList<String>();
+				
+				ItemStack item = new ItemStack(ItemManager.getMaterial(id), itemAmt, (short)data);
+				if (addLore != null) {
+					for (String toAddLore : addLore.split(";")) {
+						if (toAddLore != null && !toAddLore.equals("") && !toAddLore.equalsIgnoreCase("null")) exportLore.add(toAddLore);
+					}
+				}
+				
+				String tosub = "UNSPECIFIC_META:{meta-type=UNSPECIFIC, lore=[";
+				String smeta = rawMeta.toString().substring(tosub.length()).replace("]}", "");
+				for (String l : smeta.split(", ")) {
+					if (!l.equalsIgnoreCase("null") && !l.equals(""))
+					exportLore.add(CivColor.RESET+l);
+				}
+				
+				ItemMeta meta = item.getItemMeta();
+				meta.setLore(exportLore);
+				item.setItemMeta(meta);
+				
+				inv.addItem(item);
+			}
+		}
+		
+		
+		p.openInventory(inv);
+	}*/
+	
+	public void openMailMenu(Player p, Resident res) {
+		p.getInventory().setItemInOffHand(new ItemStack(Material.CACTUS));
+		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
+		//CivMessage.global(p.getInventory().getItemInMainHand().serialize().toString()+" - item");
+		if (this.mailData == null || this.mailData.toString().equals("")) {
+			p.openInventory(inv);
+			return;
+		}
+		for (String str : this.mailData) {
+			String[] packages = str.split("~");
+			
+			ItemStack item = CivData.stringToItem(packages[0]);
+			String addLore = "";	if (packages[1] != null) addLore = packages[1];
+			@SuppressWarnings("unused")
+			Boolean collect = Boolean.valueOf(packages[2]);
+			
+			ItemMeta meta = item.getItemMeta();
+			List<String> exportLore = new ArrayList<String>();
+			for (String b4Lore : meta.getLore()) {
+				exportLore.add(b4Lore);
 			}
 			
+			if (addLore != null) {
+				for (String toAddLore : addLore.split(";")) {
+					if (toAddLore != null && !toAddLore.equalsIgnoreCase("null")) exportLore.add(toAddLore);
+				}
+			}
+			
+			meta.setLore(exportLore);
+			item.setItemMeta(meta);
+			
+			inv.addItem(item);
 		}
 		
 		
