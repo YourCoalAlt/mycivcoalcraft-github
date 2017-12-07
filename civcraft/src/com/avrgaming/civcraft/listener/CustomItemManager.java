@@ -171,7 +171,6 @@ public class CustomItemManager implements Listener {
 			try {
 				throw new EventException("Unknown inventory error.");
 			} catch (EventException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

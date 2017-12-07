@@ -19,13 +19,13 @@ public class SpawnMobs extends RandomEventComponent {
 
 			@Override
 			public void run() {
-				/* Spawn in mobs */
+				// Spawn in mobs
 				EntityType type = EntityType.valueOf(getString("what"));
 				
-				/* Get amount. */
+				// Get amount
 				int amount = Integer.valueOf(getString("amount"));
 				
-				/* Pick a random town chunk and spawn mobs there. */
+				// Pick a random town chunk and spawn mobs there.
 				Random rand = new Random();
 				int index = rand.nextInt(getParentTown().getTownChunks().size());
 				
@@ -41,19 +41,16 @@ public class SpawnMobs extends RandomEventComponent {
 					
 					int y = world.getHighestBlockAt(x, z).getY();
 					Location loc = new Location(world, x, y, z);
-					
 					Bukkit.getServer().getWorld(tc.getChunkCoord().getWorldname()).spawnEntity(loc, type);
 				}
-				
-				sendMessage(amount+" "+type.toString()+" have spawned in the vincitiy of "+
-					(tc.getChunkCoord().getX()*16)+",64,"+(tc.getChunkCoord().getZ()*16));
+				sendMessage(amount+" "+type.toString()+" have spawned in the vincitiy of "+(tc.getChunkCoord().getX()*16)+"x, "+(tc.getChunkCoord().getZ()*16)+"z");
 			}
 		}
-
 		TaskMaster.syncTask(new SyncTask());
 	}
 	
 	@Override
-	public boolean requiresActivation() { return true;	}
-
+	public boolean requiresActivation() {
+		return true;
+	}
 }

@@ -1,7 +1,10 @@
 # Used for various things in the plugin including: random TP, 
 world:
+   name: 'world'
    radius_x: 8000
    radius_z: 8000
+   # Amount of distance to take off for uneven (circle) world borders
+   randomevent_debuffer: 2500
 # Controls the PvP aspect of the game.
 pvp:
    # Enable or Disable attack cooldown.

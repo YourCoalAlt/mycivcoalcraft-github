@@ -69,25 +69,25 @@ culture_levels:
 #
 culture_biomes:
     - name: BEACHES
-      happiness: 0.06
+      happiness: 0.05
       production: 1.0
       science: 2.5
       growth: 1.0
 #
     - name: COLD_BEACH
-      happiness: 0.02
+      happiness: 0.01
       production: 1.0
       science: 3.0
       growth: 1.0
 #
     - name: STONE_BEACH
-      happiness: 0.015
+      happiness: 0.01
       production: 4.0
       science: 2.0
       growth: 0.0
 #
     - name: OCEAN
-      happiness: 0.02
+      happiness: 0.015
       production: 0.0
       science: 3.0
       growth: 1.0
@@ -99,7 +99,7 @@ culture_biomes:
       growth: 0.0
 #
     - name: RIVER
-      happiness: 0.03
+      happiness: 0.025
       production: 1.0
       science: 2.0
       growth: 3.5
@@ -111,7 +111,7 @@ culture_biomes:
       growth: 1.0
 #
     - name: FROZEN_RIVER
-      happiness: 0.015
+      happiness: 0.01
       production: 1.0
       science: 2.5
       growth: 2.0
@@ -119,13 +119,13 @@ culture_biomes:
 # ===== Hot Biomes =====#
 # ======================#
     - name: DESERT
-      happiness: 0.03
+      happiness: 0.02
       production: 1.5
       science: 1.0
       growth: 2.0
 #
     - name: DESERT_HILLS
-      happiness: 0.03
+      happiness: 0.025
       production: 2.5
       science: 1.0
       growth: 1.0
@@ -138,7 +138,7 @@ culture_biomes:
       growth: 0.0
 #
     - name: MESA
-      happiness: 0.03
+      happiness: 0.025
       production: 1.5
       science: 2.5
       growth: 1.0
@@ -168,7 +168,7 @@ culture_biomes:
       growth: 0.0
 #
     - name: MUTATED_MESA_ROCK
-      happiness: 0.02
+      happiness: 0.015
       production: 1.0
       science: 1.0
       growth: 1.0
@@ -188,33 +188,33 @@ culture_biomes:
       growth: 2.0
 #
     - name: FOREST
-      happiness: 0.025
+      happiness: 0.02
       production: 1.5
       science: 1.0
       growth: 2.0
 #
     - name: FOREST_HILLS
-      happiness: 0.03
+      happiness: 0.025
       production: 2.5
       science: 1.0
       growth: 1.5
 #
     - name: MUTATED_FOREST
-      happiness: 0.05
+      happiness: 0.04
       production: 4.0
       science: 1.0
       growth: 1.0
 #
     - name: BIRCH_FOREST
       coins: 0.0
-      happiness: 0.025
+      happiness: 0.02
       production: 1.0
       science: 1.5
       growth: 2.0
 #
     - name: BIRCH_FOREST_HILLS
       coins: 0.0
-      happiness: 0.02
+      happiness: 0.025
       production: 2.5
       science: 2.0
       growth: 1.0
@@ -238,7 +238,7 @@ culture_biomes:
       growth: 2.5
 #
     - name: MUTATED_ROOFED_FOREST
-      happiness: 0.0
+      happiness: 0.01
       production: 3.0
       science: 1.0
       growth: 2.0
@@ -250,25 +250,25 @@ culture_biomes:
       growth: 1.0
 #
     - name: MUTATED_SWAMPLAND
-      happiness: 0.02
+      happiness: 0.015
       production: 3.0
       science: 2.0
       growth: 1.0
 #
     - name: JUNGLE
-      happiness: 0.02
+      happiness: 0.015
       production: 1.0
       science: 2.0
       growth: 2.5
 #
     - name: JUNGLE_EDGE
-      happiness: 0.03
+      happiness: 0.02
       production: 1.0
       science: 1.0
       growth: 1.0
 #
     - name: JUNGLE_HILLS
-      happiness: 0.03
+      happiness: 0.025
       production: 4.0
       science: 1.0
       growth: 2.0
@@ -286,7 +286,7 @@ culture_biomes:
       growth: 1.5
 #
     - name: UNKNOWN
-      happiness: 0.025
+      happiness: 0.015
       production: 1.0
       science: 1.0
       growth: 1.0

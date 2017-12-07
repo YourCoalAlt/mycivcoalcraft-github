@@ -32,7 +32,7 @@ public class CMatCommand extends CommandBase {
 	}
 	
 	public void find_cmd() throws CivException {
-		int MATCH_LIMIT = (9*3);
+		int MATCH_LIMIT = (9*4);
 		
 		if (args.length < 2) {
 			throw new CivException("Enter a material name. (Tip: If you do not know the item's full name, type in part of it and we will try to find it for you.)");
@@ -71,7 +71,7 @@ public class CMatCommand extends CommandBase {
 		}
 		
 		if (potentialMatches.size() > 0) {
-			Inventory inv = Bukkit.createInventory(null, 9*3, "Potential Item Matches");
+			Inventory inv = Bukkit.createInventory(null, 9*4, "Potential Item Matches");
 			for (String s : potentialMatches) {
 				
 				ItemStack stack = getInfoBookForItem(s);

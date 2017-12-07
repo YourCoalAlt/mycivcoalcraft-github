@@ -134,7 +134,6 @@ import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
 import com.avrgaming.sls.SLSManager;
-import com.nametagedit.plugin.NametagHandler;
 
 import pvptimer.PvPListener;
 import pvptimer.PvPTimer;
@@ -146,7 +145,6 @@ public final class CivCraft extends JavaPlugin {
 	public static boolean isDisable = false;
 	public static boolean isStarted = false;
 	public static String worldName;
-	public static NametagHandler handler;
 	
 	private void startTimers() {
 		
@@ -317,7 +315,7 @@ public final class CivCraft extends JavaPlugin {
 			public void run() {
 				isStarted = true;
 				try {
-					worldName = CivSettings.getString(CivSettings.gameConfig, "world_name");
+					worldName = CivSettings.getString(CivSettings.gameConfig, "world.name");
 				} catch (InvalidConfiguration e) {
 					worldName = "world";
 					CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to 'world'");
@@ -329,26 +327,9 @@ public final class CivCraft extends JavaPlugin {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
 				BuildUndoTask.resumeUndoTasks();
-//				CivCraft.prepareCivTags();
 			}
 		});
 	}
-	
-	// TODO cannot send to Nametag Handler.... so fix? idk how. comes null in console
-/*	public static void prepareCivTags() {
-		for (Civilization civ : CivGlobal.getCivs()) {
-			boolean hasIn = false;
-			for (GroupData groupData : CivCraft.handler.getGroupData()) {
-                if (!groupData.getGroupName().equalsIgnoreCase(civ.getName())) {
-                	hasIn = true;
-                	continue;
-                }
-			}
-			if (!hasIn) {
-				CivCraft.handler.addGroup(new GroupData(civ.getName(), "", StringUtils.left(civ.getName(), 4), "", new Permission("civ.tag.resciv", PermissionDefault.TRUE), -1));
-			}
-		}
-	}*/
 	
 	public boolean hasPlugin(String name) {
 		Plugin p;

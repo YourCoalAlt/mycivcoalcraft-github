@@ -87,11 +87,13 @@ import com.avrgaming.global.perks.components.CustomTemplate;
 import gpl.InventorySerializer;
 
 public class Resident extends SQLObject {
-
-	private Town town = null;
+	
+	private boolean chatToggle = true;
 	private boolean townChat = false;
 	private boolean civChat = false;
 	private boolean adminChat = false;
+	
+	private Town town = null;
 	private boolean combatInfo = false;
 	
 	public boolean anticheat = false;
@@ -1777,5 +1779,17 @@ public class Resident extends SQLObject {
 		
 		
 		p.openInventory(inv);
+	}
+
+	public boolean hasChatEnabled() {
+		return this.chatToggle;
+	}
+	
+	public boolean toggleChatEnabled() {
+		return !this.chatToggle;
+	}
+	
+	public boolean setChatEnabled(boolean toggle) {
+		return this.chatToggle = toggle;
 	}
 }

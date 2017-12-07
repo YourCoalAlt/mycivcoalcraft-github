@@ -42,6 +42,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -112,6 +113,20 @@ public class PlayerListener implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+		Player p = event.getPlayer();
+		Resident res = CivGlobal.getResident(p);
+        if (!res.hasChatEnabled()) {
+        	if (event.getRecipients().contains(p))
+        		event.getRecipients().remove(p);
+            event.setCancelled(true);
+        } else {
+        	if (!event.getRecipients().contains(p))
+        		event.getRecipients().add(p);
+        }
+    }
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) throws InvalidNameException {
@@ -286,12 +301,9 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		
 		Player player = event.getPlayer();
 		Resident resident = CivGlobal.getResident(player);
-		if (resident == null || !resident.hasTown()) {
-			return;
-		}
+		if (resident == null || !resident.hasTown()) return;
 		
 		if (War.isWarTime()) {
 			if (resident.getTown().getCiv().getDiplomacyManager().isAtWar()) {
