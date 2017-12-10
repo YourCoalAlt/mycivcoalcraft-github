@@ -515,8 +515,8 @@ public class Backpack {
 			}
 			
 			ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-//			resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
-//			resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
+			resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
+			resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
 			guiInventory.setItem(2, resMail);
 			
 			ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");

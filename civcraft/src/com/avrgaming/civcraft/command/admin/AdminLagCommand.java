@@ -99,7 +99,7 @@ public class AdminLagCommand extends CommandBase {
 	}
 	
 	public void warning_cmd() {
-		CivGlobal.growthEnabled = !CivGlobal.growthEnabled;
+		CivGlobal.warningsEnabled = !CivGlobal.warningsEnabled;
 		
 		if (CivGlobal.warningsEnabled) {
 			CivMessage.sendSuccess(sender, "Warnings enabled.");

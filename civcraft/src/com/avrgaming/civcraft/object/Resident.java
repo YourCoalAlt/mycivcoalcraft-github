@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,12 +38,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -58,6 +59,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.interactive.InteractiveResponse;
+import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivData;
@@ -433,7 +435,7 @@ public class Resident extends SQLObject {
 			String finalMail = "";
 			for (String s : this.getMailData()) {
 				if (s != null) {
-					finalMail += s+"@";
+					finalMail += s+"~";
 				}
 			}
 			hashmap.put("mailData", finalMail);
@@ -1656,7 +1658,7 @@ public class Resident extends SQLObject {
 	// Mail
 	
 	private void setMailData(String data) {
-		String[] split = data.split("@");
+		String[] split = data.split("~");
 		for (String str : split) {
 			synchronized (str) {
 				if (str == null) continue;
@@ -1744,7 +1746,8 @@ public class Resident extends SQLObject {
 	}*/
 	
 	public void openMailMenu(Player p, Resident res) {
-		p.getInventory().setItemInOffHand(new ItemStack(Material.CACTUS));
+		if (!p.isOp()) return;
+		
 		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
 		//CivMessage.global(p.getInventory().getItemInMainHand().serialize().toString()+" - item");
 		if (this.mailData == null || this.mailData.toString().equals("")) {
@@ -1754,7 +1757,15 @@ public class Resident extends SQLObject {
 		for (String str : this.mailData) {
 			String[] packages = str.split("~");
 			
-			ItemStack item = CivData.stringToItem(packages[0]);
+			for (String pkg : packages) {
+				if (pkg == null || pkg == "") continue;
+					ItemStack item = InventorySerializer.getItemStackFromSerial(pkg);
+					if (item == null) continue;
+					p.getInventory().addItem(item);
+					inv.addItem(item);
+			}
+			
+/*			ItemStack item = CivData.stringToI	tem(packages[0]);
 			String addLore = "";	if (packages[1] != null) addLore = packages[1];
 			@SuppressWarnings("unused")
 			Boolean collect = Boolean.valueOf(packages[2]);
@@ -1774,7 +1785,7 @@ public class Resident extends SQLObject {
 			meta.setLore(exportLore);
 			item.setItemMeta(meta);
 			
-			inv.addItem(item);
+			inv.addItem(item);*/
 		}
 		
 		
@@ -1786,10 +1797,82 @@ public class Resident extends SQLObject {
 	}
 	
 	public boolean toggleChatEnabled() {
-		return !this.chatToggle;
+		if (this.chatToggle) return this.chatToggle = false;
+		else return this.chatToggle = true;
 	}
 	
 	public boolean setChatEnabled(boolean toggle) {
 		return this.chatToggle = toggle;
+	}
+
+	public void begin(final Resident res, final Player p) {
+		res.setChatEnabled(false);
+		p.setInvulnerable(true);
+		
+		class SyncTask implements Runnable {
+			@Override
+			public void run() {
+				try {
+					p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*24, 4), true);
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*24, 4), true);
+					
+					String resetS = CivColor.LightGrayItalic;
+					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Are you ready to begin?");
+					Thread.sleep(1000*4);
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you build a "+CivColor.LightPurpleItalic+"civilization"+resetS+"?");
+					Thread.sleep(1000*4);
+					p.playSound(p.getLocation(), Sound.WEATHER_RAIN_ABOVE, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you "+CivColor.LightGreenItalic+"grow"+resetS+
+								" and "+CivColor.GoldItalic+"colonize"+resetS+" the world?");
+					Thread.sleep(1000*4);
+					p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75f, 0.75f);
+					p.playSound(p.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 0.8f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you survive the "+CivColor.RedItalic+"bloodlust of war"+resetS+"?");
+					Thread.sleep(1000*4);
+					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.75f, 1f);
+					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 0.75f, 1f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you become "+CivColor.LightBlueItalic+"a world power"+resetS+"?");
+					Thread.sleep(1000*4);
+					
+					
+					res.setRegistered(System.currentTimeMillis());
+					res.setisProtected(true);
+					int mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
+					
+					CivMessage.send(res, CivColor.LightGray+"You have a PvP Timer enabled for "+mins+" minutes.");
+					CivMessage.send(res, CivColor.LightGray+"You cannot attack or be attacked until it expires.");
+					CivMessage.send(res, CivColor.LightGray+"To remove it, type "+CivColor.LightGrayItalic+"'/resident pvptimer'");
+					
+					p.removePotionEffect(PotionEffectType.SLOW);
+					p.removePotionEffect(PotionEffectType.BLINDNESS);
+					p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*60*5, 0), true);
+					p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*60*5, 0), true);
+					p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20*60*5, 0), true);
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*5, 0), true);
+					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
+					
+					Thread.sleep(1000*4);
+					
+					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
+					MinecraftListener.randomTeleport(p);
+					
+				} catch (InterruptedException | InvalidConfiguration e) {
+					res.setChatEnabled(true);
+					p.setInvulnerable(false);
+					e.printStackTrace();
+				}
+				
+				res.setChatEnabled(true);
+				p.setInvulnerable(false);
+			}
+		}
+		TaskMaster.syncTask(new SyncTask());
 	}
 }

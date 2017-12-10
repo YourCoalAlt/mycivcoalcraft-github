@@ -20,7 +20,7 @@ import com.avrgaming.civcraft.util.ItemManager;
 
 public class InventorySerializer {
 	
-	private static String getSerializedItemStack(ItemStack is) {
+	public static String getSerializedItemStack(ItemStack is) {
         String serializedItemStack = new String();
         
         String isType = String.valueOf(ItemManager.getId(is.getType()));
@@ -79,7 +79,7 @@ public class InventorySerializer {
         return serializedItemStack;
 	}
 	
-	private static ItemStack getItemStackFromSerial(String serial) {
+	public static ItemStack getItemStackFromSerial(String serial) {
         ItemStack is = null;
         Boolean createdItemStack = false;
         List<String> lore = new LinkedList<String>();

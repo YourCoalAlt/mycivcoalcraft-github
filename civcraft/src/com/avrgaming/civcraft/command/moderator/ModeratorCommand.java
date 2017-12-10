@@ -386,6 +386,6 @@ public class ModeratorCommand extends CommandBase {
 	
 	@Override
 	public void doLogging() {
-		CivLog.adminlog(sender.getName(), "/mod "+this.combineArgs(args));
+		CivLog.moderatorlog(sender.getName(), "/mod "+this.combineArgs(args));
 	}
 }

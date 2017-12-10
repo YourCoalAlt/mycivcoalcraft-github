@@ -97,11 +97,15 @@ public class CivMessage {
 	}
 	
 	public static void sendSuccess(Object sender, String message) {
-		send(sender, CivColor.LightGreenItalic+"[Success] "+CivColor.LightGreen+message);
+		send(sender, CivColor.LightGrayBold+"  » "+CivColor.LightGreenItalic+"[Success] "+CivColor.LightGreen+message);
 	}
 	
-	public static void sendError(Object sender, String line) {		
-		send(sender, CivColor.RoseItalic+"[Error] "+CivColor.Rose+line);
+	public static void sendWarning(Object sender, String message) {		
+		send(sender, CivColor.LightGrayBold+"  » "+CivColor.YellowItalic+"[Warning] "+CivColor.Rose+message);
+	}
+	
+	public static void sendError(Object sender, String message) {		
+		send(sender, CivColor.LightGrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+message);
 	}
 	
 	public static void sendErrorNoRepeat(Object sender, String line) {

@@ -264,6 +264,7 @@ public final class CivCraft extends JavaPlugin {
 		
 		try {
 			CivSettings.init(this);
+			CivLog.init(this);
 			SQL.initialize();
 			SQL.initCivObjectTables();
 			ChunkCoord.buildWorldList();

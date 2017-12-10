@@ -185,7 +185,11 @@ public class StructureValidator implements Runnable {
 		}
 	
 		if (player != null) {
-			CivMessage.sendError(player, message);
+			if (message != "") {
+				CivMessage.sendWarning(player, message);
+			} else {
+				CivMessage.send(player, message);
+			}
 			if (player.isOp()) {
 				CivMessage.send(player, CivColor.LightGray+"Since you're OP we'll let you build here anyway.");
 				valid = true;

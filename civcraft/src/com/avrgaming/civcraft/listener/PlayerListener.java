@@ -27,6 +27,7 @@ import java.util.TimeZone;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -44,6 +45,7 @@ import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -55,6 +57,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.server.BroadcastMessageEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
@@ -116,16 +119,62 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Player p = event.getPlayer();
-		Resident res = CivGlobal.getResident(p);
-        if (!res.hasChatEnabled()) {
-        	if (event.getRecipients().contains(p))
-        		event.getRecipients().remove(p);
-            event.setCancelled(true);
-        } else {
-        	if (!event.getRecipients().contains(p))
-        		event.getRecipients().add(p);
-        }
+		Resident res = CivGlobal.getResident(event.getPlayer());
+		if (!res.hasChatEnabled()) {
+			event.setCancelled(true);
+		}
+    }
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+    public void onBroadcastMessage(BroadcastMessageEvent event) {
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (CommandSender cs : event.getRecipients()) {
+			if (cs instanceof Player) {
+				players.add((Player) cs);
+			}
+		}
+		
+		for (Player recipient : players) {
+			Resident res = CivGlobal.getResident(recipient);
+			if (!res.hasChatEnabled()) {
+				event.setCancelled(true);
+			}
+		}
+    }
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (CommandSender cs : event.getRecipients()) {
+			if (cs instanceof Player) {
+				players.add((Player) cs);
+			}
+		}
+		
+		for (Player recipient : players) {
+			Resident res = CivGlobal.getResident(recipient);
+			if (!res.hasChatEnabled()) {
+				String msg = event.getMessage().toLowerCase();
+				
+				if (msg.contains("/ad") || msg.contains("/dbg") || msg.contains("/backpack") || msg.contains("/civ")
+						|| msg.contains("/c") || msg.contains("/town") || msg.contains("/t") || msg.contains("/resident")
+						|| msg.contains("/res") || msg.contains("/cmat")  || msg.contains("/plot") || msg.contains("/p")
+						|| msg.contains("/accept") || msg.contains("/deny") || msg.contains("/tc") || msg.contains("/cc")
+						|| msg.contains("/mod") || msg.contains("/build")  || msg.contains("/market") || msg.contains("/pay")
+						|| msg.contains("/econ")|| msg.contains("/money") || msg.contains("/camp") || msg.contains("/here")
+						
+						|| msg.contains("[Global]") || msg.contains("[Town]") || msg.contains("[Camp]") || msg.contains("[Civ]")) {
+					event.setCancelled(false);
+				}
+				
+				if (msg.contains("/msg") || msg.contains("/tell") || msg.contains("/whisper") || msg.contains("/r") ||
+						msg.contains("/reply") || msg.contains("/broadcast") || msg.contains("/bcast") || msg.contains("/bc") ||
+						msg.contains("/shout")) {
+					event.setCancelled(true);
+				}
+			}
+		}
     }
 	
 	@EventHandler(priority = EventPriority.MONITOR)

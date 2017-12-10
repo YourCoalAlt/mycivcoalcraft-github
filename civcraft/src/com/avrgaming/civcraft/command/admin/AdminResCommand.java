@@ -47,6 +47,27 @@ public class AdminResCommand extends CommandBase {
 		commands.put("rename", "[old_name] [new_name] - Rename this resident. Useful if players change their name.");
 		commands.put("exposure", "[resident] [amount] - Gives/Takes thie [amount] of exposure to a [resident].");
 		commands.put("rtp", "Will randomly teleport you in the world.");
+		commands.put("togglechat", "Turn chat messages being sent on or off.");
+		commands.put("begin", "Does whole beginning process on first join (if player was null).");
+	}
+	
+	public void begin_cmd() throws CivException {
+		if (!(sender instanceof Player)) {
+			throw new CivException("Can only redo begin for players.");
+		}
+		Player p = (Player) sender;
+		Resident res = CivGlobal.getResident(p);
+		res.begin(res, p);
+	}
+	
+	public void togglechat_cmd() throws CivException {
+		if (!(sender instanceof Player)) {
+			throw new CivException("Can only toggle chat for players.");
+		}
+		Player p = (Player) sender;
+		Resident res = CivGlobal.getResident(p);
+		res.toggleChatEnabled();
+		CivMessage.sendSuccess(res, "Toggled chat to "+res.hasChatEnabled());
 	}
 	
 	public void rtp_cmd() throws CivException {

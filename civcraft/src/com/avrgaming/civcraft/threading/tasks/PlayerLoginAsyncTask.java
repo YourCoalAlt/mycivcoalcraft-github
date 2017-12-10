@@ -19,10 +19,15 @@
 package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.session.SessionEntry;
@@ -30,7 +35,8 @@ import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
-import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -42,7 +48,11 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
+
+import gpl.AttributeUtil;
+import gpl.InventorySerializer;
 
 public class PlayerLoginAsyncTask implements Runnable {
 	
@@ -63,6 +73,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 	public void run() {
 		try {
 			CivLog.info("Running PlayerLoginAsyncTask for "+getPlayer().getName()+" UUID("+playerUUID+")");
+			
 			Resident resident = CivGlobal.getResidentViaUUID(playerUUID);
 			if (resident != null && !resident.getName().equalsIgnoreCase(getPlayer().getName())) {
 				CivLog.info("Resident changed their name, previously "+resident.getName()+", now "+getPlayer().getName());
@@ -101,27 +112,12 @@ public class PlayerLoginAsyncTask implements Runnable {
 				try {
 					resident = new Resident(getPlayer().getUniqueId(), getPlayer().getName());
 				} catch (InvalidNameException e) {
-					TaskMaster.syncTask(new PlayerKickBan(getPlayer().getName(), true, false, "You have an invalid name. Sorry."));
+					TaskMaster.syncTask(new PlayerKickBan(getPlayer().getName(), true, false, "You have an invalid name? Sorry, contact an admin."));
 					return;
 				}
 				
 				CivGlobal.addResident(resident);
-				CivLog.info("Added resident:"+resident.getName());
-				resident.setRegistered(System.currentTimeMillis());
-//				CivGuide.showTutorialInventory(getPlayer());
-				resident.setisProtected(true);
-				int mins;
-				try {
-					mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
-				} catch (InvalidConfiguration e1) {
-					e1.printStackTrace();
-					return;
-				}
-				CivMessage.send(resident, CivColor.LightGray+"You have a PvP timer enabled for "+mins+" mins. You cannot attack or be attacked until it expires.");
-				CivMessage.send(resident, CivColor.LightGray+"To remove it, type /resident pvptimer");
-				
-				CivMessage.send(resident, CivColor.LightGray+"You are being randomly teleported now in the world to begin your adventure.");
-				MinecraftListener.randomTeleport(getPlayer());
+				resident.begin(resident, getPlayer());
 			}
 			
 			if (re == null) {
@@ -203,31 +199,40 @@ public class PlayerLoginAsyncTask implements Runnable {
 				}
 			}
 			
-/*			Random rand = new Random();
-			ItemStack item = new ItemStack(ItemManager.getMaterial(CivData.DIAMOND_SWORD), 1);
+			Random rand = new Random();
+			ItemStack item1 = new ItemStack(ItemManager.getMaterial(CivData.DIAMOND_SWORD), 1);
 			List<String> lore = new ArrayList<String>();
 			lore.add("Sample A "+rand.nextInt(10));
 			lore.add("Sample B "+rand.nextInt(100));
-			ItemMeta im = item.getItemMeta();
+			ItemMeta im = item1.getItemMeta();
 			im.setLore(lore);
-			item.setItemMeta(im);
-			item.addEnchantment(Enchantment.FIRE_ASPECT, 2);
-			item.addEnchantment(Enchantment.DAMAGE_ALL, 5);
+			item1.setItemMeta(im);
+			item1.addEnchantment(Enchantment.FIRE_ASPECT, 2);
+			item1.addEnchantment(Enchantment.DAMAGE_ALL, 5);
+			String is1 = InventorySerializer.getSerializedItemStack(item1);
+			resident.addMailData(is1);
 			
-			Map<String, Object> args = item.serialize();
+			ItemStack item2 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_vanilla_diamond_pickaxe"));
+			String is2 = InventorySerializer.getSerializedItemStack(item2);
+			resident.addMailData(is2);
 			
-			CivMessage.global(args.keySet().toString());
-			CivMessage.global(args.values().toString());
+			ItemStack item3 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_refined_iron"), 16);
+			String is3 = InventorySerializer.getSerializedItemStack(item3);
+			resident.addMailData(is3);
 			
-			CivMessage.global("Serialized: "+item.serialize().hashCode());
+			ItemStack item4 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_diamond_sword"));
+			AttributeUtil attrs = new AttributeUtil(item4);
+			attrs.addEnhancement("LoreEnhancementAttack", "level", "2");
+			item4 = attrs.getStack();
+			String is4 = InventorySerializer.getSerializedItemStack(item4);
+			resident.addMailData(is4);
 			
-			CivData.itemToString(item);
 			
-			resident.addMailData(item+"~null~false"); // TODO Remove when done testing
+			
 			resident.setLastOnline(System.currentTimeMillis());
 			resident.setLastIP(getPlayer().getAddress().getAddress().getHostAddress());
 			resident.setSpyExposure(resident.getSpyExposure());
-			resident.save();*/
+			resident.save();
 			
 			//TODO send town board messages?
 			//TODO set default modes?
