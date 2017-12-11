@@ -27,37 +27,31 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class GoodieRepoEvent implements EventInterface {
 	
 	public static void repoProcess() {
-		class SyncTask implements Runnable {
-			@Override
-			public void run() {
-				for (Town town : CivGlobal.getTowns()) {
-					for (BonusGoodie goodie : town.getBonusGoodies()) {
-						town.removeGoodie(goodie);
-					}
-				}
-				
-				for (BonusGoodie goodie : CivGlobal.getBonusGoodies()) {
-					try {
-						goodie.replenish();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+		for (Town town : CivGlobal.getTowns()) {
+			for (BonusGoodie goodie : town.getBonusGoodies()) {
+				town.removeGoodie(goodie);
 			}
 		}
-		TaskMaster.syncTask(new SyncTask());
+		
+		for (BonusGoodie goodie : CivGlobal.getBonusGoodies()) {
+			try {
+				goodie.replenish();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
 	}
 	
 	@Override
 	public void process() {
 		CivLog.info("TimerEvent: GoodieRepo -------------------------------------");
-		repoProcess();
 		CivMessage.global("Trade Goodies have been respawned at trade outposts.");
+		repoProcess();
 	}
 	
 	@Override
@@ -70,7 +64,7 @@ public class GoodieRepoEvent implements EventInterface {
 		cal.set(Calendar.SECOND, 5);
 		cal.set(Calendar.MINUTE, repo_minute);
 		cal.set(Calendar.HOUR_OF_DAY, repo_hour);
-		cal.add(Calendar.DATE, repo_day);
+		cal.set(Calendar.DAY_OF_WEEK, repo_day);
 		return cal;
 	}
 }

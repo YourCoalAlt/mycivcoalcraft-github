@@ -1761,7 +1761,7 @@ public class Resident extends SQLObject {
 				if (pkg == null || pkg == "") continue;
 					ItemStack item = InventorySerializer.getItemStackFromSerial(pkg);
 					if (item == null) continue;
-					p.getInventory().addItem(item);
+//					p.getInventory().addItem(item);
 					inv.addItem(item);
 			}
 			

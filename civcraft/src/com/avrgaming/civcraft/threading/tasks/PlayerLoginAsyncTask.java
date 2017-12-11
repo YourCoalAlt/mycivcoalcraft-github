@@ -19,15 +19,10 @@
 package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.database.session.SessionEntry;
@@ -35,8 +30,6 @@ import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
-import com.avrgaming.civcraft.lorestorage.LoreMaterial;
-import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -48,11 +41,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
-
-import gpl.AttributeUtil;
-import gpl.InventorySerializer;
 
 public class PlayerLoginAsyncTask implements Runnable {
 	
@@ -198,36 +187,6 @@ public class PlayerLoginAsyncTask implements Runnable {
 					CivMessage.sendCiv(cc.getCiv(), color+getPlayer().getDisplayName()+"("+relationName+") has logged-in to our borders.");
 				}
 			}
-			
-			Random rand = new Random();
-			ItemStack item1 = new ItemStack(ItemManager.getMaterial(CivData.DIAMOND_SWORD), 1);
-			List<String> lore = new ArrayList<String>();
-			lore.add("Sample A "+rand.nextInt(10));
-			lore.add("Sample B "+rand.nextInt(100));
-			ItemMeta im = item1.getItemMeta();
-			im.setLore(lore);
-			item1.setItemMeta(im);
-			item1.addEnchantment(Enchantment.FIRE_ASPECT, 2);
-			item1.addEnchantment(Enchantment.DAMAGE_ALL, 5);
-			String is1 = InventorySerializer.getSerializedItemStack(item1);
-			resident.addMailData(is1);
-			
-			ItemStack item2 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_vanilla_diamond_pickaxe"));
-			String is2 = InventorySerializer.getSerializedItemStack(item2);
-			resident.addMailData(is2);
-			
-			ItemStack item3 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_refined_iron"), 16);
-			String is3 = InventorySerializer.getSerializedItemStack(item3);
-			resident.addMailData(is3);
-			
-			ItemStack item4 = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_diamond_sword"));
-			AttributeUtil attrs = new AttributeUtil(item4);
-			attrs.addEnhancement("LoreEnhancementAttack", "level", "2");
-			item4 = attrs.getStack();
-			String is4 = InventorySerializer.getSerializedItemStack(item4);
-			resident.addMailData(is4);
-			
-			
 			
 			resident.setLastOnline(System.currentTimeMillis());
 			resident.setLastIP(getPlayer().getAddress().getAddress().getHostAddress());

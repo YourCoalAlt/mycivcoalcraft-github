@@ -1,7 +1,6 @@
 #
-# This files contains defines for buffs which can be applied to bonus goodies.
-# Eventually these buffs may also apply to governments and/or wonders
-#
+# This files contains buffs which can be applied to bonus goodies.
+# These buffs may also apply to governments and/or wonders
 #
 
 #stackable_text: '<greenb>Stackable<r>'

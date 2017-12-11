@@ -2,11 +2,15 @@ package com.avrgaming.civcraft.loreenhancements;
 
 import java.util.HashMap;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.main.CivData;
+import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.BuildableDamageBlock;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 
 import gpl.AttributeUtil;
@@ -26,7 +30,6 @@ public abstract class LoreEnhancement {
 		
 		enhancements.put("LoreEnhancementUnitGainAttack", new LoreEnhancementUnitGainAttack());
 		
-		enhancements.put("LoreEnhancementItemLivesLeft", new LoreEnhancementItemLivesLeft());
 		enhancements.put("LoreEnhancementSoulBound", new LoreEnhancementSoulBound());
 		enhancements.put("LoreEnhancementAttack", new LoreEnhancementAttack());
 		enhancements.put("LoreEnhancementDefense", new LoreEnhancementDefense());
@@ -148,21 +151,100 @@ public abstract class LoreEnhancement {
 	public static boolean isWeaponOrArmor(ItemStack item) {
 		return isWeapon(item) || isArmor(item);
 	}
-
+	
 	public boolean hasEnchantment(ItemStack item) {
 		return false;
 	}
-
+	
 	public abstract String getDisplayName();
-
+	
 	public int onStructureBlockBreak(BuildableDamageBlock dmgBlock, int damage) {
 		return damage;
 	}
-
+	
+	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
+		AttributeUtil attr = new AttributeUtil(stack);
+		if (attr.getCivCraftProperty("death_percent_value") == null) return stack;
+		double percent = Double.valueOf(attr.getCivCraftProperty("death_percent_value"));
+		
+		int maxDura = stack.getType().getMaxDurability();
+		int reduction = (int)(maxDura*percent);
+		int durabilityLeft = maxDura - stack.getDurability();
+		
+		if (durabilityLeft >= reduction) {
+			if (doDamage) {
+				int newDurability = (stack.getDurability() + reduction);
+				stack.setDurability((short)newDurability);
+			}
+			
+			AttributeUtil attrs = new AttributeUtil(stack);
+			int dmgpert = (durabilityLeft*100) / maxDura;
+			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
+			if (!doDamage) livesLeft++;
+			
+			String saved = "";
+			for (String l : attrs.getLore()) {
+				if (!l.contains(" Lives Left")) saved += l+";";
+			}
+			
+			String newSave = "";
+			for (String s : saved.split(";")) {
+				if (s.contains(" Lives Left")) continue;
+				else newSave += s+";";
+			}
+			
+			attrs.setLore(newSave.split(";"));
+			attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
+			stack = attrs.getStack();
+			
+			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
+			return stack;
+		} else {
+			int slot = 999;
+			for (int i = 0; i < p.getInventory().getContents().length; i++) {
+				if (p.getInventory().getContents()[i] == stack &&
+						p.getInventory().getContents()[i].getItemMeta() == stack.getItemMeta() && i < 36) {
+					slot = i;
+					continue;
+				}
+			}
+			
+			stack = new ItemStack(Material.WEB);
+			AttributeUtil attrs = new AttributeUtil(stack);
+			String brokeName = stack.getItemMeta().getDisplayName();
+			attrs.setName(brokeName+" - "+CivColor.LightPurpleBold+"BROKEN");
+			attrs.addLore(CivColor.LightGrayItalic+"Your "+brokeName+CivColor.LightGrayItalic+" ran out of Lives and broke!");
+			attrs.addEnhancement("LoreEnhancementSoulBound", null, null);	
+			stack = attrs.getStack();
+			
+			if (slot != 999) {
+				p.getInventory().setItem(slot, stack);
+				return stack;
+			} else {
+				boolean isEmpty = false;
+				for (int i = 0; i < p.getInventory().getContents().length; i++) {
+					if (p.getInventory().getContents()[i].getType() == Material.AIR && i < 36) {
+						isEmpty = true;
+						break;
+					}
+				}
+				
+				if (isEmpty) {
+					p.getInventory().addItem(stack);
+					return stack;
+				} else {
+					CivMessage.send(p, CivColor.LightGrayItalic+"We dropped items back on the ground due to a full inventory.");
+					p.getWorld().dropItem(p.getLocation(), stack);
+					return stack;
+				}
+			}
+		}
+	}
+	
 	public double getLevelDouble(AttributeUtil attrs) { return 0; }
 	public Integer getLevel(AttributeUtil attrs) { return 0; }
 	public abstract String serialize(ItemStack stack);
 	public abstract ItemStack deserialize(ItemStack stack, String data);
-	
 	
 }

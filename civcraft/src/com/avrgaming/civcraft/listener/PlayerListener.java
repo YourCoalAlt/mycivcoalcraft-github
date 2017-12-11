@@ -48,6 +48,7 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
@@ -72,6 +73,7 @@ import com.avrgaming.civcraft.config.ConfigTechPotion;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.items.units.UnitItemMaterial;
 import com.avrgaming.civcraft.items.units.UnitMaterial;
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -114,6 +116,13 @@ public class PlayerListener implements Listener {
 			} else if (resident.getItemMode().equals("rare") && rare) {
 				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
 			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerItemMend(PlayerItemMendEvent event) {
+		if (LoreEnhancement.isWeaponOrArmor(event.getItem())) {
+			event.setCancelled(true);
 		}
 	}
 	

@@ -58,16 +58,9 @@ public class EventTimer {
 	}
 	
 	
-	
 	public static void loadGlobalEvents() {
-//		TestEvent test = new TestEvent();
-//		try {
-//			new EventTimer("test", test, test.getNextDate());
-//		} catch (InvalidConfiguration e1) {
-//			e1.printStackTrace();
-//		}
 		
-		/* Setup daily upkeep event. */
+		// Daily upkeep event
 		try {
 			DailyEvent upkeepEvent = new DailyEvent();
 			new EventTimer("daily", upkeepEvent, upkeepEvent.getNextDate());
@@ -75,7 +68,7 @@ public class EventTimer {
 			e.printStackTrace();
 		}
 		
-		/* Setup Hourly tick event. */
+		// Hourly tick event
 		try {
 			HourlyEvent hourlyTickEvent = new HourlyEvent();
 			new EventTimer("hourly", hourlyTickEvent, hourlyTickEvent.getNextDate());
@@ -83,7 +76,7 @@ public class EventTimer {
 			e.printStackTrace();
 		}
 		
-		/* Setup spawn regen event */
+		// Spawn regen event
 		try {
 			SpawnRegenEvent spawnRegenEvent = new SpawnRegenEvent();
 			new EventTimer("spawn-regen", spawnRegenEvent, spawnRegenEvent.getNextDate());
@@ -91,7 +84,7 @@ public class EventTimer {
 			e.printStackTrace();
 		}
 		
-		/* Setup war event. */
+		// WarTime event
 		try {
 			WarEvent WarEvent = new WarEvent();
 			new EventTimer("war", WarEvent, WarEvent.getNextDate());
@@ -99,7 +92,7 @@ public class EventTimer {
 			e.printStackTrace();
 		}
 		
-		/* Setup repo event. */
+		// Trade repo event
 		try {
 			GoodieRepoEvent repoEvent = new GoodieRepoEvent();
 			new EventTimer("repo-goodies", repoEvent, repoEvent.getNextDate());
@@ -107,16 +100,14 @@ public class EventTimer {
 			e.printStackTrace();
 		}
 		
-		/* Setup random event timer. */
+		// Random event timer
 		try {
 			RandomEventTimer randEvent = new RandomEventTimer();
 			new EventTimer("random", randEvent, randEvent.getNextDate());
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
 	
 	public EventTimer(String name, EventInterface eventFunction, Calendar start) {
 		try {
@@ -124,11 +115,6 @@ public class EventTimer {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-//		this.name = name;
-//		this.eventFunction = eventFunction;
-//		this.peroid = peroid;
-//		this.next = start;
-//		register();
 	}
 	
 	public void load(String timerName, EventInterface eventFunction, Calendar start) throws SQLException {
@@ -145,7 +131,7 @@ public class EventTimer {
 			
 			this.name = timerName;
 			this.eventFunction = eventFunction;
-	
+			
 			if (rs.next()) {
 				this.last = EventTimer.getCalendarInServerTimeZone();
 				this.last.setTimeInMillis(rs.getLong("lastEvent"));
@@ -155,7 +141,6 @@ public class EventTimer {
 			} else {
 				this.last = EventTimer.getCalendarInServerTimeZone();
 				this.last.setTimeInMillis(0);
-				
 				this.next = start;
 				this.save();
 			}
@@ -172,7 +157,9 @@ public class EventTimer {
 	public void save() {
 		class SaveLater implements Runnable {
 			EventTimer timer;
-			SaveLater(EventTimer timer) { this.timer = timer; }
+			SaveLater(EventTimer timer) {
+				this.timer = timer;
+			}
 			public void run() {
 				try {
 					timer.saveNow();
@@ -207,7 +194,6 @@ public class EventTimer {
 		} finally {
 			SQL.close(null, ps, context);
 		}
-
 	}
 	
 	public Calendar getNext() {
@@ -218,22 +204,22 @@ public class EventTimer {
 		return last;
 	}
 	
-	public void setNext(Calendar next2) {
-		this.next = next2;
+	public void setNext(Calendar next) {
+		this.next = next;
 	}
 	
 	public void setLast(Calendar last) {
 		this.last = last;
 	}
-
+	
 	public EventInterface getEventFunction() {
 		return eventFunction;
 	}
-
+	
 	public void setEventFunction(EventInterface eventFunction) {
 		this.eventFunction = eventFunction;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -254,5 +240,4 @@ public class EventTimer {
 		
 		return cal;
 	}
-	
 }

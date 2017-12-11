@@ -20,6 +20,12 @@ package com.avrgaming.civcraft.command.market;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.main.CivGlobal;
+import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Civilization;
+import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.war.War;
 
 public class MarketCommand extends CommandBase {
 
@@ -27,29 +33,111 @@ public class MarketCommand extends CommandBase {
 	public void init() {
 		command = "/market";
 		displayName = "Market";	
-				
-		commands.put("buy", "Buy things from the market, see whats for sale.");
-
+		
+		commands.put("buytowns", "See what towns are for sale and buy them.");
+		commands.put("buycivs", "See what civs are for sale and buy them.");
 	}
-
-	public void buy_cmd() {
-		MarketBuyCommand cmd = new MarketBuyCommand();	
-		cmd.onCommand(sender, null, "buy", this.stripArgs(args, 1));
+	
+	public void buytowns_cmd() throws CivException {
+		this.validLeaderAdvisor();
+		Civilization senderCiv = this.getSenderCiv();
+		
+		if (args.length < 2) {
+			list_towns_for_sale(senderCiv);
+			CivMessage.send(sender, "Use /market buy towns [town-name] to buy this town.");
+			return;
+		}
+		
+		Town town = getNamedTown(1);
+		if (senderCiv.isForSale()) {
+			throw new CivException("Cannot buy a town when your civ is up for sale.");
+		}
+		
+		if (town.getCiv() == senderCiv) {
+			throw new CivException("Cannot buy a town already in your civ.");
+		}
+		
+		if (town.isCapitol()) {
+			throw new CivException("Cannot buy the capitol, you must buy the civilization instead.");
+		}
+		
+		if (!town.isForSale()) {
+			throw new CivException("Can only buy towns that are up for sale.");
+		}
+		
+		if (War.isWarTime() || War.isWithinWarDeclareDays()) {
+			throw new CivException("Can not buy towns during WarTime or within "+War.getTimeDeclareDays()+" days of WarTime.");
+		}
+		
+		senderCiv.buyTown(town);
+		CivMessage.global("Town of "+town.getName()+" has been bought and is now part of "+senderCiv.getName());
+		CivMessage.sendSuccess(sender, "Bought town "+args[1]);
+	}
+	
+	private void list_towns_for_sale(Civilization ourCiv) {
+		CivMessage.sendHeading(sender, "Towns For Sale");
+		for (Town town : CivGlobal.getTowns()) {
+			if (!town.isCapitol()) {
+				if (town.isForSale()) {
+					CivMessage.send(sender, town.getName()+" - "+CivColor.Yellow+df.format(town.getForSalePrice())+" coins.");
+				}
+			}
+		}
+		
+	}
+	
+	public void buycivs_cmd() throws CivException {
+		this.validLeaderAdvisor();
+		Civilization senderCiv = this.getSenderCiv();
+		
+		if (args.length < 2) {
+			list_civs_for_sale(senderCiv);
+			CivMessage.send(sender, "Use /market buy civs [civ-name] to buy this civ.");
+			return;
+		}
+		
+		Civilization civBought = getNamedCiv(1);
+		if (senderCiv.isForSale()) {
+			throw new CivException("Cannot buy a civ when your civ is up for sale.");
+		}
+		
+		if (civBought == senderCiv) {
+			throw new CivException("Cannot buy your own civ.");
+		}
+		
+		if (!civBought.isForSale()) {
+			throw new CivException("Can only buy civilizations that are up for sale.");
+		}
+		
+		if (War.isWarTime() || War.isWithinWarDeclareDays()) {
+			throw new CivException("Can not buy civs during WarTime or within "+War.getTimeDeclareDays()+" days of WarTime.");
+		}
+		
+		senderCiv.buyCiv(civBought);
+		CivMessage.global(civBought.getName()+" has been bought by "+senderCiv.getName());
+		CivMessage.sendSuccess(sender, "Bought civ "+args[1]);
+	}
+	
+	private void list_civs_for_sale(Civilization ourCiv) {
+		CivMessage.sendHeading(sender, "Civs For Sale");
+		for (Civilization civ : CivGlobal.getCivs()) {
+			if (civ.isForSale()) {
+				CivMessage.send(sender, civ.getName()+" - "+CivColor.Yellow+df.format(civ.getTotalSalePrice())+" coins.");
+			}
+		}
 	}
 	
 	@Override
 	public void doDefaultAction() throws CivException {
 		showHelp();
 	}
-
+	
 	@Override
 	public void showHelp() {
 		showBasicHelp();
 	}
-
+	
 	@Override
 	public void permissionCheck() throws CivException {
-		
 	}
-
 }

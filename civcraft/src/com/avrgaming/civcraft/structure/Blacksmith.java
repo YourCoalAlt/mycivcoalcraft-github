@@ -575,6 +575,27 @@ public class Blacksmith extends Structure {
 		// Schedule a message to notify the player when the smelting is finished.
 		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
 				CivColor.LightGreen+" Your stack of "+amt+" "+CivData.getDisplayName(iid, data)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+		
+		
+		// TODO We need to make a timer to add to resident's mail or else they won't recieve the items.
+/*		int full = 0; int partial = 0;
+		for (int stackRefine = (int) (amt*Blacksmith.YIELD_RATE); stackRefine >= 64; stackRefine -= 64) {
+			if (stackRefine < 64) partial = stackRefine;
+			else full += 1;
+		}
+		
+		for (int i = 0; i < full; i++) {
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64);
+			String is = InventorySerializer.getSerializedItemStack(item);
+			BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(player.getUniqueId().toString(), is), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+		}
+		
+		if (partial > 0) {
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial);
+			String is = InventorySerializer.getSerializedItemStack(item);
+			BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(player.getUniqueId().toString(), is), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+		}*/
+		
 		CivMessage.send(player,CivColor.LightGreen+ "Deposited "+amt+" "+CivData.getDisplayName(iid, data)+".");
 	}
 	

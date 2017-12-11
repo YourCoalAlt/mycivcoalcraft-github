@@ -206,20 +206,27 @@ public class Barracks extends Structure {
 		try {
 			player = CivGlobal.getPlayer(playerName);
 		} catch (CivException e) {
-			CivMessage.sendError(playerName, "Cannot find player: "+playerName);
+			CivMessage.sendError(playerName, "Cannot find player: "+playerName+", repair item destroyed!");
 			return;
 		}
 		
 		Resident resident = CivGlobal.getResident(player);
 		if (!resident.getTreasury().hasEnough(cost)) {
 			CivMessage.sendError(player, "Sorry, but you don't have the required "+cost+" coins.");
+			player.getInventory().addItem(stack);
 			return;
 		}
 		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 		ItemStack newStack = LoreMaterial.spawn(craftMat);
-		AttributeUtil attr = new AttributeUtil(stack); newStack = attr.getStack();
+		AttributeUtil attr = new AttributeUtil(stack);
+		newStack = attr.getStack();
 		newStack.setDurability((short)0);
+		
+		if (attr.getCivCraftProperty("death_percent_value") != null) {
+			newStack = LoreEnhancement.getItemLivesLeftViaDurability(player, newStack, false);
+		}
+		
 		player.getInventory().addItem(newStack);
 		resident.getTreasury().withdraw(cost);
 		CivMessage.sendSuccess(player, "Repaired "+craftMat.getName()+" for "+cost+" coins.");

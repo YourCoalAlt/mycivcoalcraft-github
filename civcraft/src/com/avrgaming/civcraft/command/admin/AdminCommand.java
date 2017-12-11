@@ -505,13 +505,11 @@ public class AdminCommand extends CommandBase {
 
 	@Override
 	public void permissionCheck() throws CivException {
-		
 		if (sender instanceof Player) {
 			if (((Player)sender).hasPermission(CivSettings.MINI_ADMIN)) {
 				return;
 			}
 		}
-		
 		
 		if (sender.isOp() == false) {
 			throw new CivException("Only admins can use this command.");			
@@ -522,5 +520,4 @@ public class AdminCommand extends CommandBase {
 	public void doLogging() {
 		CivLog.adminlog(sender.getName(), "/ad "+this.combineArgs(args));
 	}
-	
 }

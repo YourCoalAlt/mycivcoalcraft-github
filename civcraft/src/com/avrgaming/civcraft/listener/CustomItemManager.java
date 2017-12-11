@@ -490,9 +490,9 @@ public class CustomItemManager implements Listener {
 	
 	private void replaceItem(PlayerDeathEvent event, ItemStack item, ItemStack newItem) {
 		if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
-		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
-		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
-		else if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
+		else if (LoreEnhancement.isChestplate(item)) event.getEntity().getInventory().setChestplate(newItem);
+		else if (LoreEnhancement.isLeggings(item)) event.getEntity().getInventory().setLeggings(newItem);
+		else if (LoreEnhancement.isBoots(item)) event.getEntity().getInventory().setBoots(newItem);
 		else CivMessage.sendError(event.getEntity(), "Cannot fix item from your armor slot... contact an admin. Material: "+item);
 	}
 	

@@ -60,7 +60,8 @@ public class InteractiveRepairItem implements InteractiveResponse {
 				CivMessage.send(resident, CivColor.LightGray+"Repair cancelled.");
 				LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 				ItemStack newStack = LoreMaterial.spawn(craftMat);
-				AttributeUtil attr = new AttributeUtil(stack); newStack = attr.getStack();
+				AttributeUtil attr = new AttributeUtil(stack);
+				newStack = attr.getStack();
 				player.getInventory().addItem(newStack);
 				return;
 			}
