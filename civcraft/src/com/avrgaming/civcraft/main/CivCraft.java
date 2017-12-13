@@ -252,11 +252,11 @@ public final class CivCraft extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		CivLog.init(this);
 		isDisable = false;
 		setPlugin(this);
 		this.saveDefaultConfig();
 		
-		CivLog.init(this);
 		BukkitObjects.initialize(this);
 		
 		//Load World Populators
@@ -264,7 +264,6 @@ public final class CivCraft extends JavaPlugin {
 		
 		try {
 			CivSettings.init(this);
-			CivLog.init(this);
 			SQL.initialize();
 			SQL.initCivObjectTables();
 			ChunkCoord.buildWorldList();
