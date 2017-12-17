@@ -19,7 +19,7 @@ bank_levels:
    - level: 8
      exchange_rate: 1.40
    - level: 9
-     exchange_rate: 1.75
+     exchange_rate: 1.70
    - level: 10
      exchange_rate: 2.00
 #======================================#

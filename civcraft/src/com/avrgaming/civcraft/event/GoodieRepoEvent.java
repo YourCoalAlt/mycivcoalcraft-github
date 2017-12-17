@@ -30,6 +30,13 @@ import com.avrgaming.civcraft.object.Town;
 
 public class GoodieRepoEvent implements EventInterface {
 	
+	@Override
+	public void process() {
+		CivLog.info("TimerEvent: GoodieRepo -------------------------------------");
+		CivMessage.global("Trade Goodies have been respawned at trade outposts.");
+		repoProcess();
+	}
+	
 	public static void repoProcess() {
 		for (Town town : CivGlobal.getTowns()) {
 			for (BonusGoodie goodie : town.getBonusGoodies()) {
@@ -48,13 +55,6 @@ public class GoodieRepoEvent implements EventInterface {
 	}
 	
 	@Override
-	public void process() {
-		CivLog.info("TimerEvent: GoodieRepo -------------------------------------");
-		CivMessage.global("Trade Goodies have been respawned at trade outposts.");
-		repoProcess();
-	}
-	
-	@Override
 	public Calendar getNextDate() throws InvalidConfiguration {
 		Calendar cal = EventTimer.getCalendarInServerTimeZone();
 		int repo_day = CivSettings.getInteger(CivSettings.goodsConfig, "trade_good_repo_day");
@@ -65,6 +65,8 @@ public class GoodieRepoEvent implements EventInterface {
 		cal.set(Calendar.MINUTE, repo_minute);
 		cal.set(Calendar.HOUR_OF_DAY, repo_hour);
 		cal.set(Calendar.DAY_OF_WEEK, repo_day);
+		int day = 7 - cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DAY_OF_WEEK, repo_day+day);
 		return cal;
 	}
 }

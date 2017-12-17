@@ -248,11 +248,9 @@ public class Blacksmith extends Structure {
 		}
 	}
 	
-	
 	@Override
 	public void updateSignText() {
 		double cost = CivSettings.getDoubleStructure("blacksmith.forge_cost");
-		
 		for (StructureSign sign : getSigns()) {
 			int special_id = Integer.valueOf(sign.getAction());
 
@@ -265,14 +263,7 @@ public class Blacksmith extends Structure {
 						"For "+cost+" Coins\n"+
 						getNonResidentFeeString());			
 				break;
-			case 2:
-				sign.setText("Deposit\nOre\nResidents Only");
-				break;
-			case 3:
-				sign.setText("Withdraw\nOre\nResidents Only");
-				break;
 			}
-				
 			sign.update();
 		}
 	}
@@ -280,11 +271,9 @@ public class Blacksmith extends Structure {
 	public String getKey(Player player, Structure struct, String tag) {
 		return player.getUniqueId().toString()+"_"+struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag; 
 	}
-
+	
 	public void saveItem(ItemStack item, String key) {
-		
 		String value = ""+ItemManager.getId(item)+":";
-		
 		for (Enchantment e : item.getEnchantments().keySet()) {
 			value += ItemManager.getId(e)+","+item.getEnchantmentLevel(e);
 			value += ":";
@@ -307,9 +296,7 @@ public class Blacksmith extends Structure {
 		return false;
 	}
 		
-	/*
-	 * Converts the ore id's into the ingot id's
-	 */
+	// Converts the ore id's into the ingot id's
 	public static int convertType(int blockid) {
 		switch(blockid) {
 		case CivData.IRON_ORE:
@@ -335,7 +322,6 @@ public class Blacksmith extends Structure {
 	 * item's id, data, and damage.
 	 */
 	public void deposit_forge(Player player) throws CivException {
-		
 		ItemStack item = player.getInventory().getItemInMainHand();
 		
 		ArrayList<SessionEntry> sessions = null;

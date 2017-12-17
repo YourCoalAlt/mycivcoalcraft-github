@@ -41,7 +41,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ItemManager;
 
-import gpl.InventorySerializer;
+import gpl.ItemSerializer;
 
 public class WarRegen {
 
@@ -63,7 +63,7 @@ public class WarRegen {
 	public static String blockInventoryString(Inventory inv) {
 		String out = ":";
 
-		out += InventorySerializer.InventoryToString(inv);
+		out += ItemSerializer.InventoryToString(inv);
 		
 		return out;
 	}
@@ -143,28 +143,28 @@ public class WarRegen {
 		switch (block.getType()) {
 		case TRAPPED_CHEST:
 			inv = ((Chest)block.getState()).getBlockInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case CHEST:
 			inv = ((Chest)block.getState()).getBlockInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case DISPENSER:			
 			inv = ((Dispenser)block.getState()).getInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case BURNING_FURNACE:
 		case FURNACE:
 			inv = ((Furnace)block.getState()).getInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case DROPPER:
 			inv = ((Dropper)block.getState()).getInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case HOPPER:
 			inv = ((Hopper)block.getState()).getInventory();
-			InventorySerializer.StringToInventory(inv, split[6]);
+			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case SIGN:
 		case SIGN_POST:

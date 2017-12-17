@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.util.ItemManager;
 
 // Original serializer by Phil2812 (https://forums.bukkit.org/threads/serialize-inventory-to-single-string-and-vice-versa.92094/)
 
-public class InventorySerializer {
+public class ItemSerializer {
 	
 	public static String getSerializedItemStack(ItemStack is) {
 		String serializedItemStack = new String();
@@ -127,7 +127,7 @@ public class InventorySerializer {
 		return is;
 	}
 	
-	public static String InventoryToString (Inventory invInventory) {
+	public static String InventoryToString(Inventory invInventory) {
 		String serialization = invInventory.getSize() + ";";
 		for (int i = 0; i < invInventory.getSize(); i++) {
 			ItemStack is = invInventory.getItem(i);
@@ -149,7 +149,7 @@ public class InventorySerializer {
 		return serialization;
 	}
 	
-	public static void StringToInventory (Inventory inv, String inString) {
+	public static void StringToInventory(Inventory inv, String inString) {
 		String invString;
 		String[] inventorySplit = null; 
 		

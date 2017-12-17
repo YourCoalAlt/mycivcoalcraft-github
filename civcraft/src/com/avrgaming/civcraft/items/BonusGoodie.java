@@ -211,7 +211,6 @@ public class BonusGoodie extends LoreItem {
 						continue;
 					}
 					ItemStack stack = itemEntry.getValue();
-					
 					if (this.isItemStackOurs(stack)) {
 						// Found ya!						
 						return stack;

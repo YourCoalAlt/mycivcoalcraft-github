@@ -86,7 +86,7 @@ import com.avrgaming.global.perks.PlatinumManager;
 import com.avrgaming.global.perks.components.CustomPersonalTemplate;
 import com.avrgaming.global.perks.components.CustomTemplate;
 
-import gpl.InventorySerializer;
+import gpl.ItemSerializer;
 
 public class Resident extends SQLObject {
 	
@@ -1488,7 +1488,7 @@ public class Resident extends SQLObject {
 	public void saveInventory() {
 		try {
 			Player player = CivGlobal.getPlayer(this);			
-			String serial =  InventorySerializer.InventoryToString(player.getInventory());
+			String serial =  ItemSerializer.InventoryToString(player.getInventory());
 			this.setSavedInventory(serial);
 			this.save();
 		} catch (CivException e) {
@@ -1512,7 +1512,7 @@ public class Resident extends SQLObject {
 		try {
 			Player player = CivGlobal.getPlayer(this);
 			clearInventory();
-			InventorySerializer.StringToInventory(player.getInventory(), this.savedInventory);
+			ItemSerializer.StringToInventory(player.getInventory(), this.savedInventory);
 			this.setSavedInventory(null);
 			this.save();
 		} catch (CivException e) {
@@ -1759,7 +1759,7 @@ public class Resident extends SQLObject {
 			
 			for (String pkg : packages) {
 				if (pkg == null || pkg == "") continue;
-					ItemStack item = InventorySerializer.getItemStackFromSerial(pkg);
+					ItemStack item = ItemSerializer.getItemStackFromSerial(pkg);
 					if (item == null) continue;
 //					p.getInventory().addItem(item);
 					inv.addItem(item);
