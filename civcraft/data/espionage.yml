@@ -4,7 +4,7 @@
 #
 
 espionage:
-    # radius to search for exposure of players
+    # radius to search for exposure of players (squared)
     player_search_radius: 625
 
     # Default exposure per second.

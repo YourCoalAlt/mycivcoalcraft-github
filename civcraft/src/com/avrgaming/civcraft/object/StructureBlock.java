@@ -20,6 +20,7 @@ package com.avrgaming.civcraft.object;
 
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.structure.Buildable;
@@ -119,7 +120,7 @@ public class StructureBlock implements BuildableDamageBlock {
 						
 						if (!this.isDamageable()) {
 							CivMessage.sendError(player, "Cannot damage this structure block. Choose another.");
-						} else if (CivGlobal.willInstantBreak(this.getCoord().getBlock().getType())) {
+						} else if (CivData.willInstantBreak(this.getCoord().getBlock().getType())) {
 							CivMessage.sendError(player, "Cannot damage structure with this block, try another.");								
 						} else {
 							return true;

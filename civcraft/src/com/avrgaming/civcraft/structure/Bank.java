@@ -190,36 +190,20 @@ public class Bank extends Structure {
 		Inventory inv = Bukkit.createInventory(null, 9*4, town.getName()+"'s Bank Desk");
 		
 		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
-				CivColor.RESET+"This is the Bank Desk. You can use it to sell",
+				CivColor.RESET+"This is the Bank Menu. You can use it to sell",
 				CivColor.RESET+"different items for a set amount of price as",
-				CivColor.RESET+"listed in the GUI. Hover over them to see the",
-				CivColor.RESET+"sell price and non-member fee. If upgraded,",
-				CivColor.RESET+"you can earn more money per item sold!"
+				CivColor.RESET+"listed in the GUI. If upgraded, you can earn",
+				CivColor.RESET+"more money per item sold!",
+				CivColor.RESET+""
 				));
 		
-		
-		inv.addItem(LoreGuiItem.build(CivColor.WhiteBold+"[D] Iron Ingots", ItemManager.getId(Material.IRON_INGOT), 0, 
-				CivColor.LightGreen+"Rate: "+CivColor.Yellow+getExchangeRateString(),
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Sell Values", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.LightGreen+"Bank Rate: "+CivColor.Yellow+getExchangeRateString(),
 				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
-				CivColor.Yellow+(this.IRON_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Ingot"
-				));
-		
-		inv.addItem(LoreGuiItem.build(CivColor.WhiteBold+"[D] Gold Ingots", ItemManager.getId(Material.GOLD_INGOT), 0, 
-				CivColor.LightGreen+"Rate: "+CivColor.Yellow+getExchangeRateString(),
-				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
-				CivColor.Yellow+(this.GOLD_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Ingot"
-				));
-		
-		inv.addItem(LoreGuiItem.build(CivColor.WhiteBold+"[D] Diamonds", ItemManager.getId(Material.DIAMOND), 0, 
-				CivColor.LightGreen+"Rate: "+CivColor.Yellow+getExchangeRateString(),
-				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
-				CivColor.Yellow+(this.DIAMOND_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Ingot"
-				));
-		
-		inv.addItem(LoreGuiItem.build(CivColor.WhiteBold+"[D] Emeralds", ItemManager.getId(Material.EMERALD), 0, 
-				CivColor.LightGreen+"Rate: "+CivColor.Yellow+getExchangeRateString(),
-				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
-				CivColor.Yellow+(this.EMERALD_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Ingot"
+				CivColor.Yellow+(this.IRON_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Iron Ingot",
+				CivColor.Yellow+(this.GOLD_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Gold Ingot",
+				CivColor.Yellow+(this.DIAMOND_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Diamond",
+				CivColor.Yellow+(this.EMERALD_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Emerald"
 				));
 		
 		p.openInventory(inv);

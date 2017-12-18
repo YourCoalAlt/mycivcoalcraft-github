@@ -1574,7 +1574,7 @@ public class Resident extends SQLObject {
 			ItemStack stack = LoreGuiItem.build("Next Page", ItemManager.getId(Material.PAPER), 0, "");
 			stack = LoreGuiItem.setAction(stack, "ShowPerkPage");
 			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber+1));
-			inv.setItem((6*9)-1, stack);
+			inv.setItem((9*6)-1, stack);
 		}
 		
 		player.openInventory(inv);

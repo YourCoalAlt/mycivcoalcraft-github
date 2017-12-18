@@ -85,35 +85,52 @@ public class Warehouse extends Structure {
 		} else {
 			this.sessionAdd(this.getInfoKey(this, "quarry", "output"), "0");
 		}
-		
-//		this.collectTrommel = getTown().warehouse_collect_trommel;
-//		this.collectQuarry = getTown().warehouse_collect_quarry;
 	}
 	
 	public String getInfoKey(Structure struct, String type, String direction) {
 		return struct.getTown().getName().toLowerCase()+"_"+struct.getConfigId()+"_"+type+":"+direction;
 	}
 	
-	public int getLevel() { return level; }
-	public void setLevel(int level) { this.level = level; }
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
 	
-	public boolean canGotoTrommel() { return gotoTrommel; }
+	public boolean canGotoTrommel() {
+		return gotoTrommel;
+	}
 	public void toggleGotoTrommel() {
-		if (this.gotoTrommel) { this.gotoTrommel = false; }
-							else { this.gotoTrommel = true; }
+		if (this.gotoTrommel) {
+			this.gotoTrommel = false;
+		} else {
+			this.gotoTrommel = true;
+		}
 	}
 	
-	public boolean canCollectTrommel() { return collectTrommel; }
+	public boolean canCollectTrommel() {
+		return collectTrommel;
+	}
 	public void toggleCollectTrommel() {
-		if (this.collectTrommel) { this.collectTrommel = false; }
-							else { this.collectTrommel = true; }
+		if (this.collectTrommel) {
+			this.collectTrommel = false;
+		} else {
+			this.collectTrommel = true;
+		}
 	}
 	
-	public Integer getQuarryCollector() { return collectQuarry; }
+	public Integer getQuarryCollector() {
+		return collectQuarry;
+	}
 	public void toggleCollectQuarry() {
-		if (this.collectQuarry == 0) { this.collectQuarry = 1; }
-		else if (this.collectQuarry == 1) { this.collectQuarry = 2; }
-								else { this.collectQuarry = 0; }
+		if (this.collectQuarry == 0) {
+			this.collectQuarry = 1;
+		} else if (this.collectQuarry == 1) {
+			this.collectQuarry = 2;
+		} else {
+			this.collectQuarry = 0;
+		}
 	}
 	
 	// XXX Villager stuff

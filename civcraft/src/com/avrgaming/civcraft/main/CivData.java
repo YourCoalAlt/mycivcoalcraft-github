@@ -722,6 +722,50 @@ public class CivData {
 		return false;
 	}
 	
+	public static boolean willInstantBreak(Material type) {
+		switch (type) {
+		case BED_BLOCK:
+		case BROWN_MUSHROOM:
+		case CROPS:
+		case DEAD_BUSH:
+		case DIODE:
+		case DIODE_BLOCK_OFF:
+		case DIODE_BLOCK_ON:
+		case FIRE:
+		case FLOWER_POT:
+		case FLOWER_POT_ITEM:
+		case GLASS:
+		case GRASS:
+		case LEAVES:
+		case LEVER:
+		case LONG_GRASS:
+		case MELON_STEM:
+		case NETHER_STALK:
+		case NETHER_WARTS:
+		case PUMPKIN_STEM:
+		case REDSTONE:
+		case REDSTONE_TORCH_OFF:
+		case REDSTONE_TORCH_ON:
+		case REDSTONE_WIRE:
+		case SAPLING:
+		case SKULL:
+		case SKULL_ITEM:
+		case SNOW:
+		case SUGAR_CANE_BLOCK:
+		case THIN_GLASS:
+		case TNT:		
+		case TORCH:
+		case TRIPWIRE:
+		case TRIPWIRE_HOOK:
+		case VINE:
+		case WATER_LILY:
+		case YELLOW_FLOWER:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 	public static byte convertSignDataToDoorDirectionData(byte data) {
 		switch(data) {
 		case SIGNPOST_NORTH:

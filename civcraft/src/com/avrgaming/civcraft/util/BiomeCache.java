@@ -131,6 +131,4 @@ public class BiomeCache {
 			return Biome.HELL;
 		}
 	}
-	
-
 }

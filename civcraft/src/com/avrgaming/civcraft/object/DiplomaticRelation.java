@@ -32,14 +32,12 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class DiplomaticRelation extends SQLObject {
-
+	
 	private Civilization civ;
 	private Civilization other_civ;
 	private Civilization aggressor_civ = null;
 	
-	/*
-	 * Relationships are going to be 1 per-civ pair. This should simplify things.
-	 */
+	// Relationships are going to be 1 per-civ pair. This should simplify things.
 	public enum Status {
 		NEUTRAL,
 		HOSTILE,
@@ -49,7 +47,7 @@ public class DiplomaticRelation extends SQLObject {
 //		MASTER,
 //		VASSAL
 	}
-
+	
 	private Status relation = Status.NEUTRAL;
 	private Date created = null;
 	private Date expires = null;
@@ -62,7 +60,6 @@ public class DiplomaticRelation extends SQLObject {
 		this.relation = status;
 		this.created = new Date();
 		this.expires = expires;
-		
 		this.save();
 	}
 	
@@ -72,7 +69,7 @@ public class DiplomaticRelation extends SQLObject {
 			civ.getDiplomacyManager().addRelation(this);
 		}
 	}
-
+	
 	public static void init() throws SQLException {
 		if (!SQL.hasTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + SQL.tb_prefix + TABLE_NAME+" (" + 
@@ -115,12 +112,11 @@ public class DiplomaticRelation extends SQLObject {
 		} catch(IllegalArgumentException e) {
 			relation = Status.WAR;
 		}
-				
+		
 		int aggressor_id = rs.getInt("aggressor_civ_id");
 		if (aggressor_id != 0) {
 			setAggressor(CivGlobal.getCivFromId(aggressor_id));
 		}
-		
 		
 		Long createdLong = rs.getLong("created");
 		Long expiresLong = rs.getLong("expires");
@@ -133,7 +129,7 @@ public class DiplomaticRelation extends SQLObject {
 			expires = new Date(expiresLong);
 		}
 	}
-
+	
 	@Override
 	public void save() {
 		SQLUpdate.add(this);
@@ -142,7 +138,6 @@ public class DiplomaticRelation extends SQLObject {
 	@Override
 	public void saveNow() throws SQLException {
 		HashMap<String, Object> hashmap = new HashMap<String, Object>();
-		
 		hashmap.put("civ_id", civ.getId());
 		hashmap.put("other_civ_id", other_civ.getId());
 		hashmap.put("relation", relation.name());
@@ -164,25 +159,25 @@ public class DiplomaticRelation extends SQLObject {
 		
 		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
-
+	
 	@Override
 	public void delete() throws SQLException {
 		SQL.deleteNamedObject(this, TABLE_NAME);
 	}
-
+	
 	public Status getStatus() {
 		return relation;
 	}
-
+	
 	public Civilization getOtherCiv() {
 		return other_civ;
 	}
-
+	
 	public void setStatus(Status status) {
 		relation = status;
 		this.save();
 	}
-
+	
 	@Override
 	public String toString() {
 		String color = CivColor.White;
@@ -219,10 +214,7 @@ public class DiplomaticRelation extends SQLObject {
 			SimpleDateFormat sdf = new SimpleDateFormat("M/d/y k:m:s z");
 			expireString = CivColor.LightGray+" (Expires "+sdf.format(expires)+")";
 		}
-		
 		return color+out+expireString;
-		
-		
 	}
 	
 	public static String getRelationColor(Status status) {
@@ -245,29 +237,28 @@ public class DiplomaticRelation extends SQLObject {
 			return CivColor.White;
 		}
 	}
-
+	
 	public Date getExpireDate() {
 		return expires;
 	}
-
+	
 	public void setExpires(Date expires2) {
 		this.expires = expires2;
 	}
-
+	
 	public Civilization getCiv() {
 		return civ;
 	}
-
+	
 	public Civilization getAggressor() {
 		return aggressor_civ;
 	}
-
+	
 	public void setAggressor(Civilization aggressor_civ) {
 		this.aggressor_civ = aggressor_civ;
 	}
 	
-	/*
-	 * This key is unique to the 'pair' of relations so that
+	/* This key is unique to the 'pair' of relations so that
 	 * Civ A --> WAR --> CivB
 	 * Uses the same key as 
 	 * Civ B --> WAR --> CivA
@@ -279,13 +270,11 @@ public class DiplomaticRelation extends SQLObject {
 	 */
 	public String getPairKey() {
 		String key = "";
-		
 		if (this.getCiv().getId() < this.getOtherCiv().getId()) {
 			key += this.getCiv().getId()+":"+this.getOtherCiv().getId();
 		} else {
 			key += this.getOtherCiv().getId()+":"+this.getCiv().getId();
 		}
-		
 		return key;
 	}
 }

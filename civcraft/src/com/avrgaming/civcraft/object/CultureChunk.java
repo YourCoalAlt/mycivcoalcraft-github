@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.components.Attribute;
 import com.avrgaming.civcraft.components.AttributeBiomeBase;
-import com.avrgaming.civcraft.components.AttributeBiomeRadiusPerLevel;
 import com.avrgaming.civcraft.components.Component;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCultureBiomeInfo;
@@ -39,7 +38,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class CultureChunk {
-
+	
 	private Town town;
 	private ChunkCoord chunkCoord;
 	private int distance = 0;
@@ -50,13 +49,15 @@ public class CultureChunk {
 		this.chunkCoord = coord;
 		biome = BiomeCache.getBiome(this);
 	}
+	
 	public Civilization getCiv() {
 		return town.getCiv();
 	}
-
+	
 	public Town getTown() {
 		return town;
 	}
+	
 	public void setTown(Town town) {
 		this.town = town;
 	}
@@ -64,21 +65,22 @@ public class CultureChunk {
 	public ChunkCoord getChunkCoord() {
 		return chunkCoord;
 	}
+	
 	public void setChunkCoord(ChunkCoord chunkCoord) {
 		this.chunkCoord = chunkCoord;
 	}
+	
 	public int getDistanceToNearestEdge(ArrayList<TownChunk> edges) {
 		int distance = Integer.MAX_VALUE;
-		
 		for (TownChunk tc : edges) {
 			int tmp = tc.getChunkCoord().manhattanDistance(this.chunkCoord);
 			if (tmp < distance) {
 				distance = tmp;
 			}
 		}
-		
 		return distance;
 	}
+	
 	public void setDistance(int distance) {
 		this.distance = distance;
 	}
@@ -91,22 +93,16 @@ public class CultureChunk {
 		return CivColor.LightPurple+"Entering "+town.getCiv().getName()+" Borders";
 	}
 	public double getPower() {
-		// power = max/(distance^2).
-		// if distance == 0, power = DOUBLEMAX;
-		
-		if (this.distance == 0) {
-			return Double.MAX_VALUE;
-		}
-		
+		if (this.distance == 0) return Double.MAX_VALUE;
 		ConfigCultureLevel clc = CivSettings.cultureLevels.get(getTown().getCultureLevel());
 		double power = clc.amount / (Math.pow(distance, 2));
-		
 		return power;
 	}
 	
 	public Biome getBiome() {
 		return biome;
 	}
+	
 	public void setBiome(Biome biome) {
 		this.biome = biome;
 	}
@@ -131,7 +127,6 @@ public class CultureChunk {
 	}
 	
 	public double getHammers() {
-		//CivLog.debug("getting hammers...");
 		return getCultureBiomeInfo().hammers+getAdditionalAttributes(Attribute.TypeKeys.HAMMERS.name());
 	}
 	
@@ -144,22 +139,16 @@ public class CultureChunk {
 	}
 	
 	private double getAdditionalAttributes(String attrType) {
-		if (getBiome() == null) {
-			return 0.0;
-		}
+		if (getBiome() == null) return 0.0;
 		
 		Component.componentsLock.lock();
 		try {
 			ArrayList<Component> attrs = Component.componentsByType.get("AttributeBiomeBase");
 			double total = 0;
+			if (attrs == null) return total;
 			
-			if (attrs == null) {
-				return total;
-			}
-	
 			for (Component comp : attrs) {
-				if (comp instanceof AttributeBiomeRadiusPerLevel) {
-				}
+//				if (comp instanceof AttributeBiomeRadiusPerLevel) { }
 				
 				if (comp instanceof AttributeBiomeBase) {
 					AttributeBiomeBase attrComp = (AttributeBiomeBase)comp;
@@ -175,12 +164,9 @@ public class CultureChunk {
 	}
 	
 	public static void showInfo(Player player) {
-	//	Biome biome = player.getLocation().getWorld().getBiome(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
 		Biome biome = getBiomeFromLocation(player.getLocation());
-		
 		CultureChunk cc = CivGlobal.getCultureChunk(new ChunkCoord(player.getLocation()));
 		ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(biome.name());
-	//	CivLog.debug("showing info.");
 		
 		if (cc == null) {
 			CivMessage.send(player, CivColor.LightPurple+biome.name()+

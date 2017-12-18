@@ -28,16 +28,16 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.object.Town;
 
-public class WaterStructure extends Structure {
+public class Shipyard extends Structure {
 
-	public static int WATER_LEVEL = 62;
+	public static int WATER_LEVEL = 63;
 	public static int TOLERANCE = 20;
 
-	public WaterStructure(ResultSet rs) throws SQLException, CivException {
+	public Shipyard(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 	}
 
-	protected WaterStructure(Location center, String id, Town town)
+	protected Shipyard(Location center, String id, Town town)
 			throws CivException {
 		super(center, id, town);
 	}
