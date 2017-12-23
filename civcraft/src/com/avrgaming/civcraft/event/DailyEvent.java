@@ -54,10 +54,12 @@ public class DailyEvent implements EventInterface {
 			dayExecuted = cal.get(Calendar.DAY_OF_MONTH);
 			TaskMaster.syncTask(new DailyTimer(), 0);
 		} else {
+			String error = "Daily Event was trying to execute twice on day "+dayExecuted+"!";
 			try {
-				throw new CivException("Daily Event was trying to execute twice on day "+dayExecuted+"!");
+				throw new CivException(error);
 			} catch (CivException e) {
-				e.printStackTrace();
+				CivLog.error(error);
+//				e.printStackTrace();
 			}
 		}
 	}

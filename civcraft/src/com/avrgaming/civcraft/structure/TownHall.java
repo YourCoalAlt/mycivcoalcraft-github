@@ -639,21 +639,28 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				));
 		
 		
+		String text = "";
+		text += CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins;";
+		text += CivColor.Green+"Upkeep: "+CivColor.LightGreen+"-"+t.getTotalUpkeep()+" Coins/Day;";
+		if (t.getDebt() > 0 || t.inDebt()) {
+			text += ";";
+			text += CivColor.GoldBold+"In Debt! "+CivColor.Yellow+t.getDebt()+" Coins;";
+			text += CivColor.YellowItalic+t.getDaysInDebt()+" Days in Debt;";
+			if (t.isForSale()) {
+				text += CivColor.YellowItalic+"Town is For Sale, anyone may buy it.;";
+				text += CivColor.YellowItalic+(CivSettings.TOWN_DEBT_SELL_DAYS-t.getDaysInDebt())+" Days until Town is Deleted;";
+			} else {
+				text += CivColor.YellowItalic+"Town is Graced, you have time to pay debt off.;";
+				text += CivColor.YellowItalic+(CivSettings.TOWN_DEBT_GRACE_DAYS-t.getDaysInDebt())+" Days until Town is For Sale;";
+			}
+		}
 		Structure bank = t.getStructureByType("s_bank");
 		if (bank != null) {
-			inv.setItem(13, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
-					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
-					CivColor.Green+"Upkeep: "+CivColor.LightGreen+"-"+t.getTotalUpkeep()+" Coins/Day",
-					" ",
-					CivColor.Green+"Treasury Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%",
-					CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+((int) (t.getTreasury().getPrincipalAmount()*((Bank)bank).getInterestRate()))+" Coins/Day"
-					));
-		} else {
-			inv.setItem(13, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, 
-					CivColor.Green+"Treasury: "+CivColor.LightGreen+t.getBalance()+" Coins",
-					CivColor.Green+"Upkeep: "+CivColor.LightGreen+t.getTotalUpkeep()+" Coins/Day"
-					));
+			text += ";";
+			text += CivColor.Green+"Treasury Interest Rate: "+CivColor.LightGreen+df.format(((Bank)bank).getInterestRate()*100)+"%;";
+			text +=CivColor.Green+"Principal: "+CivColor.LightGreen+"+"+((int) (t.getTreasury().getPrincipalAmount()*((Bank)bank).getInterestRate()))+" Coins/Day";
 		}
+		inv.setItem(13, LoreGuiItem.build(CivColor.GreenBold+"Money Statistics", CivData.GOLD_INGOT, 0, text.split(";")));
 		
 		inv.setItem(22, LoreGuiItem.build(CivColor.GreenBold+"Taxes", CivData.PAPER, 0, 
 				CivColor.Green+"Tax Rate: "+CivColor.LightGreen+t.getTaxRateString(),

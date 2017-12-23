@@ -2,6 +2,7 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ListIterator;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -182,62 +183,69 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		}
 		
 		debug(quarry, "Processing quarry:"+quarry.skippedCounter+1);
-		ItemStack[] contents = source_inv.getContents();
 		for (int i = 0; i < quarry.skippedCounter+1; i++) {
-		
-			for(ItemStack stack : contents) {
-				if (stack == null) {
-					continue;
-				}
-				
-				ConfigQuarryItem cti = CivSettings.quarryItems.get(ItemManager.getId(stack));
-				if (cti == null) {
-					continue;
-				}
-				
-				if (ItemManager.getId(stack) == cti.item && quarry.getLevel() >= cti.level) {
-					try {
-						short damage = ItemManager.getData(stack);
-						this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(cti.item, 1));
-						damage ++;
-						stack.setDurability(damage);
-						if (damage < cti.max_dura) {
-							this.updateInventory(Action.ADD, source_inv, stack);
-						}
-					} catch (InterruptedException e) {
-						return;
-					}
+			boolean invUsed = false;
+			quarrytask: for (Inventory inv : source_inv.getInventories()) {
+				int index = -1;
+				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
+					index++;
+					ItemStack stack = iter.next();
+					if (stack == null) continue;
 					
-					ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
-					ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cti.item);
-					if (dropped.size() == 0) {
-						newItem.add(getUselessDrop());
-					} else {
-						for (ConfigQuarry d : dropped) {
-							if (d.custom_id != null) {
-								LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
-								newItem.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
+					ConfigQuarryItem cti = CivSettings.quarryItems.get(ItemManager.getId(stack));
+					if (cti == null) continue;
+					
+					if (invUsed) continue;
+					
+					if (ItemManager.getId(stack) == cti.item && quarry.getLevel() >= cti.level) {
+						try {
+							short damage = ItemManager.getData(stack);
+//							this.updateInventory(Action.REPLACE, source_inv, ItemManager.createItemStack(cti.item, 1));
+//							damage++;
+//							stack.setDurability(damage);
+							if (damage > cti.max_dura) {
+								invUsed = true;
+								this.updateInventory(Action.REMOVE, source_inv, stack);
 							} else {
-								newItem.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+								invUsed = true;
+								ItemStack newStack = stack; newStack.setDurability((short) (damage+1));
+								this.updateInventory(Action.UPDATE, source_inv, newStack, index, inv);
+							}
+						} catch (InterruptedException e) {
+							return;
+						}
+						
+						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
+						ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cti.item);
+						if (dropped.size() == 0) {
+							newItem.add(getUselessDrop());
+						} else {
+							for (ConfigQuarry d : dropped) {
+								if (d.custom_id != null) {
+									LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
+									newItem.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
+								} else {
+									newItem.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+								}
 							}
 						}
-					}
-					
-					try { //Try to add the new item to the dest chest, if we cant, oh well.
-						for (ItemStack ni : newItem) {
-							debug(quarry, "Updating inventory: "+ni);
-							if (warehouse) {
-								this.updateInventory(Action.ADD, dest_inv_wh, ni);
-							} else if (trommel && ni.getType() == Material.STONE) {
-								this.updateInventory(Action.ADD, dest_inv_wh, ni);
-							} else {
-								this.updateInventory(Action.ADD, dest_inv_reg, ni);
+						
+						try { //Try to add the new item to the dest chest, if we cant, oh well.
+							for (ItemStack ni : newItem) {
+								debug(quarry, "Updating inventory: "+ni);
+								if (warehouse) {
+									this.updateInventory(Action.ADD, dest_inv_wh, ni);
+								} else if (trommel && ni.getType() == Material.STONE) {
+									this.updateInventory(Action.ADD, dest_inv_wh, ni);
+								} else {
+									this.updateInventory(Action.ADD, dest_inv_reg, ni);
+								}
 							}
+						} catch (InterruptedException e) {
+							return;
 						}
-					} catch (InterruptedException e) {
-						return;
+						break quarrytask;
 					}
-					break;
 				}
 			}
 		}
@@ -246,20 +254,22 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	
 	private ItemStack getUselessDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(4);
-		if (uselessDrop == 1) {
-			return ItemManager.createItemStack(CivData.DIRT, 1, (byte)CivData.COARSE_DIRT);
-		} else if (uselessDrop == 2) {
+		int uselessDrop = rand.nextInt(10); // 0-9
+		if (uselessDrop >= 0 || uselessDrop <= 3) { // 0-3
 			return ItemManager.createItemStack(CivData.DIRT, 1);
-		} else {
+		} else if (uselessDrop >= 4 && uselessDrop <= 5) { // 4-5
+			return ItemManager.createItemStack(CivData.DIRT, 1, (byte)CivData.COARSE_DIRT);
+		} else if (uselessDrop >= 6 && uselessDrop <= 7) { // 6-7
+			return ItemManager.createItemStack(CivData.GRAVEL, 1);
+		} else { // 8-9
 			return getStoneDrop();
 		}
 	}
 	
 	private ItemStack getStoneDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(6);
-		if (uselessDrop == 1) {
+		int uselessDrop = rand.nextInt(8);
+		if (uselessDrop >= 0 && uselessDrop <= 1) {
 			return ItemManager.createItemStack(CivData.STONE, 1);
 		} else if (uselessDrop == 2) {
 			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.GRANITE);
@@ -359,6 +369,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		for (ConfigQuarry d : CivSettings.quarryDrops) {
 			if (d.input == input) {
 				double dc = d.drop_chance;
+				
 				if (quarry.getModifyChance() > 1.0) {
 					if (d.loot_type.contains("rare")) {
 						dc *= 1.1;
@@ -369,14 +380,23 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					} else if (d.loot_type.contains("junk")) {
 						dc *= 0.8;
 					} else {
-						CivLog.warning("Quarry Process had unknown loot type, "+d.loot_type);
+						CivLog.warning("Quarry Process had unknown loot type, "+d.loot_type+" from "+d.type);
+					}
+				} else if (quarry.getModifyChance() < 1.0) {
+					if (d.loot_type.contains("rare")) {
+						dc *= 0.8;
+					} else if (d.loot_type.contains("uncommon")) {
+						dc *= 0.9;
+					} else if (d.loot_type.contains("common")) {
+						dc *= 1.05;
+					} else if (d.loot_type.contains("junk")) {
+						dc *= 1.1;
+					} else {
+						CivLog.warning("Quarry Process had unknown loot type, "+d.loot_type+" from "+d.type);
 					}
 				}
 				
-				if (dc <= 0) {
-					dc = d.drop_chance;
-				}
-				
+				if (dc <= 0) dc = d.drop_chance;
 				int chance = rand.nextInt(10000);
 				if (chance < (dc*10000)) {
 					dropped.add(d);

@@ -75,6 +75,7 @@ public class TownCommand extends CommandBase {
 		commands.put("add", "[name] - invites resident to town.");
 		commands.put("members", "Show a list of members in this town.");
 		commands.put("deposit", "[amount] - deposits this amount into the town's treasury.");
+		commands.put("depositdebt", "[amount] - deposits this amount into the town's debt treasury.");
 		commands.put("withdraw","[amount] - withdraws this amount from the town's treasury.");
 		commands.put("set", "Change various town properties.");
 		commands.put("leave", "leaves the town you are currently in.");
@@ -624,7 +625,6 @@ public class TownCommand extends CommandBase {
 		Town town = getSelectedTown();
 		Player player = getPlayer();
 		Resident resident = getResident();
-		
 		if (!town.playerIsInGroupName("mayors", player)) {
 			throw new CivException("Only mayors can use this command.");
 		}
@@ -632,23 +632,21 @@ public class TownCommand extends CommandBase {
 		try {
 			Double amount = Double.valueOf(args[1]);
 			if (amount < 1) {
-				throw new CivException("Cannot withdraw less than 1");
+				throw new CivException("Cannot withdraw less than 1 coins from your treasury.");
 			}
 			amount = Math.floor(amount);
-			
 			if(!town.getTreasury().payTo(resident.getTreasury(), Integer.valueOf(args[1]))) {
 				throw new CivException("The town does not have that much.");
 			}
 		} catch (NumberFormatException e) {
 			throw new CivException(args[1]+" is not a valid number.");
 		}
-		
 		CivMessage.sendSuccess(sender, "Withdrew "+args[1]+" coins.");
 	}
 	
 	public void deposit_cmd() throws CivException {
 		if (args.length < 2) {
-			throw new CivException("Enter the amount you want to deposit.");
+			throw new CivException("Enter the amount you want to deposit to your treasury.");
 		}
 		
 		Resident resident = getResident();
@@ -657,15 +655,35 @@ public class TownCommand extends CommandBase {
 		
 		try {
 			if (amount < 1) {
-				throw new CivException("Cannot deposit less than 1");
+				throw new CivException("Cannot deposit less than 1 coin to your treasury.");
 			}
 			town.depositFromResident(amount, resident);
-
 		} catch (NumberFormatException e) {
 			throw new CivException(args[1]+" is not a valid number.");
 		}
 		
-		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins.");
+		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins to the treasury.");
+	}
+	
+	public void depositdebt_cmd() throws CivException {
+		if (args.length < 2) {
+			throw new CivException("Enter the amount you want to deposit to your debts.");
+		}
+		
+		Resident resident = getResident();
+		Town town = getSelectedTown();
+		Integer amount = getNamedInteger(1);
+		
+		try {
+			if (amount < 1) {
+				throw new CivException("Cannot deposit less than 1 coin to your debts.");
+			}
+			town.depositDebtFromResident(amount, resident);
+		} catch (NumberFormatException e) {
+			throw new CivException(args[1]+" is not a valid number.");
+		}
+		
+		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins to the debt treasury.");
 	}
 	
 	public void add_cmd() throws CivException {

@@ -27,6 +27,47 @@ tips:
    # This controls the timer for it, so a wrong value will mess up the display rate for tips.
    amount: 9
 
+### Note: The 'fortune' number is the modifier per level from max drop,
+### meaning fortune III max drop = max_drop + (max_drop_fortune * enchant.level)
+### (Ex. max drop = 5, max_drop_fortune = 2, fortune V --- max drop = 5 + (2*5) = 15
+
+
+# Amount of items to drop from Coal Ore
+coal:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+coal_hammers:
+   min_drop: 0
+   max_drop: 1
+   max_drop_fortune: 1
+# Amount of items to drop from Redstone Ore
+redstone:
+   min_drop: 4
+   max_drop: 6
+   max_drop_fortune: 2
+redstone_beakers:
+   min_drop: 0
+   max_drop: 1
+   max_drop_fortune: 1
+# Amount of items to drop from Redstone Ore
+lapis:
+   min_drop: 4
+   max_drop: 6
+   max_drop_fortune: 2
+lapis_beakers:
+   min_drop: 2
+   max_drop: 4
+   max_drop_fortune: 2
+# Amount of items to drop from Diammond Ore
+diamond:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+diamond_hammers:
+   min_drop: 2
+   max_drop: 4
+   max_drop_fortune: 2
 # Amount of Tungston to drop from Lapis Ore
 tungsten_min_drop: 0
 tungsten_max_drop: 1
@@ -36,34 +77,6 @@ tungsten_max_drop_with_fortune: 3
 lapis_min_drop: 2
 lapis_max_drop: 5
 lapis_max_drop_with_fortune: 8
-
-# Amount of items to drop from Coal Ore
-coal:
-   min_drop: 1
-   max_drop: 1
-   max_drop_fortune: 2
-coal_hammers:
-   min_drop: 0
-   max_drop: 1
-   max_drop_fortune: 2
-# Amount of items to drop from Redstone Ore
-redstone:
-   min_drop: 4
-   max_drop: 5
-   max_drop_fortune: 7
-redstone_beakers:
-   min_drop: 0
-   max_drop: 1
-   max_drop_fortune: 2
-# Amount of items to drop from Diammond Ore
-diamond:
-   min_drop: 1
-   max_drop: 1
-   max_drop_fortune: 2
-diamond_hammers:
-   min_drop: 2
-   max_drop: 4
-   max_drop_fortune: 4
 
 # Amount of Resident Experience to add for Mining XP for blocks broken
 mining_block:

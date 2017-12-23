@@ -1,0 +1,27 @@
+custom_drops_enabled: true
+
+# Example
+#
+# - id: Entity Name for Bukkit to Track Mob (EntityType)
+#   exp_min: min EXP to drop
+#   exp_max: max EXP to drop
+#   exp_mod: EXP modifier for skill levels
+#   type: '(name)' skill level used for modifications
+#   drops:
+#     - '(Material [Bukkit Material.java]), minDrop, maxDrop, dropChance, lootingRate' ## Minecraft Item
+#     - '(civ:(matName) [CivCraft materials.yml]), minDrop, maxDrop, dropChance, lootingRate, lootingDrops' ## Custom Item
+#    ## Note: the 'lootingRate' changes +(add) drop percent. if 0, looting will not work.
+#    ## 'lootingDrops' will increase drops on items. If 0, looting will not work.
+#
+# Custom Mobs
+mobs:
+ - id: ZOMBIE
+   exp_min: 5
+   exp_max: 10
+   exp_mod: 1.1
+   type: 'Weapondry'
+   drops:
+     - 'ROTTEN_FLESH, 0, 2, 1.0, 0, 1'
+     - 'POTATO_ITEM, 1, 1, 0.025, 0.1, 1'
+     - 'CARROT_ITEM, 1, 1, 0.025, 0.1, 1'
+     - 'BEETROOT_ITEM, 1, 1, 0.025, 0.l, 1'

@@ -30,6 +30,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.google.common.collect.ObjectArrays;
 
 public class MultiInventory {
 	
@@ -37,7 +38,11 @@ public class MultiInventory {
 	
 	public MultiInventory() {
 	}
-
+	
+	public ArrayList<Inventory> getInventories() {
+		return invs;
+	}
+	
 	private boolean isCorrectItemStack(ItemStack stack, String mid, int type, short data) {
 		if (stack == null) {
 			return false;
@@ -372,20 +377,14 @@ public class MultiInventory {
 	}
 	
 	public ItemStack[] getContents() {
-		
 		int size = 0;
 		for (Inventory inv : invs) {
 			size += inv.getContents().length;
 		}
 		
 		ItemStack[] array = new ItemStack[size];
-		
-		int i = 0;
 		for (Inventory inv : invs) {
-			for (int j = 0; j < inv.getContents().length; j++) {
-				array[i] = inv.getContents()[j];			
-				i++;
-			}
+			array = ObjectArrays.concat(array, inv.getContents(), ItemStack.class);
 		}
 		return array;
 	}
@@ -394,25 +393,5 @@ public class MultiInventory {
 	public int getInventoryCount() {
 		return this.invs.size();
 	}
-
-//	public boolean contains(LoreMaterial loreMaterial) {
-//		
-//		boolean found = false;
-//		for (Inventory inv : this.invs) {
-//			for (ItemStack stack : inv.getContents()) {
-//				if (stack == null) {
-//					continue;
-//				}
-//				
-//				LoreMaterial loreMat = LoreMaterial.getMaterial(stack);
-//				if (loreMat == loreMaterial) {
-//					found = true;
-//					break;
-//				}
-//			}
-//		}
-//		
-//		return found;
-//	}
-
+	
 }

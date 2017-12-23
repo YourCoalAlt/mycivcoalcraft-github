@@ -20,6 +20,7 @@ package com.avrgaming.civcraft.threading.sync.request;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.util.MultiInventory;
@@ -32,12 +33,14 @@ public class UpdateInventoryRequest extends AsyncRequest {
 
 	public enum Action {
 		ADD,
-		REMOVE
+		REMOVE,
+		UPDATE
 	}
 	
-	public MultiInventory inv;
+	public Inventory inv;
+	public MultiInventory multiinv;
 	public ItemStack stack;
 	public Action action;
-	
+	public int index;
 	
 }

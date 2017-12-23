@@ -62,13 +62,13 @@ import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.TimeTools;
 
 import gpl.AttributeUtil;
+import gpl.ItemSerializer;
 
 public class Blacksmith extends Structure {
 	
 	private static final long COOLDOWN = 1;
 	//private static final double BASE_CHANCE = 0.8;
-	public static double SMELT_TIME_SECONDS_PER_ITEM = 8.5;
-	public static int SMELT_TIME_SECONDS = (int)(3600*1.5);
+	public static double SMELT_TIME_SECONDS_PER_ITEM = 4.0; // set to 4 for debug purposes, reset to 8 when done.
 	public static double YIELD_RATE = 1.25;
 	
 	private Date lastUse = new Date();
@@ -561,6 +561,28 @@ public class Blacksmith extends Structure {
 		// Schedule a message to notify the player when the smelting is finished.
 		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
 				CivColor.LightGreen+" Your stack of "+amt+" "+CivData.getDisplayName(iid, data)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+		
+		
+		
+		Resident res = CivGlobal.getResident(player);
+		int full = 0; int partial = 0;
+		for (int stackRefine = (int) (amt*Blacksmith.YIELD_RATE); stackRefine >= 64; stackRefine -= 64) {
+			if (stackRefine < 64) partial = stackRefine;
+			else full += 1;
+		}
+		
+		for (int i = 0; i < full; i++) {
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64);
+			String is = ItemSerializer.getSerializedItemStack(item);
+			res.addMailData(is);
+		}
+		
+		if (partial > 0) {
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial);
+			String is = ItemSerializer.getSerializedItemStack(item);
+			res.addMailData(is);
+		}
+		
 		
 		
 		// TODO We need to make a timer to add to resident's mail or else they won't recieve the items.

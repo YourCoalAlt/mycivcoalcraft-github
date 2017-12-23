@@ -502,8 +502,8 @@ public class Backpack {
 						CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+mininglvl.level+" ("+re.getMiningEXP()+"/"+mininglvl.amount+" XP)",
 						CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
 						CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Essence Level: "+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Slaughter Level: "+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Rose+" (InDev)",
 						CivColor.LightGray+"« Click for Experience Info »");
 				playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
 				playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");

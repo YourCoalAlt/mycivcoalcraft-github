@@ -81,7 +81,9 @@ public class MinecraftListener implements Listener {
 				if (enchant.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
 					int level = enchant.get(Enchantment.LOOT_BONUS_BLOCKS);
 					max = CivSettings.getInteger(CivSettings.gameConfig, "tungsten_max_drop_with_fortune")+(level-1);
-				} else { max = CivSettings.getInteger(CivSettings.gameConfig, "tungsten_max_drop"); }
+				} else {
+					max = CivSettings.getInteger(CivSettings.gameConfig, "tungsten_max_drop");
+				}
 				
 				int randAmount = rand.nextInt(min + max)+1;
 				randAmount -= min;
@@ -101,47 +103,38 @@ public class MinecraftListener implements Listener {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
-				// Coal Drops
-				int minC = CivSettings.getInteger(CivSettings.gameConfig, "coal.min_drop");
-				int maxC;
-				Map<Enchantment, Integer> enchantC = p.getInventory().getItemInMainHand().getEnchantments();
-				if (enchantC.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
-					int level = enchantC.get(Enchantment.LOOT_BONUS_BLOCKS);
-					maxC = CivSettings.getInteger(CivSettings.gameConfig, "coal.max_drop_fortune")+(level-1);
-				} else { maxC = CivSettings.getInteger(CivSettings.gameConfig, "coal.max_drop"); }
+				int level = 0;
+				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
+				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
-				int randAmtC = rand.nextInt(minC + maxC)+1;
-				randAmtC -= minC;
-				if (randAmtC <= minC) randAmtC = minC;
-				for (int i = 0; i < randAmtC; i++) {
+				// Coal Drops
+				int min_coal = CivSettings.getInteger(CivSettings.gameConfig, "coal.min_drop");
+				int max_coal = CivSettings.getInteger(CivSettings.gameConfig, "coal.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "coal.max_drop_fortune") * level);
+				
+				if (max_coal < min_coal) max_coal = min_coal;
+				int rand_coal = rand.nextInt(max_coal)+1;
+				if (rand_coal < min_coal) rand_coal = min_coal;
+				for (int i = 0; i < rand_coal; i++) {
 					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = new ItemStack(Material.COAL);
 					p.getWorld().dropItemNaturally(dropLoc, stack);
 				}
 				
 				// Hammer Drops
-				int minH = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.min_drop");
-				int maxH;
-				Map<Enchantment, Integer> enchantH = p.getInventory().getItemInMainHand().getEnchantments();
-				if (enchantH.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
-					int level = enchantH.get(Enchantment.LOOT_BONUS_BLOCKS);
-					maxH = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.max_drop_fortune")+(level-1);
-				} else { maxH = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.max_drop"); }
+				int min_coalHam = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.min_drop");
+				int max_coalHam = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.max_drop_fortune") * level);
 				
-				int randAmtH = rand.nextInt(minH + maxH)+1;
-				randAmtH -= minH;
-				if (randAmtH <= minH) randAmtH = minH;
-				if (randAmtH == 1) {
+				if (max_coalHam < min_coalHam) max_coalHam = min_coalHam;
+				int rand_ham = rand.nextInt(max_coalHam)+1;
+				if (rand_ham < min_coalHam) rand_ham = min_coalHam;
+				// Just to make getting hammers a little harder
 					int newRand = rand.nextInt(3);
-					if (newRand == 1) {
-						randAmtH = 1;
-					} else {
-						randAmtH = 0;
-					}
-				}
+					if (newRand != 0) rand_ham = 0;
 				
-				if (randAmtH >= randAmtC) randAmtH = randAmtC;
-				for (int i = 0; i < randAmtH; i++) {
+				if (rand_ham > rand_coal) rand_ham = rand_coal;
+				for (int i = 0; i < rand_ham; i++) {
 					Location dropLoc = new Location(p.getWorld(), event.getBlock().getX(), event.getBlock().getY()+0.5, event.getBlock().getZ());
 					ItemStack stack = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
 					p.getWorld().dropItemNaturally(dropLoc, stack);
@@ -154,7 +147,8 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.REDSTONE_ORE) || event.getBlock().getType().equals(Material.GLOWING_REDSTONE_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setCancelled(true);
+			ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
 				// Coal Drops
 				int minD = CivSettings.getInteger(CivSettings.gameConfig, "redstone.min_drop");
@@ -199,7 +193,8 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.DIAMOND_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setCancelled(true); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setCancelled(true);
+			ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
 				// Coal Drops
 				int minD = CivSettings.getInteger(CivSettings.gameConfig, "diamond.min_drop");

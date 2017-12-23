@@ -45,6 +45,12 @@ public class CivLog {
 		civLogger.info(message);
 	}
 	
+	public static void chat(Object type, String message) {
+		message = "[CHAT] ["+type+"] "+message;
+		printWriter(message);
+		civLogger.info(message);
+	}
+	
 	public static void debug(String message) {
 		message = "[DEBUG] "+message;
 		printWriter(message);

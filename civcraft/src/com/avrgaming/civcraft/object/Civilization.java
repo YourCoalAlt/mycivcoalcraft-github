@@ -1234,30 +1234,38 @@ public class Civilization extends SQLObject {
 		return this.techs.values();
 	}
 
-	public void depositFromResident(Resident resident, Integer amount) throws CivException, SQLException {
-
-		if (resident.getTreasury().hasEnough(amount) == false) {
-			throw new CivException("You do not have enough.");
+	public void depositFromResident(Integer amount, Resident resident) throws CivException {
+		if (!resident.getTreasury().hasEnough(amount)) {
+			throw new CivException("You do not have enough coins for that.");
+		}
+		this.getTreasury().deposit(amount);
+		resident.getTreasury().withdraw(amount);
+		this.save();
+	}
+	
+	public void depositDebtFromResident(Integer amount, Resident res) throws CivException {
+		if (!res.getTreasury().hasEnough(amount)) {
+			throw new CivException("You do not have enough coins for that.");
 		}
 		
 		if (this.getTreasury().inDebt()) {
-			if (this.getTreasury().getDebt() >= amount) {
+			if (this.getTreasury().getDebt() > amount) {
 				this.getTreasury().setDebt(this.getTreasury().getDebt() - amount);
-				resident.getTreasury().withdraw(amount);
-			} else if (this.getTreasury().getDebt() < amount) {
+				res.getTreasury().withdraw(amount);
+			} else {
 				int leftAmount = amount - this.getTreasury().getDebt();
 				this.getTreasury().setDebt(0);
 				this.getTreasury().deposit(leftAmount);				
-				resident.getTreasury().withdraw(amount);
-			}
-			
-			if (this.getTreasury().inDebt() == false) {
+				res.getTreasury().withdraw(leftAmount);
+				
 				this.daysInDebt = 0;
-				CivMessage.global(this.getName()+" is no longer in debt.");				
+				CivMessage.global("Civilization of "+this.getName()+" is no longer in debt.");
+				if (leftAmount > 0) {
+					CivMessage.send(res, CivColor.LightGrayItalic+"You deposited "+leftAmount+" extra coins, they were returned to you.");
+				}
 			}
 		} else {
-			this.getTreasury().deposit(amount);
-			resident.getTreasury().withdraw(amount);
+			CivMessage.sendError(res, "Your civ is currently not in debt.");
 		}
 		this.save();
 	}

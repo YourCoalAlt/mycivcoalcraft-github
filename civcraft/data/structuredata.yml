@@ -65,27 +65,161 @@ quarry_items:
    - item: 274
      max_dura: 131
      level: 2
+   - item: 257
+     max_dura: 250
+     level: 3
+   - item: 278
+     max_dura: 1561
+     level: 4
+   - item: 285
+     max_dura: 32
+     level: 5
 # Rare, Uncommon, Common, Junk
 quarry_drops:
 #====> Wooden Pickaxe <====#
-  - type: CoalWoodPick
+  - type: WoodPickCoal
     input: 270
-    type_id: 263
-    loot_type: 'junk'
-    drop_chance: 0.0875
+    type_id: 16
+    loot_type: 'common'
+    drop_chance: 0.07
 #
+  - type: WoodPickIron
+    input: 270
+    type_id: 15
+    loot_type: 'uncommon'
+    drop_chance: 0.0075
 #====> Stone Pickaxe <====#
-  - type: CoalStonePick
+  - type: StonePickCoal
     input: 274
-    type_id: 263
+    type_id: 16
     loot_type: 'junk'
-    drop_chance: 0.0675
+    drop_chance: 0.055
 #
-  - type: IronStonePick
+  - type: StonePickIron
     input: 274
-    type_id: 265
+    type_id: 15
+    loot_type: 'common'
+    drop_chance: 0.025
+#
+  - type: StonePickGold
+    input: 274
+    type_id: 14
+    loot_type: 'uncommon'
+    drop_chance: 0.004
+#
+  - type: StonePickRedstone
+    input: 274
+    type_id: 73
+    loot_type: 'rare'
+    drop_chance: 0.015
+#
+  - type: StonePickLapis
+    input: 274
+    type_id: 21
+    loot_type: 'rare'
+    drop_chance: 0.015
+#====> Iron Pickaxe <====#
+  - type: IronPickCoal
+    input: 257
+    type_id: 16
+    loot_type: 'junk'
+    drop_chance: 0.04
+#
+  - type: IronPickIron
+    input: 257
+    type_id: 15
     loot_type: 'common'
     drop_chance: 0.0325
+#
+  - type: IronPickGold
+    input: 257
+    type_id: 14
+    loot_type: 'common'
+    drop_chance: 0.0225
+#
+  - type: IronPickDia
+    input: 257
+    type_id: 56
+    loot_type: 'rare'
+    drop_chance: 0.0015
+#
+  - type: IronPickRedstone
+    input: 257
+    type_id: 73
+    loot_type: 'uncommon'
+    drop_chance: 0.0225
+#
+  - type: IronPickLapis
+    input: 257
+    type_id: 21
+    loot_type: 'uncommon'
+    drop_chance: 0.0225
+#====> Diamond Pickaxe <====#
+  - type: DiaPickIron
+    input: 278
+    type_id: 15
+    loot_type: 'junk'
+    drop_chance: 0.0225
+#
+  - type: DiaPickGold
+    input: 278
+    type_id: 14
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: DiaPickDia
+    input: 278
+    type_id: 56
+    loot_type: 'uncommon'
+    drop_chance: 0.004
+#
+  - type: DiaPickEmr
+    input: 278
+    type_id: 129
+    loot_type: 'rare'
+    drop_chance: 0.002
+#
+  - type: DiaPickRedstone
+    input: 278
+    type_id: 73
+    loot_type: 'uncommon'
+    drop_chance: 0.03
+#
+  - type: DiaPickLapis
+    input: 278
+    type_id: 21
+    loot_type: 'uncommon'
+    drop_chance: 0.03
+#====> Gold Pickaxe <====#
+  - type: GoldPickGold
+    input: 285
+    type_id: 14
+    loot_type: 'junk'
+    drop_chance: 0.025
+#
+  - type: GoldPickDia
+    input: 285
+    type_id: 56
+    loot_type: 'common'
+    drop_chance: 0.006
+#
+  - type: GoldPickEmr
+    input: 285
+    type_id: 129
+    loot_type: 'uncommon'
+    drop_chance: 0.003
+#
+  - type: GoldPickRedstone
+    input: 285
+    type_id: 73
+    loot_type: 'common'
+    drop_chance: 0.055
+#
+  - type: GoldPickLapis
+    input: 285
+    type_id: 21
+    loot_type: 'common'
+    drop_chance: 0.055
 #
 #======================================#
 #======== > Trommel Settings < ========#

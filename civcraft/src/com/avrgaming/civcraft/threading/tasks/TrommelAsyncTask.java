@@ -376,7 +376,6 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		for (ConfigTrommel d : CivSettings.trommelDrops) {
 			if (d.input == input && d.input_data == input_data) {
 				double dc = ((trommel.getLevel()-1)*0.002) + d.drop_chance;
-				//double dc = d.drop_chance + ((trommel.getLevel() / 100) / 2);
 				
 				if (trommel.getModifyChance() > 1.0) {
 					if (d.loot_type.contains("rare")) {
@@ -388,7 +387,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 					} else if (d.loot_type.contains("junk")) {
 						dc *= 0.8;
 					} else {
-						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type);
+						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type+" from "+d.type);
 					}
 				} else if (trommel.getModifyChance() < 1.0) {
 					if (d.loot_type.contains("rare")) {
@@ -400,11 +399,11 @@ public class TrommelAsyncTask extends CivAsyncTask {
 					} else if (d.loot_type.contains("junk")) {
 						dc *= 1.1;
 					} else {
-						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type);
+						CivLog.warning("Trommel Process had unknown loot type, "+d.loot_type+" from "+d.type);
 					}
 				}
 				
-				if (dc <= 0) { dc = d.drop_chance; }
+				if (dc <= 0) dc = d.drop_chance;
 				int chance = rand.nextInt(10000);
 				if (chance < (dc*10000)) {
 					dropped.add(d);

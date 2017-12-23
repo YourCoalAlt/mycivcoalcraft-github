@@ -17,6 +17,21 @@ potions:
 taxation_cottage_buff: 2.0
 #
 techs: #Note: Pts = Beakers/10
+
+
+#TEMP FOR TESTING
+  - id: 'tech_efficiency'
+    name: 'Efficiency'
+    beaker_cost: 0
+    cost: 0
+    points: 0
+    tier: 0
+    unlocks:
+      - "quarry_test"
+    require_techs:
+#
+
+
 #============================#
 #======== > Tier 0 < ========# # We will use this as a town mechanic to unlock techs (w/ beaker items?)
 #============================#

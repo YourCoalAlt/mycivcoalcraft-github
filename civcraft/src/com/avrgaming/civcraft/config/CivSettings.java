@@ -382,7 +382,11 @@ public class CivSettings {
 	public static void streamResourceToDisk(String filepath) throws IOException {
 		URL inputUrl = plugin.getClass().getResource(filepath);
 		File dest = new File(plugin.getDataFolder().getPath()+filepath);
-		FileUtils.copyURLToFile(inputUrl, dest);
+		if (inputUrl == null) {
+			CivLog.error("Destination is null: "+filepath);
+		} else {
+			FileUtils.copyURLToFile(inputUrl, dest);
+		}
 	}
 
 	public static FileConfiguration loadCivConfig(String filepath) throws FileNotFoundException, IOException, InvalidConfigurationException {

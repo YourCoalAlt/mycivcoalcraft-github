@@ -22,12 +22,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigCottageLevel;
 import com.avrgaming.civcraft.config.ConfigCultureLevel;
 import com.avrgaming.civcraft.config.ConfigHappinessState;
 import com.avrgaming.civcraft.config.ConfigTownLevel;
@@ -53,6 +55,7 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.ItemManager;
 
 public class TownInfoCommand extends CommandBase {
 
@@ -387,6 +390,7 @@ public class TownInfoCommand extends CommandBase {
 		
 		CivMessage.sendHeading(sender, town.getName()+" Cottage Info");
 		double total = 0;
+		Map<Integer, Integer> consumed_per_hour = new HashMap<Integer, Integer>();
 		
 		for (Structure struct : town.getStructures()) {
 			if (!struct.getConfigId().equals("ti_cottage")) {
@@ -394,6 +398,14 @@ public class TownInfoCommand extends CommandBase {
 			}
 			
 			Cottage cottage = (Cottage)struct;
+			ConfigCottageLevel lvl = CivSettings.cottageLevels.get(cottage.getLevel());
+			for (Integer type : lvl.consumes.keySet()) {
+				if (consumed_per_hour.containsKey(type)) {
+					consumed_per_hour.put(type, lvl.consumes.get(type)+consumed_per_hour.get(type));
+				} else {
+					consumed_per_hour.put(type, lvl.consumes.get(type));
+				}
+			}
 			
 			String color;
 			if (struct.isActive()) {
@@ -401,7 +413,7 @@ public class TownInfoCommand extends CommandBase {
 			} else {
 				color = CivColor.Rose;
 			}
-						
+			
 			double coins = cottage.getCoinsGenerated();
 			if (town.getCiv().hasTechnology("tech_taxation")) {
 				double taxation_bonus;
@@ -416,7 +428,7 @@ public class TownInfoCommand extends CommandBase {
 			if (!struct.isDestroyed()) {
 				out.add(color+"Cottage ("+struct.getCorner()+")");
 				out.add(CivColor.Green+"    level: "+CivColor.Yellow+cottage.getLevel()+
-						CivColor.Green+" count: "+CivColor.Yellow+"("+cottage.getCount()+"/"+cottage.getMaxCount()+")");
+						CivColor.Green+"  count: "+CivColor.Yellow+"("+cottage.getCount()+"/"+cottage.getMaxCount()+")");
 				out.add(CivColor.Green+"    base coins: "+CivColor.Yellow+coins+
 						CivColor.Green+" Last Result: "+CivColor.Yellow+cottage.getLastResult().name());
 			} else {
@@ -432,7 +444,12 @@ public class TownInfoCommand extends CommandBase {
 		out.add(CivColor.Green+"Cottage Rate: "+CivColor.Yellow+df.format(town.getCottageRate()*100)+"%");
 		total *= town.getCottageRate();
 		out.add(CivColor.Green+"Total: "+CivColor.Yellow+df.format(total)+" coins.");
-		
+		out.add(CivColor.Green+"Items Consumed per Hour: ");
+		String itemsTotal = "";
+		for (Integer type : consumed_per_hour.keySet()) {
+			itemsTotal += consumed_per_hour.get(type)+" "+ItemManager.getMaterial(type)+", ";
+		}
+		out.add(CivColor.LightGreen+itemsTotal.toLowerCase());
 		CivMessage.send(sender, out);
 	}
 	

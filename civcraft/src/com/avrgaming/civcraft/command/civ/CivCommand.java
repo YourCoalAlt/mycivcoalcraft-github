@@ -18,7 +18,6 @@
  */
 package com.avrgaming.civcraft.command.civ;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -404,33 +403,6 @@ public class CivCommand extends CommandBase {
 		}
 	}
 	
-	public void deposit_cmd() throws CivException {
-		if (args.length < 2) {
-			throw new CivException("Enter the amount you want to deposit.");
-		}
-		
-		Resident resident = getResident();
-		Civilization civ = getSenderCiv();
-		
-		try {
-			Double amount = Double.valueOf(args[1]);
-			if (amount < 1) {
-				throw new CivException("Cannot deposit less than 1");
-			}
-			amount = Math.floor(amount);
-			
-			civ.depositFromResident(resident, Integer.valueOf(args[1]));			
-			
-		} catch (NumberFormatException e) {
-			throw new CivException(args[1]+" is not a valid number.");
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new CivException("Internal Database Exception");
-		}
-		
-		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins.");
-	}
-
 	public void withdraw_cmd() throws CivException {
 		if (args.length < 2) {
 			throw new CivException("Enter the amount you want to withdraw.");
@@ -438,7 +410,6 @@ public class CivCommand extends CommandBase {
 		
 		Civilization civ = getSenderCiv();
 		Resident resident = getResident();
-		
 		if (!civ.getLeaderGroup().hasMember(resident)) {
 			throw new CivException("Only leaders can use this command.");
 		}
@@ -446,23 +417,62 @@ public class CivCommand extends CommandBase {
 		try {
 			Double amount = Double.valueOf(args[1]);
 			if (amount < 1) {
-				throw new CivException("Cannot withdraw less than 1");
+				throw new CivException("Cannot withdraw less than 1 coins from your treasury.");
 			}
 			amount = Math.floor(amount);
-			
 			if(!civ.getTreasury().payTo(resident.getTreasury(), Integer.valueOf(args[1]))) {
-				throw new CivException("The civ does not have that much.");
+				throw new CivException("The town does not have that much.");
 			}
 		} catch (NumberFormatException e) {
 			throw new CivException(args[1]+" is not a valid number.");
 		}
-		
 		CivMessage.sendSuccess(sender, "Withdrew "+args[1]+" coins.");
+	}
+	
+	public void deposit_cmd() throws CivException {
+		if (args.length < 2) {
+			throw new CivException("Enter the amount you want to deposit to your treasury.");
+		}
+		
+		Resident resident = getResident();
+		Civilization civ = getSenderCiv();
+		Integer amount = getNamedInteger(1);
+		
+		try {
+			if (amount < 1) {
+				throw new CivException("Cannot deposit less than 1 coin to your treasury.");
+			}
+			civ.depositFromResident(amount, resident);
+		} catch (NumberFormatException e) {
+			throw new CivException(args[1]+" is not a valid number.");
+		}
+		
+		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins to the treasury.");
+	}
+	
+	public void depositdebt_cmd() throws CivException {
+		if (args.length < 2) {
+			throw new CivException("Enter the amount you want to deposit to your debts.");
+		}
+		
+		Resident resident = getResident();
+		Civilization civ = getSenderCiv();
+		Integer amount = getNamedInteger(1);
+		
+		try {
+			if (amount < 1) {
+				throw new CivException("Cannot deposit less than 1 coin to your debts.");
+			}
+			civ.depositDebtFromResident(amount, resident);
+		} catch (NumberFormatException e) {
+			throw new CivException(args[1]+" is not a valid number.");
+		}
+		
+		CivMessage.sendSuccess(sender, "Deposited "+args[1]+" coins to the debt treasury.");
 	}
 	
 	public void townlist_cmd() throws CivException {
 		Civilization civ = getSenderCiv();
-		
 		CivMessage.sendHeading(sender, civ.getName()+" Town List");
 		String out = "";
 		for (Town town : civ.getTowns()) {
@@ -488,7 +498,6 @@ public class CivCommand extends CommandBase {
 
 	@Override
 	public void permissionCheck() throws CivException {
-		
 	}
 	
 }

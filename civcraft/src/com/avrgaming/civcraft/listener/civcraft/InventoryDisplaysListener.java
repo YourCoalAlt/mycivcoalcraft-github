@@ -1646,7 +1646,7 @@ public class InventoryDisplaysListener implements Listener {
 		Resident res = CivGlobal.getResident(p);
 		switch (event.getCurrentItem().getType()) {
 		case CHEST:
-			res.openMailMenu(p, res);
+			res.openMailMenu(p, res, 0);
 			break;
 		default:
 			break;

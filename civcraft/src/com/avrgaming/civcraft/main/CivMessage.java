@@ -339,7 +339,7 @@ public class CivMessage {
 			return;
 		}
 		
-		CivLog.info("[TC:"+town.getName()+"] "+resident.getName()+": "+message);
+		CivLog.chat("(Town:"+town.getName()+" Res:"+resident.getName()+")", message);
 		for (Resident r : town.getResidents()) {
 			try {
 				Player player = CivGlobal.getPlayer(r);
@@ -374,6 +374,7 @@ public class CivMessage {
 			townName = resident.getTown().getName();
 		}
 		
+		CivLog.chat("(Civ:"+civ.getName()+" Res:"+resident.getName()+")", message);
 		for (Town t : civ.getTowns()) {
 			for (Resident r : t.getResidents()) {
 				try {

@@ -140,29 +140,15 @@ public abstract class CivAsyncTask implements Runnable {
 	}
 	
 	public void updateBlocksQueue(Queue<SimpleBlock> sbs) {
-
 		SyncBuildUpdateTask.queueSimpleBlock(sbs);
 		return;
-
-		//		this.finished = false;
-//		SimpleBlock sb;
-//		while((sb = sbs.poll()) != null) {		
-//			if (!SyncBuildUpdateTask.updateBlocks.offer(sb)) {
-//				this.finished = true;
-//				return false;
-//			}
-//		}
-//		
-//		this.finished = true;
-//		return true;
 	}
 	
-	public Boolean updateInventory(Action action, MultiInventory inv, ItemStack itemStack) throws InterruptedException {
-
+	public Boolean updateInventory(Action action, MultiInventory multiinv, ItemStack itemStack) throws InterruptedException {
 		UpdateInventoryRequest request = new UpdateInventoryRequest(SyncUpdateInventory.lock);
 		request.action = action;
 		request.stack = itemStack;
-		request.inv = inv;
+		request.multiinv = multiinv;
 		
 		this.finished = false;
 		
@@ -178,6 +164,39 @@ public abstract class CivAsyncTask implements Runnable {
 				request.condition.await(TIMEOUT, TimeUnit.MILLISECONDS);
 				if (!request.finished) {
 					CivLog.warning("Couldn't update inventory in "+TIMEOUT+" milliseconds! Retrying.");
+				}
+			}
+			
+			return (Boolean)request.result;
+		} finally {
+			this.finished = true;
+			SyncUpdateInventory.lock.unlock();
+		}
+	}
+	
+	public Boolean updateInventory(Action action, MultiInventory multiinv, ItemStack stack, int index, Inventory inv) throws InterruptedException  {
+		UpdateInventoryRequest request = new UpdateInventoryRequest(SyncUpdateInventory.lock);
+		request.index = index;
+		request.stack = stack;
+		request.multiinv = multiinv;
+		request.inv = inv;
+		request.index = index;
+		request.action = action;
+		
+		this.finished = false;
+		
+		SyncUpdateInventory.lock.lock();
+		try {
+			SyncUpdateInventory.requestQueue.add(request);
+			while(!request.finished) {
+				/* 
+				 * We await for the finished flag to be set, at this
+				 * time the await function will give up the lock above
+				 * and automagically re-lock when its finished.
+				 */
+				request.condition.await(TIMEOUT, TimeUnit.MILLISECONDS);
+				if (!request.finished) {
+					CivLog.warning("Couldn't async update inventory in "+TIMEOUT+" milliseconds! Retrying.");
 				}
 			}
 			
@@ -211,6 +230,5 @@ public abstract class CivAsyncTask implements Runnable {
 			SyncGrowTask.lock.unlock();
 		}
 	}
-	
 	
 }
