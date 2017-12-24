@@ -111,13 +111,13 @@ quarry_drops:
     input: 274
     type_id: 73
     loot_type: 'rare'
-    drop_chance: 0.015
+    drop_chance: 0.005
 #
   - type: StonePickLapis
     input: 274
     type_id: 21
     loot_type: 'rare'
-    drop_chance: 0.015
+    drop_chance: 0.005
 #====> Iron Pickaxe <====#
   - type: IronPickCoal
     input: 257
@@ -147,13 +147,13 @@ quarry_drops:
     input: 257
     type_id: 73
     loot_type: 'uncommon'
-    drop_chance: 0.0225
+    drop_chance: 0.0125
 #
   - type: IronPickLapis
     input: 257
     type_id: 21
     loot_type: 'uncommon'
-    drop_chance: 0.0225
+    drop_chance: 0.0125
 #====> Diamond Pickaxe <====#
   - type: DiaPickIron
     input: 278
@@ -183,43 +183,43 @@ quarry_drops:
     input: 278
     type_id: 73
     loot_type: 'uncommon'
-    drop_chance: 0.03
+    drop_chance: 0.02
 #
   - type: DiaPickLapis
     input: 278
     type_id: 21
     loot_type: 'uncommon'
-    drop_chance: 0.03
+    drop_chance: 0.02
 #====> Gold Pickaxe <====#
   - type: GoldPickGold
     input: 285
     type_id: 14
     loot_type: 'junk'
-    drop_chance: 0.025
+    drop_chance: 0.06
 #
   - type: GoldPickDia
     input: 285
     type_id: 56
     loot_type: 'common'
-    drop_chance: 0.006
+    drop_chance: 0.0075
 #
   - type: GoldPickEmr
     input: 285
     type_id: 129
     loot_type: 'uncommon'
-    drop_chance: 0.003
+    drop_chance: 0.004
 #
   - type: GoldPickRedstone
     input: 285
     type_id: 73
     loot_type: 'common'
-    drop_chance: 0.055
+    drop_chance: 0.045
 #
   - type: GoldPickLapis
     input: 285
     type_id: 21
     loot_type: 'common'
-    drop_chance: 0.055
+    drop_chance: 0.045
 #
 #======================================#
 #======== > Trommel Settings < ========#

@@ -1,4 +1,4 @@
-custom_drops_enabled: true
+custom_mobs_enabled: true
 
 # Example
 #
@@ -8,20 +8,24 @@ custom_drops_enabled: true
 #   exp_mod: EXP modifier for skill levels
 #   type: '(name)' skill level used for modifications
 #   drops:
-#     - '(Material [Bukkit Material.java]), minDrop, maxDrop, dropChance, lootingRate' ## Minecraft Item
-#     - '(civ:(matName) [CivCraft materials.yml]), minDrop, maxDrop, dropChance, lootingRate, lootingDrops' ## Custom Item
-#    ## Note: the 'lootingRate' changes +(add) drop percent. if 0, looting will not work.
-#    ## 'lootingDrops' will increase drops on items. If 0, looting will not work.
+#     - '(Material [Bukkit Material.java]),itemData,minDrop,maxDrop,dropChance,lootingRate,lootingDrops,dropMod' ## Minecraft Item
+#     - '(civ:(matName) [CivCraft materials.yml]),itemData,minDrop,maxDrop,dropChance,lootingRate,lootingDrops,dropMod' ## Custom Item
+#    ## Note: the 'lootingRate' changes +(add) drop percent. if 0,looting will not work.
+#    ## 'lootingDrops' will increase drops on items. If 0,looting will not work.
+#    ## dropMod will require the 'type' to be this lvl before it drops
 #
 # Custom Mobs
 mobs:
  - id: ZOMBIE
+   type: 'Lesser Yobo'
+#   chance: 1.0
+#   biomes: 'PLAINS'
    exp_min: 5
    exp_max: 10
    exp_mod: 1.1
-   type: 'Weapondry'
-   drops:
-     - 'ROTTEN_FLESH, 0, 2, 1.0, 0, 1'
-     - 'POTATO_ITEM, 1, 1, 0.025, 0.1, 1'
-     - 'CARROT_ITEM, 1, 1, 0.025, 0.1, 1'
-     - 'BEETROOT_ITEM, 1, 1, 0.025, 0.l, 1'
+   mod_type: 'Weapondry'
+   drops: '367,0,0,2,1.0,0,1,0;391,0,1,1,0.035,0.1,1,2;392,0,1,1,0.035,0.1,1,2;434,0,1,1,0.025,0.l,2'
+
+biomes:
+ - biome: 'PLAINS'
+   types: 'Lesser Yobo;Greater Yobo;Lesser Savage'

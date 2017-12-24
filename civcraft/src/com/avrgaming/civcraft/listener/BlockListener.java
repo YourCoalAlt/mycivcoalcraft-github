@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.listener;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -81,8 +82,11 @@ import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigMobDrops;
 import com.avrgaming.civcraft.config.ConfigTempleSacrifice;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -106,7 +110,6 @@ import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Library;
 import com.avrgaming.civcraft.structure.Market;
-import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Pasture;
 import com.avrgaming.civcraft.structure.Stable;
 import com.avrgaming.civcraft.structure.Temple;
@@ -905,50 +908,6 @@ public class BlockListener implements Listener {
 			return;
 		}
 		
-		//XXX used for residents doing quests at structures
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.ENDER_PORTAL_FRAME) {
-			if (resident.isSBPermOverride()) {
-				return;
-			}
-			
-			Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
-			event.setCancelled(true);
-			
-			TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
-			if (tc == null) {
-				CivMessage.sendError(resident, "Structure unclaimed? Error, needs to be claimed in order to run code!");
-				return;
-			}
-			if(!tc.perms.hasPermission(PlotPermissions.Type.INTERACT, resident)) {
-				CivMessage.sendError(resident, "You do not have permission to access this technology table.");
-				return;
-			}
-			
-			if (buildable.getTown() != resident.getTown() || !resident.hasTown()) {
-				CivMessage.sendError(resident, "Cannot access a quest table of a town you are not in.");
-				return;
-			}
-			
-/*			if (buildable instanceof Barracks) {
-				Barracks barracks = (Barracks) buildable;
-				barracks.openToolGUI(p, barracks.getTown());
-			} else*/
-			
-			if (buildable instanceof Bank) {
-				Bank bank = (Bank) buildable;
-				bank.openToolGUI(p, bank.getTown());
-/*			} else if (buildable instanceof Granary) {
-				Granary granary = (Granary) buildable;
-				granary.openToolGUI(p, granary.getTown());*/
-			} else if (buildable instanceof Mine) {
-				Mine mine = (Mine) buildable;
-				mine.openToolGUI(p, mine.getTown());
-			} else {
-				CivMessage.sendError(resident, "It appears you are trying to access an illegal quest table...?");
-				return;
-			}
-		}
-		
 		if (event.isCancelled()) {
 			// Fix for bucket bug.
 			if (event.getAction() == Action.RIGHT_CLICK_AIR) {
@@ -1496,8 +1455,57 @@ public class BlockListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDeath(EntityDeathEvent event) {
-
+	public void onEntityDeath(EntityDeathEvent event) { // TODO Finish
+		
+		if (event.getEntity().getKiller() != null) {
+	//		Player p = event.getEntity().getKiller();
+	//		ResidentExperience resE = CivGlobal.getResidentE(p);
+			ConfigMobDrops mDs = CivSettings.custMobDrops.get(event.getEntityType().toString().toUpperCase());
+			if (mDs != null) {
+				Random rand = new Random();
+				int coins = (int) ((rand.nextInt(mDs.exp_max - mDs.exp_min) + mDs.exp_min) * (mDs.exp_mod));
+				event.setDroppedExp(coins);
+				
+				event.getDrops().clear();
+				ArrayList<String> dropped = new ArrayList<String>();
+				for (String values : mDs.drops.split(";")) {
+					String[] drops = values.split(",");
+					double dc = Double.valueOf(drops[4]);
+					int chance = rand.nextInt(10000);
+					if (chance < (dc*10000)) {
+						dropped.add(values);
+					}
+				}
+				
+				if (dropped.size() != 0) {
+					for (String items : dropped) {
+						if (items == null) continue;
+						String[] drops = items.split(",");
+						String mat = drops[0]; mat = mat.replace("[", "").replace("]", "");
+						int dropAmt;
+						
+						if ((Integer.valueOf(drops[3]) - Integer.valueOf(drops[2])) == 0) {
+							dropAmt = Integer.valueOf(drops[2]);
+						} else {
+							dropAmt = (rand.nextInt(Integer.valueOf(drops[3]) - Integer.valueOf(drops[2])) + Integer.valueOf(drops[2])); // + (Integer.valueOf(drops[7])
+						}
+						
+						if (dropAmt > 0) {
+							LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(mat);
+							if (craftMat != null) {
+								ItemStack item = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), dropAmt);
+								event.getDrops().add(item);
+							} else {
+								ItemStack item = ItemManager.createItemStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
+							//	CivMessage.global(item.getType().toString());
+								event.getDrops().add(item);
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		Pasture pasture = Pasture.pastureEntities.get(event.getEntity().getUniqueId());
 		if (pasture != null) {
 			pasture.onEntityDeath(event.getEntity());
@@ -1524,16 +1532,7 @@ public class BlockListener implements Listener {
 			}
 		}
 	}
-
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onEntityBreakDoor(EntityBreakDoorEvent event) {
-		bcoord.setFromLocation(event.getBlock().getLocation());
-		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
-		if (sb != null) {
-			event.setCancelled(true);
-		}
-	}
-
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
 		if (War.isWarTime() && !event.getEntity().getType().equals(EntityType.HORSE)) {
@@ -1601,7 +1600,7 @@ public class BlockListener implements Listener {
 		if (event.getEntity().getType().equals(EntityType.BAT) ||
 			event.getEntity().getType().equals(EntityType.WITCH) ||
 			event.getEntity().getType().equals(EntityType.GUARDIAN) ||
-			event.getEntity().getType().equals(EntityType.ZOMBIE) ||
+//			event.getEntity().getType().equals(EntityType.ZOMBIE) ||
 			event.getEntity().getType().equals(EntityType.SKELETON) ||
 			event.getEntity().getType().equals(EntityType.CREEPER) ||
 			event.getEntity().getType().equals(EntityType.SPIDER) ||
@@ -1628,6 +1627,15 @@ public class BlockListener implements Listener {
 		if (event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
 			event.setCancelled(true);
 			return;
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onEntityBreakDoor(EntityBreakDoorEvent event) {
+		bcoord.setFromLocation(event.getBlock().getLocation());
+		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
+		if (sb != null) {
+			event.setCancelled(true);
 		}
 	}
 

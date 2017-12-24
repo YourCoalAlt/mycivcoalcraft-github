@@ -56,11 +56,10 @@ public class EffectEventTimer extends CivAsyncTask {
 		while (iter.hasNext()) {
 			Structure struct = iter.next().getValue();
 			TownHall townhall = struct.getTown().getTownHall();
-			if (townhall == null) continue;
-			if (!struct.isActive()) continue;
-			
-			struct.onEffectEvent();
 			if (struct.getEffectEvent() == null || struct.getEffectEvent().equals("")) continue;
+			if (!struct.isActive()) continue;
+			if (townhall == null) continue;
+			struct.onEffectEvent();
 			
 			String[] split = struct.getEffectEvent().toLowerCase().split(":"); 
 			switch (split[0]) {

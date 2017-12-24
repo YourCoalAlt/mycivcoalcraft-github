@@ -54,10 +54,11 @@ public class ConfigBuff {
 			
 			buff.value = (String)b.get("value");
 			buff.stackable = (Boolean)b.get("stackable");
-			buff.parent = (String)b.get("parent");
 			
-			if (buff.parent == null) {
+			if ((String)b.get("parent") == null) {
 				buff.parent = buff.id;
+			} else {
+				buff.parent = (String)b.get("parent");
 			}
 			
 			buffs.put(buff.id, buff);

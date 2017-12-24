@@ -61,30 +61,6 @@ materials:
        - "s  "
 # Resource Recipes  ===========================================
 # Checked 25 August 2017
-  - id: 'civ_vanilla_diamond_pickaxe'
-    item_id: 278
-    item_data: 0
-    name: 'Diamond Pickaxe'
-    craftable: true
-    shaped: true
-    category: '<blue>Tools'
-    components:
-       - name: 'Damage'
-         value: '2.5'
-       - name: 'RepairCost'
-         value: '1500'
-    ingredients:
-       - type_id: 280
-         data: 0
-         letter: 's'
-       - type_id: 264
-         data: 0
-         letter: 'm' 
-    shape:
-        - "mmm"
-        - " s "
-        - " s "
-# Checked 25 August 2017
   - id: 'civ_citrus'
     item_id: 351
     item_data: 14
@@ -911,6 +887,58 @@ materials:
     category: 'Special'
     components:
        - name: 'Tagged'
+#======================================================#
+#===================[ Tool Recipes ]===================#
+#======================================================#
+# Checked 25 August 2017
+  - id: 'civ_vanilla_diamond_pickaxe'
+    item_id: 278
+    item_data: 0
+    name: 'Diamond Pickaxe'
+    craftable: true
+    shaped: true
+    category: '<blue>Tools'
+    components:
+       - name: 'Damage'
+         value: '2'
+       - name: 'RepairCost'
+         value: '1500'
+    ingredients:
+       - type_id: 280
+         data: 0
+         letter: 's'
+       - type_id: 264
+         data: 0
+         letter: 'h' 
+    shape:
+        - "hhh"
+        - " s "
+        - " s "
+# Checked 25 August 2017
+  - id: 'civ_vanilla_gold_pickaxe'
+    item_id: 278
+    item_data: 0
+    name: 'Golden Pickaxe'
+    craftable: true
+    shaped: true
+    category: '<blue>Tools'
+    components:
+       - name: 'Damage'
+         value: '1'
+       - name: 'RepairCost'
+         value: '6000'
+    ingredients:
+       - type_id: 0
+         custom_id: 'civ_crafted_sticks'
+         data: 0
+         letter: 's'
+       - type_id: 41
+         data: 0
+         letter: 'h' 
+    shape:
+        - "hhh"
+        - " s "
+        - " s "
 # Leather Gear =========================================
 # Checked 25 August 2017
   - id: 'civ_wood_sword'

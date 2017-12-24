@@ -254,14 +254,14 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	
 	private ItemStack getUselessDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(10); // 0-9
-		if (uselessDrop >= 0 || uselessDrop <= 3) { // 0-3
+		int uselessDrop = rand.nextInt(10);
+		if (uselessDrop >= 0 && uselessDrop <= 2) {
 			return ItemManager.createItemStack(CivData.DIRT, 1);
-		} else if (uselessDrop >= 4 && uselessDrop <= 5) { // 4-5
+		} else if (uselessDrop >= 3 && uselessDrop <= 4) {
 			return ItemManager.createItemStack(CivData.DIRT, 1, (byte)CivData.COARSE_DIRT);
-		} else if (uselessDrop >= 6 && uselessDrop <= 7) { // 6-7
+		} else if (uselessDrop >= 5 && uselessDrop <= 6) {
 			return ItemManager.createItemStack(CivData.GRAVEL, 1);
-		} else { // 8-9
+		} else {
 			return getStoneDrop();
 		}
 	}

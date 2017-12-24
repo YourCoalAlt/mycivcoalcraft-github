@@ -92,6 +92,9 @@ public class CivSettings {
 	public static Map<Integer, ConfigNewspaper> newspapers = new HashMap<Integer, ConfigNewspaper>();
 	public static Map<String, ConfigEXPMining> resxpMiningBlocks = new HashMap<String, ConfigEXPMining>();
 	
+	public static FileConfiguration mobConfig; /* mobs.yml */
+	public static Map<String, ConfigMobDrops> custMobDrops = new HashMap<String, ConfigMobDrops>();
+	
 	public static FileConfiguration structureConfig; /* structures.yml */
 	public static Map<String, ConfigBuildableInfo> structures = new HashMap<String, ConfigBuildableInfo>();
 	public static Map<Integer, ConfigGrocerLevel> grocerLevels = new HashMap<Integer, ConfigGrocerLevel>();
@@ -431,6 +434,7 @@ public class CivSettings {
 		cultureConfig = loadCivConfig("culture.yml");
 		experienceConfig = loadCivConfig("experience.yml");
 		gameConfig = loadCivConfig("game.yml");
+		mobConfig = loadCivConfig("mobs.yml");
 		structureConfig = loadCivConfig("structures.yml");
 		structuredataConfig = loadCivConfig("structuredata.yml");
 		techsConfig = loadCivConfig("techs.yml");
@@ -458,6 +462,8 @@ public class CivSettings {
 		
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
+		
+		ConfigMobDrops.loadConfig(mobConfig, custMobDrops);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
