@@ -18,6 +18,7 @@
  */
 package com.avrgaming.civcraft.listener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -41,6 +42,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -82,9 +84,10 @@ import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigMobDrops;
+import com.avrgaming.civcraft.config.ConfigMobs;
 import com.avrgaming.civcraft.config.ConfigTempleSacrifice;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
@@ -93,6 +96,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.StructureBlock;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.StructureSign;
@@ -1458,23 +1462,48 @@ public class BlockListener implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) { // TODO Finish
 		
 		if (event.getEntity().getKiller() != null) {
-	//		Player p = event.getEntity().getKiller();
-	//		ResidentExperience resE = CivGlobal.getResidentE(p);
-			ConfigMobDrops mDs = CivSettings.custMobDrops.get(event.getEntityType().toString().toUpperCase());
+			Player p = event.getEntity().getKiller();
+			ConfigMobs mDs = CivSettings.custMobs.get(event.getEntityType().toString().toUpperCase());
 			if (mDs != null) {
+				ResidentExperience resE = CivGlobal.getResidentE(p);
+				double mod = ((resE.getWeapondryLevel() + 1) * mDs.exp_mod) / 2;
+				try {
+					DecimalFormat df = new DecimalFormat("0.00");
+					double genrf = mDs.res_exp*mod;
+					double rfEXP = Double.valueOf(df.format(genrf));
+					resE.addWeapondryEXP(rfEXP);
+				} catch (CivException e1) {
+				}
+				
 				Random rand = new Random();
-				int coins = (int) ((rand.nextInt(mDs.exp_max - mDs.exp_min) + mDs.exp_min) * (mDs.exp_mod));
+				int coins = (rand.nextInt(mDs.exp_max - mDs.exp_min) + mDs.exp_min);
+				coins = (int) ((coins * mod) / 2);
 				event.setDroppedExp(coins);
 				
 				event.getDrops().clear();
 				ArrayList<String> dropped = new ArrayList<String>();
-				for (String values : mDs.drops.split(";")) {
+				for (String values : mDs.drops.split(";")) { // Specific Mob's Drops
 					String[] drops = values.split(",");
 					double dc = Double.valueOf(drops[4]);
 					int chance = rand.nextInt(10000);
 					if (chance < (dc*10000)) {
 						dropped.add(values);
 					}
+				}
+				
+				try {
+					for (String values : CivSettings.getString(CivSettings.mobConfig, "common_drops").split(";")) { // Common Mob's Drops
+						String[] drops = values.split(",");
+						double dc = Double.valueOf(drops[4]);
+						int chance = rand.nextInt(10000);
+						if (chance < (dc*10000)) {
+							dropped.add(values);
+						}
+					}
+				} catch (NumberFormatException | InvalidConfiguration e) {
+					CivLog.error("Could not get common_drops from mob.yml!");
+					CivLog.error(e.getMessage());
+//					e.printStackTrace();
 				}
 				
 				if (dropped.size() != 0) {
@@ -1519,9 +1548,7 @@ public class BlockListener implements Listener {
 		/* Check if we're 'inside' a temple. */
 		bcoord.setFromLocation(event.getEntity().getLocation());
 		HashSet<Buildable> buildables = CivGlobal.getBuildablesAt(bcoord);
-		if (buildables == null) {
-			return;
-		}
+		if (buildables == null) return;
 
 		for (Buildable buildable : buildables) {
 			if (buildable instanceof Temple) {
@@ -1536,7 +1563,7 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
 		if (War.isWarTime() && !event.getEntity().getType().equals(EntityType.HORSE)) {
-			if (!event.getSpawnReason().equals(SpawnReason.BREEDING)){
+			if (!event.getSpawnReason().equals(SpawnReason.BREEDING)) {
 				event.setCancelled(true);
 				return;
 			}
@@ -1546,7 +1573,7 @@ public class BlockListener implements Listener {
 			if (event.getSpawnReason().equals(SpawnReason.EGG) || event.getSpawnReason().equals(SpawnReason.DISPENSE_EGG)) {
 				Random rand = new Random();
 				int chance = rand.nextInt(100);
-				if (chance <= 10) {
+				if (chance < 10) {
 					event.setCancelled(false);
 					return;
 				} else {
@@ -1561,6 +1588,28 @@ public class BlockListener implements Listener {
 			}
 		}
 		
+		if (event.getSpawnReason().equals(SpawnReason.JOCKEY)) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		LivingEntity ent = event.getEntity();
+		ConfigMobs mob = CivSettings.custMobs.get(ent.getType().toString().toUpperCase());
+		if (mob != null) {
+			mob.setMaxHealth(ent, mob.max_health);
+			mob.modifySpeed(ent, mob.move_speed);
+			mob.setAttack(ent, mob.attack_dmg);
+			mob.setFollowRange(ent, mob.follow_range);
+			mob.setKnockbackResistance(ent, mob.kb_resistance);
+			ent.setCustomName(CivColor.colorize(mob.name));
+			ent.setCustomNameVisible(mob.name_visible);
+			if (ent instanceof Zombie) {
+				Zombie z = (Zombie) ent;
+				if (z.isBaby()) z.setBaby(false);
+			}
+			return;
+		}
+		
 		if (event.getEntity().getType().equals(EntityType.IRON_GOLEM) && event.getSpawnReason().equals(SpawnReason.BUILD_IRONGOLEM)) {
 			event.setCancelled(true);
 			return;
@@ -1571,10 +1620,10 @@ public class BlockListener implements Listener {
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.SILVERFISH) && event.getSpawnReason().equals(SpawnReason.SILVERFISH_BLOCK)) {
-			event.setCancelled(true);
-			return;
-		}
+//		if (event.getEntity().getType().equals(EntityType.SILVERFISH) && event.getSpawnReason().equals(SpawnReason.SILVERFISH_BLOCK)) {
+//			event.setCancelled(true);
+//			return;
+//		}
 		
 		if (event.getEntity().getType().equals(EntityType.PIG_ZOMBIE) && event.getSpawnReason().equals(SpawnReason.NETHER_PORTAL)) {
 			event.setCancelled(true);
@@ -1586,10 +1635,10 @@ public class BlockListener implements Listener {
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.ENDERMITE) && event.getSpawnReason().equals(SpawnReason.ENDER_PEARL)) {
-			event.setCancelled(true);
-			return;
-		}
+//		if (event.getEntity().getType().equals(EntityType.ENDERMITE) && event.getSpawnReason().equals(SpawnReason.ENDER_PEARL)) {
+//			event.setCancelled(true);
+//			return;
+//		}
 		
 		//False, we want them to be cute to players
 		if (event.getEntity().getType().equals(EntityType.SLIME) && event.getSpawnReason().equals(SpawnReason.SLIME_SPLIT)) {
@@ -1597,36 +1646,39 @@ public class BlockListener implements Listener {
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.BAT) ||
-			event.getEntity().getType().equals(EntityType.WITCH) ||
-			event.getEntity().getType().equals(EntityType.GUARDIAN) ||
-//			event.getEntity().getType().equals(EntityType.ZOMBIE) ||
-			event.getEntity().getType().equals(EntityType.SKELETON) ||
-			event.getEntity().getType().equals(EntityType.CREEPER) ||
-			event.getEntity().getType().equals(EntityType.SPIDER) ||
-			event.getEntity().getType().equals(EntityType.CAVE_SPIDER) ||
-			event.getEntity().getType().equals(EntityType.SILVERFISH) ||
-			event.getEntity().getType().equals(EntityType.ENDERMITE) ||
-			event.getEntity().getType().equals(EntityType.ENDERMAN) ||
-			event.getEntity().getType().equals(EntityType.WOLF) ||
-			event.getEntity().getType().equals(EntityType.OCELOT) ||
-			event.getEntity().getType().equals(EntityType.IRON_GOLEM) ||
-			
-			event.getEntity().getType().equals(EntityType.SHULKER) ||
-			event.getEntity().getType().equals(EntityType.GUARDIAN) ||
-			event.getEntity().getType().equals(EntityType.POLAR_BEAR) ||
-			
-			event.getEntity().getType().equals(EntityType.PIG_ZOMBIE) ||
-			event.getEntity().getType().equals(EntityType.MAGMA_CUBE) ||
-			event.getEntity().getType().equals(EntityType.GHAST) ||
-			event.getEntity().getType().equals(EntityType.BLAZE)) {
-			event.setCancelled(true);
-			return;
-		}
+//		if (event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
+//			event.setCancelled(true);
+//			return;
+//		}
 		
-		if (event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
+		if (event.getEntity().getType().equals(EntityType.BAT) ||
+				ent.getType().equals(EntityType.WITCH) ||
+				ent.getType().equals(EntityType.GUARDIAN) ||
+//				ent.getType().equals(EntityType.ZOMBIE) ||
+				ent.getType().equals(EntityType.SKELETON) ||
+//				ent.getType().equals(EntityType.CREEPER) ||
+//				ent.getType().equals(EntityType.SPIDER) ||
+				ent.getType().equals(EntityType.CAVE_SPIDER) ||
+//				ent.getType().equals(EntityType.SILVERFISH) ||
+				ent.getType().equals(EntityType.ENDERMITE) ||
+				ent.getType().equals(EntityType.ENDERMAN) ||
+				ent.getType().equals(EntityType.WOLF) ||
+				ent.getType().equals(EntityType.OCELOT) ||
+				ent.getType().equals(EntityType.IRON_GOLEM) ||
+				
+				ent.getType().equals(EntityType.SHULKER) ||
+				ent.getType().equals(EntityType.GUARDIAN) ||
+				ent.getType().equals(EntityType.POLAR_BEAR) ||
+				
+				ent.getType().equals(EntityType.PIG_ZOMBIE) ||
+				ent.getType().equals(EntityType.MAGMA_CUBE) ||
+				ent.getType().equals(EntityType.GHAST) ||
+				ent.getType().equals(EntityType.BLAZE)) {
 			event.setCancelled(true);
 			return;
+//		} else {
+//			CivLog.warning("Non-custom mob nor disabled mob "+ent.getType()+" tried to spawn, was let go.");
+//			event.setCancelled(false);
 		}
 	}
 	

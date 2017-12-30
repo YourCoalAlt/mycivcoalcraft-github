@@ -17,21 +17,6 @@ potions:
 taxation_cottage_buff: 2.0
 #
 techs: #Note: Pts = Beakers/10
-
-
-#TEMP FOR TESTING
-  - id: 'tech_efficiency'
-    name: 'Efficiency'
-    beaker_cost: 0
-    cost: 0
-    points: 0
-    tier: 0
-    unlocks:
-      - "quarry_test"
-    require_techs:
-#
-
-
 #============================#
 #======== > Tier 0 < ========# # We will use this as a town mechanic to unlock techs (w/ beaker items?)
 #============================#
@@ -61,22 +46,8 @@ techs: #Note: Pts = Beakers/10
     tier: 1
     unlocks:
       - "Structure Barracks"
-      - "T1 Tech Blacksmithing"
-      - "T2 Tech Exploration And Strength"
-      - "T2 Tech Metal Casting"
-      - "T2 Tech Smelting"
-      - "T2 Tech Leather Refinement"
-      - "T2 Tech Archery"
-    require_techs: 'tech_doesnotexist'
-#
-  - id: 'tech_blacksmithing'
-    name: 'Blacksmithing'
-    beaker_cost: 500
-    cost: 4000
-    points: 50
-    tier: 1
-    unlocks:
-      - "Structure Blacksmith"
+      - "T2 Tech Blacksmithing"
+      - "T3 Tech Exploration And Strength"
     require_techs: 'tech_doesnotexist'
 #
   - id: 'tech_mining'
@@ -131,61 +102,18 @@ techs: #Note: Pts = Beakers/10
 #============================#
 #======== > Tier 2 < ========#
 #============================#
-  - id: 'tech_exploration_and_strength'
-    name: 'Exploration and Strength'
+  - id: 'tech_blacksmithing'
+    name: 'Blacksmithing'
     beaker_cost: 1000
     cost: 7500
     points: 100
     tier: 2
     unlocks:
-      - "Unit Settler"
-      - "Unit Warrior"
-      - "Unit Archer"
-      - "T2 Tech Strategy"
-    require_techs: 'tech_armory'
-#
-  - id: 'tech_metal_casting'
-    name: 'Metal Casting'
-    beaker_cost: 1000
-    cost: 7500
-    points: 100
-    tier: 2
-    unlocks:
-      - "Weapon T2 Gold Sword"
-      - "T6 Tech Swordsmithing"
-    require_techs: 'tech_armory'
-#
-  - id: 'tech_smelting'
-    name: 'Smelting'
-    beaker_cost: 1000
-    cost: 7500
-    points: 100
-    tier: 2
-    unlocks:
-      - "Armor T2 Gold Metal"
-      - "T6 Tech Chemical Bonding"
-    require_techs: 'tech_armory'
-#
-  - id: 'tech_leather_refinement'
-    name: 'Leather Refinement'
-    beaker_cost: 1000
-    cost: 7500
-    points: 100
-    tier: 2
-    unlocks:
-      - "Armor T2 Gold Leather"
-      - "T6 Tech Tanning"
-    require_techs: 'tech_armory'
-#
-  - id: 'tech_archery'
-    name: 'Archery'
-    beaker_cost: 1000
-    cost: 7500
-    points: 100
-    tier: 2
-    unlocks:
-      - "Weapon Recurve Bow"
-      - "T6 Tech Tillering"
+      - "Structure Blacksmith"
+      - "T3 Tech Metal Casting"
+      - "T3 Tech Smelting"
+      - "T3 Tech Leather Crafting"
+      - "T3 Tech Archery"
     require_techs: 'tech_armory'
 #
   - id: 'tech_masonry'
@@ -241,6 +169,7 @@ techs: #Note: Pts = Beakers/10
     tier: 2
     unlocks:
       - "Bank Upgrade Level 2"
+      - "Town Upgrade Large Hamlet"
       - "T3 Tech Language"
     require_techs: 'tech_mysticism'
 #
@@ -258,6 +187,63 @@ techs: #Note: Pts = Beakers/10
 #============================#
 #======== > Tier 3 < ========#
 #============================#
+  - id: 'tech_exploration_and_strength'
+    name: 'Exploration and Strength'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Unit Settler"
+      - "Unit Warrior"
+      - "Unit Archer"
+      - "T5 Tech Strategy"
+    require_techs: 'tech_armory'
+#
+  - id: 'tech_metal_casting'
+    name: 'Metal Casting'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Weapon T2 Aluminium Sword"
+      - "T7 Tech Swordsmithing"
+    require_techs: 'tech_blacksmithing'
+#
+  - id: 'tech_smelting'
+    name: 'Smelting'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Armor T2 Aluminium Metal"
+      - "T7 Tech Metallurgy"
+    require_techs: 'tech_blacksmithing'
+#
+  - id: 'tech_leather_crafting'
+    name: 'Leather Crafting'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Armor T2 Aluminium Leather"
+      - "T7 Tech Leather Refinement"
+    require_techs: 'tech_blacksmithing'
+#
+  - id: 'tech_archery'
+    name: 'Archery'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Weapon Traditional Bow"
+      - "T7 Tech Fletching"
+    require_techs: 'tech_blacksmithing'
+#
   - id: 'tech_advanced_masonry'
     name: 'Advanced Masonry'
     beaker_cost: 2000
@@ -267,7 +253,7 @@ techs: #Note: Pts = Beakers/10
     unlocks:
       - "Structure Scout Tower"
       - "War Structure Siege Tower"
-      - "T4 Tech Artillery"
+      - "T5 Tech Artillery"
     require_techs: 'tech_masonry'
 #
   - id: 'tech_productivity'
@@ -279,7 +265,7 @@ techs: #Note: Pts = Beakers/10
     unlocks:
       - "Structure Mine"
       - "T4 Tech Trading"
-      - "T4 Tech Sailing*"
+      - "T4 Tech Shipbuilding*"
     require_techs: 'tech_mining'
 #
   - id: 'tech_experimentation'
@@ -290,9 +276,20 @@ techs: #Note: Pts = Beakers/10
     tier: 3
     unlocks:
       - "Structure Lab"
-      - "T4 Tech Sailing*"
+      - "T4 Tech Shipbuilding*"
       - "T5 Tech Education"
     require_techs: 'tech_writing'
+#
+  - id: 'tech_horseback_riding'
+    name: 'Horseback Riding'
+    beaker_cost: 2000
+    cost: 15000
+    points: 200
+    tier: 3
+    unlocks:
+      - "Structure Horse Stable"
+      - "T6 Tech Herding"
+    require_techs: 'tech_animal_husbandry'
 #
   - id: 'tech_housing'
     name: 'Housing'
@@ -303,7 +300,7 @@ techs: #Note: Pts = Beakers/10
     unlocks:
       - "Structure Cottage"
       - "T4 Tech Automation"
-      - "T4 Tech Objectification*"
+      - "T5 Tech Objectification*"
     require_techs: 'tech_pottery'
 #
   - id: 'tech_language'
@@ -334,19 +331,94 @@ techs: #Note: Pts = Beakers/10
 #============================#
 #======== > Tier 4 < ========#
 #============================#
-  - id: 'tech_'
-    name: ''
+  - id: 'tech_trading'
+    name: 'Trading'
     beaker_cost: 3750
     cost: 30000
     points: 375
     tier: 4
     unlocks:
-      - ""
-      - ""
-      - "T Tech "
-    require_techs: 'tech_'
+      - "Structure Trade Outpost"
+      - "Structure Trade Boat"
+      - "T7 Tech Efficiency"
+      - "T5 Tech Commerce*"
+    require_techs: 'tech_productivity'
+#
+  - id: 'tech_shipbuilding'
+    name: 'Shipbuilding'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Structure Shipyard"
+      - "T5 Tech Sailing"
+      - "T5 Tech Commerce*"
+    require_techs: 'tech_productivity:tech_experimentation'
+#
+  - id: 'tech_objectification'
+    name: 'Objectification*'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Structure Mob Grinder"
+      - "T10 Tech Hunting*"
+    require_techs: 'tech_housing:tech_deforestation'
+#
+  - id: 'tech_currency'
+    name: 'Currency'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Bank Upgrade Level 4"
+      - "Town Upgrade Large Village"
+      - "T5 Accounting"
+    require_techs: 'tech_language'
+#
+  - id: 'tech_priesthood'
+    name: 'Priesthood'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Structure Temple"
+      - "T5 Tech Holy Book"
+    require_techs: 'tech_heritage'
+#
+  - id: 'tech_brewing'
+    name: 'Brewing'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Potion Speed I"
+      - "Potion Healing I"
+      - "T6 Fermentation"
+    require_techs: 'tech_heritage'
 #
 #============================#
 #======== > Tier 5 < ========#
 #============================#
+#  - id: 'tech_'
+#    name: ''
+#    beaker_cost: 
+#    cost: 
+#    points: 
+#    tier: 5
+#    unlocks:
+#      - ""
+#      - ""
+#      - "T Tech "
+#    require_techs: 'tech_'
+#
+#============================#
+#======== > Tier 6 < ========#
+#============================#
+
 #

@@ -10,13 +10,13 @@
 # plus this extra stuff.
 town_scores:
     # How many points is each town chunk worth
-    town_chunk: 20
+    town_chunk: 10
 
     # How many points is each culture chunk this town owns is worth
-    culture_chunk: 10
+    culture_chunk: 5
 
     # Points per resident in town
-    resident: 250
+    resident: 100
 
     # Points per coin in town treasury
     coins: 25

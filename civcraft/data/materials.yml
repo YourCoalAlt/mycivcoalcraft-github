@@ -2057,7 +2057,7 @@ materials:
          value: '7'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
-         value: '0.5'
+         value: '0.05'
     ingredients:
        - type_id: 0
          data: 0

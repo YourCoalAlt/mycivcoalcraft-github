@@ -17,6 +17,7 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 		commands.put("quest", "[name] [amount] Changes the player's quest XP based on the amount.");
 		commands.put("mining", "[name] [amount] Changes the player's mining XP based on the amount.");
 		commands.put("fishing", "[name] [amount] Changes the player's fishing XP based on the amount.");
+		commands.put("weapondry", "[name] [amount] Changes the player's weapondry XP based on the amount.");
 	}
 	
 	public void quest_cmd() throws CivException {
@@ -44,6 +45,15 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 		re.addFishingEXP(value);
 		re.save();
 		CivMessage.sendSuccess(sender, "Changed "+re.getName()+" Fishing XP by "+value+". Their total is now "+re.getFishingEXP());
+	}
+	
+	public void weapondry_cmd() throws CivException {
+		if (args.length < 3) throw new CivException("Please check your command: Must include resident name and a value.");
+		ResidentExperience re = CivGlobal.getResidentE(args[1]);
+		double value = Double.valueOf(args[2]);
+		re.addWeapondryEXP(value);
+		re.save();
+		CivMessage.sendSuccess(sender, "Changed "+re.getName()+" Weapondry XP by "+value+". Their total is now "+re.getWeapondryEXP());
 	}
 	
 	@Override

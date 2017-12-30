@@ -281,7 +281,7 @@ public abstract class Unit {
 		return true;	
 	}
 	
-	public static boolean isWearingAnyMetal(Player player) {
+	public static boolean isWeari1ngAnyMetal(Player player) {
 		return isWearingAnyChain(player) || isWearingAnyGold(player) || isWearingAnyIron(player) || isWearingAnyDiamond(player);
 	}
 	

@@ -55,34 +55,41 @@ public class ConfigTech {
 		CivLog.info("Loaded "+tech_maps.size()+" technologies.");		
 	}
 	
+/*	public static double eraRate(Civilization civ) {
+		double rate = 0.0;
+		double era = (CivGlobal.highestCivEra-1) - civ.getCurrentEra();
+		if (era > 0) {
+			rate = (era/10);
+		}
+		return rate;
+	}
+	
+	public double getAdjustedBeakerCost(Civilization civ) {
+		double rate = 1.0;
+		rate -= eraRate(civ);
+		return Math.floor(this.beaker_cost*Math.max(rate, .01));
+	}
+	
+	public double getAdjustedTechCost(Civilization civ) {
+		double rate = 1.0;
+		
+//		for (Town town : civ.getTowns()) {
+//			if (town.getBuffManager().hasBuff("buff_profit_sharing")) {
+//				rate -= town.getBuffManager().getEffectiveDouble("buff_profit_sharing");
+//			}
+//		}
+		rate = Math.max(rate, 0.75);
+		rate -= eraRate(civ);
+		return Math.floor(this.cost * Math.max(rate, .01));
+	}*/
 	
 	public static ArrayList<ConfigTech> getAvailableTechs(Civilization civ) {
 		ArrayList<ConfigTech> returnTechs = new ArrayList<ConfigTech>();
-		
 		for (ConfigTech tech : CivSettings.techs.values()) {
 			if (!civ.hasTechnology(tech.id)) {
 				if (tech.isAvailable(civ)) {
 					returnTechs.add(tech);
 				}
-				
-				
-				/*if (tech.require_techs == null || tech.require_techs.equals("")) {
-					returnTechs.add(tech);
-				} else {
-					String[] requireTechs = tech.require_techs.split(":");
-					// Search for the prereq techs.
-					boolean hasRequirements = true;
-					for (String reqTech : requireTechs) {
-						if (!civ.hasTech(reqTech)) {
-							hasRequirements = false;
-							break;
-						}
-					}
-					if (hasRequirements) {
-						// If we're here, then we have all the required techs.
-						returnTechs.add(tech);
-					}
-				}*/
 			}
 		}
 		return returnTechs;
@@ -94,16 +101,12 @@ public class ConfigTech {
 			return true;
 		}
 		
-		if (require_techs == null || require_techs.equals("")) {
-			return true;			
-		}
+		if (require_techs == null || require_techs.equals("")) return true;
 		
 		String[] requireTechs = require_techs.split(":");
 		
 		for (String reqTech : requireTechs) {
-			if (!civ.hasTechnology(reqTech)) {
-				return false;
-			}
+			if (!civ.hasTechnology(reqTech)) return false;
 		}
 		return true;
 	}

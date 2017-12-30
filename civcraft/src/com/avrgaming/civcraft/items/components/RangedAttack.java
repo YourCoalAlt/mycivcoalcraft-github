@@ -6,14 +6,12 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.items.units.Unit;
-import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainAttack;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -42,14 +40,14 @@ public class RangedAttack extends ItemComponent {
 		}
 	}
 	
-	@Override
+/*	@Override
 	public void onInteract(PlayerInteractEvent event) {
 		if (Unit.isWearingAnyMetal(event.getPlayer())) {
 			event.setCancelled(true);
 			CivMessage.sendError(event.getPlayer(), "Cannot use a bow while wearing metal armor.");
 			return;
 		}
-	}
+	}*/
 	
 	@Override
 	public void onRangedAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
@@ -59,11 +57,11 @@ public class RangedAttack extends ItemComponent {
 			Arrow arrow = (Arrow)event.getDamager();
 			if (arrow.getShooter() instanceof Player) {
 				Player attacker = (Player)arrow.getShooter();
-				if (Unit.isWearingAnyMetal(attacker)) {
-					event.setCancelled(true);
-					CivMessage.sendError(attacker, "Cannot use a bow while wearing metal armor.");
-					return;
-				}
+//				if (Unit.isWearingAnyMetal(attacker)) {
+//					event.setCancelled(true);
+//					CivMessage.sendError(attacker, "Cannot use a bow while wearing metal armor.");
+//					return;
+//				}
 				
 				ConfigUnit u = Unit.getPlayerUnit(attacker);
 				ItemStack unit = Unit.getPlayerUnitStack(attacker);
@@ -75,7 +73,6 @@ public class RangedAttack extends ItemComponent {
 					else if (u != null && u.id.equals("u_archer")) { dmg *= 1.25; }
 					// Additional attack dmg always gets added, reguardless of unit type.
 					for (LoreEnhancement enh : a.getEnhancements()) {
-						CivMessage.global(enh.getDisplayName());
 						if (enh instanceof LoreEnhancementUnitGainAttack) {
 							unitper += (enh.getLevel(a)*0.05);
 						}
@@ -83,46 +80,6 @@ public class RangedAttack extends ItemComponent {
 				}
 				
 				dmg *= unitper;
-				
-				ItemStack ar = MinecraftListener.getArrowStack(attacker);
-				String an = null;
-				if (ar != null && ar.hasItemMeta() && ar.getItemMeta().hasDisplayName()) {
-					an = ar.getItemMeta().getDisplayName();
-				} else {
-					Resident r = CivGlobal.getResident(attacker);
-					if (r.lastShotArrow != null) {
-						an = r.lastShotArrow;
-						r.lastShotArrow = null;
-					}
-				}
-				
-				if (an != null) {
-					if (an.contains("Wood-Flint ")) {
-						CivMessage.global("a");
-						dmg *= 0.85;
-					} else if (an.contains("Wood-Slime ")) {
-						CivMessage.global("b");
-						dmg *= 1.0;
-					} else if (an.contains("Stone-Flint ")) {
-						CivMessage.global("c");
-						dmg *= 1.0;
-					} else if (an.contains("Stone-Slime ")) {
-						CivMessage.global("d");
-						dmg *= 1.0;
-					} else if (an.contains("Iron-Flint ")) {
-						CivMessage.global("e");
-						dmg *= 1.15;
-					} else if (an.contains("Iron-Slime ")) {
-						CivMessage.global("f");
-						dmg *= 1.0;
-					} else {
-						CivMessage.global("0");
-						dmg *= 1.0;
-					}
-				} else {
-					CivMessage.sendError(attacker, "An arrow you shot came back with an unknown arrow varient, we cannot calculate custom arrow damage.");
-					dmg *= 1.0;
-				}
 			}
 		}
 		

@@ -52,8 +52,9 @@ public class CivCommand extends CommandBase {
 		displayName = "Civ";
 		
 		commands.put("townlist", "Shows a list of all towns in the civilization.");
-		commands.put("deposit", "[amount] - deposits this amount into the civ's treasury.");
-		commands.put("withdraw", "[amount] - withdraws this amount from the civ's treasury.");
+		commands.put("deposit", "[amount] - deposits this amount into the town's treasury.");
+		commands.put("depositdebt", "[amount] - deposits this amount into the town's debt treasury.");
+		commands.put("withdraw","[amount] - withdraws this amount from the town's treasury.");
 		commands.put("info", "Shows information about this Civilization");
 		commands.put("show", "[name] gives you information about the civ named [name].");
 		commands.put("list", "(name) - shows all civs in the world, or the towns for the civ named (name).");

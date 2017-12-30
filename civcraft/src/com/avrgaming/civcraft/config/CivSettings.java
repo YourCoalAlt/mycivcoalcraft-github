@@ -93,7 +93,7 @@ public class CivSettings {
 	public static Map<String, ConfigEXPMining> resxpMiningBlocks = new HashMap<String, ConfigEXPMining>();
 	
 	public static FileConfiguration mobConfig; /* mobs.yml */
-	public static Map<String, ConfigMobDrops> custMobDrops = new HashMap<String, ConfigMobDrops>();
+	public static Map<String, ConfigMobs> custMobs = new HashMap<String, ConfigMobs>();
 	
 	public static FileConfiguration structureConfig; /* structures.yml */
 	public static Map<String, ConfigBuildableInfo> structures = new HashMap<String, ConfigBuildableInfo>();
@@ -463,7 +463,7 @@ public class CivSettings {
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
-		ConfigMobDrops.loadConfig(mobConfig, custMobDrops);
+		ConfigMobs.loadConfig(mobConfig, custMobs);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);

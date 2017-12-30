@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -37,7 +36,6 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.CultureChunk;
-import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.ItemManager;
 
@@ -349,27 +347,6 @@ public class MinecraftListener implements Listener {
 	}
 	
 	//XXX Mechanical PvP Aspect
-	
-	public static ItemStack getArrowStack(Player player) {
-		for (ItemStack stack : player.getInventory().getContents()) {
-			if (stack != null && stack.getType() == Material.ARROW) {
-				return stack;
-			}
-		}
-		return null;
-	}
-	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onEntityShootBow(EntityShootBowEvent e) {
-		if (e.getEntity() instanceof Player) {
-			Player p = (Player) e.getEntity();
-			ItemStack a = getArrowStack(p);
-			if (a != null && a.hasItemMeta() && a.getItemMeta().hasDisplayName()) {
-				Resident r = CivGlobal.getResident(p);
-				r.lastShotArrow = a.getItemMeta().getDisplayName();
-			}
-		}
-	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onSwapHandItems(PlayerSwapHandItemsEvent e) {

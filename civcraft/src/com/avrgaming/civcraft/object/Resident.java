@@ -148,7 +148,6 @@ public class Resident extends SQLObject {
 	
 	public byte[] textureInfo;
 	public boolean allchat = false; 
-	public String lastShotArrow = null;
 	
 	/* XXX 
 	 * This buildable is used as place to store which buildable we're working on when interacting 

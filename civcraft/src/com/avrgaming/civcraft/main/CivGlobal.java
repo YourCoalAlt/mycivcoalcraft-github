@@ -305,19 +305,60 @@ public class CivGlobal {
 			}
 		}
 	}
-
+	
+	public static int highestCivEra = 0;
+	public static void setCurrentEra(int era, Civilization civ) {
+		if (era > highestCivEra) {
+			highestCivEra = era;
+			String newEra = "";
+			switch (highestCivEra) {
+				case 0: //ANCIENT
+					newEra = "Ancient";
+					break;
+				case 1: //CLASSICAL
+					newEra = "Classical";
+					break;
+				case 2: //MEDIEVAL
+					newEra = "Medieval";
+					break;
+				case 3: //RENAISSANCE
+					newEra = "Renaissance";
+					break;
+				case 4: //INDUSTRIAL
+					newEra = "Industrial";
+					break;
+				case 5: //MODERN
+					newEra = "Modern";
+					break;
+				case 6: //ATOMIC
+					newEra = "Atomic";
+					break;
+				case 7: //INFORMATION
+					newEra = "Information";
+					break;
+				default:
+					break;
+			}
+			CivMessage.global(CivColor.Green+civ.getName()+CivColor.White+" has entered the "+CivColor.LightGreen+newEra+" Era!");
+			
+		}
+	}
+	
 	private static void loadCivs() throws SQLException {
 		Connection context = null;
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		try {
-			context = SQL.getGameConnection();		
+			context = SQL.getGameConnection();
 			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+Civilization.TABLE_NAME);
 			rs = ps.executeQuery();
 			int count = 0;
 			while(rs.next()) {
 				try {
 					Civilization civ = new Civilization(rs);
+//					if (highestCivEra < civ.getCurrentEra()) {
+//						highestCivEra = civ.getCurrentEra();
+//					}
 					if (!civ.isConquered()) {
 						CivGlobal.addCiv(civ);
 					} else {

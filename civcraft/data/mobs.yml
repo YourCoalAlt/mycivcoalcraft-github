@@ -14,17 +14,123 @@ custom_mobs_enabled: true
 #    ## 'lootingDrops' will increase drops on items. If 0,looting will not work.
 #    ## dropMod will require the 'type' to be this lvl before it drops
 #
+
+common_drops: '287,0,1,1,0.1,0.02,1,-0.01;289,0,1,1,0.1,0.015,1,-0.005;334,0,1,1,0.1,0.02,1,-0.01;341,0,1,1,0.04,0.01,1,0.01;391,0,1,1,0.075,0.025,1,-0.005;392,0,1,1,0.075,0.025,1,-0.005;434,0,1,1,0.075,0.025,1,-0.005'
+
 # Custom Mobs
 mobs:
  - id: ZOMBIE
-   type: 'Lesser Yobo'
+   name: '<lightgreen>Lesser Yobo'
+   name_visible: true
 #   chance: 1.0
 #   biomes: 'PLAINS'
+   max_health: 20.0
+   move_speed: 1.05
+   attack_dmg: 3.0
+   follow_range: 24.0
+   kb_resistance: 0.3
    exp_min: 5
-   exp_max: 10
+   exp_max: 20
+   res_exp: 0.3
    exp_mod: 1.1
    mod_type: 'Weapondry'
-   drops: '367,0,0,2,1.0,0,1,0;391,0,1,1,0.035,0.1,1,2;392,0,1,1,0.035,0.1,1,2;434,0,1,1,0.025,0.l,2'
+   drops: '367,0,0,2,1.0,0,1,0'
+#
+ - id: ZOMBIE_VILLAGER
+   name: '<lightgreen>Lesser Human-Yobo'
+   name_visible: true
+#   chance: 1.0
+#   biomes: 'PLAINS'
+   max_health: 30.0
+   move_speed: 1.15
+   attack_dmg: 5.0
+   follow_range: 24.0
+   kb_resistance: 0.5
+   exp_min: 15
+   exp_max: 40
+   res_exp: 0.6
+   exp_mod: 1.25
+   mod_type: 'Weapondry'
+   drops: '367,0,0,2,1.0,0,1,0'
+#
+ - id: HUSK
+   name: '<lightgreen>Lesser Hungry-Yobo'
+   name_visible: true
+#   chance: 1.0
+#   biomes: 'PLAINS'
+   max_health: 30.0
+   move_speed: 1.1
+   attack_dmg: 5.0
+   follow_range: 20.0
+   kb_resistance: 0.5
+   exp_min: 10
+   exp_max: 30
+   res_exp: 0.5
+   exp_mod: 1.15
+   mod_type: 'Weapondry'
+   drops: '367,0,0,2,1.0,0,1,0'
+#
+# - id: SKELETON
+#   name: '<lightgreen>Lesser Deceased Human'
+#   name_visible: true
+#   max_health: 20.0
+#   move_speed: 1.05
+#   attack_dmg: 3.0
+#   follow_range: 20.0
+#   kb_resistance: 0.35
+#   exp_min: 5
+#   exp_max: 20
+#   res_exp: 0.4
+#   exp_mod: 1.1
+#   mod_type: 'Weapondry'
+#   drops: '352,0,0,2,1.0,0,1,0'
+#   drops: 'civ_woodflint_arrow,0,0,2,1.0,0,1,0'
+#
+ - id: CREEPER
+   name: '<lightgreen>Lesser Bomber'
+   name_visible: true
+   max_health: 20.0
+   move_speed: 1.1
+   attack_dmg: 12.0
+   follow_range: 16.0
+   kb_resistance: 0.4
+   exp_min: 10
+   exp_max: 30
+   res_exp: 0.4
+   exp_mod: 1.1
+   mod_type: 'Weapondry'
+   drops: '289,0,0,2,1.0,0,1,0'
+#
+ - id: SPIDER
+   name: '<lightgreen>Lesser Spider'
+   name_visible: true
+   max_health: 20.0
+   move_speed: 1.1
+   attack_dmg: 2.0
+   follow_range: 20.0
+   kb_resistance: 0.25
+   exp_min: 5
+   exp_max: 20
+   res_exp: 0.3
+   exp_mod: 1.1
+   mod_type: 'Weapondry'
+   drops: '287,0,0,2,1.0,0,1,0'
+   drops: '375,0,0,2,0.5,0,1,0'
+#
+ - id: SILVERFISH
+   name: '<lightgreen>Lesser Cavecrawler'
+   name_visible: true
+   max_health: 10.0
+   move_speed: 1.2
+   attack_dmg: 2.0
+   follow_range: 12.0
+   kb_resistance: 0.1
+   exp_min: 5
+   exp_max: 15
+   res_exp: 0.8
+   exp_mod: 1.4
+   mod_type: 'Weapondry'
+   drops: '1,0,1,1,1.0,0,1,0'
 
 biomes:
  - biome: 'PLAINS'

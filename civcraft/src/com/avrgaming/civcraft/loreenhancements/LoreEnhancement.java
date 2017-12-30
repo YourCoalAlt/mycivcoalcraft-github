@@ -162,6 +162,7 @@ public abstract class LoreEnhancement {
 		return damage;
 	}
 	
+	// REPAIR ITEMS ONLY!!! Bugged when damaging items.
 	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
 		AttributeUtil attr = new AttributeUtil(stack);
 		if (attr.getCivCraftProperty("death_percent_value") == null) return stack;
@@ -180,7 +181,9 @@ public abstract class LoreEnhancement {
 			AttributeUtil attrs = new AttributeUtil(stack);
 			int dmgpert = (durabilityLeft*100) / maxDura;
 			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
-			if (!doDamage) livesLeft++;
+			if (!doDamage) {
+				livesLeft++;
+			}
 			
 			String saved = "";
 			for (String l : attrs.getLore()) {

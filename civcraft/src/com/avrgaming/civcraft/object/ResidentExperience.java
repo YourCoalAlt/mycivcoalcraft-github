@@ -26,6 +26,7 @@ public class ResidentExperience extends SQLObject {
 	private double questEXP;
 	private double miningEXP;
 	private double fishingEXP;
+	private double weapondryEXP;
 	
 	public ResidentExperience(UUID uid, String name) throws InvalidNameException {
 		this.setName(name);
@@ -39,7 +40,7 @@ public class ResidentExperience extends SQLObject {
 	}
 	
 	public void loadSettings() {
-		this.setQuestEXP(0);
+//		this.setQuestEXP(0);
 	}
 	
 	public static final String TABLE_NAME = "RESIDENTS_EXPERIENCE";
@@ -52,6 +53,7 @@ public class ResidentExperience extends SQLObject {
 					"`questEXP` double DEFAULT 0," +
 					"`miningEXP` double DEFAULT 0," +
 					"`fishingEXP` double DEFAULT 0," +
+					"`weapondryEXP` double DEFAULT 0," +
 					"UNIQUE KEY (`name`), " +
 					"PRIMARY KEY (`id`)" + ")";
 			
@@ -79,6 +81,11 @@ public class ResidentExperience extends SQLObject {
 				CivLog.info("\tCouldn't find `fishingEXP` for resident experience.");
 				SQL.addColumn(TABLE_NAME, "`fishingEXP` double DEFAULT 0");
 			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "weapondryEXP")) {
+				CivLog.info("\tCouldn't find `weapondryEXP` for resident experience.");
+				SQL.addColumn(TABLE_NAME, "`weapondryEXP` double DEFAULT 0");
+			}
 		}		
 	}
 
@@ -90,6 +97,7 @@ public class ResidentExperience extends SQLObject {
 		this.setQuestEXP(rs.getDouble("questEXP"));
 		this.setMiningEXP(rs.getDouble("miningEXP"));
 		this.setFishingEXP(rs.getDouble("fishingEXP"));
+		this.setWeapondryEXP(rs.getDouble("weapondryEXP"));
 	}
 	
 	@Override
@@ -105,6 +113,7 @@ public class ResidentExperience extends SQLObject {
 		hashmap.put("questEXP", this.getQuestEXP());
 		hashmap.put("miningEXP", this.getMiningEXP());
 		hashmap.put("fishingEXP", this.getFishingEXP());
+		hashmap.put("weapondryEXP", this.getWeapondryEXP());
 		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	
@@ -258,6 +267,58 @@ public class ResidentExperience extends SQLObject {
 	}
 	
 	public static int getMaxFishingLevel() {
+		int returnLevel = 0;
+		for (Integer level : CivSettings.expGenericLevels.keySet()) {
+			if (returnLevel < level) {
+				returnLevel = level;
+			}
+		}
+		return returnLevel;
+	}
+	
+	// Weapondry EXP
+	public double getWeapondryEXP() {
+		return weapondryEXP;
+	}
+	
+	public void addWeapondryEXP(double generated) throws CivException {
+		player = CivGlobal.getPlayerE(this.getName());
+		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getWeapondryLevel());
+		DecimalFormat df = new DecimalFormat("0.00");
+		this.weapondryEXP = Double.valueOf(df.format(this.weapondryEXP + generated));
+		this.save();
+		
+		if (this.getWeapondryLevel() < getMaxWeapondryLevel()) {
+			if (this.weapondryEXP >= clc.amount) {
+				CivMessage.sendQuestExp(player, "You have became Weapondry Level "+this.getWeapondryLevel()+"!");
+			}
+		}
+		CivMessage.sendQuestExp(player, "+"+generated+" Weapondry EXP");
+	}
+	
+	public void setWeapondryEXP(double generated) {
+		DecimalFormat df = new DecimalFormat("0.00");
+		double gen = Double.valueOf(df.format(generated));
+		this.weapondryEXP = gen;
+	}
+	
+	public int getWeapondryLevel() {
+		// Get the first level
+		int bestLevel = 0;
+		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
+		
+		while (this.weapondryEXP >= level.amount) {
+			level = CivSettings.expGenericLevels.get(bestLevel+1);
+			if (level == null) {
+				level = CivSettings.expGenericLevels.get(bestLevel);
+				break;
+			}
+			bestLevel++;
+		}
+		return level.level;
+	}
+	
+	public static int getMaxWeapondryLevel() {
 		int returnLevel = 0;
 		for (Integer level : CivSettings.expGenericLevels.keySet()) {
 			if (returnLevel < level) {

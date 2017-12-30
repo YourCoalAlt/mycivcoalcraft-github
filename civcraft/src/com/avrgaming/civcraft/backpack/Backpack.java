@@ -491,6 +491,7 @@ public class Backpack {
 				ConfigEXPGenericLevel questlvl = CivSettings.expGenericLevels.get(re.getQuestLevel());
 				ConfigEXPGenericLevel mininglvl = CivSettings.expGenericLevels.get(re.getMiningLevel());
 				ConfigEXPGenericLevel fishinglvl = CivSettings.expGenericLevels.get(re.getFishingLevel());
+				ConfigEXPGenericLevel weapondrylvl = CivSettings.expGenericLevels.get(re.getWeapondryLevel());
 				
 				String town = "None"; if (res.hasTown()) town = res.getTown().getName();
 				String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
@@ -503,7 +504,7 @@ public class Backpack {
 						CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
 						CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
 						CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Rose+" (InDev)",
+						CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+weapondrylvl.level+" ("+re.getWeapondryEXP()+"/"+weapondrylvl.amount+" XP)",
 						CivColor.LightGray+"« Click for Experience Info »");
 				playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
 				playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
