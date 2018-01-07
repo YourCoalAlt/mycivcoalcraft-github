@@ -67,6 +67,7 @@ public class ConfigMaterial {
 				else if (mat.category.toLowerCase().contains("tier 2")) mat.tier = 2;
 				else if (mat.category.toLowerCase().contains("tier 3")) mat.tier = 3;
 				else if (mat.category.toLowerCase().contains("tier 4")) mat.tier = 4;
+				else if (mat.category.toLowerCase().contains("tier 5")) mat.tier = 5;
 				else mat.tier = 0;
 				
 			}

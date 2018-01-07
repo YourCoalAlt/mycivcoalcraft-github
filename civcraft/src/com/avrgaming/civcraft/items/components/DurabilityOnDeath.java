@@ -1,12 +1,29 @@
+/*************************************************************************
+ * 
+ * AVRGAMING LLC
+ * __________________
+ * 
+ *  [2013] AVRGAMING LLC
+ *  All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains
+ * the property of AVRGAMING LLC and its suppliers,
+ * if any.  The intellectual and technical concepts contained
+ * herein are proprietary to AVRGAMING LLC
+ * and its suppliers and may be covered by U.S. and Foreign Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from AVRGAMING LLC.
+ */
 package com.avrgaming.civcraft.items.components;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.lorestorage.ItemChangeResult;
-import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
 
 import gpl.AttributeUtil;
@@ -18,8 +35,9 @@ public class DurabilityOnDeath extends ItemComponent {
 		int livesLeft = (int) (1 / this.getDouble("value"));
 		attrs.addLore(CivColor.YellowBold+(livesLeft)+CivColor.LightGreen+" Lives Left");
 		attrs.setCivCraftProperty("death_percent_value", String.valueOf(this.getDouble("value")));
+		attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
 	}
-	
+
 	@Override
 	public ItemChangeResult onDurabilityDeath(PlayerDeathEvent event, ItemChangeResult result, ItemStack sourceStack) {
 		if (result == null) {
@@ -28,21 +46,36 @@ public class DurabilityOnDeath extends ItemComponent {
 			result.destroyItem = false;
 		}
 		
-//		// No need to destroy item, we will do it now inside of this (via web)
-//		result.stack = LoreEnhancement.getItemLivesLeftViaDurability(event.getEntity(), result.stack, true);
+		if (result.destroyItem) return result;
+		
+		ItemStack newStack = LoreEnhancement.getItemLivesLeftViaDurability(event.getEntity(), result.stack, true);
+		if (newStack == null || newStack.getType() == Material.AIR) {
+			result.destroyItem = true;
+		} else {
+			result.stack = newStack;
+		}
+		return result;
+		
+/*		AttributeUtil attrs = new AttributeUtil(result.stack);
+		// if person died within last 3 seconds, do not take damage to prevent bug.
+		if (attrs.getCivCraftProperty("last_death") != null) {
+			if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 3*1000) {
+				return result;
+			}
+		} else {
+			attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
+		}
 		
 		Player p = event.getEntity();
 		double percent = this.getDouble("value");
-		
 		int maxDura = result.stack.getType().getMaxDurability();
 		int reduction = (int)(maxDura*percent);
 		int durabilityLeft = maxDura - result.stack.getDurability();
-		
-		if (durabilityLeft >= reduction) {
+		attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
+		if (durabilityLeft > reduction) {
 			int newDurability = (result.stack.getDurability() + reduction);
-			result.stack.setDurability((short)newDurability);
+			attrs.getStack().setDurability((short)newDurability);
 			
-			AttributeUtil attrs = new AttributeUtil(result.stack);
 			int dmgpert = (durabilityLeft*100) / maxDura;
 			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
 			
@@ -63,32 +96,12 @@ public class DurabilityOnDeath extends ItemComponent {
 			
 			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
 							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
-			return result;
 		} else {
-			result.stack = new ItemStack(Material.WEB);
-			AttributeUtil attrs = new AttributeUtil(result.stack);
-			String brokeName = result.stack.getItemMeta().getDisplayName();
-			attrs.setName(brokeName+" - "+CivColor.LightPurpleBold+"BROKEN");
-			attrs.addLore(CivColor.LightGrayItalic+"Your "+brokeName+CivColor.LightGrayItalic+" ran out of Lives and broke!");
-			attrs.addEnhancement("LoreEnhancementSoulBound", null, null);	
-			result.stack = attrs.getStack();
-			
-			boolean isEmpty = false;
-			for (int i = 0; i < p.getInventory().getContents().length; i++) {
-				if (p.getInventory().getContents()[i].getType() == Material.AIR && i < 36) {
-					isEmpty = true;
-					break;
-				}
-			}
-			
-			if (isEmpty) {
-				p.getInventory().addItem(result.stack);
-			} else {
-				CivMessage.send(p, CivColor.LightGrayItalic+"We dropped items back on the ground due to a full inventory.");
-				p.getWorld().dropItem(p.getLocation(), result.stack);
-			}
+			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
+			result.destroyItem = true;
 		}
-		
-		return result;
+		return result;*/
 	}
+
 }

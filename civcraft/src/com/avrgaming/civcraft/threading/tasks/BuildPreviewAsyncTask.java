@@ -56,7 +56,7 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 		this.playerUUID = playerUUID;
 		resident = CivGlobal.getResidentViaUUID(playerUUID);
 		this.blocksPerTick = 128;
-		this.speed = 750;
+		this.speed = 500;
 	}
 	
 	public Player getPlayer() throws CivException {
@@ -75,15 +75,12 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 				for (int x = 0; x < tpl.size_x; x++) {
 					for (int z = 0; z < tpl.size_z; z++) {
 						Block b = centerBlock.getRelative(x, y, z);
-						if (tpl.blocks[x][y][z].isAir()) {
-							continue;
-						}
+//						if (tpl.blocks[x][y][z].isAir()) continue;
 						
 						lock.lock();
 						try {
-							if (aborted) {
-								return;
-							}//TODO See if the line below works:
+							if (aborted) return;
+							if (resident.previewUndo.get(new BlockCoord(b.getLocation())) != null && tpl.blocks[x][y][z].isAir()) continue;
 							ItemManager.sendBlockChange(getPlayer(), b.getLocation(), ItemManager.getId(tpl.blocks[x][y][z].getMaterial()), tpl.blocks[x][y][z].getData());
 							resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
 							count++;			
@@ -91,10 +88,7 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 							lock.unlock();
 						}
 						
-						if (count < blocksPerTick) {
-							continue;
-						}
-						
+						if (count < blocksPerTick) continue;
 						count = 0;
 						int timeleft = speed;
 						while (timeleft > 0) {

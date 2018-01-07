@@ -18,14 +18,13 @@
  */
 package com.avrgaming.civcraft.items.units;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigUnit;
-import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
@@ -38,19 +37,30 @@ public abstract class Unit {
 	public static Warrior WARRIOR_UNIT;
 	public static Archer ARCHER_UNIT;
 	
-	public static void init() {
+	public static void init() throws InvalidConfiguration {
 		SPY_UNIT = new Spy("u_spy", CivSettings.units.get("u_spy"));
 		SETTLER_UNIT = new Settler("u_settler", CivSettings.units.get("u_settler"));
 		
 		WARRIOR_UNIT = new Warrior("u_warrior", CivSettings.units.get("u_warrior"));
 		ARCHER_UNIT = new Archer("u_archer", CivSettings.units.get("u_archer"));
+		
+		Unit.enhancement_unit_attack_amt = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.enhancement_unit_attack_amt");
+		Unit.enhancement_unit_protect_amt = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.enhancement_unit_protect_amt");
+		
+		Unit.warrior_atk_dmg = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.warrior.atk_dmg");
+		Unit.warrior_bow_dmg = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.warrior.bow_dmg");
+		Unit.archer_atk_dmg = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.archer.atk_dmg");
+		Unit.archer_bow_dmg = CivSettings.getDouble(CivSettings.unitConfig, "unit_info.archer.atk_dmg");
 	}
 	
-	public Unit() {
-	}
+	public static double enhancement_unit_attack_amt;
+	public static double enhancement_unit_protect_amt;
 	
-	public Unit(Inventory inv) throws CivException {	
-	}
+	public static double warrior_atk_dmg;
+	public static double warrior_bow_dmg;
+	
+	public static double archer_atk_dmg;
+	public static double archer_bow_dmg;
 	
 	protected static boolean addItemNoStack(Inventory inv, ItemStack stack) {
 			ItemStack[] contents = inv.getContents();
@@ -139,34 +149,17 @@ public abstract class Unit {
 		}
 		player.updateInventory();
 	}
-
-	public static boolean isWearingFullLeather(Player player) {
-		
-		try {
-			if (ItemManager.getId(player.getEquipment().getBoots()) != CivData.LEATHER_BOOTS) {
-				return false;
-			}
-			
-			if (ItemManager.getId(player.getEquipment().getChestplate()) != CivData.LEATHER_CHESTPLATE) {
-				return false;
-			}
-			
-			if (ItemManager.getId(player.getEquipment().getHelmet()) != CivData.LEATHER_HELMET) {
-				return false;
-			}
-			
-			if (ItemManager.getId(player.getEquipment().getLeggings()) != CivData.LEATHER_LEGGINGS) {
-				return false;
-			}
-		
-		} catch (NullPointerException e) {
-			return false;
-		}
-		return true;
+	
+	public static boolean isWearingAnyLeather(Player player) {
+		if (player.getEquipment().getBoots() != null && ItemManager.getId(player.getEquipment().getBoots()) == CivData.LEATHER_BOOTS) return true;
+		if (player.getEquipment().getLeggings() != null && ItemManager.getId(player.getEquipment().getLeggings()) == CivData.LEATHER_LEGGINGS) return true;
+		if (player.getEquipment().getChestplate() != null && ItemManager.getId(player.getEquipment().getChestplate()) == CivData.LEATHER_CHESTPLATE) return true;
+		if (player.getEquipment().getHelmet() != null && ItemManager.getId(player.getEquipment().getHelmet()) == CivData.LEATHER_HELMET) return true;
+		return false;
 	}
 	
+	
 	public static boolean isWearingFullComposite(Player player) {
-		
 		for (ItemStack stack : player.getInventory().getArmorContents()) {
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -253,7 +246,6 @@ public abstract class Unit {
 	}
 	
 	public static boolean isWearingFullBasicLeather(Player player) {
-		
 		for (ItemStack stack : player.getInventory().getArmorContents()) {
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -281,125 +273,43 @@ public abstract class Unit {
 		return true;	
 	}
 	
-	public static boolean isWeari1ngAnyMetal(Player player) {
-		return isWearingAnyChain(player) || isWearingAnyGold(player) || isWearingAnyIron(player) || isWearingAnyDiamond(player);
+	// TODO have a resident.isWearingMetal to check for bow useage instead of this, get value set when modifying speed.
+//	public static boolean isWearingAnyMetal(Player player) {
+//		return isWearingAnyChain(player) || isWearingAnyIron(player) || isWearingAnyGold(player) || isWearingAnyDiamond(player);
+//	}
+	
+	public static Double speedWearingAnyChain(Player p, double mod) {
+		double total = 0.0;
+		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.CHAIN_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.CHAIN_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.CHAIN_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.CHAIN_HELMET) total += mod;
+		return total;
 	}
 	
-	public static boolean isWearingAnyChain(Player player) {
-		
-		if (player.getEquipment().getBoots() != null) {
-			if (player.getEquipment().getBoots().getType().equals(Material.CHAINMAIL_BOOTS)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getChestplate() != null) {
-			if (player.getEquipment().getChestplate().getType().equals(Material.CHAINMAIL_CHESTPLATE)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getHelmet() != null) {
-			if (player.getEquipment().getHelmet().getType().equals(Material.CHAINMAIL_HELMET)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getLeggings() != null) {
-			if (player.getEquipment().getLeggings().getType().equals(Material.CHAINMAIL_LEGGINGS)) {
-				return true;
-			}
-		}
-		
-		return false;
+	public static Double speedWearingAnyIron(Player p, double mod) {
+		double total = 0.0;
+		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.IRON_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.IRON_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.IRON_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.IRON_HELMET) total += mod;
+		return total;
 	}
 	
-	
-	public static boolean isWearingAnyGold(Player player) {
-		
-		if (player.getEquipment().getBoots() != null) {
-			if (player.getEquipment().getBoots().getType().equals(Material.GOLD_BOOTS)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getChestplate() != null) {
-			if (player.getEquipment().getChestplate().getType().equals(Material.GOLD_CHESTPLATE)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getHelmet() != null) {
-			if (player.getEquipment().getHelmet().getType().equals(Material.GOLD_HELMET)) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getLeggings() != null) {
-			if (player.getEquipment().getLeggings().getType().equals(Material.GOLD_LEGGINGS)) {
-				return true;
-			}
-		}
-		
-		return false;
+	public static Double speedWearingAnyGold(Player p, double mod) {
+		double total = 0.0;
+		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.GOLD_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.GOLD_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.GOLD_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.GOLD_HELMET) total += mod;
+		return total;
 	}
-	
-	
-	public static boolean isWearingAnyIron(Player player) {
-		
-		if (player.getEquipment().getBoots() != null) {
-			if (ItemManager.getId(player.getEquipment().getBoots()) == CivData.IRON_BOOTS) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getChestplate() != null) {
-			if (ItemManager.getId(player.getEquipment().getChestplate()) == CivData.IRON_CHESTPLATE) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getHelmet() != null) {
-			if (ItemManager.getId(player.getEquipment().getHelmet()) == CivData.IRON_HELMET) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getLeggings() != null) {
-			if (ItemManager.getId(player.getEquipment().getLeggings()) == CivData.IRON_LEGGINGS) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public static boolean isWearingAnyDiamond(Player player) {
-		
-		if (player.getEquipment().getBoots() != null) {
-			if (ItemManager.getId(player.getEquipment().getBoots()) == CivData.DIAMOND_BOOTS) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getChestplate() != null) {
-			if (ItemManager.getId(player.getEquipment().getChestplate()) == CivData.DIAMOND_CHESTPLATE) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getHelmet() != null) {
-			if (ItemManager.getId(player.getEquipment().getHelmet()) == CivData.DIAMOND_HELMET) {
-				return true;
-			}
-		}
-		
-		if (player.getEquipment().getLeggings() != null) {
-			if (ItemManager.getId(player.getEquipment().getLeggings()) == CivData.DIAMOND_LEGGINGS) {
-				return true;
-			}
-		}
-		
-		return false;
+	public static Double speedWearingAnyDiamond(Player p, double mod) {
+		double total = 0.0;
+		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.DIAMOND_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.DIAMOND_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.DIAMOND_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.DIAMOND_HELMET) total += mod;
+		return total;
 	}
 }

@@ -17,22 +17,28 @@ trade_good_multiplier_max: 3
 trade_good_repo_day: 6
 #6PM / 16H
 trade_good_repo_hour: 18
-# HR:01
+# HR:05
 trade_good_repo_minute: 05
 
 ########### Trade Good Generation Options #######
 generation:
+    # Minimum number of chunks the same type of trade good can be apart.
+    # If this happens, one of them should be changed.
+    same_type_range: 8
+    # Set the maximum rarity for goods (should be maximum rarity set for goods below)
+    max_rarity: 4
+
     # Minimum number of chunks trade goods can be apart
-    chunks_min: 15
+    chunks_min: 12
     # Maximum number of chunks trade goods should be apart
-    chunks_max: 32
+    chunks_max: 24
 
     # World size in x chunks (radius)
-    chunks_x: 500
+    chunks_x: 400
     # World size in z chunks (radius)
-    chunks_z: 500
+    chunks_z: 400
     
-    # Random seed for trade good locations
+    # Random seed for trade good locations (Must be an Integer)
     seed: 12345
 
 # Hemispheres, valid ranges that trade goods can spawn in.
@@ -54,47 +60,47 @@ hemispheres:
       x_min: 0
       x_max: 0
       z_min: 0
-      z_max: -200
+      z_max: -500
     - id: 'hemi_south'
       x_min: 0
       x_max: 0
-      z_min: 200
+      z_min: 500
       z_max: 0
     - id: 'hemi_east'
-      x_min: 200
+      x_min: 500
       x_max: 0
       z_min: 0
       z_max: 0
     - id: 'hemi_west'
       x_min: 0
-      x_max: -200
+      x_max: -500
       z_min: 0
       z_max: 0
     # Overlapping hemishperes are OK.
     - id: 'hemi_equator'
       x_min: 0
       x_max: 0
-      z_min: -200
-      z_max: 200
+      z_min: -500
+      z_max: 500
     - id: 'hemi_northeast'
-      x_min: 200
+      x_min: 500
       x_max: 0
       z_min: 0
-      z_max: -200
+      z_max: -500
     - id: 'hemi_northwest'
       x_min: 0
-      x_max: -200
+      x_max: -500
       z_min: 0
-      z_max: -200
+      z_max: -500
     - id: 'hemi_southwest'
       x_min: 0
-      x_max: -200
-      z_min: 200
+      x_max: -500
+      z_min: 500
       z_max: 0
     - id: 'hemi_southeast'
-      x_min: 200
+      x_min: 500
       x_max: 0
-      z_min: 200
+      z_min: 500
       z_max: 0
 ########## Trade Good Types #######
 # id - unquie ID to identify this good
@@ -108,6 +114,7 @@ land_goods:
     - id: 'good_citrus'
       name: Citrus
       value: 125
+      rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 351 # dye
       material_data: 14 # orange dye
@@ -117,6 +124,7 @@ land_goods:
     - id: 'good_cocoa'
       name: Cocoa
       value: 500
+      rarity: 4
       buffs: 'buff_advanced_touring, buff_year_of_plenty, buff_preservative'
       material: 351 # dye
       material_data: 3 # cocoa beans
@@ -126,6 +134,7 @@ land_goods:
     - id: 'good_coffee'
       name: Coffee
       value: 375
+      rarity: 3
       buffs: 'buff_rush, buff_extraction, buff_innovation'
       material: 390 # flower pot
       material_data: 0
@@ -136,6 +145,7 @@ land_goods:
     - id: 'good_copper'
       name: Copper
       value: 250
+      rarity: 2
       buffs: 'buff_advanced_tooling, buff_construction'
       material: 369 # blaze rod
       material_data: 0
@@ -145,6 +155,7 @@ land_goods:
     - id: 'good_corn'
       name: Corn
       value: 125
+      rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 371 # gold nugget
       material_data: 0
@@ -154,6 +165,7 @@ land_goods:
     - id: 'good_cotton'
       name: Cotton
       value: 250
+      rarity: 2
       buffs: 'buff_fine_art, buff_hedonism'
       material: 351 # dye
       material_data: 15 # bone meal
@@ -163,6 +175,7 @@ land_goods:
     - id: 'good_gems'
       name: Gems
       value: 375
+      rarity: 3
       buffs: 'buff_barter, buff_greed, buff_monopoly'
       material: 388 # emerald
       material_data: 0
@@ -173,6 +186,7 @@ land_goods:
     - id: 'good_grapes'
       name: Grapes
       value: 250
+      rarity: 2
       buffs: 'buff_hedonism, buff_year_of_plenty'
       material: 372 # nether wart seed
       material_data: 0
@@ -182,6 +196,7 @@ land_goods:
     - id: 'good_guarana'
       name: Guarana
       value: 375
+      rarity: 3
       buffs: 'buff_rush, buff_extraction, buff_medicine'
       material: 351 # dye
       material_data: 1 # red dye
@@ -192,6 +207,7 @@ land_goods:
     - id: 'good_hemlock'
       name: Hemlock
       value: 375
+      rarity: 3
       buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
       material: 31 # tall grass
       material_data: 0
@@ -202,6 +218,7 @@ land_goods:
     - id: 'good_herbs'
       name: Herbs
       value: 250
+      rarity: 2
       buffs: 'buff_medicine, buff_year_of_plenty'
       material: 31 # tall grass
       material_data: 2 # fern
@@ -211,6 +228,7 @@ land_goods:
     - id: 'good_horses'
       name: Horses
       value: 250
+      rarity: 2
       buffs: 'buff_advanced_tooling, buff_year_of_plenty'
       material: 415 # rabbit hide
       material_data: 0
@@ -220,6 +238,7 @@ land_goods:
     - id: 'good_incense'
       name: Incense
       value: 250
+      rarity: 2
       buffs: 'buff_fine_art, buff_innovation'
       material: 362 # melon seed
       material_data: 0
@@ -229,6 +248,7 @@ land_goods:
     - id: 'good_ivory'
       name: Ivory
       value: 250
+      rarity: 2
       buffs: 'buff_fine_art, buff_monopoly'
       material: 406 # nether quartz
       material_data: 0
@@ -238,6 +258,7 @@ land_goods:
     - id: 'good_jade'
       name: Jade
       value: 250
+      rarity: 2
       buffs: 'buff_advanced_touring, buff_fine_art'
       material: 295 # seeds
       material_data: 0
@@ -247,6 +268,7 @@ land_goods:
     - id: 'good_limestone'
       name: Limestone
       value: 250
+      rarity: 2
       buffs: 'buff_barricade, buff_construction'
       material: 1 # stone
       material_data: 6 # polished andesite
@@ -256,6 +278,7 @@ land_goods:
     - id: 'good_Marble'
       name: Marble
       value: 250
+      rarity: 2
       buffs: 'buff_construction, buff_fine_art'
       material: 1 # stone
       material_data: 4 # polished diorite
@@ -265,6 +288,7 @@ land_goods:
     - id: 'good_niter'
       name: Niter
       value: 250
+      rarity: 2
       buffs: 'buff_advanced_tooling, buff_advanced_mixing'
       material: 263 # coal
       material_data: 1 # charcoal
@@ -274,6 +298,7 @@ land_goods:
     - id: 'good_oil'
       name: Oil
       value: 500
+      rarity: 4
       buffs: 'buff_advanced_tooling, buff_advanced_mixing, buff_extraction, buff_fire_bomb'
       material: 351 # dye
       material_data: 0 # ink sack
@@ -284,6 +309,7 @@ land_goods:
     - id: 'good_olives'
       name: Olives
       value: 125
+      rarity: 1
       buffs: 'buff_hedonism'
       material: 434 # beetroot
       material_data: 0
@@ -293,6 +319,7 @@ land_goods:
     - id: 'good_papyrus'
       name: Papyrus
       value: 125
+      rarity: 1
       buffs: 'buff_innovation'
       material: 351 # Ink sack
       material_data: 2 # Green
@@ -302,6 +329,7 @@ land_goods:
     - id: 'good_pelts'
       name: Pelts
       value: 250
+      rarity: 2
       buffs: 'buff_fine_art, buff_monopoly'
       material: 334 # leather
       material_data: 0
@@ -311,6 +339,7 @@ land_goods:
     - id: 'good_poison_ivy'
       name: "Poison Ivy"
       value: 375
+      rarity: 3
       buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
       material: 106 # vines
       material_data: 0
@@ -321,6 +350,7 @@ land_goods:
     - id: 'good_silver'
       name: Silver
       value: 250
+      rarity: 2
       buffs: 'buff_barter, buff_hedonism'
       material: 265 # iron ingot
       material_data: 0
@@ -330,6 +360,7 @@ land_goods:
     - id: 'good_spice'
       name: Spice
       value: 250
+      rarity: 2
       buffs: 'buff_preservative'
       material: 435 # beetroot seeds
       material_data: 0
@@ -339,6 +370,7 @@ land_goods:
     - id: 'good_tobacco'
       name: Tobacco
       value: 375
+      rarity: 3
       buffs: 'buff_greed, buff_fine_art, buff_monopoly'
       material: 338 # sugar canes
       material_data: 0
@@ -350,6 +382,7 @@ water_goods:
     - id: 'good_coral'
       name: Coral
       value: 250
+      rarity: 2
       buffs: 'buff_monopoly, buff_innovation'
       material: 401 # firework rocket
       material_data: 0
@@ -359,6 +392,7 @@ water_goods:
     - id: 'good_crabs'
       name: Crabs
       value: 250
+      rarity: 1
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 432 # chorus fruit
       material_data: 0
@@ -368,6 +402,7 @@ water_goods:
     - id: 'good_pearls'
       name: Pearls
       value: 375
+      rarity: 3
       buffs: 'buff_advanced_mixing, buff_greed, buff_monopoly'
       material: 410 # prismarine crystals
       material_data: 0
@@ -378,6 +413,7 @@ water_goods:
     - id: 'good_rice'
       name: Rice
       value: 250
+      rarity: 2
       buffs: 'buff_innovation'
       material: 361 # pumpkin seeds
       material_data: 0
@@ -387,6 +423,7 @@ water_goods:
     - id: 'good_salmon'
       name: Salmon
       value: 250
+      rarity: 2
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 349 # raw fish
       material_data: 1 # salmon
@@ -396,6 +433,7 @@ water_goods:
     - id: 'good_salt'
       name: Salt
       value: 250
+      rarity: 2
       buffs: 'buff_advanced_touring, buff_fine_art'
       material: 353 # sugar
       material_data: 0
@@ -405,6 +443,7 @@ water_goods:
     - id: 'good_shrimp'
       name: Shrimp
       value: 250
+      rarity: 2
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 349 # raw fish
       material_data: 2 # clownfish
@@ -414,6 +453,7 @@ water_goods:
     - id: 'good_tuna'
       name: Tuna
       value: 125
+      rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 349 # fish
       material_data: 0
@@ -423,6 +463,7 @@ water_goods:
     - id: 'good_whale'
       name: Whale
       value: 500
+      rarity: 4
       buffs: 'buff_advanced_tooling, buff_extraction, buff_fine_art, buff_innovation'
       material: 345 # compass
       material_data: 0

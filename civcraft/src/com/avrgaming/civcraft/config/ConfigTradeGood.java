@@ -36,7 +36,7 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 	public int material;
 	public int material_data;
 	public String hemiString = null;
-	public Double rarity = null;
+	public Integer rarity;
 	
 	
 	public static void loadBuffsString(ConfigTradeGood good, String bonus) {
@@ -50,7 +50,7 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 	}
 	
 	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigTradeGood> goods,
-			Map<String, ConfigTradeGood> landGoods, Map<String, ConfigTradeGood> waterGoods){
+			Map<String, ConfigTradeGood> landGoods, Map<String, ConfigTradeGood> waterGoods) {
 		goods.clear();
 		List<Map<?, ?>> land_goods = cfg.getMapList("land_goods");
 		for (Map<?, ?> g : land_goods) {
@@ -63,10 +63,7 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 			good.material = (Integer)g.get("material");
 			good.material_data = (Integer)g.get("material_data");
 			good.hemiString = ((String)g.get("hemispheres"));
-			good.rarity = ((Double)g.get("rarity"));
-			if (good.rarity == null) {
-				good.rarity = 1.0;
-			}
+			good.rarity = (Integer)g.get("rarity");
 			landGoods.put(good.id, good);
 			goods.put(good.id, good);
 		}
@@ -82,22 +79,15 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 			good.material = (Integer)g.get("material");
 			good.material_data = (Integer)g.get("material_data");
 			good.hemiString = ((String)g.get("hemispheres"));
-			good.rarity = ((Double)g.get("rarity"));
-			if (good.rarity == null) {
-				good.rarity = 1.0;
-			}
-
-			
+			good.rarity = (Integer)g.get("rarity");
 			waterGoods.put(good.id, good);
 			goods.put(good.id, good);
 		}
-		
 		CivLog.info("Loaded "+goods.size()+" Trade Goods.");
 	}
 	
 	@Override
 	public int compareTo(ConfigTradeGood otherGood) {
-		
 		if (this.rarity < otherGood.rarity) {
 			// A lower rarity should go first.
 			return 1;
@@ -106,5 +96,4 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 		}
 		return -1;
 	}
-	
 }

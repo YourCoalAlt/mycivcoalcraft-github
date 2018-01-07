@@ -1,15 +1,35 @@
 # Unit configuration
 
-# TODO Update unit info to actually grab from code
+# Base rates and information for items 
+# without any units attached.
+#
+base:
+    T1_leather_speed: 0.01
+    T2_leather_speed: 0.02
+    T3_leather_speed: 0.03
+    T4_leather_speed: 0.04
+    T5_leather_speed: 0.05
+#
+    T2_metal_speed: -0.01
+    T3_metal_speed: -0.02
+    T4_metal_speed: -0.03
+    T5_metal_speed: -0.04
 
+# TODO Update unit info to actually grab from code
 # Special information per unit
 unit_info:
-    # Percentage of damage increase for warrior unit.
-    warrior_damage: 10
-
-    # Percentage of damage increase for archer unit.
-    archer_damage: 1.5
-
+    warrior:
+        atk_dmg: 1.25
+        bow_dmg: 0.9
+#
+    archer:
+        atk_dmg: 0.9
+        bow_dmg: 1.25
+#
+    enhancement_unit_attack_amt: 0.05
+    enhancement_unit_protect_amt: 0.01
+#
+#
 units:
   - id: 'u_settler'
     name: "Settler"

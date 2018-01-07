@@ -50,9 +50,6 @@ public class SyncBuildUpdateTask implements Runnable {
 		}
 	}
 	
-	public SyncBuildUpdateTask() {
-	}
-	
 	/* Runs once, per tick and changes the blocks represented by SimpleBlock 
 	 * up to UPDATE_LIMIT times. */
 	@Override

@@ -79,6 +79,11 @@ public class AdminItemCommand extends CommandBase {
 		
 		String name = getNamedString(1, "enchantname");
 		Integer mult = getNamedInteger(2);
+		
+		if (mult > 10000) {
+			throw new CivException("Cannot enhance an item more than 10,000 times at once.");
+		}
+		
 		name.toLowerCase();
 		for (String str : enhancements.keySet()) {
 			if (name.equals(str)) {

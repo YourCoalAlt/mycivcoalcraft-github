@@ -137,7 +137,7 @@ public class Capitol extends TownHall {
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock commandBlock) {
 		StructureSign structSign;
-		if (commandBlock.command.equals("/guideinfo")) {
+		if (commandBlock.command.equals("/guide")) {
 			spawnInfoVillager(absCoord.getLocation(), (byte)commandBlock.getData());
 		} else if (commandBlock.command.equals("/questinfo")) {
 			spawnQuestVillager(absCoord.getLocation(), (byte)commandBlock.getData());

@@ -3,7 +3,7 @@
 #
 happiness:
   # Amount of unhappiness per resident in the town.
-  per_resident: 0.0
+  per_resident: 0.2
   
   # Empire Unhappiness, how much unhappiness to add, per town, to the entire
   # civilization's towns.

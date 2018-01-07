@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import com.avrgaming.civcraft.main.CivData;
@@ -59,7 +60,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 	public Boolean aborted = false;
 	public Date lastSave; 
 	
-	private final int SAVE_INTERVAL = 5*1000; /* once every 5 sec. */
+	private final int SAVE_INTERVAL = 5*1000; // every 5 sec.
 	
 	public BuildAsyncTask(Buildable bld, Template t, int s, int blocks_per_tick, Block center ) {
 		buildable = bld;
@@ -73,7 +74,6 @@ public class BuildAsyncTask extends CivAsyncTask {
 	
 	@Override
 	public void run() {
-		
 		try {
 			start();
 			// Do something if we aborted???
@@ -82,24 +82,18 @@ public class BuildAsyncTask extends CivAsyncTask {
 		}
 	}
 	
-	
 	private boolean start() {
 		lastSave = new Date();
-		
 		for (; buildable.getBuiltBlockCount() < (tpl.size_x*tpl.size_y*tpl.size_z); buildable.builtBlockCount++) {
 			speed = buildable.getBuildSpeed();
 			blocks_per_tick = buildable.getBlocksPerTick();
-		
 			synchronized(aborted) {
 				if (aborted) {
 					return aborted;
 				}
 			}
 			
-			if (buildable.isComplete()) {
-				break;
-			}
-			
+			if (buildable.isComplete()) break;
 			
 			if (buildable instanceof Wonder) {
 				if (buildable.getTown().getMotherCiv() != null) {
@@ -111,7 +105,6 @@ public class BuildAsyncTask extends CivAsyncTask {
 					} 
 				}
 				
-//				Buildable inProgress = buildable.getTown().getCurrentStructureInProgress();
 				for (Buildable b : buildable.getTown().getCurrentStructuresInProgress().values()) {
 					if (b != null && b != buildable) {
 						CivMessage.sendTown(buildable.getTown(), "Wonder production halted while we're constructing a "+b.getDisplayName());
@@ -119,7 +112,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 							Thread.sleep(5*60*1000); //5 min notify.
 						} catch (InterruptedException e) {
 							e.printStackTrace();
-						} 
+						}
 					}
 				}
 				
@@ -132,11 +125,9 @@ public class BuildAsyncTask extends CivAsyncTask {
 					} 
 				}
 			}
-
-			if (build() == true) { 
-				//skip to next run.
-				continue;
-			}		
+			
+			//skip to next run.
+			if (build() == true) continue;
 			
 			Date now = new Date();
 			if (now.getTime() > lastSave.getTime()+SAVE_INTERVAL) {
@@ -230,14 +221,13 @@ public class BuildAsyncTask extends CivAsyncTask {
 
 		tpl.deleteInProgessTemplate(buildable.getCorner().toString(), buildable.getTown());
 		buildable.getTown().build_tasks.remove(this);
-		TaskMaster.syncTask(new PostBuildSyncTask(tpl, buildable));
-		CivMessage.global("The town of "+buildable.getTown().getName()+ " has completed a "+ buildable.getDisplayName() + "!");
+		TaskMaster.syncTask(new PostBuildSyncTask(tpl, buildable), 10); // Wait a few ticks before placing items that may drop (if structure insta builds)
+		CivMessage.global("The town of "+buildable.getTown().getName()+" has completed a "+buildable.getDisplayName()+"!");
 		buildable.onComplete();
 		return false;
 	}
 	
 	public boolean build() {
-	
 		boolean skipToNext = false;
 		
 		// Apply extra blocks first, then work on this blocks per tick.
@@ -273,14 +263,13 @@ public class BuildAsyncTask extends CivAsyncTask {
 		// synchronous stuff is now going to be handled later. Perform the reset
 		// of the build task async.
 		synchronized (this.aborted) {
+			// dont build items that may fall off, save it for post sync build.
 			if (!this.aborted) {
-				if (sb.getType() == CivData.WOOD_DOOR || sb.getType() == CivData.IRON_DOOR ||
-						sb.getType() == CivData.BIRCH_DOOR || sb.getType() == CivData.SPRUCE_DOOR ||
-						sb.getType() == CivData.JUNGLE_DOOR || sb.getType() == CivData.ACACIA_DOOR ||
-						sb.getType() == CivData.DARK_OAK_DOOR || Template.isAttachable(sb.getType())) {
-					// dont build items that may fall off, save it for post sync build.
-				}
-				else {
+				if (Template.isAttachable(sb.getType())) {
+					// Make all items that may fall off into cobweb
+					SimpleBlock temp = new SimpleBlock(sb.worldname, Material.WEB, 0, sb.x, sb.y, sb.z);
+					sbs.add(temp);
+				} else {
 					sbs.add(sb);
 				}
 			
@@ -299,7 +288,6 @@ public class BuildAsyncTask extends CivAsyncTask {
 				return false;
 			}
 		}
-		
 		return skipToNext;
 	}
 	
@@ -351,7 +339,6 @@ public class BuildAsyncTask extends CivAsyncTask {
 	}
 	
 	public double setExtraHammers(double extra_hammers) {
-		
 		double leftover_hammers = 0.0;
 		//Get the total number of blocks represented by the extra hammers.
 		synchronized(this) {
@@ -369,6 +356,4 @@ public class BuildAsyncTask extends CivAsyncTask {
 			aborted = true;
 		}
 	}
-
-
 }

@@ -46,6 +46,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -62,6 +63,7 @@ import com.avrgaming.civcraft.interactive.InteractiveResponse;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -73,6 +75,7 @@ import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.BuildPreviewAsyncTask;
+import com.avrgaming.civcraft.threading.tasks.GivePlayerStartingKit;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CallbackInterface;
 import com.avrgaming.civcraft.util.CivColor;
@@ -1115,7 +1118,7 @@ public class Resident extends SQLObject {
 			@Override
 			public void run() {
 				try {
-                    resident.perks.clear();
+					resident.perks.clear();
 					Player player = CivGlobal.getPlayer(resident);				
 					try {
 						CivGlobal.perkManager.loadPerksForResident(resident);
@@ -1366,9 +1369,9 @@ public class Resident extends SQLObject {
 			return inv;
 		} catch (CivException e) {
 			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("possibleCheaters.txt", true)))) {
-			    out.println("trade:"+this.getName()+" WITH "+resident.getName()+" and was dead");
+				out.println("trade:"+this.getName()+" WITH "+resident.getName()+" and was dead");
 			}catch (IOException e1) {
-			    //exception handling left as an exercise for the reader
+				//exception handling left as an exercise for the reader
 			}
 
 			
@@ -1657,7 +1660,7 @@ public class Resident extends SQLObject {
 	// Mail
 	
 	private void setMailData(String data) {
-		String[] split = data.split("~");
+		String[] split = data.split("PKGE");
 		for (String str : split) {
 			synchronized (str) {
 				if (str == null) continue;
@@ -1666,8 +1669,10 @@ public class Resident extends SQLObject {
 		}
 	}
 	
-	public void addMailData(String data) {
-		this.mailData.add(data);
+	public void addMailData(String name, String msg, String data, String inv) {
+		String div = "PKIO";
+		String pkge = name+div+msg+div+data+inv;
+		this.mailData.add(pkge);
 	}
 	
 	public ArrayList<String> getMailData() {
@@ -1774,17 +1779,23 @@ public class Resident extends SQLObject {
 	public boolean setChatEnabled(boolean toggle) {
 		return this.chatToggle = toggle;
 	}
-
-	public void begin(final Resident res, final Player p) {
+	
+	public void begin(final Resident res, final Player p2) {
 		res.setChatEnabled(false);
-		p.setInvulnerable(true);
+		p2.setInvulnerable(true);
 		
-		class SyncTask implements Runnable {
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*24, 4), true);
-					p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*24, 4), true);
+					Player p = CivGlobal.getPlayer(res);
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*24, 4), true);
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*24, 4), true);
+						}
+					}.runTaskTimer(CivCraft.getPlugin(), 0L, 1L);
 					
 					String resetS = CivColor.LightGrayItalic;
 					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
@@ -1820,12 +1831,17 @@ public class Resident extends SQLObject {
 					CivMessage.send(res, CivColor.LightGray+"You cannot attack or be attacked until it expires.");
 					CivMessage.send(res, CivColor.LightGray+"To remove it, type "+CivColor.LightGrayItalic+"'/resident pvptimer'");
 					
-					p.removePotionEffect(PotionEffectType.SLOW);
-					p.removePotionEffect(PotionEffectType.BLINDNESS);
-					p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*60*5, 0), true);
-					p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*60*5, 0), true);
-					p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20*60*5, 0), true);
-					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*5, 0), true);
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							p2.removePotionEffect(PotionEffectType.SLOW);
+							p2.removePotionEffect(PotionEffectType.BLINDNESS);
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*60*5, 0), true);
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*60*5, 0), true);
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20*60*5, 0), true);
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*5, 0), true);
+						}
+					}.runTaskTimer(CivCraft.getPlugin(), 0L, 1L);
 					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
 					
 					Thread.sleep(1000*4);
@@ -1833,16 +1849,19 @@ public class Resident extends SQLObject {
 					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);
 					
-				} catch (InterruptedException | InvalidConfiguration e) {
+					if (!res.isGivenKit()) {
+						TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
+					}
+					
+				} catch (InterruptedException | InvalidConfiguration | CivException e) {
 					res.setChatEnabled(true);
-					p.setInvulnerable(false);
+					p2.setInvulnerable(false);
 					e.printStackTrace();
 				}
-				
 				res.setChatEnabled(true);
-				p.setInvulnerable(false);
+				p2.setInvulnerable(false);
 			}
-		}
-		TaskMaster.syncTask(new SyncTask());
+			
+		}).start();
 	}
 }

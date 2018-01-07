@@ -60,6 +60,10 @@ public class Damage extends ItemComponent {
 	@Override
 	public void onAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
 		double dmg = this.getDouble("value");
+//		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+//		if (craftMat == null) {
+//			return;
+//		}
 		
 		double extraAtt = 0.0;
 		AttributeUtil attrs = new AttributeUtil(inHand);
@@ -98,29 +102,30 @@ public class Damage extends ItemComponent {
 			}
 			
 			ConfigUnit u = Unit.getPlayerUnit(p);
-			ItemStack unit = Unit.getPlayerUnitStack(p);
-			AttributeUtil a = new AttributeUtil(unit);
 			
-			double unitper = 1.0;
+			double unitperk = 1.0;
 			if (u != null) { 
-				if (u.id.equals("u_warrior")) { dmg *= 1.25; }
-				else if (u != null && u.id.equals("u_archer")) { dmg *= 0.9; }
+				if (u.id.equals("u_warrior")) dmg *= Unit.warrior_atk_dmg;
+				else if (u != null && u.id.equals("u_archer")) dmg *= Unit.archer_atk_dmg;
+				
 				// Additional attack dmg always gets added, reguardless of unit type.
+				ItemStack unit = Unit.getPlayerUnitStack(p);
+				AttributeUtil a = new AttributeUtil(unit);
 				for (LoreEnhancement enh : a.getEnhancements()) {
 					CivMessage.global(enh.getDisplayName());
 					if (enh instanceof LoreEnhancementUnitGainAttack) {
-						unitper += (enh.getLevel(a)*0.05);
+						unitperk += (enh.getLevel(a) * Unit.enhancement_unit_attack_amt);
 					}
 				}
 			}
 			
-			dmg *= unitper;
+			dmg *= unitperk;
 			
 			Resident resident = CivGlobal.getResident(p);
-			if (!resident.hasTechForItem(inHand)) { dmg = dmg/2; }
+			if (!resident.hasTechForItem(inHand)) dmg = dmg/2;
 		}
 		
-		if (dmg < 0.2) { dmg = 0.2; }
+		if (dmg < 0.75) dmg = 0.75;
 		event.setDamage(dmg);
 	}
 }

@@ -71,6 +71,7 @@ import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
 import com.avrgaming.civcraft.exception.InvalidNameException;
+import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.items.units.UnitItemMaterial;
 import com.avrgaming.civcraft.items.units.UnitMaterial;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
@@ -85,6 +86,7 @@ import com.avrgaming.civcraft.road.Road;
 import com.avrgaming.civcraft.structure.Capitol;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.PlayerChunkNotifyAsyncTask;
+import com.avrgaming.civcraft.threading.tasks.PlayerKickBan;
 import com.avrgaming.civcraft.threading.tasks.PlayerLoginAsyncTask;
 import com.avrgaming.civcraft.threading.timers.PlayerLocationCacheUpdate;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -93,6 +95,9 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarStats;
+import com.codingforcookies.armorequip.ArmorEquipEvent;
+
+import gpl.AttributeUtil;
 
 public class PlayerListener implements Listener {
 	
@@ -120,22 +125,22 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerItemMend(PlayerItemMendEvent event) {
+	public void onPlayerItemMend(PlayerItemMendEvent event) {
 		if (LoreEnhancement.isWeaponOrArmor(event.getItem())) {
 			event.setCancelled(true);
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Resident res = CivGlobal.getResident(event.getPlayer());
 		if (!res.hasChatEnabled()) {
 			event.setCancelled(true);
 		}
-    }
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-    public void onBroadcastMessage(BroadcastMessageEvent event) {
+	public void onBroadcastMessage(BroadcastMessageEvent event) {
 		ArrayList<Player> players = new ArrayList<Player>();
 		for (CommandSender cs : event.getRecipients()) {
 			if (cs instanceof Player) {
@@ -149,11 +154,11 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 			}
 		}
-    }
+	}
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		ArrayList<Player> players = new ArrayList<Player>();
 		for (CommandSender cs : event.getRecipients()) {
 			if (cs instanceof Player) {
@@ -184,13 +189,24 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-    }
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) throws InvalidNameException {
 		Player p = event.getPlayer();
 		Resident res = CivGlobal.getResident(p);
 		CivLog.info("Scheduling Player Login Task for:"+p.getName());
+		if (res == null) {
+			CivLog.info("No resident found. Creating for "+p.getName());
+			try {
+				res = new Resident(p.getUniqueId(), p.getName());
+			} catch (InvalidNameException e) {
+				TaskMaster.syncTask(new PlayerKickBan(p.getName(), true, false, "You have an invalid name? Sorry, contact an admin."));
+				return;
+			}
+			
+			CivGlobal.addResident(res);
+		}
 		
 		String ip = event.getAddress().getHostAddress();
 		if (ip == null) {
@@ -237,49 +253,46 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		if (res == null) event.allow();
-		else {
-			if (res.isBanned()) {
+		if (res.isBanned()) {
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
+			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
+			Date date = new Date(res.getBannedLength());
+			String msg = (" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
+					"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
+					" "+"\n"+
+					" "+"\n"+
+					"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
+					"§7§o[You are banned, cannot rejoin server.]"+"\n");
+			event.disallow(Result.KICK_OTHER, msg);
+			CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
+		}
+		
+		if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
+			String msg = (" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lReason §r§8»§ §fKicked: The server is currently on lockdown... Try again in a few minutes.\n");
+			event.disallow(Result.KICK_OTHER, msg);
+			CivLog.info("Denied Player Join Task for:"+p.getName()+" (Server Lockdown)");
+		}
+		
+		if (War.isWarTime() && War.isOnlyWarriors()) {
+			if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
+				//Allowed to connect since player is OP or mini admin.
+			} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 				sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-				Date date = new Date(res.getBannedLength());
+				Date date = new Date(War.getEnd().getTime());
 				String msg = (" §b§l« CivilizationCraft »"+"\n"+
 						" "+"\n"+
 						"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-						"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
-						"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
-						" "+"\n"+
-						" "+"\n"+
-						"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
-						"§7§o[You are banned, cannot rejoin server.]"+"\n");
+						"§c§lReason §r§8»§ §fKicked: Currently WarTime, only players at-war can join.\n"+
+						"§c§lWar Ends At §r§8»§ §f"+sdf.format(date)+"\n");
 				event.disallow(Result.KICK_OTHER, msg);
-				CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
-			}
-			
-			if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
-				String msg = (" §b§l« CivilizationCraft »"+"\n"+
-						" "+"\n"+
-						"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-						"§c§lReason §r§8»§ §fKicked: The server is currently on lockdown... Try again in a few minutes.\n");
-				event.disallow(Result.KICK_OTHER, msg);
-				CivLog.info("Denied Player Join Task for:"+p.getName()+" (Server Lockdown)");
-			}
-			
-			if (War.isWarTime() && War.isOnlyWarriors()) {
-				if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
-					//Allowed to connect since player is OP or mini admin.
-				} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
-					SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
-					sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-					Date date = new Date(War.getEnd().getTime());
-					String msg = (" §b§l« CivilizationCraft »"+"\n"+
-							" "+"\n"+
-							"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-							"§c§lReason §r§8»§ §fKicked: Currently WarTime, only players at-war can join.\n"+
-							"§c§lWar Ends At §r§8»§ §f"+sdf.format(date)+"\n");
-					event.disallow(Result.KICK_OTHER, msg);
-					CivLog.info("Denied Player Join Task for:"+p.getName()+" (Not War Participant)");
-				}
+				CivLog.info("Denied Player Join Task for:"+p.getName()+" (Not War Participant)");
 			}
 		}
 	}
@@ -289,6 +302,7 @@ public class PlayerListener implements Listener {
 		CivLog.info("Scheduling Player Join Task for:"+event.getPlayer().getName());
 		TaskMaster.asyncTask("onPlayerLogin-"+event.getPlayer().getName(), new PlayerLoginAsyncTask(event.getPlayer().getUniqueId()), 0);
 		PlayerLocationCacheUpdate.playerQueue.add(event.getPlayer().getName());
+		setModifiedMovementSpeed(event.getPlayer());
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -306,8 +320,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
-		if (event.getCause().equals(TeleportCause.COMMAND) ||
-				event.getCause().equals(TeleportCause.PLUGIN)) {
+		if (event.getCause().equals(TeleportCause.COMMAND) || event.getCause().equals(TeleportCause.PLUGIN)) {
 			CivLog.info("[TELEPORT] "+event.getPlayer().getName()+" to:"+event.getTo().getBlockX()+","+event.getTo().getBlockY()+","+event.getTo().getBlockZ()+
 					" from:"+event.getFrom().getBlockX()+","+event.getFrom().getBlockY()+","+event.getFrom().getBlockZ());
 		}
@@ -317,6 +330,30 @@ public class PlayerListener implements Listener {
 		// Get player's current speed. Will be grabbing armor with it.
 		double speed = CivSettings.normal_speed;
 		
+		// T5 Tungsten
+		speed += Unit.speedWearingAnyDiamond(player, (CivSettings.T5_metal_speed / 4));
+		// T4 Gold
+		speed += Unit.speedWearingAnyGold(player, (CivSettings.T4_metal_speed / 4));
+		// T3 Iron
+		speed += Unit.speedWearingAnyIron(player, (CivSettings.T3_metal_speed / 4));
+		// T2 Aluminium
+		speed += Unit.speedWearingAnyChain(player, (CivSettings.T2_metal_speed / 4));
+		
+		// TODO Add all leather options
+		
+		// T1 Leather
+//		speed += Unit.speedWearingBasicLeather(player, (CivSettings.T1_leather_speed / 4));
+		
+		// Add any attribute speed set on it
+		for (ItemStack stack : player.getInventory().getContents()) {
+			if (LoreEnhancement.isWeaponOrArmor(stack)) {
+				AttributeUtil util = new AttributeUtil(stack);
+				if (util.getCivCraftProperty("modified_speed") != null) {
+					speed += Integer.valueOf(util.getCivCraftProperty("modified_speed"));
+				}
+			}
+		}
+		
 		Resident resident = CivGlobal.getResident(player);
 		if (resident != null && resident.isOnRoad()) {
 			if (player.getVehicle() != null && player.getVehicle().getType().equals(EntityType.HORSE)) {
@@ -324,35 +361,53 @@ public class PlayerListener implements Listener {
 				double yComp = vec.getY();
 				
 				vec.multiply(Road.ROAD_HORSE_SPEED);
-				vec.setY(yComp); /* Do not multiply y velocity. */
-				
+				vec.setY(yComp); // Do not multiply y velocity.
 				player.getVehicle().setVelocity(vec);
 			} else {
 				speed *= Road.ROAD_PLAYER_SPEED;
 			}
 		}
 		
+		speed = Double.valueOf(new DecimalFormat("0.00000").format(speed));
 		player.setWalkSpeed((float) Math.min(1.0f, speed));
+	}
+	
+	@EventHandler
+	public void onArmorWear(ArmorEquipEvent event) {
+		CivMessage.global("triggered");
+		
+		class SyncTask implements Runnable {
+			Player p;
+				
+			public SyncTask(Player p) {
+				this.p = p;
+			}
+			
+			@Override
+			public void run() {
+				CivMessage.global("modified");
+				setModifiedMovementSpeed(p);
+			}
+		}
+		TaskMaster.syncTask(new SyncTask(event.getPlayer()), 2);
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		// Abort if we havn't really moved
-		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && 
-			event.getFrom().getBlockZ() == event.getTo().getBlockZ() && 
-			event.getFrom().getBlockY() == event.getTo().getBlockY()) {
-			return;
-		}
+//		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && 
+//			event.getFrom().getBlockZ() == event.getTo().getBlockZ() && 
+//			event.getFrom().getBlockY() == event.getTo().getBlockY()) {
+//			return;
+//		}
 		
 		/* Test for enchants effecting movement. */
 		/* TODO can speed be set once? If so we should only calculate speed change when our armor changes. */
-		setModifiedMovementSpeed(event.getPlayer());
+//		setModifiedMovementSpeed(event.getPlayer());
 				
 		ChunkCoord fromChunk = new ChunkCoord(event.getFrom());
 		ChunkCoord toChunk = new ChunkCoord(event.getTo());
-		
-		// Haven't moved chunks.
-		if (fromChunk.equals(toChunk)) return;
+		if (fromChunk.equals(toChunk)) return; // Haven't moved chunks.
 		
 		TaskMaster.asyncTask(PlayerChunkNotifyAsyncTask.class.getSimpleName(), new PlayerChunkNotifyAsyncTask(event.getFrom(), event.getTo(), event.getPlayer().getName()), 0);
 	}

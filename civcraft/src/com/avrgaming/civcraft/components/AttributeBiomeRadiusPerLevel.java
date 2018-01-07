@@ -79,25 +79,25 @@ public class AttributeBiomeRadiusPerLevel extends AttributeBiomeBase {
 			return 0.0;
 		}
 		
-		int mineLevel = -1;
+		int level = -1;
 		for (Component comp : this.getBuildable().attachedComponents) {
 			if (comp instanceof ConsumeLevelComponent) {
 				ConsumeLevelComponent consumeComp = (ConsumeLevelComponent)comp;
-				mineLevel = consumeComp.getLevel();
+				level = consumeComp.getLevel();
 			}
 		}
 		
-		if (mineLevel == -1) {
+		if (level == -1) {
 			CivLog.warning("Couldn't find consume component for buildable "+this.getBuildable().getDisplayName()+
 					" but it has an AttributeBiomeRadiusPerLevel component attached.");
 			return 0.0;
 		}
 		
-		double generated = this.getBaseValue()*mineLevel;
+		double generated = this.getBaseValue()*level;
 		Double extra = this.biomeInfo.get(cc.getBiome().name());
 		
 		if (extra != null) {
-			generated += extra*mineLevel;
+			generated += extra*level;
 		}
 		
 		return generated;

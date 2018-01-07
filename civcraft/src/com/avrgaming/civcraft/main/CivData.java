@@ -82,7 +82,7 @@ public class CivData {
 	public static final int DISPENSER = 23;
 	public static final int SANDSTONE = 24;
 	public static final int NOTEBLOCK = 25;
-	
+	public static final int BED_BLOCK = 26;
 	public static final int RAIL_POWERED = 27;
 	public static final int RAIL_DETECTOR = 28;
 	public static final int STICKY_PISTON = 29;
@@ -143,6 +143,8 @@ public class CivData {
 	public static final int NETHERRACK = 87;
 	public static final int GLOWSTONE = 89;
 	
+	public static final int REDSTONE_REPEATER_OFF = 93;
+	public static final int REDSTONE_REPEATER_ON = 94;
 	public static final int STAINED_GLASS = 95;
 	public static final int TRAPDOOR = 96;
 	public static final int STONE_BRICK = 98;
@@ -151,6 +153,7 @@ public class CivData {
 	public static final int MELON = 103;
 	public static final int PUMPKIN_STEM = 104;
 	public static final int MELON_STEM = 105;
+	public static final int VINE = 106;
 	
 	public static final int LILY_PAD = 111;
 	public static final int NETHER_BRICK = 112;
@@ -162,7 +165,7 @@ public class CivData {
 	
 	public static final int REDSTONE_LAMP = 123;
 	
-	public static final int COCOAPOD = 127;
+	public static final int COCOA_CROP = 127;
 	public static final int EMERALD_ORE = 129;
 	public static final int ENDER_CHEST = 130;
 	public static final int TRIPWIRE_HOOK = 131;
@@ -172,14 +175,20 @@ public class CivData {
 	public static final int COMMAND_BLOCK = 137;
 	public static final int BEACON = 138;
 	public static final int COBBLESTONE_WALL = 139;
+	public static final int FLOWER_POT = 140;
 	public static final int CARROT_CROP = 141;
 	public static final int POTATO_CROP = 142;
+	public static final int WOOD_BUTTON = 143;
 	
 	public static final int ANVIL = 145;
 	public static final int TRAPPED_CHEST = 146;
+	public static final int GOLD_PLATE = 147;
+	public static final int IRON_PLATE = 148;
+	public static final int COMPARATOR_OFF = 149;
+	public static final int COMPARATOR_ON = 150;
 	
 	public static final int REDSTONE_BLOCK = 152;
-	public static final int NETHER_QUARTZ_ORE = 153;
+	public static final int QUARTZ_ORE = 153;
 	public static final int HOPPER = 154;
 	public static final int QUARTZ_BLOCK = 155;
 	public static final int RAIL_ACTIVATOR = 157;
@@ -705,7 +714,7 @@ public class CivData {
 			if (bs.getData() == 0x3) return false;
 			return true;
 		
-		case COCOAPOD:
+		case COCOA_CROP:
 			return canCocoaGrow(bs);
 		
 		case MELON_STEM:

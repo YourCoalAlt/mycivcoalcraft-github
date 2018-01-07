@@ -258,6 +258,7 @@ public final class CivCraft extends JavaPlugin {
 		this.saveDefaultConfig();
 		
 		BukkitObjects.initialize(this);
+		worldName = BukkitObjects.getWorlds().get(0).getName();
 		
 		//Load World Populators
 		BukkitObjects.getWorlds().get(0).getPopulators().add(new TradeGoodPopulator());
@@ -317,8 +318,8 @@ public final class CivCraft extends JavaPlugin {
 				try {
 					worldName = CivSettings.getString(CivSettings.gameConfig, "world.name");
 				} catch (InvalidConfiguration e) {
-					worldName = "world";
-					CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to 'world'");
+					worldName = BukkitObjects.getWorlds().get(0).getName();
+					CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to '"+worldName+"'");
 				}
 				
 				if (hasPlugin("HolographicDisplays")) {

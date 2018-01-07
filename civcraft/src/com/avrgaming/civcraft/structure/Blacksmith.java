@@ -571,17 +571,24 @@ public class Blacksmith extends Structure {
 			else full += 1;
 		}
 		
+		Inventory inv = Bukkit.createInventory(player, 9*5, System.currentTimeMillis()+player.getName()+"blacksmith_forge");
+		
 		for (int i = 0; i < full; i++) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64);
-			String is = ItemSerializer.getSerializedItemStack(item);
-			res.addMailData(is);
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64, (short) data);
+			inv.addItem(item);
+//			String is = ItemSerializer.getSerializedItemStack(item);
+//			res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, is);
 		}
 		
 		if (partial > 0) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial);
-			String is = ItemSerializer.getSerializedItemStack(item);
-			res.addMailData(is);
+			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial, (short) data);
+			inv.addItem(item);
+//			String is = ItemSerializer.getSerializedItemStack(item);
+//			res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, is);
 		}
+		
+		String sinv = ItemSerializer.InventoryToString(inv);
+		res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, sinv);
 		
 		
 		

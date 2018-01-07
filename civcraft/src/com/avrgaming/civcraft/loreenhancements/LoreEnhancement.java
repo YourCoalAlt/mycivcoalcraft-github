@@ -29,6 +29,7 @@ public abstract class LoreEnhancement {
 		enhancements.put("LoreEnhancementProtection", new LoreEnhancementProtection());
 		
 		enhancements.put("LoreEnhancementUnitGainAttack", new LoreEnhancementUnitGainAttack());
+		enhancements.put("LoreEnhancementUnitGainProtection", new LoreEnhancementUnitGainProtection());
 		
 		enhancements.put("LoreEnhancementSoulBound", new LoreEnhancementSoulBound());
 		enhancements.put("LoreEnhancementAttack", new LoreEnhancementAttack());
@@ -43,6 +44,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isSword(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.WOOD_SWORD:
 		case CivData.STONE_SWORD:
@@ -56,6 +58,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isBow(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.BOW:
 			return true;
@@ -73,6 +76,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isHelmet(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.LEATHER_HELMET:
 		case CivData.CHAIN_HELMET:
@@ -87,6 +91,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isChestplate(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.LEATHER_CHESTPLATE:
 		case CivData.CHAIN_CHESTPLATE:
@@ -100,6 +105,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isLeggings(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.LEATHER_LEGGINGS:
 		case CivData.CHAIN_LEGGINGS:
@@ -113,6 +119,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isBoots(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.LEATHER_BOOTS:
 		case CivData.CHAIN_BOOTS:
@@ -126,6 +133,7 @@ public abstract class LoreEnhancement {
 	}
 	
 	public static boolean isTool(ItemStack item) {
+		if (item == null) return false;
 		switch (ItemManager.getId(item)) {
 		case CivData.WOOD_SHOVEL:
 		case CivData.WOOD_PICKAXE:
@@ -162,28 +170,55 @@ public abstract class LoreEnhancement {
 		return damage;
 	}
 	
-	// REPAIR ITEMS ONLY!!! Bugged when damaging items.
+	// TODO Update this
 	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
-		AttributeUtil attr = new AttributeUtil(stack);
-		if (attr.getCivCraftProperty("death_percent_value") == null) return stack;
-		double percent = Double.valueOf(attr.getCivCraftProperty("death_percent_value"));
-		
-		int maxDura = stack.getType().getMaxDurability();
-		int reduction = (int)(maxDura*percent);
-		int durabilityLeft = maxDura - stack.getDurability();
-		
-		if (durabilityLeft >= reduction) {
-			if (doDamage) {
-				int newDurability = (stack.getDurability() + reduction);
-				stack.setDurability((short)newDurability);
+		AttributeUtil attrs = new AttributeUtil(stack);
+		double percent = Double.valueOf(attrs.getCivCraftProperty("death_percent_value"));
+		if (doDamage) {
+			// if person died within last 3 seconds, do not take damage to prevent bug.
+			if (attrs.getCivCraftProperty("last_death") != null) {
+				if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 3*1000) {
+					return stack;
+				}
+			} else {
+				attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
 			}
 			
-			AttributeUtil attrs = new AttributeUtil(stack);
-			int dmgpert = (durabilityLeft*100) / maxDura;
-			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
-			if (!doDamage) {
-				livesLeft++;
+			int maxDura = stack.getType().getMaxDurability();
+			int reduction = (int)(maxDura*percent);
+			int durabilityLeft = maxDura - stack.getDurability();
+			attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
+			if (durabilityLeft > reduction) {
+				int newDurability = (stack.getDurability() + reduction);
+				attrs.getStack().setDurability((short)newDurability);
+				
+				int dmgpert = (durabilityLeft*100) / maxDura;
+				int livesLeft = (int) (dmgpert / (percent*100)) - 1;
+				
+				String saved = "";
+				for (String l : attrs.getLore()) {
+					if (!l.contains(" Lives Left")) saved += l+";";
+				}
+				
+				String newSave = "";
+				for (String s : saved.split(";")) {
+					if (s.contains(" Lives Left")) continue;
+					else newSave += s+";";
+				}
+				
+				attrs.setLore(newSave.split(";"));
+				attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
+				stack = attrs.getStack();
+				
+				CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+								CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
+			} else {
+				CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+						CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
+				stack = new ItemStack(Material.AIR);
 			}
+		} else {
+			int livesLeft = (int) (1 / percent);
 			
 			String saved = "";
 			for (String l : attrs.getLore()) {
@@ -200,49 +235,11 @@ public abstract class LoreEnhancement {
 			attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
 			stack = attrs.getStack();
 			
-			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
-			return stack;
-		} else {
-			int slot = 999;
-			for (int i = 0; i < p.getInventory().getContents().length; i++) {
-				if (p.getInventory().getContents()[i] == stack &&
-						p.getInventory().getContents()[i].getItemMeta() == stack.getItemMeta() && i < 36) {
-					slot = i;
-					continue;
-				}
-			}
-			
-			stack = new ItemStack(Material.WEB);
-			AttributeUtil attrs = new AttributeUtil(stack);
-			String brokeName = stack.getItemMeta().getDisplayName();
-			attrs.setName(brokeName+" - "+CivColor.LightPurpleBold+"BROKEN");
-			attrs.addLore(CivColor.LightGrayItalic+"Your "+brokeName+CivColor.LightGrayItalic+" ran out of Lives and broke!");
-			attrs.addEnhancement("LoreEnhancementSoulBound", null, null);	
-			stack = attrs.getStack();
-			
-			if (slot != 999) {
-				p.getInventory().setItem(slot, stack);
-				return stack;
-			} else {
-				boolean isEmpty = false;
-				for (int i = 0; i < p.getInventory().getContents().length; i++) {
-					if (p.getInventory().getContents()[i].getType() == Material.AIR && i < 36) {
-						isEmpty = true;
-						break;
-					}
-				}
-				
-				if (isEmpty) {
-					p.getInventory().addItem(stack);
-					return stack;
-				} else {
-					CivMessage.send(p, CivColor.LightGrayItalic+"We dropped items back on the ground due to a full inventory.");
-					p.getWorld().dropItem(p.getLocation(), stack);
-					return stack;
-				}
-			}
+			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has been healed to "+
+							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives.");
 		}
+		
+		return stack;
 	}
 	
 	public double getLevelDouble(AttributeUtil attrs) { return 0; }

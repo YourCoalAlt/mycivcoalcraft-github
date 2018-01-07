@@ -97,7 +97,7 @@ barracks:
 
     # Base repair cost of all items
     base_damage_repair: 500
-    base_tier_repair: 1250
+    base_tier_repair: 2000
     # durability dampen.
     #durability_damp: 0.85
     # tier dampen
@@ -427,7 +427,7 @@ structures:
     itemData: 0
     position: 14
     template: quarry
-    template_y_shift: 0
+    template_y_shift: -11
     displayName: Quarry
     require_tech: 'tech_efficiency' 
     update_event: quarry_process
@@ -629,7 +629,7 @@ structures:
     components:
         - name: 'AttributeBiomeRadiusPerLevel'
           attribute: 'COINS'
-          biomes: 'DESERT:3,BEACHES:3,RIVER:3,JUNGLE:3'
+          biomes: 'DESERT:4,BEACHES:4,RIVER:4,JUNGLE:4'
           base_value: '5.0'
         - name: 'ConsumeLevelComponent'
 #

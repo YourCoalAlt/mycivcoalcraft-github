@@ -1,4 +1,205 @@
 materials:
+# Leather Gear =========================================
+# Checked 25 August 2017
+  - id: 'civ_stone_sword214'
+    item_id: 272
+    item_data: 0
+    name: 'Stone Shank A'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Damage'
+         value: '10'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_stone_sword214664'
+    item_id: 272
+    item_data: 0
+    name: 'Stone Shank B'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Damage'
+         value: '14'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_stone_sword214343'
+    item_id: 272
+    item_data: 0
+    name: 'Stone Shank C'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Damage'
+         value: '18'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_helmet454'
+    item_id: 298
+    item_data: 0
+    name: 'Leather Helmet A'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '1.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_chestplate45345'
+    item_id: 299
+    item_data: 0
+    name: 'Leather Jacket A'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '3'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_leggings45345'
+    item_id: 300
+    item_data: 0
+    name: 'Leather Pants A'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '2'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_Boots23434'
+    item_id: 301
+    item_data: 0
+    name: 'Leather Moccasins A'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '1.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_helmet45565464'
+    item_id: 298
+    item_data: 0
+    name: 'Leather Helmet B'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '2.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_chestplate45456546345'
+    item_id: 299
+    item_data: 0
+    name: 'Leather Jacket B'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '4'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_leggings4554654345'
+    item_id: 300
+    item_data: 0
+    name: 'Leather Pants B'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '3'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+# Checked 25 August 2017
+  - id: 'civ_leather_Boots2343353454'
+    item_id: 301
+    item_data: 0
+    name: 'Leather Moccasins B'
+    craftable: false
+    shaped: false
+    category: '<gray>Gear Test'
+    components:
+       - name: 'Armor'
+         value: '2.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Checked 25 August 2017
   - id: 'civ_refined_gold'
     item_id: 7
@@ -916,7 +1117,7 @@ materials:
         - " s "
 # Checked 25 August 2017
   - id: 'civ_vanilla_gold_pickaxe'
-    item_id: 278
+    item_id: 285
     item_data: 0
     name: 'Golden Pickaxe'
     craftable: true
@@ -950,7 +1151,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Damage'
-         value: '1'
+         value: '6.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -966,42 +1167,16 @@ materials:
        - " b "
        - " s "
 # Checked 25 August 2017
-  - id: 'civ_stone_sword'
-    item_id: 272
-    item_data: 0
-    name: 'Stone Shank'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    components:
-       - name: 'Damage'
-         value: '2'
-       - name: 'NoVanillaDurability'
-       - name: 'DurabilityOnDeath'
-         value: '0.05'
-    ingredients:
-       - type_id: 4
-         data: 0
-         letter: 'b'
-       - type_id: 280
-         data: 0
-         letter: 's'
-    shape:
-       - " b "
-       - " b "
-       - " s "
-# Checked 25 August 2017
   - id: 'civ_hunting_bow'
     item_id: 261
     item_data: 0
     name: 'Hunting Bow'
     craftable: true
-    required_not_techs: 'tech_fletching'
     shaped: true
     category: '<green>Gear Tier 1'
     components:
        - name: 'RangedAttack'
-         value: '5'
+         value: '8.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1019,226 +1194,6 @@ materials:
        - "s a"
        - "sa "
 # Checked 25 August 2017
-  - id: 'civ_woodslime_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Wooden Slime Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 341
-         data: 0
-         letter: 't'
-       - type_id: 280
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_woodsugar_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Wooden Sugar Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 353
-         data: 0
-         letter: 't'
-       - type_id: 280
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_woodflint_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Wooden Flint Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 318
-         data: 0
-         letter: 't'
-       - type_id: 280
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_woodnetherbrick_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Wooden Nether Brick Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 405
-         data: 0
-         letter: 't'
-       - type_id: 280
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_woodmagmacream_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Wooden Magma Cream Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 378
-         data: 0
-         letter: 't'
-       - type_id: 280
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_stoneslime_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Stone Slime Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 341
-         data: 0
-         letter: 't'
-       - type_id: 4
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_stonesugar_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Stone Sugar Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 353
-         data: 0
-         letter: 't'
-       - type_id: 4
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_stoneflint_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Stone Flint Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 318
-         data: 0
-         letter: 't'
-       - type_id: 4
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_stonenetherbrick_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Stone Nether Brick Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 405
-         data: 0
-         letter: 't'
-       - type_id: 4
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_stonemagmacream_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Stone Magma Cream Arrow'
-    craftable: true
-    shaped: true
-    category: '<green>Gear Tier 1'
-    ingredients:
-       - type_id: 378
-         data: 0
-         letter: 't'
-       - type_id: 4
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
   - id: 'civ_leather_helmet'
     item_id: 298
     item_data: 0
@@ -1248,7 +1203,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '1'
+         value: '0.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1270,7 +1225,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '4'
+         value: '1.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1292,7 +1247,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '0.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1314,7 +1269,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '1'
+         value: '0.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1326,26 +1281,26 @@ materials:
        - "   "
        - "l l"
        - "l l"
-# Gold Gear Recipes --------------------------------
+# Chain Gear Recipes --------------------------------
 # Checked 25 August 2017
-  - id: 'civ_gold_sword'
-    item_id: 283
+  - id: 'civ_stone_sword'
+    item_id: 272
     item_data: 0
-    name: 'Gold Sword'
+    name: 'Aluminium Shortsword'
     craftable: true
-    required_not_techs: 'tech_folded_steel'
+    required_not_techs: 'tech_metal_casting'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Damage'
-         value: '3'
+         value: '8.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_gold'
+         custom_id: 'civ_refined_iron'
          letter: 'b'
        - type_id: 0
          data: 0
@@ -1356,239 +1311,129 @@ materials:
        - " b "
        - " h "
 # Checked 25 August 2017
-  - id: 'civ_recurve_bow'
+  - id: 'civ_traditional_bow'
     item_id: 261
     item_data: 0
-    name: 'Recurve Bow'
+    name: 'Traditional Bow'
     craftable: true
     required_not_techs: 'tech_fletching'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'RangedAttack'
-         value: '6.5'
+         value: '10.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_crafted_sticks'
+         custom_id: 'civ_woven_sticks'
          letter: 'a'
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_string'
+         custom_id: 'civ_woven_string'
          letter: 's'
     shape:
        - "sa "
        - "s a"
        - "sa "
 # Checked 25 August 2017
-  - id: 'civ_ironslime_arrow'
-    item_id: 262
+  - id: 'civ_chain_helmet'
+    item_id: 302
     item_data: 0
-    name: 'Iron Slime Arrow'
+    name: 'Aluminium Helmet'
     craftable: true
-    shaped: true
-    category: '<gold>Gear Tier 2'
-    ingredients:
-       - type_id: 341
-         data: 0
-         letter: 't'
-       - type_id: 265
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_ironsugar_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Iron Sugar Arrow'
-    craftable: true
-    shaped: true
-    category: '<gold>Gear Tier 2'
-    ingredients:
-       - type_id: 353
-         data: 0
-         letter: 't'
-       - type_id: 265
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_ironflint_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Iron Flint Arrow'
-    craftable: true
-    shaped: true
-    category: '<gold>Gear Tier 2'
-    ingredients:
-       - type_id: 318
-         data: 0
-         letter: 't'
-       - type_id: 265
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_ironnetherbrick_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Iron Nether Brick Arrow'
-    craftable: true
-    shaped: true
-    category: '<gold>Gear Tier 2'
-    ingredients:
-       - type_id: 405
-         data: 0
-         letter: 't'
-       - type_id: 265
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_ironmagmacream_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Iron Magma Cream Arrow'
-    craftable: true
-    shaped: true
-    category: '<gold>Gear Tier 2'
-    ingredients:
-       - type_id: 378
-         data: 0
-         letter: 't'
-       - type_id: 265
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_gold_helmet'
-    item_id: 314
-    item_data: 0
-    name: 'Gold Helmet'
-    craftable: true
-    required_not_techs: 'tech_chemical_bonding'
+    required_not_techs: 'tech_blacksmithing'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '1.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_gold'
-         letter: 'c'
+         custom_id: 'civ_refined_stone'
+         letter: 'i'
     shape:
-       - "ccc"
-       - "c c"
+       - "iii"
+       - "i i"
        - "   "
 # Checked 25 August 2017
-  - id: 'civ_gold_chestplate'
-    item_id: 315
+  - id: 'civ_chain_chestplate'
+    item_id: 303
     item_data: 0
-    name: 'Gold Chestplate'
+    name: 'Aluminium Chestplate'
     craftable: true
-    required_not_techs: 'tech_chemical_bonding'
+    required_not_techs: 'tech_blacksmithing'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '5'
+         value: '2.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_gold'
-         letter: 'c'
+         custom_id: 'civ_refined_stone'
+         letter: 'i'
     shape:
-       - "c c"
-       - "ccc"
-       - "ccc"
+       - "i i"
+       - "iii"
+       - "iii"
 # Checked 25 August 2017
-  - id: 'civ_gold_leggings'
-    item_id: 316
+  - id: 'civ_chain_leggings'
+    item_id: 304
     item_data: 0
-    name: 'Gold leggings'
+    name: 'Aluminium Leggings'
     craftable: true
-    required_not_techs: 'tech_chemical_bonding'
+    required_not_techs: 'tech_blacksmithing'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '2.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_gold'
-         letter: 'c'
+         custom_id: 'civ_refined_stone'
+         letter: 'i'
     shape:
-       - "ccc"
-       - "c c"
-       - "c c"
+       - "iii"
+       - "i i"
+       - "i i"
 # Checked 25 August 2017
-  - id: 'civ_gold_boots'
-    item_id: 317
+  - id: 'civ_chain_boots'
+    item_id: 305
     item_data: 0
-    name: 'Gold Boots'
+    name: 'Aluminium Boots'
     craftable: true
-    required_not_techs: 'tech_chemical_bonding'
+    required_not_techs: 'tech_blacksmithing'
     shaped: true
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '2'
+         value: '0.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
     ingredients:
        - type_id: 0
          data: 0
-         custom_id: 'civ_refined_gold'
-         letter: 'c'
+         custom_id: 'civ_refined_stone'
+         letter: 'i'
     shape:
        - "   "
-       - "c c"
-       - "c c"
+       - "i i"
+       - "i i"
 # Iron Gear Recipes --------------------------------
 # Checked 25 August 2017
   - id: 'civ_iron_sword'
@@ -1601,7 +1446,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Damage'
-         value: '4.5'
+         value: '10.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1629,7 +1474,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'RangedAttack'
-         value: '8'
+         value: '12.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1647,116 +1492,6 @@ materials:
        - "s a"
        - "sa "
 # Checked 25 August 2017
-  - id: 'civ_goldslime_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Gold Slime Arrow'
-    craftable: true
-    shaped: true
-    category: '<red>Gear Tier 3'
-    ingredients:
-       - type_id: 341
-         data: 0
-         letter: 't'
-       - type_id: 266
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_goldsugar_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Gold Sugar Arrow'
-    craftable: true
-    shaped: true
-    category: '<red>Gear Tier 3'
-    ingredients:
-       - type_id: 353
-         data: 0
-         letter: 't'
-       - type_id: 266
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_goldflint_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Gold Flint Arrow'
-    craftable: true
-    shaped: true
-    category: '<red>Gear Tier 3'
-    ingredients:
-       - type_id: 318
-         data: 0
-         letter: 't'
-       - type_id: 266
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_goldnetherbrick_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Gold Nether Brick Arrow'
-    craftable: true
-    shaped: true
-    category: '<red>Gear Tier 3'
-    ingredients:
-       - type_id: 405
-         data: 0
-         letter: 't'
-       - type_id: 266
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_goldmagmacream_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Gold Magma Cream Arrow'
-    craftable: true
-    shaped: true
-    category: '<red>Gear Tier 3'
-    ingredients:
-       - type_id: 378
-         data: 0
-         letter: 't'
-       - type_id: 266
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
   - id: 'civ_iron_helmet'
     item_id: 306
     item_data: 0
@@ -1767,7 +1502,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '1.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1791,7 +1526,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '6'
+         value: '3.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1815,7 +1550,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '4'
+         value: '2.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1839,7 +1574,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '3'
+         value: '1.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1852,6 +1587,159 @@ materials:
        - "   "
        - "i i"
        - "i i"
+# Gold Gear Recipes --------------------------------
+# Checked 25 August 2017
+  - id: 'civ_gold_sword'
+    item_id: 283
+    item_data: 0
+    name: 'Gold Greatsword'
+    craftable: true
+    required_not_techs: 'tech_folded_steel'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'Damage'
+         value: '12.0'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_gold'
+         letter: 'b'
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_crafted_sticks'
+         letter: 'h'
+    shape:
+       - " b "
+       - " b "
+       - " h "
+# Checked 25 August 2017
+  - id: 'civ_recurve_bow'
+    item_id: 261
+    item_data: 0
+    name: 'Recurve Bow'
+    craftable: true
+    required_not_techs: 'tech_fletching'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'RangedAttack'
+         value: '14.0'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_crafted_sticks'
+         letter: 'a'
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_string'
+         letter: 's'
+    shape:
+       - "sa "
+       - "s a"
+       - "sa "
+# Checked 25 August 2017
+  - id: 'civ_gold_helmet'
+    item_id: 314
+    item_data: 0
+    name: 'Gold Helmet'
+    craftable: true
+    required_not_techs: 'tech_chemical_bonding'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'Armor'
+         value: '2.0'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_gold'
+         letter: 'c'
+    shape:
+       - "ccc"
+       - "c c"
+       - "   "
+# Checked 25 August 2017
+  - id: 'civ_gold_chestplate'
+    item_id: 315
+    item_data: 0
+    name: 'Gold Chestplate'
+    craftable: true
+    required_not_techs: 'tech_chemical_bonding'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'Armor'
+         value: '3.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_gold'
+         letter: 'c'
+    shape:
+       - "c c"
+       - "ccc"
+       - "ccc"
+# Checked 25 August 2017
+  - id: 'civ_gold_leggings'
+    item_id: 316
+    item_data: 0
+    name: 'Gold leggings'
+    craftable: true
+    required_not_techs: 'tech_chemical_bonding'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'Armor'
+         value: '3.0'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_gold'
+         letter: 'c'
+    shape:
+       - "ccc"
+       - "c c"
+       - "c c"
+# Checked 25 August 2017
+  - id: 'civ_gold_boots'
+    item_id: 317
+    item_data: 0
+    name: 'Gold Boots'
+    craftable: true
+    required_not_techs: 'tech_chemical_bonding'
+    shaped: true
+    category: '<darkblue>Gear Tier 4'
+    components:
+       - name: 'Armor'
+         value: '1.5'
+       - name: 'NoVanillaDurability'
+       - name: 'DurabilityOnDeath'
+         value: '0.05'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_gold'
+         letter: 'c'
+    shape:
+       - "   "
+       - "c c"
+       - "c c"
 # Diamond Gear Recipes --------------------------------
 # Checked 25 August 2017
   - id: 'civ_diamond_sword'
@@ -1861,10 +1749,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_tempering'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'Damage'
-         value: '6'
+         value: '14.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1889,10 +1777,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_fletching'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'RangedAttack'
-         value: '9.5'
+         value: '16.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1910,116 +1798,6 @@ materials:
        - "s a"
        - "sa "
 # Checked 25 August 2017
-  - id: 'civ_diamondslime_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Diamond Slime Arrow'
-    craftable: true
-    shaped: true
-    category: '<darkblue>Gear Tier 4'
-    ingredients:
-       - type_id: 341
-         data: 0
-         letter: 't'
-       - type_id: 264
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_diamondsugar_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Diamond Sugar Arrow'
-    craftable: true
-    shaped: true
-    category: '<darkblue>Gear Tier 4'
-    ingredients:
-       - type_id: 353
-         data: 0
-         letter: 't'
-       - type_id: 264
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_diamondflint_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Diamond Flint Arrow'
-    craftable: true
-    shaped: true
-    category: '<darkblue>Gear Tier 4'
-    ingredients:
-       - type_id: 318
-         data: 0
-         letter: 't'
-       - type_id: 264
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_diamondnetherbrick_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Diamond Nether Brick Arrow'
-    craftable: true
-    shaped: true
-    category: '<darkblue>Gear Tier 4'
-    ingredients:
-       - type_id: 405
-         data: 0
-         letter: 't'
-       - type_id: 264
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
-  - id: 'civ_diamondmagmacream_arrow'
-    item_id: 262
-    item_data: 0
-    name: 'Diamond Magma Cream Arrow'
-    craftable: true
-    shaped: true
-    category: '<darkblue>Gear Tier 4'
-    ingredients:
-       - type_id: 378
-         data: 0
-         letter: 't'
-       - type_id: 264
-         data: 0
-         letter: 'm'
-       - type_id: 288
-         data: 0
-         letter: 'b'
-    shape:
-       - " t "
-       - " m "
-       - " b "
-# Checked 25 August 2017
   - id: 'civ_diamond_helmet'
     item_id: 310
     item_data: 0
@@ -2027,10 +1805,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_forging'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '4'
+         value: '2.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2051,10 +1829,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_forging'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '7'
+         value: '4.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2075,10 +1853,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_forging'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '5'
+         value: '3.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2099,10 +1877,10 @@ materials:
     craftable: true
     required_not_techs: 'tech_forging'
     shaped: true
-    category: '<darkblue>Gear Tier 4'
+    category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '4'
+         value: '2.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -2115,6 +1893,7 @@ materials:
        - "   "
        - "t t"
        - "t t"
+#
 
 #
 # This is a list of removed recpies based on the typeID and 

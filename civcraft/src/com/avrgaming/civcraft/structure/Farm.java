@@ -94,7 +94,7 @@ public class Farm extends Structure {
 		switch (ItemManager.getId(b)) {
 		//case CivData.BROWNMUSHROOM:
 		//case CivData.REDMUSHROOM:
-		case CivData.COCOAPOD:
+		case CivData.COCOA_CROP:
 		case CivData.MELON:
 		case CivData.MELON_STEM:
 		case CivData.PUMPKIN:

@@ -199,7 +199,7 @@ public class FarmChunk {
 				spawnMelonOrPumpkin(bs, task);
 			}
 			break;
-		case CivData.COCOAPOD:	
+		case CivData.COCOA_CROP:	
 			if (!checkLight(growMe)) break;
 			if (CivData.canCocoaGrow(bs)) {
 				addGrowBlock("world", growMe.getX(), growMe.getY(), growMe.getZ(), bs.getTypeId(), CivData.getNextCocoaValue(bs), false);

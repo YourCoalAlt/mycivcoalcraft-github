@@ -540,7 +540,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
 		switch (sb.command) {
-		case "/guideinfo":
+		case "/guide":
 			spawnInfoVillager(absCoord.getLocation(), (byte)sb.getData());
 			break;
 		case "/questinfo":

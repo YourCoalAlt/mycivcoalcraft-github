@@ -25,7 +25,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.inventory.ItemStack;
@@ -151,7 +150,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 			if (ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_STILL || 
 					ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_RUNNING || 
 					ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.ICE) {
-					if (!coord2.getLocation().getBlock().getBiome().equals(Biome.OCEAN) &&
+/*					if (!coord2.getLocation().getBlock().getBiome().equals(Biome.OCEAN) &&
 							!coord2.getLocation().getBlock().getBiome().equals(Biome.DEEP_OCEAN) &&
 							!coord2.getLocation().getBlock().getBiome().equals(Biome.FROZEN_OCEAN)) {
 						CivLog.warning(" -------------------------------- ");
@@ -160,7 +159,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 						CivLog.warning(" (We will not spawn the trade good here as it is an invalid spot.) ");
 						CivLog.warning(" -------------------------------- ");
 						good = null;
-					} else {
+					} else {*/
 						good = pick.waterPick;
 						CivLog.info(" -------------------------------- ");
 						CivLog.info("Trade Good Generate: "+cX+", "+(centerY-1)+", "+cZ
@@ -168,9 +167,9 @@ public class TradeGoodPopulator extends BlockPopulator {
 								+" - Block: "+coord2.getCenteredLocation().getBlock().getType().toString()
 								+" - Goodie: "+pick.waterPick.name);
 						CivLog.info(" -------------------------------- ");
-					}
+//					}
 				} else {
-					//TODO For this we don't want to just cancel the trade good spawn, so we should try to make a method
+/*					//TODO For this we don't want to just cancel the trade good spawn, so we should try to make a method
 					//     that will check within a 4-5 block radius for a block it can be placed on. If that check fails,
 					//     ONLY THEN will we not place a goodie.
 					if (coord2.getCenteredLocation().getBlock().getType() == Material.WATER ||
@@ -187,7 +186,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 						CivLog.warning(" (We will not spawn the trade good here as it is an invalid spot.) ");
 						CivLog.warning(" -------------------------------- ");
 						good = null;
-					} else {
+					} else {*/
 						good = pick.landPick;
 						CivLog.info(" -------------------------------- ");
 						CivLog.info("Trade Good Generate: "+cX+", "+(centerY-1)+", "+cZ
@@ -195,7 +194,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 									+" - Block: "+coord2.getCenteredLocation().getBlock().getType().toString()
 									+" - Goodie: "+pick.landPick.name);
 						CivLog.info(" -------------------------------- ");
-					}
+//					}
 				}
 			// Randomly choose a land or water good.
 			if (good == null) {

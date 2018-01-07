@@ -32,14 +32,12 @@ import com.avrgaming.civcraft.config.ConfigEnchant;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
-import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 
 public class GreatLibrary extends Wonder {
 
@@ -113,14 +111,10 @@ public class GreatLibrary extends Wonder {
 	
 	@Override
 	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) {
-		//int special_id = Integer.valueOf(sign.getAction());
 		Resident resident = CivGlobal.getResident(player);
+		if (resident == null) return;
 		
-		if (resident == null) {
-			return;
-		}
-		
-		if (!resident.hasTown() || resident.getCiv() != this.getCiv()) {
+		if (resident.getCiv() != this.getCiv()) {
 			CivMessage.sendError(player, "Only members of "+this.getCiv().getName()+" may use The Great Library.");
 			return;
 		}
@@ -157,7 +151,7 @@ public class GreatLibrary extends Wonder {
 			}
 			
 			resident.getTreasury().withdraw(configEnchant.cost);
-			hand.addEnchantment(Enchantment.PROTECTION_FIRE, 3);			
+			hand.addEnchantment(Enchantment.PROTECTION_FIRE, 2);			
 			break;
 		case "2": /* flame */
 			if (!Enchantment.ARROW_FIRE.canEnchantItem(hand)) {
@@ -175,14 +169,8 @@ public class GreatLibrary extends Wonder {
 			hand.addEnchantment(Enchantment.ARROW_FIRE, 1);	
 			break;
 		case "3":
-			switch (ItemManager.getId(hand)) {
-			case CivData.WOOD_PICKAXE:
-			case CivData.STONE_PICKAXE:
-			case CivData.IRON_PICKAXE:
-			case CivData.DIAMOND_PICKAXE:
-			case CivData.GOLD_PICKAXE:
+			if (LoreEnhancement.isTool(hand)) {
 				configEnchant = CivSettings.enchants.get("ench_punchout");
-				
 				if (!LoreMaterial.isCustom(hand)) {					
 					CivMessage.sendError(player, "This item is not a custom civcraft item and cannot recieve this enhancement.");
 					return;
@@ -202,16 +190,13 @@ public class GreatLibrary extends Wonder {
 				ItemStack newItem = LoreMaterial.addEnhancement(hand, LoreEnhancement.enhancements.get(configEnchant.enchant_id), 1);				
 				player.getInventory().setItemInMainHand(newItem);
 				break;
-			default:
+			} else {
 				CivMessage.sendError(player, "You can only add this enchantment to pickaxes.");
 				return;	
 			}
-			break;
 		default:
 			return;
 		}
-		
 		CivMessage.sendSuccess(player, "Enchant Success!");
 	}
-
 }

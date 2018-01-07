@@ -96,7 +96,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 				return;
 			}
 	
-			if (resident == null) {
+/*			if (resident == null) { // Now checked in PlayerListener pre-login. Using isGivenKit to do resident.begin
 				CivLog.info("No resident found. Creating for "+getPlayer().getName());
 				try {
 					resident = new Resident(getPlayer().getUniqueId(), getPlayer().getName());
@@ -107,7 +107,11 @@ public class PlayerLoginAsyncTask implements Runnable {
 				
 				CivGlobal.addResident(resident);
 				resident.begin(resident, getPlayer());
-			}
+			}*/
+			
+			if (!resident.isGivenKit()) {
+				resident.begin(resident, getPlayer());
+		}
 			
 			if (re == null) {
 				CivLog.info("No resident experience found. Creating for "+getPlayer().getName());
@@ -148,9 +152,9 @@ public class PlayerLoginAsyncTask implements Runnable {
 			// if (resident != null && resident.isBanned()) // Now saved in PlayerListener
 			// if (AdminCommand.isLockdown() && !getPlayer().isOp() && !getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {  // Now saved in PlayerListener
 			
-			if (!resident.isGivenKit()) {
-				TaskMaster.syncTask(new GivePlayerStartingKit(resident.getName()));
-			}
+//			if (!resident.isGivenKit()) {
+//				TaskMaster.syncTask(new GivePlayerStartingKit(resident.getName()));
+//			}
 					
 			// if (War.isWarTime() && War.isOnlyWarriors()) { // Now saved in PlayerListener
 			

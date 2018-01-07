@@ -60,15 +60,25 @@ public class SimpleBlock {
 	 *
 	 * @param block
 	 */
-	    public SimpleBlock(Block block) {
-	        this.x = block.getX();
-	        this.y = block.getY();
-	        this.z = block.getZ();
-	        this.worldname = block.getWorld().getName();
-	        this.type = ItemManager.getId(block);
-	        this.data = ItemManager.getData(block);
-	        this.specialType = Type.NORMAL;
-	    }
+    public SimpleBlock(Block block) {
+        this.x = block.getX();
+        this.y = block.getY();
+        this.z = block.getZ();
+        this.worldname = block.getWorld().getName();
+        this.type = ItemManager.getId(block);
+        this.data = ItemManager.getData(block);
+        this.specialType = Type.NORMAL;
+    }
+    
+    public SimpleBlock(String worldName, Material mat, int data, int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.worldname = worldName;
+        this.type = ItemManager.getId(mat);
+        this.data = (byte) data;
+        this.specialType = Type.NORMAL;
+    }
 	    
 	    public SimpleBlock(String hash, int type, byte data) {
 		    String[] split = hash.split(",");

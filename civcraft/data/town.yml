@@ -14,8 +14,8 @@ town:
     # Falloff for the upkeep. Upkeep per plot is: upkeep = base * (distance-grace_distance)^falloff
     upkeep_town_block_falloff: 1.5
 
-    base_hammer_rate: 0.75
-    base_beaker_rate: 0.75
+    base_hammer_rate: 0.7
+    base_beaker_rate: 0.7
     base_growth_rate: 0.33
 
     # Maximum number of blocks a town chunk can "protrude" from the main mass.

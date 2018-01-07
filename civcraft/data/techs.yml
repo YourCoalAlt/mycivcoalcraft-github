@@ -280,17 +280,6 @@ techs: #Note: Pts = Beakers/10
       - "T5 Tech Education"
     require_techs: 'tech_writing'
 #
-  - id: 'tech_horseback_riding'
-    name: 'Horseback Riding'
-    beaker_cost: 2000
-    cost: 15000
-    points: 200
-    tier: 3
-    unlocks:
-      - "Structure Horse Stable"
-      - "T6 Tech Herding"
-    require_techs: 'tech_animal_husbandry'
-#
   - id: 'tech_housing'
     name: 'Housing'
     beaker_cost: 2000
@@ -355,6 +344,16 @@ techs: #Note: Pts = Beakers/10
       - "T5 Tech Sailing"
       - "T5 Tech Commerce*"
     require_techs: 'tech_productivity:tech_experimentation'
+#
+  - id: 'tech_horseback_riding'
+    name: 'Horseback Riding'
+    beaker_cost: 3750
+    cost: 30000
+    points: 375
+    tier: 4
+    unlocks:
+      - "Structure Stable"
+    require_techs: 'tech_animal_husbandry'
 #
   - id: 'tech_objectification'
     name: 'Objectification*'

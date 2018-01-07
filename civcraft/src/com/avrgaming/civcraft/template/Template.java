@@ -108,53 +108,59 @@ public class Template {
 	}
 	
 	public static void initAttachableTypes() {
-		attachableTypes.add(ItemManager.getId(Material.SAPLING));
-		attachableTypes.add(ItemManager.getId(Material.BED_BLOCK));
-		attachableTypes.add(ItemManager.getId(Material.POWERED_RAIL));
-		attachableTypes.add(ItemManager.getId(Material.DETECTOR_RAIL));
-		attachableTypes.add(ItemManager.getId(Material.LONG_GRASS));
-		attachableTypes.add(ItemManager.getId(Material.DEAD_BUSH));
-		attachableTypes.add(ItemManager.getId(Material.YELLOW_FLOWER));
-		attachableTypes.add(ItemManager.getId(Material.RED_ROSE));
-		attachableTypes.add(ItemManager.getId(Material.BROWN_MUSHROOM));
-		attachableTypes.add(ItemManager.getId(Material.RED_MUSHROOM));
-		attachableTypes.add(ItemManager.getId(Material.TORCH));
-		attachableTypes.add(ItemManager.getId(Material.REDSTONE_WIRE));
-		attachableTypes.add(ItemManager.getId(Material.WHEAT));
-//		attachableTypes.add(ItemManager.getId(Material.SIGN_POST));
-//		attachableTypes.add(ItemManager.getId(Material.WALL_SIGN));
-		attachableTypes.add(ItemManager.getId(Material.LADDER));
-		attachableTypes.add(ItemManager.getId(Material.RAILS));
-		attachableTypes.add(ItemManager.getId(Material.LEVER));
-		attachableTypes.add(ItemManager.getId(Material.STONE_PLATE));
-		attachableTypes.add(ItemManager.getId(Material.WOOD_PLATE));
-		attachableTypes.add(ItemManager.getId(Material.REDSTONE_TORCH_ON));
-		attachableTypes.add(ItemManager.getId(Material.REDSTONE_TORCH_OFF));
-		attachableTypes.add(ItemManager.getId(Material.STONE_BUTTON));
-		attachableTypes.add(ItemManager.getId(Material.CACTUS));
-		attachableTypes.add(ItemManager.getId(Material.SUGAR_CANE));
-		attachableTypes.add(93); //redstone repeater off
-		attachableTypes.add(94); //redstone repeater on
-		attachableTypes.add(ItemManager.getId(Material.TRAP_DOOR));
-		attachableTypes.add(ItemManager.getId(Material.PUMPKIN_STEM));
-		attachableTypes.add(ItemManager.getId(Material.MELON_STEM));
-		attachableTypes.add(ItemManager.getId(Material.VINE));
-		attachableTypes.add(111); //lily pad
-		attachableTypes.add(ItemManager.getId(Material.BREWING_STAND));
-		attachableTypes.add(ItemManager.getId(Material.COCOA));
-		attachableTypes.add(ItemManager.getId(Material.TRIPWIRE));
-		attachableTypes.add(ItemManager.getId(Material.TRIPWIRE_HOOK));
-		attachableTypes.add(ItemManager.getId(Material.FLOWER_POT));
-		attachableTypes.add(ItemManager.getId(Material.CARROT));
-		attachableTypes.add(ItemManager.getId(Material.POTATO));
-		attachableTypes.add(ItemManager.getId(Material.WOOD_BUTTON));
-		attachableTypes.add(ItemManager.getId(Material.ANVIL));
-		attachableTypes.add(ItemManager.getId(Material.GOLD_PLATE));
-		attachableTypes.add(ItemManager.getId(Material.IRON_PLATE));
-		attachableTypes.add(ItemManager.getId(Material.REDSTONE_COMPARATOR_ON));
-		attachableTypes.add(ItemManager.getId(Material.REDSTONE_COMPARATOR_OFF));
-		attachableTypes.add(ItemManager.getId(Material.DAYLIGHT_DETECTOR));
-		attachableTypes.add(ItemManager.getId(Material.ACTIVATOR_RAIL));
+		attachableTypes.add(CivData.SAPLING);
+		attachableTypes.add(CivData.BED_BLOCK);
+		attachableTypes.add(CivData.RAIL_POWERED);
+		attachableTypes.add(CivData.RAIL_DETECTOR);
+		attachableTypes.add(CivData.TALL_GRASS);
+		attachableTypes.add(CivData.DEAD_BUSH);
+		attachableTypes.add(CivData.DANDELION);
+		attachableTypes.add(CivData.OTHER_FLOWERS);
+		attachableTypes.add(CivData.BROWN_MUSHROOM);
+		attachableTypes.add(CivData.RED_MUSHROOM);
+		attachableTypes.add(CivData.TORCH);
+		attachableTypes.add(CivData.REDSTONE_WIRE);
+		attachableTypes.add(CivData.WHEAT_CROP);
+//		attachableTypes.add(CivData.SIGN);
+		attachableTypes.add(CivData.WOOD_DOOR);
+		attachableTypes.add(CivData.LADDER);
+		attachableTypes.add(CivData.RAIL);
+//		attachableTypes.add(CivData.WALL_SIGN);
+		attachableTypes.add(CivData.LEVER);
+		attachableTypes.add(CivData.STONE_PLATE);
+		attachableTypes.add(CivData.IRON_DOOR);
+		attachableTypes.add(CivData.WOOD_PLATE);
+		attachableTypes.add(CivData.REDSTONE_TORCH_OFF);
+		attachableTypes.add(CivData.REDSTONE_TORCH_ON);
+		attachableTypes.add(CivData.STONE_BUTTON);
+		attachableTypes.add(CivData.CACTUS);
+		attachableTypes.add(CivData.SUGARCANE_BLOCK);
+		attachableTypes.add(CivData.REDSTONE_REPEATER_OFF);
+		attachableTypes.add(CivData.REDSTONE_REPEATER_ON);
+		attachableTypes.add(CivData.PUMPKIN_STEM);
+		attachableTypes.add(CivData.MELON_STEM);
+		attachableTypes.add(CivData.VINE);
+		attachableTypes.add(CivData.LILY_PAD);
+		attachableTypes.add(CivData.NETHERWART_CROP);
+		attachableTypes.add(CivData.COCOA_CROP);
+		attachableTypes.add(CivData.TRIPWIRE_HOOK);
+		attachableTypes.add(CivData.FLOWER_POT);
+		attachableTypes.add(CivData.CARROT_CROP);
+		attachableTypes.add(CivData.POTATO_CROP);
+		attachableTypes.add(CivData.WOOD_BUTTON);
+		attachableTypes.add(CivData.ANVIL);
+		attachableTypes.add(CivData.GOLD_PLATE);
+		attachableTypes.add(CivData.IRON_PLATE);
+		attachableTypes.add(CivData.COMPARATOR_OFF);
+		attachableTypes.add(CivData.COMPARATOR_ON);
+		attachableTypes.add(CivData.RAIL_ACTIVATOR);
+		attachableTypes.add(CivData.CARPET);
+		attachableTypes.add(CivData.DOUBLE_FLOWER);
+		attachableTypes.add(CivData.SPRUCE_DOOR);
+		attachableTypes.add(CivData.BIRCH_DOOR);
+		attachableTypes.add(CivData.JUNGLE_DOOR);
+		attachableTypes.add(CivData.ACACIA_DOOR);
+		attachableTypes.add(CivData.DARK_OAK_DOOR);
 	}
 	
 	public static boolean isAttachable(int blockID) {
@@ -223,7 +229,7 @@ public class Template {
 		Resident resident = CivGlobal.getResident(player);
 		resident.undoPreview();
 		
-		//Top
+		// Top
 		for (int z = 0; z < this.size_z; z++) {
 			for (int x = 0; x < this.size_x; x++) {
 				Block b = center.getBlock().getRelative(x, this.size_y-1, z);
@@ -232,18 +238,16 @@ public class Template {
 			}
 		}
 		
-		for (int y = 0; y < this.size_y; y++) {
+		// Bottom
+		for (int z = 0; z < this.size_z; z++) {
 			for (int x = 0; x < this.size_x; x++) {
-			Block b1 = center.getBlock().getRelative(x, y, 0);
-			ItemManager.sendBlockChange(player, b1.getLocation(), CivData.BARRIER, 0);
-			resident.previewUndo.put(new BlockCoord(b1.getLocation()), new SimpleBlock(ItemManager.getId(b1), ItemManager.getData(b1)));
-			
-			Block b2 = center.getBlock().getRelative(x, y, this.size_z-1);
-			ItemManager.sendBlockChange(player, b2.getLocation(), CivData.BARRIER, 0);
-			resident.previewUndo.put(new BlockCoord(b2.getLocation()), new SimpleBlock(ItemManager.getId(b2), ItemManager.getData(b2)));
+				Block b = center.getBlock().getRelative(x, 0, z);
+				ItemManager.sendBlockChange(player, b.getLocation(), CivData.BARRIER, 0);
+				resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
 			}
 		}
 		
+		// Building Parallel to player
 		for (int y = 0; y < this.size_y; y++) {
 			for (int z = 0; z < this.size_z; z++) {
 			Block b1 = center.getBlock().getRelative(0, y, z);
@@ -256,6 +260,20 @@ public class Template {
 			}
 		}
 		
+		// Building Perpendicular to player
+		for (int y = 0; y < this.size_y; y++) {
+			for (int x = 0; x < this.size_x; x++) {
+			Block b1 = center.getBlock().getRelative(x, y, 0);
+			ItemManager.sendBlockChange(player, b1.getLocation(), CivData.BARRIER, 0);
+			resident.previewUndo.put(new BlockCoord(b1.getLocation()), new SimpleBlock(ItemManager.getId(b1), ItemManager.getData(b1)));
+			
+			Block b2 = center.getBlock().getRelative(x, y, this.size_z-1);
+			ItemManager.sendBlockChange(player, b2.getLocation(), CivData.BARRIER, 0);
+			resident.previewUndo.put(new BlockCoord(b2.getLocation()), new SimpleBlock(ItemManager.getId(b2), ItemManager.getData(b2)));
+			}
+		}
+		
+		// Corner Pillars
 		for (int y = 0; y < this.size_y; y++) {
 			Block b = center.getBlock().getRelative(0, y, 0);
 			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
@@ -274,17 +292,19 @@ public class Template {
 			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
 		}
 		
+		// Top Bars parallel to player
 		for (int x = 0; x < this.size_x; x++) {
 			Block b = center.getBlock().getRelative(x, this.size_y-1, 0);
 			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
 			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
-
+			
 			b = center.getBlock().getRelative(x, this.size_y-1, this.size_z-1);
 			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
 			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
 
 		}
 		
+		// Top Bars Perpendicular to player
 		for (int z = 0; z < this.size_z; z++) {
 			Block b = center.getBlock().getRelative(0, this.size_y-1, z);
 			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
@@ -295,15 +315,28 @@ public class Template {
 			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
 		}
 		
-		//Bottom
-		for (int z = 0; z < this.size_z; z++) {
-			for (int x = 0; x < this.size_x; x++) {
-				Block b = center.getBlock().getRelative(x, 0, z);
-				ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
-				resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
-			}
+		// Bottom Bars parallel to player
+		for (int x = 0; x < this.size_x; x++) {
+			Block b = center.getBlock().getRelative(x, 0, 0);
+			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
+			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+			
+			b = center.getBlock().getRelative(x, 0, this.size_z-1);
+			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
+			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+
 		}
 		
+		// Bottom Bars Perpendicular to player
+		for (int z = 0; z < this.size_z; z++) {
+			Block b = center.getBlock().getRelative(0, 0, z);
+			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
+			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+			
+			b = center.getBlock().getRelative(this.size_x-1, 0, z);
+			ItemManager.sendBlockChange(player, b.getLocation(), CivData.BEDROCK, 0);
+			resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+		}
 	}
 	
 	public void buildScaffolding(Location center) {

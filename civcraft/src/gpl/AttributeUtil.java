@@ -118,6 +118,7 @@ public class AttributeUtil {
 		private Attribute(Builder builder) {
 			data = new NBTTagCompound();
 			setAmount(builder.amount);
+			if (builder.slot != null) setSlot(builder.slot);
 			setOperation(builder.operation);
 			setAttributeType(builder.type);
 			setName(builder.name);
@@ -134,6 +135,10 @@ public class AttributeUtil {
 		
 		public void setAmount(double amount) {
 			data.setDouble("Amount", amount);
+		}
+		
+		public void setSlot(String slot) {
+			data.setString("Slot", slot);
 		}
 		
 		public Operation getOperation() {
@@ -182,6 +187,7 @@ public class AttributeUtil {
 		// Makes it easier to construct an attribute
 		public static class Builder {
 			private double amount;
+			private String slot;
 			private Operation operation = Operation.ADD_NUMBER;
 			private AttributeType type;
 			private String name;
@@ -191,6 +197,10 @@ public class AttributeUtil {
 			}
 			public Builder amount(double amount) {
 				this.amount = amount;
+				return this;
+			}
+			public Builder slot(String slot) {
+				this.slot = slot;
 				return this;
 			}
 			public Builder operation(Operation operation) {
@@ -257,6 +267,10 @@ public class AttributeUtil {
 			}
 		}
 		return CraftItemStack.asCraftMirror(nmsStack);
+	}
+	
+	public NBTTagCompound getParent() {
+		return parent;
 	}
 	
 	/** Retrieve the number of attributes.

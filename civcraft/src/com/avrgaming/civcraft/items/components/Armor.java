@@ -1,67 +1,45 @@
 package com.avrgaming.civcraft.items.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import com.avrgaming.civcraft.config.ConfigUnit;
+import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementProtection;
+import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainProtection;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
 
 import gpl.AttributeUtil;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.NBTTagDouble;
-import net.minecraft.server.v1_12_R1.NBTTagInt;
-import net.minecraft.server.v1_12_R1.NBTTagList;
-import net.minecraft.server.v1_12_R1.NBTTagString;
+import gpl.AttributeUtil.AttributeType;
 
 public class Armor extends ItemComponent {
 	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
-		ItemStack item = attrs.getStack();
-		attrs.nmsStack = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound compound = (attrs.nmsStack.hasTag()) ? attrs.nmsStack.getTag() : new NBTTagCompound();
-		NBTTagList modifiers = new NBTTagList();
-		NBTTagCompound damage = new NBTTagCompound();
+		ItemStack stack = attrs.getStack();
+		double value = this.getDouble("value");
 		
-		damage.set("AttributeName", new NBTTagString("generic.armor"));
-		damage.set("Name", new NBTTagString("generic.armor"));
-		damage.set("Amount", new NBTTagDouble(this.getDouble("value")));
-		damage.set("Operation", new NBTTagInt(0));
-		damage.set("UUIDLeast", new NBTTagInt(894654));
-		damage.set("UUIDMost", new NBTTagInt(2872));
-		if (item.getType() == Material.LEATHER_HELMET || item.getType() == Material.GOLD_HELMET || item.getType() == Material.CHAINMAIL_HELMET ||
-					item.getType() == Material.IRON_HELMET || item.getType() == Material.DIAMOND_HELMET) {
-			damage.set("Slot", new NBTTagString("head"));
-		} else if (item.getType() == Material.LEATHER_CHESTPLATE || item.getType() == Material.GOLD_CHESTPLATE || item.getType() == Material.CHAINMAIL_CHESTPLATE ||
-				item.getType() == Material.IRON_CHESTPLATE || item.getType() == Material.DIAMOND_CHESTPLATE) {
-			damage.set("Slot", new NBTTagString("chest"));
-		} else if (item.getType() == Material.LEATHER_LEGGINGS || item.getType() == Material.GOLD_LEGGINGS || item.getType() == Material.CHAINMAIL_LEGGINGS ||
-				item.getType() == Material.IRON_LEGGINGS || item.getType() == Material.DIAMOND_LEGGINGS) {
-			damage.set("Slot", new NBTTagString("legs"));
-		} else if (item.getType() == Material.LEATHER_BOOTS || item.getType() == Material.GOLD_BOOTS || item.getType() == Material.CHAINMAIL_BOOTS ||
-				item.getType() == Material.IRON_BOOTS || item.getType() == Material.DIAMOND_BOOTS) {
-			damage.set("Slot", new NBTTagString("feet"));
+		attrs.clear();
+		if (EnchantmentTarget.ARMOR_HEAD.includes(stack)) {
+			attrs.add(gpl.AttributeUtil.Attribute.newBuilder().name("Armor").type(AttributeType.GENERIC_ARMOR).amount(value).slot("head").build());
+		} else if (EnchantmentTarget.ARMOR_TORSO.includes(stack)) {
+			attrs.add(gpl.AttributeUtil.Attribute.newBuilder().name("Armor").type(AttributeType.GENERIC_ARMOR).amount(value).slot("chest").build());
+		} else if (EnchantmentTarget.ARMOR_LEGS.includes(stack)) {
+			attrs.add(gpl.AttributeUtil.Attribute.newBuilder().name("Armor").type(AttributeType.GENERIC_ARMOR).amount(value).slot("legs").build());
+		} else if (EnchantmentTarget.ARMOR_FEET.includes(stack)) {
+			attrs.add(gpl.AttributeUtil.Attribute.newBuilder().name("Armor").type(AttributeType.GENERIC_ARMOR).amount(value).slot("feet").build());
 		} else {
-			damage.set("Slot", new NBTTagString("offhand"));
-			List<String> lore = new ArrayList<String>();
-						 lore.add("Unknown Armor Type");
-						 item.getItemMeta().setLore(lore);
+			attrs.add(gpl.AttributeUtil.Attribute.newBuilder().name("Armor").type(AttributeType.GENERIC_ARMOR).amount(value).slot("offhand").build());
 		}
-		modifiers.add(damage);
-		compound.set("AttributeModifiers", modifiers);
-		attrs.nmsStack.setTag(compound);
-		item = CraftItemStack.asBukkitCopy(attrs.nmsStack);
 	}
 	
 	@Override
@@ -74,20 +52,20 @@ public class Armor extends ItemComponent {
 	
 	@Override
 	public void onDefense(EntityDamageByEntityEvent event, ItemStack stack) {
-		double def = this.getDouble("value")/10;
+		double def = this.getDouble("value");
 //		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 //		if (craftMat == null) {
 //			return;
 //		}
 		
-		double extraAtt = 0.0;
+		double extraDef = 0.0;
 		AttributeUtil attrs = new AttributeUtil(stack);
 		for (LoreEnhancement enh : attrs.getEnhancements()) {
 			if (enh instanceof LoreEnhancementProtection) {
-				extraAtt += (((LoreEnhancementProtection)enh).getExtraDamage(attrs) * 0.1);
+				extraDef += (((LoreEnhancementProtection)enh).getExtraDamage(attrs) * 0.15);
 			}
 		}
-		def += extraAtt;	
+		def += extraDef;	
 		
 		/*double defProt = 0.0;
 		Map<Enchantment, Integer> enchant = stack.getEnchantments();
@@ -101,18 +79,46 @@ public class Armor extends ItemComponent {
 		}
 		def += defProt;*/
 		
-		double damage = event.getDamage();
 		if (event.getEntity() instanceof Player) {
-			Resident resident = CivGlobal.getResident(((Player)event.getEntity()));
-			if (!resident.hasTechForItem(stack)) {
-				def = def/2;
+			Player p = (Player) event.getEntity();
+			for (PotionEffect effect : p.getActivePotionEffects()) {
+				if (effect.getType().toString().contains(PotionEffectType.WEAKNESS.toString())) {
+					int weaknessDmg = 2+(2*effect.getAmplifier());
+					def -= weaknessDmg;
+				}
+				
+				if (effect.getType().toString().contains(PotionEffectType.INCREASE_DAMAGE.toString())) {
+					int strengthDmg = 2+(2*effect.getAmplifier());
+					def += strengthDmg;
+				}
 			}
+			
+			ConfigUnit u = Unit.getPlayerUnit(p);
+			
+			double unitperk = 1.0;
+			if (u != null) { 
+//				if (u.id.equals("u_warrior")) def *= Unit.warrior_atk_dmg;
+//				else if (u != null && u.id.equals("u_archer")) def *= Unit.archer_atk_dmg;
+				
+				// Additional attack dmg always gets added, reguardless of unit type.
+				ItemStack unit = Unit.getPlayerUnitStack(p);
+				AttributeUtil a = new AttributeUtil(unit);
+				for (LoreEnhancement enh : a.getEnhancements()) {
+					CivMessage.global(enh.getDisplayName());
+					if (enh instanceof LoreEnhancementUnitGainProtection) {
+						unitperk += (enh.getLevel(a) * Unit.enhancement_unit_protect_amt);
+					}
+				}
+			}
+			
+			def *= unitperk;
+			
+			Resident resident = CivGlobal.getResident(p);
+			if (!resident.hasTechForItem(stack)) def = def/2;
 		}
 		
-		damage -= def;
-		if (damage < 0.1) {
-			damage = 0.1;
-		}
+		double damage = event.getDamage() - def;
+		if (damage < 0.75) damage = 0.75;
 		event.setDamage(damage);
 	}
 }

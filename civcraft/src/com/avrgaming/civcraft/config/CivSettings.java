@@ -57,7 +57,6 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.randomevents.ConfigRandomEvent;
 import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.template.Template;
-import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.global.perks.Perk;
 
 public class CivSettings {
@@ -76,6 +75,15 @@ public class CivSettings {
 	
 	// cached for faster access.
 	public static float normal_speed;
+	public static float T1_leather_speed;
+	public static float T2_leather_speed;
+	public static float T3_leather_speed;
+	public static float T4_leather_speed;
+	public static float T5_leather_speed;
+	public static float T2_metal_speed;
+	public static float T3_metal_speed;
+	public static float T4_metal_speed;
+	public static float T5_metal_speed;
 	
 	public static FileConfiguration townConfig; /* town.yml */
 	public static Map<Integer, ConfigTownLevel> townLevels = new HashMap<Integer, ConfigTownLevel>();
@@ -226,7 +234,18 @@ public class CivSettings {
 		Perk.init();
 		Unit.init();
 		
-		CivSettings.normal_speed = 0.2f;	
+		CivSettings.T1_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T1_leather_speed");
+		CivSettings.T2_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T2_leather_speed");
+		CivSettings.T3_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T3_leather_speed");
+		CivSettings.T4_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T4_leather_speed");
+		CivSettings.T5_leather_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T5_leather_speed");
+		
+		CivSettings.T2_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T2_metal_speed");
+		CivSettings.T3_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T3_metal_speed");
+		CivSettings.T4_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T4_metal_speed");
+		CivSettings.T5_metal_speed = (float)CivSettings.getDouble(CivSettings.unitConfig, "base.T5_metal_speed");
+		
+		CivSettings.normal_speed = 0.2f;
 		
 		for (Object obj : civConfig.getList("global.start_kit")) {
 			if (obj instanceof String) {
@@ -257,10 +276,25 @@ public class CivSettings {
 		startingCoins = CivSettings.getInteger(civConfig, "global.starting_coins");
 		
 		alwaysCrumble.add(CivData.BEDROCK);
-		alwaysCrumble.add(ItemManager.getId(Material.GOLD_BLOCK));
-		alwaysCrumble.add(ItemManager.getId(Material.DIAMOND_BLOCK));
-		alwaysCrumble.add(ItemManager.getId(Material.IRON_BLOCK));
-		alwaysCrumble.add(ItemManager.getId(Material.REDSTONE_BLOCK));
+		alwaysCrumble.add(CivData.GOLD_ORE);
+		alwaysCrumble.add(CivData.IRON_ORE);
+		alwaysCrumble.add(CivData.COAL_ORE);
+		alwaysCrumble.add(CivData.LAPIS_BLOCK);
+		alwaysCrumble.add(CivData.LAPIS_ORE);
+		alwaysCrumble.add(CivData.GOLD_BLOCK);
+		alwaysCrumble.add(CivData.IRON_BLOCK);
+		alwaysCrumble.add(CivData.SPAWNER);
+		alwaysCrumble.add(CivData.DIAMOND_ORE);
+		alwaysCrumble.add(CivData.DIAMOND_BLOCK);
+		alwaysCrumble.add(CivData.REDSTONE_ORE);
+		alwaysCrumble.add(CivData.REDSTONE_ORE_GLOW);
+		alwaysCrumble.add(CivData.EMERALD_ORE);
+		alwaysCrumble.add(CivData.EMERALD_BLOCK);
+		alwaysCrumble.add(CivData.COMMAND_BLOCK);
+		alwaysCrumble.add(CivData.BEACON);
+		alwaysCrumble.add(CivData.REDSTONE_BLOCK);
+		alwaysCrumble.add(CivData.QUARTZ_ORE);
+		alwaysCrumble.add(CivData.COAL_BLOCK);
 		
 		LoreEnhancement.init();
 		LoreCraftableMaterial.buildStaticMaterials();
@@ -369,6 +403,7 @@ public class CivSettings {
 		playerEntityWeapons.add(EntityType.SPECTRAL_ARROW);
 		playerEntityWeapons.add(EntityType.TIPPED_ARROW);
 		playerEntityWeapons.add(EntityType.EGG);
+		playerEntityWeapons.add(EntityType.ENDER_PEARL);
 		playerEntityWeapons.add(EntityType.SNOWBALL);
 		playerEntityWeapons.add(EntityType.SPLASH_POTION);
 		playerEntityWeapons.add(EntityType.LINGERING_POTION);

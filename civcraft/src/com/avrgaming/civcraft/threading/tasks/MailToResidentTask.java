@@ -2,8 +2,6 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -26,10 +24,11 @@ public class MailToResidentTask implements Runnable {
 			CivLog.error("cannot find resident for uuid ["+uid+"] to send item: ["+item+"]");
 			return;
 		} else {
-			res.addMailData(item);
-			if (Bukkit.getPlayer(res.getUUID()).isOnline()) {
-				CivMessage.send(res, "You have recieved a package in the mail! Collect it using your Backpack.");
-			}
+			CivMessage.send(res, "You would have recived a package, but it was lost as MailToResidentTask unavailable to send mail at this time.");
+//			res.addMailData(item);
+//			if (Bukkit.getPlayer(res.getUUID()).isOnline()) {
+//				CivMessage.send(res, "You have recieved a package in the mail! Collect it using your Backpack.");
+//			}
 		}
 	}
 }
