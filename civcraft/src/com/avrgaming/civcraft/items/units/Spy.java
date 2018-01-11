@@ -119,11 +119,11 @@ public class Spy extends UnitMaterial {
 				
 				DecimalFormat df = new DecimalFormat();
 				
-				double failChance = MissionBook.getMissionFailChance(m, target);
+				double failChance = SpyMissions.getMissionFailChance(m, target);
 				String successChance = df.format((1 - failChance)*100)+"%;";
 				out += CivColor.Green+"Chance of Success: "+CivColor.LightGreen+successChance;
 				
-				double compChance = MissionBook.getMissionCompromiseChance(m, target);
+				double compChance = SpyMissions.getMissionCompromiseChance(m, target);
 				String compromiseChance = df.format(compChance*100)+"%;";
 				out += CivColor.Green+"Chance of Compromise: "+CivColor.LightGreen+compromiseChance;
 				
@@ -161,9 +161,7 @@ public class Spy extends UnitMaterial {
 	public void onPlayerDeath(EntityDeathEvent event, ItemStack stack) {
 		Player player = (Player)event.getEntity();
 		Resident resident = CivGlobal.getResident(player);
-		if (resident == null || !resident.hasTown()) {
-			return;
-		}
+		if (resident == null || !resident.hasTown()) return;
 		
 		ArrayList<String> bookout = MissionLogger.getMissionLogs(resident.getTown());
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);

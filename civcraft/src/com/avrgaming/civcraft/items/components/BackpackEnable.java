@@ -1,7 +1,5 @@
 package com.avrgaming.civcraft.items.components;
 
-import java.io.IOException;
-
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ItemSpawnEvent;
@@ -26,11 +24,8 @@ public class BackpackEnable extends ItemComponent {
 		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			event.setUseItemInHand(Result.DENY);
 			return;
-		} try {
-			Backpack.spawnGuiBook(event.getPlayer());
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		Backpack.spawnGuiBook(event.getPlayer(), true);
 	}
 	
 	@Override

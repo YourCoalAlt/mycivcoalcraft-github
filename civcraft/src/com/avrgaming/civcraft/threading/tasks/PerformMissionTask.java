@@ -18,23 +18,23 @@
  */
 package com.avrgaming.civcraft.threading.tasks;
 
+import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.config.ConfigMission;
-import com.avrgaming.civcraft.items.units.MissionBook;
+import com.avrgaming.civcraft.items.units.SpyMissions;
 
 public class PerformMissionTask implements Runnable {
+	
 	ConfigMission mission;
-	String playerName;
+	Player p;
 	
-	public PerformMissionTask (ConfigMission mission, String playerName) {
+	public PerformMissionTask (ConfigMission mission, Player p) {
 		this.mission = mission;
-		this.playerName = playerName;
+		this.p = p;
 	}
-	
 	
 	@Override
 	public void run() {
-		MissionBook.performMission(mission, playerName);
+		SpyMissions.performMission(mission, p);
 	}
-
 }

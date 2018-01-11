@@ -1025,13 +1025,11 @@ public class Civilization extends SQLObject {
 	
 	public double getBeakers() {
 		double total = 0;
-		
 		for (Town town : this.getTowns()) {
 			total += town.getBeakers().total;
 		}
 		
 		total += baseBeakers;
-		
 		return total;
 	}
 

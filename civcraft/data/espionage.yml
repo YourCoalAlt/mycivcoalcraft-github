@@ -56,18 +56,34 @@ espionage:
 
     # Number of mins a resident must be online before
     # being able to use a spy unit.
-    spy_online_time: 10
+    spy_online_time: 5
 
 missions:
+    - id: 'spy_investigate_civ'
+      itemId: 380
+      itemData: 0
+      position: 9
+      name: 'Investigate Civ'
+      description: 
+          - 'Provides a report on the target civ.'
+          - 'Must be at civilization capitol town.'
+      cost: 30000
+      range: 256.0
+      cooldown: 2.0
+      fail_chance: 0.1
+      compromise_chance: 0.01
+      intel: 0
+      length: 60
+#
     - id: 'spy_subvert_government'
       itemId: 49
       itemData: 0
-      position: 9
+      position: 10
       name: 'Subvert Government'
       description: 
           - 'Plunges the target civ into Anarchy.'
           - 'Emerges them in a random government.'
-          - 'Must be at civilization capital town.'
+          - 'Must be at civilization capitol town.'
       cost: 300000
       range: 100.0
       cooldown: 2.0
@@ -79,7 +95,7 @@ missions:
     - id: 'spy_ravage_technology'
       itemId: 377
       itemData: 0
-      position: 10
+      position: 11
       name: 'Ravage Technology'
       description: 
           - 'Remove tech being researched in target civ.'
@@ -104,7 +120,7 @@ missions:
       cost: 7500
       range: 512.0
       cooldown: 2.0
-      fail_chance: 0.1
+      fail_chance: 0.05
       compromise_chance: 0.01
       intel: 0
       length: 30
@@ -115,7 +131,7 @@ missions:
       position: 19
       name: 'Steal Treasury'
       description: 
-          - 'Steals 20% of the target towns treasury.'
+          - 'Steals 25% of the target towns treasury.'
       cost: 25000
       range: 50.0
       cooldown: 2.0

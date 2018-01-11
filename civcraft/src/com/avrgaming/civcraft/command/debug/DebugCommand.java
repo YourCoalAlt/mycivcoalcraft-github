@@ -173,7 +173,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("biomehere", "- shows you biome info where you're standing.");
 		commands.put("scout", "[civ] - enables debugging for scout towers in this civ.");
 		commands.put("showinv", "shows you an inventory");
-		commands.put("showcraftinv", "shows you crafting inventory");
 		commands.put("setspecial", "sets special stuff");
 		commands.put("getspecial", "gets the special stuff");
 		commands.put("setcivnbt", "[key] [value] - adds this key.");
@@ -715,13 +714,8 @@ public class DebugCommand extends CommandBase {
 	}
 	
 	public void showinv_cmd() throws CivException, IOException {
-		Backpack.spawnGuiBook(getPlayer());
+		Backpack.spawnGuiBook(getPlayer(), true);
 	}
-	
-	public void showcraftinv_cmd() throws CivException {
-		Backpack.showCraftingHelp(getPlayer());
-	}
-	
 	
 	public void scout_cmd() throws CivException {
 		Civilization civ = getNamedCiv(1);

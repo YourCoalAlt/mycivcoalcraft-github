@@ -1,12 +1,12 @@
 package com.avrgaming.civcraft.loregui;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class BuildStructureList implements GuiAction {
 
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
+	public void performAction(Player player, ItemStack stack) {
 //		Player player = (Player)event.getWhoClicked();
 //		Resident resident = CivGlobal.getResident(player);
 //		Inventory guiInventory = Bukkit.getServer().createInventory(player, LoreGuiItem.MAX_INV_SIZE, "Pick Structure To Build");

@@ -3,7 +3,6 @@ package com.avrgaming.civcraft.loregui;
 import java.io.IOException;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -20,8 +19,7 @@ import com.avrgaming.global.perks.components.CustomTemplate;
 public class BuildWithTemplate implements GuiAction {
 
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player player = (Player)event.getWhoClicked();
+	public void performAction(Player player, ItemStack stack) {
 		Resident resident = CivGlobal.getResident(player);
 			
 		String perk_id = LoreGuiItem.getActionData(stack, "perk");

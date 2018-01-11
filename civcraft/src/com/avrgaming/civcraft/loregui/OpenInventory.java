@@ -1,7 +1,6 @@
 package com.avrgaming.civcraft.loregui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,15 +10,16 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
+import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.threading.TaskMaster;
+import com.avrgaming.civcraft.util.CivColor;
 
 public class OpenInventory implements GuiAction {
 
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player player = (Player)event.getWhoClicked();
-		player.closeInventory();
+	public void performAction(Player p, ItemStack stack) {
+		p.closeInventory();
 		
 		class SyncTaskDelayed implements Runnable {
 			String playerName;
@@ -41,6 +41,8 @@ public class OpenInventory implements GuiAction {
 				}
 				
 				switch (LoreGuiItem.getActionData(stack, "invType")) {
+				case "cancel_confirmation":
+					CivMessage.send(player, CivColor.LightGray+"Cancelled.");
 				case "showTutorialInventory":
 					Backpack.showTutorialInventory(player);
 					break;
@@ -69,7 +71,7 @@ public class OpenInventory implements GuiAction {
 					if (inv != null) {
 						player.openInventory(inv);
 					} else {
-						CivLog.error("Couldn't find GUI inventory:"+invName);
+						CivLog.error("Couldn't find GUI inventory: "+invName);
 					}
 					break;
 				default:
@@ -78,7 +80,7 @@ public class OpenInventory implements GuiAction {
 			}
 		}
 		
-		TaskMaster.syncTask(new SyncTaskDelayed(player.getName(), stack));		
+		TaskMaster.syncTask(new SyncTaskDelayed(p.getName(), stack));		
 	}
 
 }

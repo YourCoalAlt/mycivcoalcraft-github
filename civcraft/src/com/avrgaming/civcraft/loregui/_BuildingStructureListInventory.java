@@ -3,7 +3,6 @@ package com.avrgaming.civcraft.loregui;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,8 +23,7 @@ public class _BuildingStructureListInventory implements GuiAction {
 	}
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player p = (Player)event.getWhoClicked();
+	public void performAction(Player p, ItemStack stack) {
 		guiInventory = Bukkit.getServer().createInventory(p,9*6, "Global Structure Info");
 		
 		for (int i = 0; i < 9*6; i++) {

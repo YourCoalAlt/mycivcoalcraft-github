@@ -1,9 +1,8 @@
 package com.avrgaming.civcraft.loregui;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-
 public interface GuiAction {
-	public void performAction(InventoryClickEvent event, ItemStack stack);
+	public void performAction(Player p, ItemStack stack);
 }

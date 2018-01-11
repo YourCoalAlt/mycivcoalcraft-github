@@ -138,7 +138,7 @@ public class PlayerProximityComponent extends Component {
 				continue;
 			}
 			
-			if (pc.getCoord().distanceSquared(this.center) < radiusSquared) {
+			if (pc.getCoord().distanceSquared(this.center) <= radiusSquared) {
 				newSet.add(pc);
 			}
 		}

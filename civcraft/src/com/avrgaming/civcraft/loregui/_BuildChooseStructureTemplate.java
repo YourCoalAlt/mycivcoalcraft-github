@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,8 +24,7 @@ import com.avrgaming.global.perks.Perk;
 public class _BuildChooseStructureTemplate implements GuiAction {
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player player = (Player)event.getWhoClicked();
+	public void performAction(Player player, ItemStack stack) {
 		Resident resident = CivGlobal.getResident(player);
 		ConfigBuildableInfo sinfo = CivSettings.structures.get(LoreGuiItem.getActionData(stack, "info"));
 		Structure struct;

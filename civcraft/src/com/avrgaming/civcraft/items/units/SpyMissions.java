@@ -19,13 +19,13 @@
 package com.avrgaming.civcraft.items.units;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -36,6 +36,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGovernment;
 import com.avrgaming.civcraft.config.ConfigMission;
+import com.avrgaming.civcraft.config.ConfigTech;
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.exception.CivException;
@@ -51,7 +52,9 @@ import com.avrgaming.civcraft.object.MissionLogger;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
+import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.structure.Buildable;
+import com.avrgaming.civcraft.structure.Capitol;
 import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Structure;
@@ -64,9 +67,9 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
 
-public class MissionBook extends UnitItemMaterial {
+public class SpyMissions extends UnitItemMaterial {
 	
-	public MissionBook(String id, int minecraftId, short damage) {
+	public SpyMissions(String id, int minecraftId, short damage) {
 		super(id, minecraftId, damage);
 	}
 	
@@ -182,27 +185,14 @@ public class MissionBook extends UnitItemMaterial {
 		}
 	}
 	
-	public static void performMission(ConfigMission mission, String playerName) {
-		Player player;
+	public static void performMission(ConfigMission mission, Player player) {
 		try {
-			player = CivGlobal.getPlayer(playerName);
-		} catch (CivException e1) {
-			return;
-		}
-		
-		try {
-			Resident resident = CivGlobal.getResident(playerName);
+			Resident resident = CivGlobal.getResident(player);
 			if (!resident.getTreasury().hasEnough(mission.cost)) {
 				throw new CivException("You require "+mission.cost+" coins to perform this mission.");
 			}
 			
 			switch (mission.id) {
-			case "spy_subvert_government":
-				performSubvertGovernment(player, mission);
-				break;
-			case "spy_ravage_technology":
-				performRavageTechnology(player, mission);
-				break;
 			case "spy_investigate_town":
 				performInvestigateTown(player, mission);
 				break;
@@ -221,8 +211,18 @@ public class MissionBook extends UnitItemMaterial {
 			case "spy_sabotage":
 				performSabotage(player, mission);
 				break;
+			case "spy_investigate_civ":
+				performInvestigateCiv(player, mission);
+				break;
+			case "spy_subvert_government":
+				performSubvertGovernment(player, mission);
+				break;
+			case "spy_ravage_technology":
+				performRavageTechnology(player, mission);
+				break;
 			}
 		} catch (CivException e) {
+			e.printStackTrace();
 			CivMessage.sendError(player, e.getMessage());
 		}
 	}
@@ -231,8 +231,8 @@ public class MissionBook extends UnitItemMaterial {
 		return processMissionResult(player, target, mission, 1.0, 1.0);
 	}
 	private static boolean processMissionResult(Player player, Town target, ConfigMission mission, double failModifier, double compromiseModifier) {
-		double failChance = (int)((MissionBook.getMissionFailChance(mission, target)*failModifier)*100);
-		double compChance = (int)((MissionBook.getMissionCompromiseChance(mission, target)*compromiseModifier)*100);
+		double failChance = (int)((SpyMissions.getMissionFailChance(mission, target)*failModifier)*100);
+		double compChance = (int)((SpyMissions.getMissionCompromiseChance(mission, target)*compromiseModifier)*100);
 		
 		Resident resident = CivGlobal.getResident(player);
 		if (resident == null || !resident.hasTown()) {
@@ -391,205 +391,9 @@ public class MissionBook extends UnitItemMaterial {
 		}
 	}
 	
-	private static void performPosionGranary(Player player, ConfigMission mission) throws CivException {
-		Resident resident = CivGlobal.getResident(player);
-		if (resident == null || !resident.hasTown()) {
-			throw new CivException("Only residents of towns can perform spy missions.");
-		}
-		
-		// Must be within enemy town borders.
-		ChunkCoord coord = new ChunkCoord(player.getLocation());
-		TownChunk tc = CivGlobal.getTownChunk(coord);
-		
-		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
-			throw new CivException("Must be in another civilization's town's borders.");
-		}
-		
-		// Check that the player is within range of the town hall.
-		Structure granary = tc.getTown().getNearestStrucutre(player.getLocation());
-		if (!(granary instanceof Granary)) {
-			throw new CivException("The closest structure to you must be a granary.");
-		}
-		
-		double distance = player.getLocation().distance(granary.getCorner().getLocation());
-		if (distance > mission.range) {
-			throw new CivException("Too far away from the granary to poison it.");
-		}
-		
-		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("posiongranary:"+tc.getTown().getName());
-		if (entries != null && entries.size() != 0) {
-			throw new CivException("Cannot poison granary, already posioned.");
-		}
-		
-		double failMod = 1.0;
-		if (resident.getTown().getBuffManager().hasBuff("buff_espionage")) {
-			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_espionage");
-			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Espionage' will come in handy here.");
-		}
-		
-		if (processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
-			int min;
-			int max;
-			try {
-				min = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.poison_granary_min_ticks");
-				max = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.poison_granary_max_ticks");
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				throw new CivException("Invalid configuration error.");
-			}
-			
-			Random rand = new Random();
-			int posion_ticks = rand.nextInt((max -min)) + min;
-			String value = ""+posion_ticks;
-			
-			CivGlobal.getSessionDB().add("posiongranary:"+tc.getTown().getName(), value, tc.getTown().getId(), tc.getTown().getId(), granary.getId());
-			
-			try {
-				double famine_chance = CivSettings.getDouble(CivSettings.espionageConfig, "espionage.poison_granary_famine_chance");
-				
-				if (rand.nextInt(100) < (int)(famine_chance*100)) {
-					
-					for (Structure struct : tc.getTown().getStructures()) {
-						if (struct instanceof Cottage) {
-							((Cottage)struct).delevel();
-						}
-					}
-					
-					CivMessage.global(CivColor.Yellow+"DISASTER!"+CivColor.White+" The cottages in "+tc.getTown().getName()+
-							" have suffered a famine from poison grain! Each cottage loses 1 level.");
-				}
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				throw new CivException("Invalid configuration.");
-			}
-			
-			CivMessage.sendSuccess(player, "Poisoned the granary for "+posion_ticks+" hours!");
-		}
-	}
-	
-	private static void performStealTreasury(Player player, ConfigMission mission) throws CivException {
-		
-		Resident resident = CivGlobal.getResident(player);
-		if (resident == null || !resident.hasTown()) {
-			throw new CivException("Only residents of towns can perform spy missions.");
-		}
-		
-		// Must be within enemy town borders.
-		ChunkCoord coord = new ChunkCoord(player.getLocation());
-		TownChunk tc = CivGlobal.getTownChunk(coord);
-		
-		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
-			throw new CivException("Must be in another civilization's town's borders.");
-		}
-		
-		// Check that the player is within range of the town hall.
-		TownHall townhall = tc.getTown().getTownHall();
-		if (townhall == null) {
-			throw new CivException("This town doesnt have a town hall... that sucks.");
-		}
-		
-		double distance = player.getLocation().distance(townhall.getCorner().getLocation());
-		if (distance > mission.range) {
-			throw new CivException("Too far away from town hall to steal treasury.");
-		}
-		
-		double failMod = 1.0;
-		if (resident.getTown().getBuffManager().hasBuff("buff_dirty_money")) {
-			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_dirty_money");
-			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Dirty Money' will come in handy here.");
-		}
-		
-		if(processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
-			int amount = (int)(tc.getTown().getTreasury().getBalance()*0.2);
-			if (amount > 0) {
-				tc.getTown().getTreasury().withdraw(amount);
-				resident.getTown().getTreasury().deposit(amount);
-			}
-			
-			CivMessage.sendSuccess(player, "Success! Stole "+amount+" coins from "+tc.getTown().getName());
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-	private static void performInvestigateTown(Player player, ConfigMission mission) throws CivException {
-		
-		Resident resident = CivGlobal.getResident(player);
-		if (resident == null || !resident.hasTown()) {
-			throw new CivException("Only residents of towns can perform spy missions.");
-		}
-		
-		// Must be within enemy town borders.
-		ChunkCoord coord = new ChunkCoord(player.getLocation());
-		TownChunk tc = CivGlobal.getTownChunk(coord);
-		
-		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
-			throw new CivException("Must be in another civilization's town's borders.");
-		}
-		
-		if(processMissionResult(player, tc.getTown(), mission)) {
-			Town t = tc.getTown();
-			ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-			BookMeta meta = (BookMeta) book.getItemMeta();
-			ArrayList<String> lore = new ArrayList<String>();
-			lore.add("Mission Report");
-			
-			meta.setAuthor("Mission Reports");
-			meta.setTitle("Investigate Town");
-			
-		//	ArrayList<String> out = new ArrayList<String>();
-			String out = "";
-			
-			out += ChatColor.UNDERLINE+"Town:"+t.getName()+"\n"+ChatColor.RESET;
-			out += ChatColor.UNDERLINE+"Civ:"+t.getCiv().getName()+"\n\n"+ChatColor.RESET;
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("M/dd h:mm:ss a z");
-			out += "Time: "+sdf.format(new Date())+"\n";
-			out += ("Treasury: "+t.getTreasury().getBalance()+"\n");
-			out += ("Hammers: "+t.getHammers().total+"\n");
-			out += ("Culture: "+t.getCulture().total+"\n");
-			out += ("Growth: "+t.getGrowth().total+"\n");
-			out += ("Beakers(civ): "+t.getBeakers().total+"\n");
-			if (tc.getTown().getCiv().getResearchTech() != null) {
-				out += ("Researching: "+t.getCiv().getResearchTech().name+"\n");
-			} else {
-				out += ("Researching:Nothing"+"\n");
-			}
-			
-			BookUtil.paginate(meta, out);
-			
-			out = ChatColor.UNDERLINE+"Upkeep Info\n\n"+ChatColor.RESET;
-			try {
-				out += "From Spread:"+t.getSpreadUpkeep()+"\n";
-				out += "From Structures:"+t.getStructureUpkeep()+"\n";
-				out += "Total:"+t.getTotalUpkeep();
-				BookUtil.paginate(meta, out);
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-				throw new CivException("Internal configuration exception.");
-			}
-			
-			
-			meta.setLore(lore);
-			book.setItemMeta(meta);
-			
-			HashMap<Integer, ItemStack> leftovers = player.getInventory().addItem(book);
-			for (ItemStack stack : leftovers.values()) {
-				player.getWorld().dropItem(player.getLocation(), stack);
-			}
-			
-			player.updateInventory();
-			
-			CivMessage.sendSuccess(player, "Mission Accomplished");
-		}
-	}
-	
 	private static void performInciteRiots(Player player, ConfigMission mission) throws CivException {
 		throw new CivException("Not implemented.");
 	}
-	
-	
-	
-	
 	
 	// Civilization Missions
 	
@@ -675,6 +479,324 @@ public class MissionBook extends UnitItemMaterial {
 					" and has lost its progress!");
 			
 			CivMessage.sendSuccess(player, "Mission Accomplished.");
+		}
+	}
+	
+	
+	// XXX Cleaned missions
+	
+	// Town Missions
+	
+	// TODO finish editing investigate town
+	private static void performInvestigateTown(Player player, ConfigMission mission) throws CivException {
+		Resident resident = CivGlobal.getResident(player);
+		if (resident == null || !resident.hasTown()) {
+			throw new CivException("Only residents of towns can perform spy missions.");
+		}
+		
+		// Must be within enemy town borders.
+		ChunkCoord coord = new ChunkCoord(player.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
+		
+		// Check if the town actully has a town hall
+		TownHall townhall = tc.getTown().getTownHall();
+		if (townhall == null) {
+			throw new CivException("The Town Hall is not fuctioning... that sucks. Contact an admin.");
+		}
+		
+		// Check to see if structure is in radius
+		if (player.getLocation().distance(townhall.getCenterLoc()) > mission.range) {
+			throw new CivException("Too far away from Town Hall to steal treasury.");
+		}
+		
+		if(processMissionResult(player, tc.getTown(), mission)) {
+			Town t = tc.getTown();
+			ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+			BookMeta meta = (BookMeta) book.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+			
+			meta.setAuthor("Mission Reports");
+			meta.setTitle("Investigate Town");
+			lore.add("Mission Report");
+			lore.add("Town: "+t.getName());
+			
+			String out = "";
+			
+			out += CivColor.UNDERLINE+"Town: "+t.getName()+"\n"+CivColor.RESET;
+			out += CivColor.UNDERLINE+"Civ: "+t.getCiv().getName()+"\n\n"+CivColor.RESET;
+			
+			DecimalFormat df = new DecimalFormat("0.000");
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy HH:mm:ss");
+			out += "Time: "+sdf.format(new Date())+"\n";
+			out += ("Treasury: "+t.getTreasury().getBalance()+"\n");
+			out += ("Hammers: "+df.format(t.getHammers().total)+"\n");
+			out += ("Beakers: "+df.format(t.getBeakers().total)+"\n");
+			out += ("Growth: "+df.format(t.getGrowth().total)+"\n");
+			out += ("Culture: "+df.format(t.getCulture().total)+"\n");
+			BookUtil.paginate(meta, out);
+			
+			out = CivColor.UNDERLINE+"Rates Info\n\n"+CivColor.RESET;
+			out += "Trade Income: "+TradeGood.getTownTradePayment(t)+"\n";
+			out += "Cottage Income: N/A [Not Coded]\n";
+//			out += "Total: "+t.getTotalUpkeep();
+			BookUtil.paginate(meta, out);
+			
+			// Have it also list the coords of them, in case of no dynmap in the server
+//			out = CivColor.UNDERLINE+"Strategic Info\n\n"+CivColor.RESET;
+//			out += "Scout Towers: "+(code)+"\n";
+//			out += "Arrow Towers: "+(code)+"\n";
+//			out += "Cannon Towers: "+(code)+"\n";
+//			out += "Arcane Towers: "+(code)+"\n";
+//			out += "Levitation Towers: "+(code)+"\n";
+//			BookUtil.paginate(meta, out);
+			
+			out = CivColor.UNDERLINE+"Upkeep Info\n\n"+CivColor.RESET;
+//			try {
+				out += "Base: "+t.getBaseUpkeep()+"\n";
+//				out += "From Spread:"+t.getSpreadUpkeep()+"\n"; // Currently unused? See how it works, or else remove it.
+				out += "Structures: "+t.getStructureUpkeep()+"\n";
+				out += "Total: "+t.getTotalUpkeep()+"\n";
+				BookUtil.paginate(meta, out);
+//			} catch (InvalidConfiguration e) {
+//				e.printStackTrace();
+//				throw new CivException("Internal configuration exception [SpyMissions (SpreadUpkeep)].");
+//			}
+			
+			meta.setLore(lore);
+			book.setItemMeta(meta);
+			
+			HashMap<Integer, ItemStack> leftovers = player.getInventory().addItem(book);
+			for (ItemStack stack : leftovers.values()) {
+				player.getWorld().dropItem(player.getLocation(), stack);
+			}
+			CivMessage.sendSuccess(player, "Mission Accomplished! Dropping book...");
+			CivMessage.sendCiv(tc.getTown().getCiv(), "Spies are in the area! They just investigated town "+tc.getTown().getName()+"!");
+		}
+	}
+	
+	private static void performStealTreasury(Player player, ConfigMission mission) throws CivException {
+		Resident resident = CivGlobal.getResident(player);
+		if (resident == null || !resident.hasTown()) {
+			throw new CivException("Only residents of towns can perform spy missions.");
+		}
+		
+		// Must be within enemy town borders.
+		ChunkCoord coord = new ChunkCoord(player.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
+		
+		// Check if the town actully has a town hall
+		TownHall townhall = tc.getTown().getTownHall();
+		if (townhall == null) {
+			throw new CivException("The Town Hall is not fuctioning... that sucks. Contact an admin.");
+		}
+		
+		// Check to see if structure is in radius
+		if (player.getLocation().distance(townhall.getCenterLoc()) > mission.range) {
+			throw new CivException("Too far away from Town Hall to steal treasury.");
+		}
+		
+		double failMod = 1.0;
+		if (resident.getTown().getBuffManager().hasBuff("buff_dirty_money")) {
+			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_dirty_money");
+			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Dirty Money' will come in handy here.");
+		}
+		
+		if(processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
+			int amount = (int)(tc.getTown().getTreasury().getBalance()*0.25);
+			if (amount > 0) {
+				tc.getTown().getTreasury().withdraw(amount);
+				resident.getTown().getTreasury().deposit(amount);
+			}
+			
+			CivMessage.sendSuccess(player, "Success! Stole "+amount+" coins from "+tc.getTown().getName()+".");
+			CivMessage.sendCiv(tc.getTown().getCiv(), "Spies are in the area! They just stole "+amount+" coins from "+tc.getTown().getName()+"!");
+		}
+	}
+	
+	private static void performPosionGranary(Player player, ConfigMission mission) throws CivException {
+		Resident resident = CivGlobal.getResident(player);
+		if (resident == null || !resident.hasTown()) {
+			throw new CivException("Only residents of towns can perform spy missions.");
+		}
+		
+		// Must be within enemy town borders.
+		ChunkCoord coord = new ChunkCoord(player.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
+		
+		// See if granary is already poisoned
+		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("posiongranary:"+tc.getTown().getName());
+		if (entries != null && entries.size() != 0) {
+			throw new CivException("Cannot poison granary, already posioned.");
+		}
+		
+		// Check if the town actully has a town hall
+		Granary granary = (Granary) tc.getTown().getStructureByType("s_granary");
+		if (granary == null) {
+			throw new CivException("This Town doesnt have a Town Hall... that sucks. Contact an admin.");
+		}
+		
+		// Check to see if structure is in radius
+		if (player.getLocation().distance(granary.getCenterLoc()) > mission.range) {
+			throw new CivException("Too far away from Town Hall to steal treasury.");
+		}
+		
+/*		// Check to see if structure is in radius
+		Granary granary = null;
+		BlockCoord bcoord = new BlockCoord(player.getLocation());
+		for (Structure struc : tc.getTown().getStructures()) {
+			if (struc instanceof Granary) {
+				if (bcoord.distanceSquared(struc.getCenterLocation()) <= Math.pow(mission.range, 2)) {
+					// We found granary
+					granary = (Granary) struc;
+					break;
+				} else {
+					// Too far from the granary
+					throw new CivException("Too far away from the granary to poison it.");
+				}
+			}
+		}
+		
+		if (granary == null) {
+			throw new CivException("Must be a Granary within "+mission.range+" blocks from you.");
+		}*/
+		
+		double failMod = 1.0;
+		if (resident.getTown().getBuffManager().hasBuff("buff_espionage")) {
+			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_espionage");
+			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Espionage' will come in handy here.");
+		}
+		
+		if (processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
+			int min;
+			int max;
+			try {
+				min = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.poison_granary_min_ticks");
+				max = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.poison_granary_max_ticks");
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				throw new CivException("Invalid configuration error [SpyMissions].");
+			}
+			
+			Random rand = new Random();
+			int posion_ticks = rand.nextInt((max -min)) + min;
+			String value = ""+posion_ticks;
+			CivGlobal.getSessionDB().add("posiongranary:"+tc.getTown().getName(), value, tc.getTown().getId(), tc.getTown().getId(), granary.getId());
+			
+			try {
+				double famine_chance = CivSettings.getDouble(CivSettings.espionageConfig, "espionage.poison_granary_famine_chance");
+				if (rand.nextInt(100) < (int)(famine_chance*100)) {
+					for (Structure struct : tc.getTown().getStructures()) {
+						if (struct instanceof Cottage) {
+							((Cottage)struct).delevel();
+						}
+					}
+					
+					CivMessage.global(CivColor.Yellow+"DISASTER!"+CivColor.White+" The cottages in "+tc.getTown().getName()+
+							" have suffered a famine from a poison granary mission! Each cottage has lost 1 level.");
+				}
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				throw new CivException("Invalid configuration.");
+			}
+			CivMessage.sendSuccess(player, "Poisoned the granary for "+posion_ticks+" hours.");
+			CivMessage.sendCiv(tc.getTown().getCiv(), "Spies are in the area! They just poisoned the granaries in "+tc.getTown().getName()+"!");
+		}
+	}
+	
+	// Civilization missions
+	
+	// TODO finish editing investigate town
+	private static void performInvestigateCiv(Player player, ConfigMission mission) throws CivException {
+		Resident resident = CivGlobal.getResident(player);
+		if (resident == null || !resident.hasTown()) {
+			throw new CivException("Only residents of towns can perform spy missions.");
+		}
+		
+		// Must be within enemy town borders.
+		ChunkCoord coord = new ChunkCoord(player.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null || tc.getTown().getCiv() == resident.getTown().getCiv()) {
+			throw new CivException("Must be in another civilization's town's borders.");
+		}
+		
+		// Must be at capitol town
+		if (!tc.getTown().isCapitol()) {
+			throw new CivException("Must be in the borders of the capitol town.");
+		}
+		
+		// Check if the town actully has a town hall
+		Capitol capitol = tc.getTown().getCiv().getCapitolStructure();
+		if (capitol == null) {
+			throw new CivException("The Capitol is not fuctioning... that sucks. Contact an admin.");
+		}
+		
+		// Check to see if structure is in radius
+		if (player.getLocation().distance(capitol.getCenterLoc()) > mission.range) {
+			throw new CivException("Too far away from the Capitol to steal treasury.");
+		}
+		
+		if(processMissionResult(player, tc.getTown(), mission)) {
+			Town t = capitol.getTown();
+			Civilization civ = capitol.getCiv();
+			ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+			BookMeta meta = (BookMeta) book.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+			
+			meta.setAuthor("Mission Reports");
+			meta.setTitle("Investigate Civ");
+			lore.add("Mission Report");
+			lore.add("Town: "+civ.getName());
+			
+			String out = "";
+			
+			out += CivColor.UNDERLINE+"Capitol: "+t.getName()+"\n"+CivColor.RESET;
+			out += CivColor.UNDERLINE+"Civ: "+civ.getName()+"\n\n"+CivColor.RESET;
+			
+			DecimalFormat df = new DecimalFormat("0.000");
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy HH:mm:ss");
+			out += "Time: "+sdf.format(new Date())+"\n";
+			out += ("Treasury: "+civ.getTreasury().getBalance()+"\n");
+			out += "Government: "+civ.getGovernment().displayName+"\n";
+			out += "Income Tax: "+civ.getIncomeTaxRateString()+"\n";
+			out += "Science Percent: "+civ.getSciencePercentage()+"%\n";
+			out += ("Collective Beakers: "+df.format(civ.getBeakers())+"\n");
+			if (civ.getResearchTech() != null) {
+				out += ("Researching: "+civ.getResearchTech().name+"\n");
+				out += ("   Progress: "+civ.getResearchProgress()+"\n");
+			} else {
+				out += ("Researching: Nothing"+"\n");
+			}
+			BookUtil.paginate(meta, out);
+			
+			out = CivColor.UNDERLINE+"Researched Techs\n\n"+CivColor.RESET;
+			String techs = "";
+			for (ConfigTech ct : civ.getTechs()) {
+				techs += ct.name+",  ";
+			}
+			out += techs+"\n";
+			BookUtil.paginate(meta, out);
+			
+//			out = CivColor.UNDERLINE+"IDK Info\n\n"+CivColor.RESET;
+//			BookUtil.paginate(meta, out);
+			
+			meta.setLore(lore);
+			book.setItemMeta(meta);
+			
+			HashMap<Integer, ItemStack> leftovers = player.getInventory().addItem(book);
+			for (ItemStack stack : leftovers.values()) {
+				player.getWorld().dropItem(player.getLocation(), stack);
+			}
+			CivMessage.sendSuccess(player, "Mission Accomplished! Dropping book...");
+			CivMessage.sendCiv(tc.getTown().getCiv(), "Spies are in the area! They just investigated town "+tc.getTown().getName()+"!");
 		}
 	}
 }

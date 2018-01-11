@@ -170,14 +170,19 @@ public abstract class LoreEnhancement {
 		return damage;
 	}
 	
-	// TODO Update this
 	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
 		AttributeUtil attrs = new AttributeUtil(stack);
-		double percent = Double.valueOf(attrs.getCivCraftProperty("death_percent_value"));
+		double percent;
+		if (attrs.getCivCraftProperty("death_percent_value") != null) {
+			percent = Double.valueOf(attrs.getCivCraftProperty("death_percent_value"));
+		} else {
+			percent = 0.1;
+		}
+		
 		if (doDamage) {
-			// if person died within last 3 seconds, do not take damage to prevent bug.
+			// if person died within last 4 seconds, do not take damage to prevent bug.
 			if (attrs.getCivCraftProperty("last_death") != null) {
-				if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 3*1000) {
+				if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
 					return stack;
 				}
 			} else {

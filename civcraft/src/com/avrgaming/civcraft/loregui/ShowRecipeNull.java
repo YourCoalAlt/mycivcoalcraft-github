@@ -3,7 +3,6 @@ package com.avrgaming.civcraft.loregui;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -99,12 +98,10 @@ public class ShowRecipeNull implements GuiAction {
 	}
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player player = (Player)event.getWhoClicked();
-		
+	public void performAction(Player player, ItemStack stack) {
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 		if (craftMat == null) {
-			/* Do nothing for now. */
+			// Do nothing for now.
 			return;
 		}
 		

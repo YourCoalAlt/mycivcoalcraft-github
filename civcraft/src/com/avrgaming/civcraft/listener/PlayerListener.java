@@ -374,8 +374,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onArmorWear(ArmorEquipEvent event) {
-		CivMessage.global("triggered");
-		
+
 		class SyncTask implements Runnable {
 			Player p;
 				

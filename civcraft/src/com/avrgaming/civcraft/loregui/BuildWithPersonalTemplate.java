@@ -2,7 +2,6 @@ package com.avrgaming.civcraft.loregui;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -21,8 +20,7 @@ import com.avrgaming.global.perks.components.CustomPersonalTemplate;
 public class BuildWithPersonalTemplate implements GuiAction {
 
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player player = (Player)event.getWhoClicked();
+	public void performAction(Player player, ItemStack stack) {
 		Resident resident = CivGlobal.getResident(player);
 		
 		ConfigBuildableInfo info = resident.pendingBuildableInfo;

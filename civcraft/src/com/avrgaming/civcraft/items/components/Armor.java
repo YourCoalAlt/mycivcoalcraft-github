@@ -118,7 +118,7 @@ public class Armor extends ItemComponent {
 		}
 		
 		double damage = event.getDamage() - def;
-		if (damage < 0.75) damage = 0.75;
+		if (damage < 0.5) damage = 0.5;
 		event.setDamage(damage);
 	}
 }

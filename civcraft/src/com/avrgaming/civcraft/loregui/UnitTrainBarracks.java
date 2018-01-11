@@ -1,7 +1,6 @@
 package com.avrgaming.civcraft.loregui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,8 +21,7 @@ public class UnitTrainBarracks implements GuiAction {
 	static Inventory guiInventory;
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player p = (Player)event.getWhoClicked();
+	public void performAction(Player p, ItemStack stack) {
 		Resident res = CivGlobal.getResident(p);
 		String gid = LoreGuiItem.getActionData(stack, "unitid");
 		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());

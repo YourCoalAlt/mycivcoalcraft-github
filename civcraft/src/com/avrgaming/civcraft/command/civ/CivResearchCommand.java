@@ -21,11 +21,15 @@ package com.avrgaming.civcraft.command.civ;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTech;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidNameException;
+import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
@@ -33,6 +37,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.ItemManager;
 
 public class CivResearchCommand extends CommandBase {
 
@@ -93,10 +98,9 @@ public class CivResearchCommand extends CommandBase {
 
 	public void on_cmd() throws CivException, SQLException, InvalidNameException {
 		Civilization civ = getSenderCiv();
-		
-		if (args.length < 2) {
-			throw new CivException("Enter the name of the technology you want to research.");
-		}
+//		if (args.length < 2) {
+//			throw new CivException("Enter the name of the technology you want to research.");
+//		}
 		
 		Town capitol = CivGlobal.getTown(civ.getCapitolName());
 		if (capitol == null) {
@@ -112,14 +116,18 @@ public class CivResearchCommand extends CommandBase {
 			throw new CivException("Town hall must be completed before you can begin research.");
 		}
 		
-		String techname = combineArgs(stripArgs(args, 1));
-		ConfigTech tech = CivSettings.getTechByName(techname);
-		if (tech == null) {
-			throw new CivException("Couldn't find technology named "+techname);
-		}
+		ItemStack techMenu = LoreGuiItem.build("Research Technology", ItemManager.getId(Material.POTION), 8267, CivColor.Gold+"<Click to View>");
+		techMenu = LoreGuiItem.setAction(techMenu, "_2BuildTechnologyList");
+		LoreGuiItem.processAction("_2BuildTechnologyList", techMenu, getPlayer());
 		
-		civ.startTechnologyResearch(tech);
-		CivMessage.sendSuccess(sender, "Started researching "+tech.name);
+//		String techname = combineArgs(stripArgs(args, 1));
+//		ConfigTech tech = CivSettings.getTechByName(techname);
+//		if (tech == null) {
+//			throw new CivException("Couldn't find technology named "+techname);
+//		}
+		
+//		civ.startTechnologyResearch(tech);
+//		CivMessage.sendSuccess(sender, "Started researching "+tech.name);
 	}
 	
 	public void progress_cmd() throws CivException {

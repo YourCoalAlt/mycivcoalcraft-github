@@ -310,11 +310,16 @@ public abstract class Buildable extends SQLObject {
 			int centerX = getCorner().getX() + (getTemplateX() / 2);
 			int centerY = getCorner().getY() + (getTemplateY() / 2);
 			int centerZ = getCorner().getZ() + (getTemplateZ() / 2);
-			
 			this.centerLocation = new BlockCoord(this.getCorner().getWorldname(), centerX, centerY, centerZ);
 		}
-		
 		return this.centerLocation;
+	}
+	
+	public Location getCenterLoc() {
+		int centerX = getCorner().getX() + (getTemplateX() / 2);
+		int centerY = getCorner().getY() + (getTemplateY() / 2);
+		int centerZ = getCorner().getZ() + (getTemplateZ() / 2);
+		return new Location(Bukkit.getWorld(this.getCorner().getWorldname()), centerX, centerY, centerZ);
 	}
 	
 	public double getBlocksPerHammer() {

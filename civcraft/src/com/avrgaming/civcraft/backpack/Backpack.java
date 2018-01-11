@@ -43,7 +43,7 @@ import com.mojang.authlib.properties.Property;
 import gpl.AttributeUtil;
 
 public class Backpack {
-
+	
 	public static Inventory tutorialInventory = null;
 	public static Inventory craftingHelpInventory = null;
 	public static Inventory guiInventory = null;
@@ -413,71 +413,72 @@ public class Backpack {
 	}
 	
 	// https://bukkit.org/threads/create-your-own-custom-head-texture.424286/
-	public static ItemStack getPlayerHead(Player p) throws IOException {
-		ItemStack is = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-		SkullMeta meta = (SkullMeta) is.getItemMeta();
-		
-		byte[] encodedData = null;
-		Resident res = CivGlobal.getResident(p);
-		GameProfile gp = new GameProfile(p.getUniqueId(), p.getName());
-		if (res.textureInfo == null) {
-			String trimmedUUID = p.getUniqueId().toString().replace("-", "");
-			URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/"+trimmedUUID);
+	public static ItemStack getPlayerHead(Player p) {
+		try {
+			ItemStack is = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+			SkullMeta meta = (SkullMeta) is.getItemMeta();
 			
-			String inputLine;
-			URLConnection conn = url.openConnection();
-			// open the stream and put it into BufferedReader
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			inputLine = br.readLine();
-			br.close();
-			
-			String ua1 = ("{\"id\":\""+trimmedUUID+"\",\"name\":\""+p.getName()+"\",\"properties\":[{\"name\":\"textures\",\"value\":\""); String ua2 = ("\"}]}");
-			String newLine1 = inputLine.replace(ua1, "").replace(ua2, "");
-			String decode1 = new String(DatatypeConverter.parseBase64Binary(newLine1));
-			
-			String ub2 = ("\"}}}");
-			int tosub = 103+p.getName().length();
-			String newLine2 = decode1.substring(tosub).replace(ub2, "").replace("\"SKIN\":{\"url\":\"", "").replaceAll("}", "");
-			
-			if (decode1.contains(newLine2)) {
-				if (newLine2.length() > 0) {
-					if (newLine2.contains("\"CAPE\"")) { // TODO Figure out how to ignore capes and only get head data.
-						encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-						CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, cape interference, setting to default.");
-						CivLog.warning("Warning! Cannot get player head for Backpack, cape interference, setting to default.");
+			byte[] encodedData = null;
+			Resident res = CivGlobal.getResident(p);
+			GameProfile gp = new GameProfile(p.getUniqueId(), p.getName());
+			if (res.textureInfo == null) {
+				String trimmedUUID = p.getUniqueId().toString().replace("-", "");
+				URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/"+trimmedUUID);
+				
+				String inputLine;
+				URLConnection conn = url.openConnection();
+				// open the stream and put it into BufferedReader
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				inputLine = br.readLine();
+				br.close();
+				
+				String ua1 = ("{\"id\":\""+trimmedUUID+"\",\"name\":\""+p.getName()+"\",\"properties\":[{\"name\":\"textures\",\"value\":\""); String ua2 = ("\"}]}");
+				String newLine1 = inputLine.replace(ua1, "").replace(ua2, "");
+				String decode1 = new String(DatatypeConverter.parseBase64Binary(newLine1));
+				
+				String ub2 = ("\"}}}");
+				int tosub = 103+p.getName().length();
+				String newLine2 = decode1.substring(tosub).replace(ub2, "").replace("\"SKIN\":{\"url\":\"", "").replaceAll("}", "");
+				
+				if (decode1.contains(newLine2)) {
+					if (newLine2.length() > 0) {
+						if (newLine2.contains("\"CAPE\"")) { // TODO Figure out how to ignore capes and only get head data.
+							encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
+							CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, cape interference, setting to default.");
+							CivLog.warning("Warning! Cannot get player head for Backpack, cape interference, setting to default.");
+						} else {
+							encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\""+newLine2+"\"}}}").getBytes());
+						}
 					} else {
-						encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\""+newLine2+"\"}}}").getBytes());
+						encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
+						CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, texutre was null, setting to default.");
+						CivLog.warning("Warning! Cannot get player head for Backpack, texture was null, setting to default.");
 					}
 				} else {
 					encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-					CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, texutre was null, setting to default.");
-					CivLog.warning("Warning! Cannot get player head for Backpack, texture was null, setting to default.");
+					CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
+					CivLog.warning("Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
 				}
 			} else {
-				encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-				CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
-				CivLog.warning("Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
+				encodedData = res.textureInfo;
 			}
-		} else {
-			encodedData = res.textureInfo;
-		}
-		
-		res.textureInfo = encodedData;
-		gp.getProperties().put("textures", new Property("textures", new String(encodedData)));
-		Field profileField = null;
-		try {
-			profileField = meta.getClass().getDeclaredField("profile");
+			
+			res.textureInfo = encodedData;
+			gp.getProperties().put("textures", new Property("textures", new String(encodedData)));
+			Field profileField = meta.getClass().getDeclaredField("profile");
 			profileField.setAccessible(true);
 			profileField.set(meta, gp);
-		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
-			e1.printStackTrace();
+			
+			is.setItemMeta(meta);
+			return is;
+		} catch (IOException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		is.setItemMeta(meta);
-		return is;
+		return null;
 	}
 	
-	public static void spawnGuiBook(Player player) throws IOException {
+	public static void spawnGuiBook(Player player, boolean openGUI) {
 		guiInventory = null;
 		if (guiInventory == null) {
 			guiInventory = Bukkit.getServer().createInventory(player, 9*3, "CivCraft Information");
@@ -563,6 +564,8 @@ public class Backpack {
 			
 			LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);
 			}
-		player.openInventory(guiInventory);
+		if (openGUI) {
+			player.openInventory(guiInventory);
+		}
 	}
 }

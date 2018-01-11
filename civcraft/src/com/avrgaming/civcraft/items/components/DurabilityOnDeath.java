@@ -55,53 +55,6 @@ public class DurabilityOnDeath extends ItemComponent {
 			result.stack = newStack;
 		}
 		return result;
-		
-/*		AttributeUtil attrs = new AttributeUtil(result.stack);
-		// if person died within last 3 seconds, do not take damage to prevent bug.
-		if (attrs.getCivCraftProperty("last_death") != null) {
-			if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 3*1000) {
-				return result;
-			}
-		} else {
-			attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
-		}
-		
-		Player p = event.getEntity();
-		double percent = this.getDouble("value");
-		int maxDura = result.stack.getType().getMaxDurability();
-		int reduction = (int)(maxDura*percent);
-		int durabilityLeft = maxDura - result.stack.getDurability();
-		attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
-		if (durabilityLeft > reduction) {
-			int newDurability = (result.stack.getDurability() + reduction);
-			attrs.getStack().setDurability((short)newDurability);
-			
-			int dmgpert = (durabilityLeft*100) / maxDura;
-			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
-			
-			String saved = "";
-			for (String l : attrs.getLore()) {
-				if (!l.contains(" Lives Left")) saved += l+";";
-			}
-			
-			String newSave = "";
-			for (String s : saved.split(";")) {
-				if (s.contains(" Lives Left")) continue;
-				else newSave += s+";";
-			}
-			
-			attrs.setLore(newSave.split(";"));
-			attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
-			result.stack = attrs.getStack();
-			
-			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
-		} else {
-			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-					CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
-			result.destroyItem = true;
-		}
-		return result;*/
 	}
 
 }

@@ -20,6 +20,7 @@ package com.avrgaming.civcraft.lorestorage;
 
 import java.util.HashMap;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,7 +46,7 @@ public class LoreGuiItemListener implements Listener {
 			if (event.getCurrentItem() != null) {
 				String action = LoreGuiItem.getAction(event.getCurrentItem());
 				if (action != null) {
-					LoreGuiItem.processAction(action, event.getCurrentItem(), event);
+					LoreGuiItem.processAction(action, event.getCurrentItem(), (Player)event.getWhoClicked());
 				}
 				return;
 			}
@@ -53,7 +54,7 @@ public class LoreGuiItemListener implements Listener {
 			if (event.getCursor() != null) {
 				String action = LoreGuiItem.getAction(event.getCursor());
 				if (action != null) {
-					LoreGuiItem.processAction(action, event.getCursor(), event);
+					LoreGuiItem.processAction(action, event.getCursor(), (Player)event.getWhoClicked());
 				}
 				return;
 			}

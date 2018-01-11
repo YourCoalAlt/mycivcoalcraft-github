@@ -5,7 +5,6 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,8 +23,7 @@ public class DiplomaticMenuViewGlobal implements GuiAction {
 	static Inventory guiInventory;
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player p = (Player)event.getWhoClicked();
+	public void performAction(Player p, ItemStack stack) {
 		guiInventory = Bukkit.getServer().createInventory(p, 9*6, "Global Relations");
 		
 		for (int i = 0; i < 9*6; i++) {

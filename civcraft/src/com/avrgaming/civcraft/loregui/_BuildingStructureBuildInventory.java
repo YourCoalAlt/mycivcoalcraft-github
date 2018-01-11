@@ -24,8 +24,7 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 	static Inventory guiInventory;
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player p = (Player)event.getWhoClicked();
+	public void performAction(Player p, ItemStack stack) {
 		Resident res = CivGlobal.getResident(p);
 		Town t = res.getTown();
 		guiInventory = Bukkit.getServer().createInventory(p,9*6, "Global Structure Info");

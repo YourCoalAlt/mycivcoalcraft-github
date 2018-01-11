@@ -83,6 +83,14 @@ public class ConfigTech {
 		return Math.floor(this.cost * Math.max(rate, .01));
 	}*/
 	
+	public int getAdjustedTechCost(Civilization civ) {
+		return cost;
+	}
+	
+	public double getAdjustedScienceCost(Civilization civ) {
+		return beaker_cost;
+	}
+	
 	public static ArrayList<ConfigTech> getAvailableTechs(Civilization civ) {
 		ArrayList<ConfigTech> returnTechs = new ArrayList<ConfigTech>();
 		for (ConfigTech tech : CivSettings.techs.values()) {

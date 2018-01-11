@@ -3,7 +3,6 @@ package com.avrgaming.civcraft.loregui;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,9 +22,8 @@ public class _BuildingInventory implements GuiAction {
 	}
 	
 	@Override
-	public void performAction(InventoryClickEvent event, ItemStack stack) {
-		Player p = (Player)event.getWhoClicked();
-		guiInventory = Bukkit.getServer().createInventory(p,9*3, "Building Menu");
+	public void performAction(Player p, ItemStack stack) {
+		guiInventory = Bukkit.getServer().createInventory(p ,9*3, "Building Menu");
 		
 		for (int i = 0; i < 27; i++) {
 			ItemStack is = LoreGuiItem.build("", ItemManager.getId(Material.STAINED_GLASS_PANE), 8);

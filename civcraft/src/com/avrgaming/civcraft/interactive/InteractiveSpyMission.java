@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.config.ConfigMission;
 import com.avrgaming.civcraft.exception.CivException;
-import com.avrgaming.civcraft.items.units.MissionBook;
+import com.avrgaming.civcraft.items.units.SpyMissions;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
@@ -42,8 +42,8 @@ public class InteractiveSpyMission implements InteractiveResponse {
 		
 		CivMessage.sendHeading(player, "Mission: "+mission.name);
 		
-		double failChance = MissionBook.getMissionFailChance(mission, target);
-		double compChance = MissionBook.getMissionCompromiseChance(mission, target);
+		double failChance = SpyMissions.getMissionFailChance(mission, target);
+		double compChance = SpyMissions.getMissionCompromiseChance(mission, target);
 		DecimalFormat df = new DecimalFormat();
 		
 		String successChance = df.format((1 - failChance)*100)+"%";

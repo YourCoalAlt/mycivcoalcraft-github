@@ -20,7 +20,7 @@ package com.avrgaming.civcraft.lorestorage;
 
 import java.lang.reflect.Constructor;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.loregui.GuiAction;
@@ -98,20 +98,16 @@ public class LoreGuiItem {
 		return attrs.getStack();
 	}
 
-	public static void processAction(String action, ItemStack stack, InventoryClickEvent event) {
-				
+	public static void processAction(String action, ItemStack stack, Player p) {
 		/* Get class name from reflection and perform assigned action */
 		try {
 			Class<?> clazz = Class.forName("com.avrgaming.civcraft.loregui."+action);
 			Constructor<?> constructor = clazz.getConstructor();
 			GuiAction instance = (GuiAction) constructor.newInstance();
-			instance.performAction(event, stack);
+			instance.performAction(p, stack);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	
 	}
-	
-	
-	
 }

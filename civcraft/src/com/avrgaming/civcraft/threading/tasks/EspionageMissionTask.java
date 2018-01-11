@@ -170,7 +170,7 @@ public class EspionageMissionTask implements Runnable {
 		}
 		
 		resident.setPerformingMission(false);
-		TaskMaster.syncTask(new PerformMissionTask(mission, playerName));
+		TaskMaster.syncTask(new PerformMissionTask(mission, player));
 	}
 
 }
