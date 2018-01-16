@@ -33,6 +33,9 @@ import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.BuildableLayer;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
+import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.threading.TaskMaster;
+import com.avrgaming.civcraft.threading.tasks.PostBuildSyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 
@@ -51,8 +54,16 @@ public class AdminBuildCommand extends CommandBase {
 		commands.put("validateall", "Gets all invalid buildables in the server.");
 		commands.put("listinvalid", "lists all invalid buildables.");
 		commands.put("showbuildable", "[loc] - show this buildable's y percertages.");
+		commands.put("postbuild", "Reloads any attachables (signs, torches, etc) and villagers to all structures.");
 
 		//commands.put("repairwonder", "Fixes the nearest wonder, requires confirmation.");
+	}
+	
+	public void postbuild_cmd() throws IOException, CivException {
+		for (Buildable b : CivGlobal.getStructures()) {
+			Template tpl = Template.getTemplate(b.getSavedTemplatePath(), null);
+			TaskMaster.syncTask(new PostBuildSyncTask(tpl, b));
+		}
 	}
 	
 	public void showbuildable_cmd() throws CivException {

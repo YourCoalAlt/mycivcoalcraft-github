@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -541,7 +542,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 	}
 	
 	@Override
-	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack stack) {
+	public void onBulletAttack(ProjectileHitEvent event, ItemStack stack) {
 		/* Search components for bullet attack value. */
 		for (ItemComponent comp : this.components.values()) {
 			comp.onBulletAttack(event, stack);

@@ -51,6 +51,21 @@ public class CivMessage {
 	// Indexed off of civ names, contains a list of extra people who listen to civ chats. (mostly for admins to list to civs)
 	private static Map<String, ArrayList<String>> extraCivChatListeners = new ConcurrentHashMap<String, ArrayList<String>>();
 	
+	public static void sendNoRepeat(Object sender, String line) {
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			Integer hashcode = lastMessageHashCode.get(player.getName());
+			if (hashcode != null && hashcode == line.hashCode()) return;
+			lastMessageHashCode.put(player.getName(), line.hashCode());
+		} else if (sender instanceof Resident) {
+			Resident res = (Resident)sender;
+			Integer hashcode = lastMessageHashCode.get(res.getName());
+			if (hashcode != null && hashcode == line.hashCode()) return;
+			lastMessageHashCode.put(res.getName(), line.hashCode());
+		}
+		send(sender, line);
+	}
+	
 	public static void send(Object sender, String line) {
 		if ((sender instanceof Player)) {
 			((Player) sender).sendMessage(line);
@@ -115,7 +130,7 @@ public class CivMessage {
 			if (hashcode != null && hashcode == line.hashCode()) return;
 			lastMessageHashCode.put(player.getName(), line.hashCode());
 		}
-		send(sender, CivColor.RoseItalic+"[Error]"+CivColor.Rose+line);
+		sendError(sender, line);
 	}
 	
 	// Sends message to playerName(if online) AND console.

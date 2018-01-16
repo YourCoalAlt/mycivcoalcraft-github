@@ -208,7 +208,7 @@ public final class CivCraft extends JavaPlugin {
 				
 		TaskMaster.asyncTask(new StructureValidationChecker(), TimeTools.toTicks(120));
 		TaskMaster.asyncTimer("StructureValidationPunisher", new StructureValidationPunisher(), TimeTools.toTicks(3600));
-		TaskMaster.asyncTimer("SessionDBAsyncTimer", new SessionDBAsyncTimer(), 10);
+		TaskMaster.asyncTimer("SessionDBAsyncTimer", new SessionDBAsyncTimer(), 5);
 		TaskMaster.asyncTimer("pvptimer", new PvPTimer(), TimeTools.toTicks(30));
 
 	}

@@ -104,6 +104,7 @@ public class Resident extends SQLObject {
 	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
 	public ArrayList<String> mailData = new ArrayList<String>();
+	public boolean isSuicidal = false;
 	
 	public static HashSet<String> allchatters = new HashSet<String>();
 	

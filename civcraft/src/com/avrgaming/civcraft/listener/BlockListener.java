@@ -947,12 +947,13 @@ public class BlockListener implements Listener {
 			}
 		}
 		
+		// prevent players trampling crops
 		Block soilBlock1 = p.getLocation().getBlock().getRelative(0, 0, 0);
 		Block soilBlock2 = p.getLocation().getBlock().getRelative(0, -1, 0);
-		// prevent players trampling crops
 		if ((event.getAction() == Action.PHYSICAL)) {
 			if (ItemManager.getId(soilBlock1) == CivData.FARMLAND || ItemManager.getId(soilBlock2) == CivData.FARMLAND) {
 				event.setCancelled(true);
+				return;
 			}
 		}
 

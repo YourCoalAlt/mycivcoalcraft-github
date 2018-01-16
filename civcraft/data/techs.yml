@@ -35,6 +35,26 @@ techs: #Note: Pts = Beakers/10
       - "T1 Tech Mysticism"
     require_techs:
 #
+  - id: 'tech_efficiency'
+    name: 'efficiency'
+    beaker_cost: 0
+    cost: 0
+    points: 0
+    tier: 0
+    unlocks:
+      - "quarry"
+    require_techs:
+#
+  - id: 'tech_material_placement'
+    name: 'material placement'
+    beaker_cost: 0
+    cost: 0
+    points: 0
+    tier: 0
+    unlocks:
+      - "quarry"
+    require_techs:
+#
 #============================#
 #======== > Tier 1 < ========#
 #============================#

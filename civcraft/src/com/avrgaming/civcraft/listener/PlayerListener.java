@@ -32,12 +32,12 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -109,6 +109,13 @@ public class PlayerListener implements Listener {
 			if (resident.getItemMode().equals("none")) return;
 			
 			ItemStack i = event.getItem().getItemStack();
+//			if (LoreEnhancement.isWeaponOrArmor(i)) {
+//				CivMessage.global("Checking");
+//				ItemStack update = LoreEnhancement.resetLivesWithDurability(p, i, true);
+//				i = update;
+//			} else {
+//				CivMessage.global("Fail Check");
+//			}
 			String name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
 			boolean rare = false;
 			if (i.getItemMeta().hasDisplayName()) {
@@ -384,11 +391,10 @@ public class PlayerListener implements Listener {
 			
 			@Override
 			public void run() {
-				CivMessage.global("modified");
 				setModifiedMovementSpeed(p);
 			}
 		}
-		TaskMaster.syncTask(new SyncTask(event.getPlayer()), 2);
+		TaskMaster.syncTask(new SyncTask(event.getPlayer()), 3);
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
@@ -399,10 +405,6 @@ public class PlayerListener implements Listener {
 //			event.getFrom().getBlockY() == event.getTo().getBlockY()) {
 //			return;
 //		}
-		
-		/* Test for enchants effecting movement. */
-		/* TODO can speed be set once? If so we should only calculate speed change when our armor changes. */
-//		setModifiedMovementSpeed(event.getPlayer());
 				
 		ChunkCoord fromChunk = new ChunkCoord(event.getFrom());
 		ChunkCoord toChunk = new ChunkCoord(event.getTo());
@@ -437,41 +439,38 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDeath(EntityDeathEvent event) {
-		if (event.getEntity() instanceof Player) {
-			//Unit.removeUnit(((Player)event.getEntity()));
-			Boolean keepInventory = Boolean.valueOf(Bukkit.getWorld("world").getGameRuleValue("keepInventory"));
-			if (!keepInventory) {
-				ArrayList<ItemStack> stacksToRemove = new ArrayList<ItemStack>();
-				for (ItemStack stack : event.getDrops()) {
-					if (stack != null) {
-						//CustomItemStack is = new CustomItemStack(stack);
-						LoreMaterial material = LoreMaterial.getMaterial(stack);
-						if (material != null) {
-							material.onPlayerDeath(event, stack);
-							if (material instanceof UnitMaterial) {
-								stacksToRemove.add(stack); continue;
-							}
-							
-							if (material instanceof UnitItemMaterial) {
-								stacksToRemove.add(stack); continue;
-							}
-						}
-					}
-				}
-				
-				for (ItemStack stack : stacksToRemove) { event.getDrops().remove(stack); }
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (War.isWarTime()) {
 			Player d = event.getEntity();
 			WarStats.incrementPlayerDeaths(d.getName());
 			if (d.getKiller() != null) {
 				WarStats.incrementPlayerKills(d.getKiller().getName());
+			}
+		}
+		
+		//Unit.removeUnit(((Player)event.getEntity()));
+		Boolean keepInventory = Boolean.valueOf(Bukkit.getWorld("world").getGameRuleValue("keepInventory"));
+		if (!keepInventory) {
+			ArrayList<ItemStack> stacksToRemove = new ArrayList<ItemStack>();
+			for (ItemStack stack : event.getDrops()) {
+				if (stack != null) {
+					//CustomItemStack is = new CustomItemStack(stack);
+					LoreMaterial material = LoreMaterial.getMaterial(stack);
+					if (material != null) {
+						material.onPlayerDeath(event, stack);
+						if (material instanceof UnitMaterial) {
+							stacksToRemove.add(stack); continue;
+						}
+						
+						if (material instanceof UnitItemMaterial) {
+							stacksToRemove.add(stack); continue;
+						}
+					}
+				}
+			}
+			
+			for (ItemStack stack : stacksToRemove) {
+				event.getDrops().remove(stack);
 			}
 		}
 	}
@@ -618,9 +617,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamageByEntityMonitor(EntityDamageByEntityEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+		if (event.isCancelled()) return;
 		
 		Player attacker;
 		Player defender;
@@ -638,6 +635,17 @@ public class PlayerListener implements Listener {
 			Arrow arrow = (Arrow)event.getDamager();
 			if (arrow.getShooter() instanceof Player) {
 				attacker = (Player)arrow.getShooter();
+			} else {
+				attacker = null;
+			}
+		} else if (event.getDamager() instanceof Snowball) {
+			Snowball sb = (Snowball)event.getDamager();
+			if (sb.getShooter() instanceof Player) {
+				attacker = (Player)sb.getShooter();
+				if (sb.getCustomName().equals("bullet")) {
+					// TODO Fix, this does TRUE damage and ignores armor. I mean, it could since it is a gun, but... meh.
+					if (sb.getMetadata("damage") != null) event.setDamage(sb.getMetadata("damage").get(0).asDouble());
+				}
 			} else {
 				attacker = null;
 			}
@@ -665,6 +673,9 @@ public class PlayerListener implements Listener {
 					if (entityName == null) {
 						entityName = event.getDamager().getType().toString();
 					}
+					
+					if (entityName.equalsIgnoreCase("SNOWBALL") && event.getDamage() >= 1.0) entityName = "Bullet";
+					
 					CivMessage.send(defender, CivColor.LightGray+"  [Combat] Took "+CivColor.Rose+damage+" damage "+CivColor.LightGray+" from a "+entityName);
 				}
 			}
@@ -684,6 +695,9 @@ public class PlayerListener implements Listener {
 					if (entityName == null) {
 						entityName = event.getEntity().getType().toString();
 					}
+					
+					if (entityName.equalsIgnoreCase("SNOWBALL") && event.getDamage() >= 1.0) entityName = "Bullet";
+					
 					CivMessage.send(attacker, CivColor.LightGray+"    [Combat] Gave "+CivColor.LightGreen+damage+CivColor.LightGray+" damage to a "+entityName);
 				}
 			}

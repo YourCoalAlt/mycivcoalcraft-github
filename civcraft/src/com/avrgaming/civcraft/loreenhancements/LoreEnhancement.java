@@ -8,6 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.main.CivData;
+import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.BuildableDamageBlock;
 import com.avrgaming.civcraft.util.CivColor;
@@ -170,7 +171,75 @@ public abstract class LoreEnhancement {
 		return damage;
 	}
 	
-	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
+	
+	
+	
+	
+	
+	public static ItemStack deductLivesAndDurability(Player p, ItemStack stack, double percent, boolean msg) {
+		String saved = "";
+		AttributeUtil attrs = new AttributeUtil(stack);
+		// if person died within last 4 seconds, do not take damage to prevent bug.
+		if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
+			return stack;
+		}
+		
+		int reduction = (int)(stack.getType().getMaxDurability()*percent);
+		int durabilityLeft = stack.getType().getMaxDurability() - stack.getDurability();
+		
+		if (durabilityLeft > reduction) {
+			stack.setDurability((short)(stack.getDurability() + reduction));
+			
+			int dmgpert = (durabilityLeft*100) / stack.getType().getMaxDurability();
+			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
+			
+			for (String l : attrs.getLore()) {
+				if (!l.contains(" Lives Left")) saved += l+";";
+			}
+			
+			saved += CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left";
+			if (msg) CivMessage.sendNoRepeat(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
+		} else {
+			stack = new ItemStack(Material.AIR);
+			if (msg) CivMessage.sendNoRepeat(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
+		}
+		
+		attrs.setLore(saved.split(";"));
+		return attrs.getStack();
+	}
+	
+	public static ItemStack resetLivesWithDurability(Player p, ItemStack stack, boolean msg) {
+		AttributeUtil attrs = new AttributeUtil(stack);
+		
+		double percent;
+		if (attrs.getCivCraftProperty("death_percent_value") != null) {
+			percent = Double.valueOf(attrs.getCivCraftProperty("death_percent_value"));
+		} else {
+			CivLog.warning("Death percent null for "+stack+" for "+p.getName());
+			percent = 0.1;
+		}
+		
+		int durabilityLeft = stack.getType().getMaxDurability() - stack.getDurability();
+		int dmgpert = (durabilityLeft*100) / stack.getType().getMaxDurability();
+		int livesLeft = (int) (dmgpert / (percent*100)) - 1;
+		
+		String saved = "";
+		for (String l : attrs.getLore()) {
+			if (!l.contains(" Lives Left")) saved += l+";";
+		}
+		
+		saved += CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left";
+		attrs.setLore(saved.split(";"));
+		return attrs.getStack();
+	}
+	
+	
+	
+	
+	
+/*	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
 		AttributeUtil attrs = new AttributeUtil(stack);
 		double percent;
 		if (attrs.getCivCraftProperty("death_percent_value") != null) {
@@ -245,7 +314,7 @@ public abstract class LoreEnhancement {
 		}
 		
 		return stack;
-	}
+	}*/
 	
 	public double getLevelDouble(AttributeUtil attrs) { return 0; }
 	public Integer getLevel(AttributeUtil attrs) { return 0; }

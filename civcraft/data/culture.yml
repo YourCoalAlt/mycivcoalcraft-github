@@ -120,20 +120,20 @@ culture_biomes:
 # ======================#
     - name: DESERT
       happiness: 0.02
-      production: 1.5
+      production: 1.25
       science: 1.0
-      growth: 2.0
+      growth: 1.5
 #
     - name: DESERT_HILLS
       happiness: 0.025
-      production: 2.5
+      production: 2.0
       science: 1.0
       growth: 1.0
 #
     - name: MUTATED_DESERT
       coins: 0.0
       happiness: 0.01
-      production: 4.0
+      production: 3.5
       science: 1.0
       growth: 0.0
 #
@@ -286,9 +286,9 @@ culture_biomes:
       growth: 1.5
 #
     - name: UNKNOWN
-      happiness: 0.015
-      production: 1.0
-      science: 1.0
-      growth: 1.0
+      happiness: 0.01
+      production: 0.5
+      science: 0.5
+      growth: 0.5
 #
 #

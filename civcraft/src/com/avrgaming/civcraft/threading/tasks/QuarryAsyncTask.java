@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Random;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,12 +12,12 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGovernment;
 import com.avrgaming.civcraft.config.ConfigQuarry;
 import com.avrgaming.civcraft.config.ConfigQuarryItem;
+import com.avrgaming.civcraft.config.ConfigTrommelItem;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Quarry;
@@ -56,6 +55,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		// Grab each CivChest object we'll require.
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
 		ArrayList<StructureChest> destinations_wh = new ArrayList<StructureChest>();
+		ArrayList<StructureChest> destinations_tr = new ArrayList<StructureChest>();
 		ArrayList<StructureChest> destinations_reg = quarry.getAllChestsById(2);
 		
 		boolean trommel = false;
@@ -76,7 +76,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						for (Structure s2 : quarry.getTown().getStructures()) {
 							if (s2 instanceof Trommel) {
 								Trommel tS = (Trommel) s2;
-								destinations_wh.addAll(tS.getAllChestsById(1));
+								destinations_tr.addAll(tS.getAllChestsById(1));
 								trommel = true;
 								debug(quarry, "Sending output to Trommel");
 							}
@@ -87,7 +87,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		}
 		
 		if (!warehouse && !trommel) {
-//			destinations_wh = quarry.getAllChestsById(2);
 			debug(quarry, "Sending output to Quarry");
 		}
 		
@@ -96,13 +95,14 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		if (destinations_wh != null && destinations_reg.size() != 2) {
-			CivLog.error("Bad chests for quarry (warehouse) in town:"+quarry.getTown().getName()+" dests:"+destinations_wh.size());
-		}
+//		if (destinations_wh != null && destinations_reg.size() != 2) {
+//			CivLog.error("Bad chests for quarry (warehouse) in town:"+quarry.getTown().getName()+" dests:"+destinations_wh.size());
+//		}
 		
 		// Make sure the chunk is loaded before continuing. Also, add get chest and add it to inventory.
 		MultiInventory source_inv = new MultiInventory();
 		MultiInventory dest_inv_wh = new MultiInventory();
+		MultiInventory dest_inv_tr = new MultiInventory();
 		MultiInventory dest_inv_reg = new MultiInventory();
 
 		try {
@@ -127,14 +127,13 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			
 			if (destinations_wh != null) {
 				for (StructureChest dst : destinations_wh) {
-					CivMessage.global(""+dst.getChestId());
 					//this.syncLoadChunk(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getZ());
 					Inventory tmp;
 					try {
 						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 					} catch (CivTaskAbortException e) {
 						//e.printStackTrace();
-						CivLog.warning("Quarry (to Warehouse/Trommel):"+e.getMessage());
+						CivLog.warning("Quarry (to Warehouse):"+e.getMessage());
 						return;
 					}
 					if (tmp == null) {
@@ -142,6 +141,31 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						return;
 					}
 					dest_inv_wh.addInventory(tmp);
+					for (ItemStack stack : tmp.getContents()) {
+						if (stack == null) {
+							full = false;
+							break;
+						}
+					}
+				}
+			}
+			
+			if (destinations_tr != null) {
+				for (StructureChest dst : destinations_tr) {
+					//this.syncLoadChunk(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getZ());
+					Inventory tmp;
+					try {
+						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
+					} catch (CivTaskAbortException e) {
+						//e.printStackTrace();
+						CivLog.warning("Quarry (to Trommel):"+e.getMessage());
+						return;
+					}
+					if (tmp == null) {
+						quarry.skippedCounter++;
+						return;
+					}
+					dest_inv_tr.addInventory(tmp);
 					for (ItemStack stack : tmp.getContents()) {
 						if (stack == null) {
 							full = false;
@@ -184,7 +208,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		
 		debug(quarry, "Processing quarry:"+quarry.skippedCounter+1);
 		for (int i = 0; i < quarry.skippedCounter+1; i++) {
-			boolean invUsed = false;
 			quarrytask: for (Inventory inv : source_inv.getInventories()) {
 				int index = -1;
 				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
@@ -192,22 +215,15 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigQuarryItem cti = CivSettings.quarryItems.get(ItemManager.getId(stack));
-					if (cti == null) continue;
+					ConfigQuarryItem cqi = CivSettings.quarryItems.get(ItemManager.getId(stack));
+					if (cqi == null) continue;
 					
-					if (invUsed) continue;
-					
-					if (ItemManager.getId(stack) == cti.item && quarry.getLevel() >= cti.level) {
+					if (ItemManager.getId(stack) == cqi.item && quarry.getLevel() >= cqi.level) {
 						try {
 							short damage = ItemManager.getData(stack);
-//							this.updateInventory(Action.REPLACE, source_inv, ItemManager.createItemStack(cti.item, 1));
-//							damage++;
-//							stack.setDurability(damage);
-							if (damage > cti.max_dura) {
-								invUsed = true;
+							if (damage > cqi.max_dura) {
 								this.updateInventory(Action.REMOVE, source_inv, stack);
 							} else {
-								invUsed = true;
 								ItemStack newStack = stack; newStack.setDurability((short) (damage+1));
 								this.updateInventory(Action.UPDATE, source_inv, newStack, index, inv);
 							}
@@ -216,7 +232,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						}
 						
 						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
-						ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cti.item);
+						ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cqi.item);
 						if (dropped.size() == 0) {
 							newItem.add(getUselessDrop());
 						} else {
@@ -235,7 +251,15 @@ public class QuarryAsyncTask extends CivAsyncTask {
 								debug(quarry, "Updating inventory: "+ni);
 								if (warehouse) {
 									this.updateInventory(Action.ADD, dest_inv_wh, ni);
-								} else if (trommel && ni.getType() == Material.STONE) {
+								} else if (trommel) {
+									ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)));
+									// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
+									if (cti != null && ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data &&
+												quarry.getTown().saved_trommel_level >= cti.level) {
+										this.updateInventory(Action.ADD, dest_inv_tr, ni);
+									} else {
+										this.updateInventory(Action.ADD, dest_inv_wh, ni);
+									}
 									this.updateInventory(Action.ADD, dest_inv_wh, ni);
 								} else {
 									this.updateInventory(Action.ADD, dest_inv_reg, ni);
@@ -257,9 +281,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 2) {
 			return ItemManager.createItemStack(CivData.DIRT, 1);
-		} else if (uselessDrop >= 3 && uselessDrop <= 4) {
-			return ItemManager.createItemStack(CivData.DIRT, 1, (byte)CivData.COARSE_DIRT);
-		} else if (uselessDrop >= 5 && uselessDrop <= 6) {
+		} else if (uselessDrop >= 3 && uselessDrop <= 5) {
 			return ItemManager.createItemStack(CivData.GRAVEL, 1);
 		} else {
 			return getStoneDrop();

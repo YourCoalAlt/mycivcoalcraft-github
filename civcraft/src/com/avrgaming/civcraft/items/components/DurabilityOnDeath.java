@@ -48,12 +48,47 @@ public class DurabilityOnDeath extends ItemComponent {
 		
 		if (result.destroyItem) return result;
 		
-		ItemStack newStack = LoreEnhancement.getItemLivesLeftViaDurability(event.getEntity(), result.stack, true);
+/*		AttributeUtil attrs = new AttributeUtil(result.stack);
+		
+		// if person died within last 4 seconds, do not take damage to prevent bug.
+		if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
+			return result;
+		}
+		
+		double percent = this.getDouble("value");
+		int reduction = (int)(result.stack.getType().getMaxDurability()*percent);
+		int durabilityLeft = result.stack.getType().getMaxDurability() - result.stack.getDurability();
+		
+		if (durabilityLeft > reduction) {
+			result.stack.setDurability((short)(result.stack.getDurability() + reduction));
+			
+			int dmgpert = (durabilityLeft*100) / result.stack.getType().getMaxDurability();
+			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
+			
+			String saved = "";
+			for (String l : attrs.getLore()) {
+				if (!l.contains(" Lives Left")) saved += l+";";
+			}
+			
+			attrs.setLore(saved.split(";"));
+			attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
+			CivMessage.sendNoRepeat(event.getEntity(), CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
+		} else {
+			result.destroyItem = true;
+			CivMessage.sendNoRepeat(event.getEntity(), CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
+		}
+		
+		result.stack = attrs.getStack();*/
+		
+		ItemStack newStack = LoreEnhancement.deductLivesAndDurability(event.getEntity(), result.stack, this.getDouble("value"), true);
 		if (newStack == null || newStack.getType() == Material.AIR) {
 			result.destroyItem = true;
 		} else {
 			result.stack = newStack;
 		}
+		
 		return result;
 	}
 

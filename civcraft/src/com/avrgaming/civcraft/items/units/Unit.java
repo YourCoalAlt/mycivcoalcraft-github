@@ -151,10 +151,10 @@ public abstract class Unit {
 	}
 	
 	public static boolean isWearingAnyLeather(Player player) {
-		if (player.getEquipment().getBoots() != null && ItemManager.getId(player.getEquipment().getBoots()) == CivData.LEATHER_BOOTS) return true;
-		if (player.getEquipment().getLeggings() != null && ItemManager.getId(player.getEquipment().getLeggings()) == CivData.LEATHER_LEGGINGS) return true;
-		if (player.getEquipment().getChestplate() != null && ItemManager.getId(player.getEquipment().getChestplate()) == CivData.LEATHER_CHESTPLATE) return true;
-		if (player.getEquipment().getHelmet() != null && ItemManager.getId(player.getEquipment().getHelmet()) == CivData.LEATHER_HELMET) return true;
+		if (isWearingFullComposite(player)) return true;
+		if (isWearingFullHardened(player)) return true;
+		if (isWearingFullRefined(player)) return true;
+		if (isWearingFullBasicLeather(player)) return true;
 		return false;
 	}
 	

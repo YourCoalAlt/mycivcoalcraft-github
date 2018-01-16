@@ -3,7 +3,6 @@
 # structures as well as some specific structure related configuration options.
 #
 
-
 ################ Grocer Settings ###############
 grocer_levels:
     - level: 1
@@ -415,7 +414,7 @@ structures:
     displayName: Trommel
     require_tech: 'tech_mining'
     update_event: trommel_process
-    limit: 4
+    limit: 1
     cost: 5000
     upkeep: 500
     hammer_cost: 350

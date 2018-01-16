@@ -223,9 +223,10 @@ public class Barracks extends Structure {
 		newStack = attr.getStack();
 		newStack.setDurability((short)0);
 		
-		if (attr.getCivCraftProperty("death_percent_value") != null) {
-			newStack = LoreEnhancement.getItemLivesLeftViaDurability(player, newStack, false);
-		}
+		// TODO Fix
+//		if (attr.getCivCraftProperty("death_percent_value") != null) {
+//			newStack = LoreEnhancement.getItemLivesLeftViaDurability(player, newStack, false);
+//		}
 		
 		player.getInventory().addItem(newStack);
 		resident.getTreasury().withdraw(cost);

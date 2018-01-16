@@ -42,6 +42,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -317,6 +318,20 @@ public class CustomItemManager implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerProjectileHit(ProjectileHitEvent event) {
+		if (event.getEntity() instanceof Snowball) {
+			Snowball sb = (Snowball)event.getEntity();
+			if (sb.getShooter() instanceof Player) {
+				Player p = (Player)sb.getShooter();
+				ItemStack inHand = p.getInventory().getItemInMainHand();
+				if (LoreMaterial.isCustom(inHand)) {
+					LoreMaterial.getMaterial(inHand).onBulletAttack(event, inHand);
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerDefenseAndAttack(EntityDamageByEntityEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -327,7 +342,7 @@ public class CustomItemManager implements Listener {
 			defendingPlayer = (Player)event.getEntity();
 		}
 		
-		if (event.getDamager() instanceof Snowball) {
+/*		if (event.getDamager() instanceof Snowball) {
 			LivingEntity shooter = (LivingEntity) ((Snowball)event.getDamager()).getShooter();
 			if (shooter instanceof Player) {
 				ItemStack inHand = ((Player)shooter).getInventory().getItemInMainHand();
@@ -335,7 +350,7 @@ public class CustomItemManager implements Listener {
 					LoreMaterial.getMaterial(inHand).onBulletAttack(event, inHand);
 				}
 			}
-		}
+		}*/
 		
 		if (event.getDamager() instanceof Arrow) {
 			LivingEntity shooter = (LivingEntity) ((Arrow)event.getDamager()).getShooter();

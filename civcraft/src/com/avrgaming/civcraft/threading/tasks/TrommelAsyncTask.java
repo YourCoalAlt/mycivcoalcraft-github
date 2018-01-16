@@ -223,17 +223,12 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		
 		for (int i = 0; i < trommel.skippedCounter+1; i++) {
 			for (ItemStack stack : contents) {
-				if (stack == null) {
-					continue;
-				}
+				if (stack == null) continue;
 				
-				ConfigTrommelItem cti = CivSettings.trommelItems.get(ItemManager.getId(stack));
-				if (cti == null) {
-					continue;
-				}
+				ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
+				if (cti == null) continue;
 				
-				if (ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == ItemManager.getData(ItemManager.getMaterialData(cti.item, cti.item_data)) &&
-							trommel.getLevel() >= cti.level) {
+				if (ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data && trommel.getLevel() >= cti.level) {
 					try {
 						if (getfromWarehouse) {
 							this.updateInventory(Action.REMOVE, source_inv_wh, ItemManager.createItemStack(cti.item, 1, (byte)cti.item_data));
@@ -280,10 +275,10 @@ public class TrommelAsyncTask extends CivAsyncTask {
 	
 	private ItemStack getUselessDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(6);
-		if (uselessDrop == 1 || uselessDrop == 2) {
+		int uselessDrop = rand.nextInt(10);
+		if (uselessDrop >= 0 && uselessDrop <= 3) {
 			return ItemManager.createItemStack(CivData.DIRT, 1);
-		} else if (uselessDrop == 3 || uselessDrop == 4) {
+		} else if (uselessDrop >= 4 && uselessDrop <= 7) {
 			return ItemManager.createItemStack(CivData.GRAVEL, 1);
 		} else {
 			return ItemManager.createItemStack(CivData.AIR, 1);

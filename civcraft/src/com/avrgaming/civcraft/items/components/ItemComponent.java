@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -95,8 +96,5 @@ public abstract class ItemComponent {
 	public void onHold(PlayerItemHeldEvent event) {	}
 	public void onItemDrop(PlayerDropItemEvent event) { }
 
-	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onBulletAttack(ProjectileHitEvent event, ItemStack inHand) {}
 }

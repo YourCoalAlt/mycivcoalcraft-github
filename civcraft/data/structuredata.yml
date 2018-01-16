@@ -225,11 +225,25 @@ quarry_drops:
 #======== > Trommel Settings < ========#
 #======================================#
 trommel_items:
-   - item: 4
+   - type: COBBLESTONE
+     item: 4
      level: 1
-#   - item: 1
-#     item_data: 1
-#     level: 2
+   - type: STONE
+     item: 1
+     item_data: 0
+     level: 1
+   - type: GRANITE
+     item: 1
+     item_data: 1
+     level: 2
+   - type: DIORITE
+     item: 1
+     item_data: 3
+     level: 3
+   - type: ANDESITE
+     item: 1
+     item_data: 5
+     level: 4
 # Rare, Uncommon, Common, Junk
 trommel_drops:
 #====> Cobblestone <====#
@@ -237,13 +251,13 @@ trommel_drops:
     input: 4
     type_id: 263
     loot_type: 'junk'
-    drop_chance: 0.04
+    drop_chance: 0.02
 #
   - type: IronCobble
     input: 4
     type_id: 265
     loot_type: 'common'
-    drop_chance: 0.025
+    drop_chance: 0.0275
 #
   - type: GoldCobble
     input: 4
@@ -254,36 +268,237 @@ trommel_drops:
   - type: RedstoneCobble
     input: 4
     type_id: 331
-    amount: 3
+    amount: 4
     loot_type: 'common'
-    drop_chance: 0.0095
+    drop_chance: 0.009
 #
   - type: LapisCobble
     input: 4
     type_id: 351
     type_data: 4
-    amount: 3
+    amount: 4
     loot_type: 'common'
-    drop_chance: 0.0095
+    drop_chance: 0.009
 #
   - type: DiamondCobble
     input: 4
     type_id: 264
     loot_type: 'rare'
-    drop_chance: 0.003
+    drop_chance: 0.004
 #
   - type: EmeraldCobble
     input: 4
     type_id: 388
     loot_type: 'rare'
-    drop_chance: 0.0015
+    drop_chance: 0.002
+#====> Stone <====#
+  - type: CoalStone
+    input: 1
+    input_data: 0
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.005
 #
+  - type: IronStone
+    input: 1
+    input_data: 0
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.0325
+#
+  - type: GoldStone
+    input: 1
+    input_data: 0
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.0175
+#
+  - type: RedstoneStone
+    input: 1
+    input_data: 0
+    type_id: 331
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.012
+#
+  - type: LapisStone
+    input: 1
+    input_data: 0
+    type_id: 351
+    type_data: 4
+    amount: 3
+    loot_type: 'common'
+    drop_chance: 0.012
+#
+  - type: DiamondStone
+    input: 1
+    input_data: 0
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.006
+#
+  - type: EmeraldStone
+    input: 1
+    input_data: 0
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.0035
 #====> Granite <====#
-
+  - type: CoalGranite
+    input: 1
+    input_data: 1
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.005
+#
+  - type: IronGranite
+    input: 1
+    input_data: 1
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: GoldGranite
+    input: 1
+    input_data: 1
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.009
+#
+  - type: RedstoneGranite
+    input: 1
+    input_data: 1
+    type_id: 331
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.04
+#
+  - type: LapisGranite
+    input: 1
+    input_data: 1
+    type_id: 351
+    type_data: 4
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.02
+#
+  - type: DiamondGranite
+    input: 1
+    input_data: 1
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.005
+#
+  - type: EmeraldGranite
+    input: 1
+    input_data: 1
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.003
 #====> Diorite <====#
-
+  - type: CoalDiorite
+    input: 1
+    input_data: 3
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.005
+#
+  - type: IronDiorite
+    input: 1
+    input_data: 3
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.025
+#
+  - type: GoldDiorite
+    input: 1
+    input_data: 3
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.03
+#
+  - type: RedstoneDiorite
+    input: 1
+    input_data: 3
+    type_id: 331
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.02
+#
+  - type: LapisDiorite
+    input: 1
+    input_data: 3
+    type_id: 351
+    type_data: 4
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.04
+#
+  - type: DiamondDiorite
+    input: 1
+    input_data: 3
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.006
+#
+  - type: EmeraldDiorite
+    input: 1
+    input_data: 3
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.002
 #====> Andesite <====#
-
+  - type: CoalAndesite
+    input: 1
+    input_data: 5
+    type_id: 263
+    loot_type: 'junk'
+    drop_chance: 0.005
+#
+  - type: IronAndesite
+    input: 1
+    input_data: 5
+    type_id: 265
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: GoldAndesite
+    input: 1
+    input_data: 5
+    type_id: 266
+    loot_type: 'uncommon'
+    drop_chance: 0.0175
+#
+  - type: RedstoneAndesite
+    input: 1
+    input_data: 5
+    type_id: 331
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: LapisAndesite
+    input: 1
+    input_data: 5
+    type_id: 351
+    type_data: 4
+    amount: 4
+    loot_type: 'common'
+    drop_chance: 0.03
+#
+  - type: DiamondAndesite
+    input: 1
+    input_data: 5
+    type_id: 264
+    loot_type: 'rare'
+    drop_chance: 0.004
+#
+  - type: EmeraldAndesite
+    input: 1
+    input_data: 5
+    type_id: 388
+    loot_type: 'rare'
+    drop_chance: 0.006
 #======================================#
 #======== > Cottage Settings < ========#
 #======================================#
@@ -293,14 +508,14 @@ cottage_levels:
          - 297,1
          - 391,1
      count: 24
-     coins: 50.0
+     coins: 100.0
 #
    - level: 2
      consumes:
          - 297,2
          - 391,2
      count: 48
-     coins: 100.0
+     coins: 175.0
 #
    - level: 3
      consumes:
@@ -308,7 +523,7 @@ cottage_levels:
          - 391,3
          - 392,1
      count: 72
-     coins: 175.0
+     coins: 250.0
 #
    - level: 4
      consumes:
@@ -316,7 +531,7 @@ cottage_levels:
          - 391,3
          - 392,2
      count: 96
-     coins: 225.0
+     coins: 325.0
 #
    - level: 5
      consumes:
@@ -325,7 +540,7 @@ cottage_levels:
          - 392,3
          - 434,1
      count: 120
-     coins: 300.0
+     coins: 400.0
 #
    - level: 6
      consumes:
@@ -334,7 +549,7 @@ cottage_levels:
          - 392,4
          - 434,2
      count: 168
-     coins: 350.0
+     coins: 475.0
 #
    - level: 7
      consumes:
@@ -344,7 +559,7 @@ cottage_levels:
          - 434,3
          - 353,3
      count: 216
-     coins: 425.0
+     coins: 550.0
 #
    - level: 8
      consumes:
@@ -354,7 +569,7 @@ cottage_levels:
          - 434,4
          - 353,6
      count: 288
-     coins: 475.0
+     coins: 625.0
 #======================================#
 #======== > Granary Settings < ========#
 #======================================#
@@ -364,13 +579,17 @@ granary_levels:
    - level: 2
      max_storage: 512
    - level: 3
-     max_storage: 768
+     max_storage: 896
    - level: 4
-     max_storage: 1024
+     max_storage: 1280
    - level: 5
-     max_storage: 1536
+     max_storage: 1792
    - level: 6
-     max_storage: 2048
+     max_storage: 2304
+   - level: 7
+     max_storage: 2944
+   - level: 8
+     max_storage: 3584
 #
 granary_food:
    - food: 297

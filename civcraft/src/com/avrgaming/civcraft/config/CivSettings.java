@@ -116,7 +116,7 @@ public class CivSettings {
 	public static Map<Integer, ConfigBankLevel> bankLevels = new HashMap<Integer, ConfigBankLevel>();
 	public static Map<Integer, ConfigQuarryItem> quarryItems = new HashMap<Integer, ConfigQuarryItem>();
 	public static ArrayList<ConfigQuarry> quarryDrops = new ArrayList<ConfigQuarry>();
-	public static Map<Integer, ConfigTrommelItem> trommelItems = new HashMap<Integer, ConfigTrommelItem>();
+	public static Map<String, ConfigTrommelItem> trommelItems = new HashMap<String, ConfigTrommelItem>();
 	public static ArrayList<ConfigTrommel> trommelDrops = new ArrayList<ConfigTrommel>();
 	public static Map<Integer, ConfigCottageLevel> cottageLevels = new HashMap<Integer, ConfigCottageLevel>();
 	public static Map<Integer, ConfigGranaryLevel> granaryLevels = new HashMap<Integer, ConfigGranaryLevel>();

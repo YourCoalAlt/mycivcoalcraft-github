@@ -576,7 +576,7 @@ upgrades:
       action: 'set_granary_level, 2'
       cost: 7500
       require_upgrade:
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
       category: 'granary'
 #
@@ -585,7 +585,7 @@ upgrades:
       action: 'set_granary_level, 3'
       cost: 15000
       require_upgrade: 'upgrade_granary_level_2'
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
       category: 'granary'
 #
@@ -594,7 +594,7 @@ upgrades:
       action: 'set_granary_level, 4'
       cost: 22500
       require_upgrade: 'upgrade_granary_level_3'
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
       category: 'granary'
 #
@@ -603,7 +603,7 @@ upgrades:
       action: 'set_granary_level, 5'
       cost: 30000
       require_upgrade: 'upgrade_granary_level_4'
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
       category: 'granary'
 #
@@ -612,45 +612,90 @@ upgrades:
       action: 'set_granary_level, 6'
       cost: 37500
       require_upgrade: 'upgrade_granary_level_5'
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_granary'
+      category: 'granary'
+#
+    - id: 'upgrade_granary_level_7'
+      name: 'Upgrade Granary Level 7'
+      action: 'set_granary_level, 7'
+      cost: 45000
+      require_upgrade: 'upgrade_granary_level_6'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_granary'
+      category: 'granary'
+#
+    - id: 'upgrade_granary_level_8'
+      name: 'Upgrade Granary Level 8'
+      action: 'set_granary_level, 8'
+      cost: 52500
+      require_upgrade: 'upgrade_granary_level_7'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
       category: 'granary'
 #
 # Trommel Upgrades
     - id: 'upgrade_trommel_material_granite'
-      name: 'Upgrade Trommel Level 2'
+      name: 'Upgrade Trommel Level 2 [Granite]'
       action: 'set_trommel_level, 2'
       cost: 10000
       require_upgrade:
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
       category: 'trommel'
 #
     - id: 'upgrade_trommel_material_diorite'
-      name: 'Upgrade Trommel Level 3'
+      name: 'Upgrade Trommel Level 3 [Diorite]'
       action: 'set_trommel_level, 3'
       cost: 15000
       require_upgrade: 'upgrade_trommel_material_granite'
-      require_tech: 'tech_advanced_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
       category: 'trommel'
 #
     - id: 'upgrade_trommel_level_andesite'
-      name: 'Upgrade Trommel Level 4'
+      name: 'Upgrade Trommel Level 4 [Andesite]'
       action: 'set_trommel_level, 4'
       cost: 20000
       require_upgrade: 'upgrade_trommel_material_diorite'
-      require_tech: 'tech_alloys'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
       category: 'trommel'
 #
 # Quarry Upgrades
-    - id: 'upgrade_quarry_pickaxe_stone'
-      name: 'Upgrade Quarry Level 2'
+    - id: 'upgrade_quarry_level_2'
+      name: 'Upgrade Quarry Level 2 [Stone Pickaxe]'
       action: 'set_quarry_level, 2'
       cost: 25000
       require_upgrade:
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_quarry'
+      category: 'quarry'
+#
+    - id: 'upgrade_quarry_level_3'
+      name: 'Upgrade Quarry Level 3 [Iron Pickaxe]'
+      action: 'set_quarry_level, 3'
+      cost: 50000
+      require_upgrade: 'upgrade_quarry_level_2'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_quarry'
+      category: 'quarry'
+#
+    - id: 'upgrade_quarry_level_4'
+      name: 'Upgrade Quarry Level 4 [Diamond Pickaxe]'
+      action: 'set_quarry_level, 4'
+      cost: 75000
+      require_upgrade: 'upgrade_quarry_level_3'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_quarry'
+      category: 'quarry'
+#
+    - id: 'upgrade_quarry_level_5'
+      name: 'Upgrade Quarry Level 5 [Gold Pickaxe]'
+      action: 'set_quarry_level, 5'
+      cost: 100000
+      require_upgrade: 'upgrade_quarry_level_4'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_quarry'
       category: 'quarry'
 #

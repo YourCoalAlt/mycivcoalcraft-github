@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -303,9 +304,6 @@ public abstract class LoreMaterial {
 	public int onStructureBlockBreak(BuildableDamageBlock dmgBlock, int damage) { return damage; }
 	public void onInventoryOpen(InventoryOpenEvent event, ItemStack stack) {}
 
-	public void onBulletAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onBulletAttack(ProjectileHitEvent event, ItemStack inHand) {}
 	
 }
