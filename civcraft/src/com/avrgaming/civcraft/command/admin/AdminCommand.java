@@ -114,11 +114,17 @@ public class AdminCommand extends CommandBase {
 		commands.put("test", "Formal testing commands.");
 		commands.put("reload", "Admin reload commands.");
 		commands.put("rxp", "Admin Resident Experience commands.");
+		commands.put("debug", "Admin Debugging commands.");
 	}
 	
 	public void rxp_cmd() {
 		AdminExperienceCommand cmd = new AdminExperienceCommand();	
 		cmd.onCommand(sender, null, "rxp", this.stripArgs(args, 1));
+	}
+	
+	public void debug_cmd() {
+		AdminDebugCommand cmd = new AdminDebugCommand();	
+		cmd.onCommand(sender, null, "debug", this.stripArgs(args, 1));
 	}
 	
 	public void reload_cmd() {

@@ -29,6 +29,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
@@ -73,8 +74,10 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
+import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -590,8 +593,19 @@ public class CustomItemManager implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void OnEntityDeath(EntityDeathEvent event) {
-		if (event.getEntity() instanceof Player) {
-			return;
+		if (event.getEntity() instanceof Player) return;
+		
+		if (event.getEntity() instanceof Villager) {
+			Villager v = (Villager) event.getEntity();
+			TownChunk tc = CivGlobal.getTownChunk(v.getLocation());
+			if (tc != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+				String vilKey = tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+				if (CivGlobal.getStructureVillager(vilKey) != null) {
+					v.setHealth(0); v.remove();
+					CivGlobal.removeStructureVillager(vilKey);
+					CivLog.warning("Villager removed: "+vilKey);
+				}
+			}
 		}
 				
 		/* Remove any vanilla item IDs that can't be crafted from vanilla drops. */

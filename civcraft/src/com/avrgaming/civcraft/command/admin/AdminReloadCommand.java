@@ -3,10 +3,7 @@ package com.avrgaming.civcraft.command.admin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.bukkit.Chunk;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.Listener;
 
 import com.avrgaming.civcraft.command.CommandBase;
@@ -18,7 +15,6 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.ResidentExperience;
-import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class AdminReloadCommand extends CommandBase implements Listener {
@@ -32,31 +28,6 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		commands.put("govs", "Reloads the governments.yml file");
 		commands.put("structuredata", "Reloads the structuredata.yml file");
 		commands.put("newspaper", "Reloads the game.yml file (newspapers only)");
-		commands.put("killvillagers", "Removes all villagers spawned by CivCraft. WARNING: Only use if you are rebooting server, or else they don't respawn!");
-	}
-	
-	public void killvillagers_cmd() {
-		int chunksSearched = 0;
-		int villagersRemoved = 0;
-		for (TownChunk tc : CivGlobal.getTownChunks()) {
-			Chunk chunk = tc.getChunkCoord().getChunk();
-			if (!chunk.isLoaded()) chunk.load();
-			
-			for (Entity e : chunk.getEntities()) {
-				if (e instanceof Villager) {
-					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
-					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
-						villagersRemoved++;
-						v.setHealth(0);
-						e.remove();
-					}
-				}
-			}
-			
-			chunksSearched++;
-			chunk.unload();
-		}
-		CivMessage.global(CivColor.Gold+"Removed "+villagersRemoved+" villagers from "+chunksSearched+" town chunks.");
 	}
 	
 	public void decformat_cmd() {

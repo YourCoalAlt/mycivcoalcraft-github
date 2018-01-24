@@ -868,16 +868,6 @@ materials:
     components:
        - name: 'BackpackEnable'
 # Checked 25 August 2017
-#  - id: 'civ_found_civ'
-#    item_id: 369
-#    item_data: 0
-#    name: 'Founding Civilization Flag'
-#    craftable: false
-#    shaped: false
-#    category: 'Special'
-#    components:
-#       - name: 'FoundCivilization'
-# Checked 25 August 2017
   - id: 'civ_token_of_leadership'
     item_id: 370
     item_data: 0

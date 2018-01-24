@@ -54,31 +54,32 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		debug(quarry, "Processing quarry...");
 		// Grab each CivChest object we'll require.
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
-		ArrayList<StructureChest> destinations_wh = new ArrayList<StructureChest>();
-		ArrayList<StructureChest> destinations_tr = new ArrayList<StructureChest>();
-		ArrayList<StructureChest> destinations_reg = quarry.getAllChestsById(2);
+		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
+		ArrayList<StructureChest> destinations_other = new ArrayList<StructureChest>();
 		
 		boolean trommel = false;
 		boolean warehouse = false;
 		for (Structure s : quarry.getTown().getStructures()) {
 			if (s instanceof Warehouse) {
+				warehouse = true;
+				debug(quarry, "Sending output to Warehouse");
 				Warehouse wh = (Warehouse) s;
 				if (wh.isComplete() && wh.isEnabled()) {
 					if (wh.getQuarryCollector() == 1) {
 						for (StructureChest sc : wh.structureChests.values()) {
 							if (sc.getChestId() <= wh.getLevel()) {
-								destinations_wh.add(sc);
+								destinations_other.add(sc);
 							}
 						}
-						warehouse = true;
-						debug(quarry, "Sending output to Warehouse");
 					} else if (wh.getQuarryCollector() == 2) {
+						trommel = true;
+						debug(quarry, "Sending output to Trommel");
 						for (Structure s2 : quarry.getTown().getStructures()) {
 							if (s2 instanceof Trommel) {
 								Trommel tS = (Trommel) s2;
-								destinations_tr.addAll(tS.getAllChestsById(1));
-								trommel = true;
-								debug(quarry, "Sending output to Trommel");
+								for (StructureChest sc : tS.getAllChestsById(1)) {
+									destinations_other.add(sc);
+								}
 							}
 						}
 					}
@@ -86,24 +87,15 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			}
 		}
 		
-		if (!warehouse && !trommel) {
-			debug(quarry, "Sending output to Quarry");
-		}
-		
-		if (sources.size() != 2 || destinations_reg.size() != 2) {
-			CivLog.error("Bad chests for quarry in town:"+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations_reg.size());
+		if (sources.size() < 1 || destinations.size() < 1) {
+			CivLog.error("Bad main dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size());
 			return;
 		}
 		
-//		if (destinations_wh != null && destinations_reg.size() != 2) {
-//			CivLog.error("Bad chests for quarry (warehouse) in town:"+quarry.getTown().getName()+" dests:"+destinations_wh.size());
-//		}
-		
 		// Make sure the chunk is loaded before continuing. Also, add get chest and add it to inventory.
 		MultiInventory source_inv = new MultiInventory();
-		MultiInventory dest_inv_wh = new MultiInventory();
-		MultiInventory dest_inv_tr = new MultiInventory();
-		MultiInventory dest_inv_reg = new MultiInventory();
+		MultiInventory dest_inv = new MultiInventory();
+		MultiInventory dest_inv_other = new MultiInventory();
 
 		try {
 			for (StructureChest src : sources) {
@@ -125,63 +117,36 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			
 			boolean full = true;
 			
-			if (destinations_wh != null) {
-				for (StructureChest dst : destinations_wh) {
-					//this.syncLoadChunk(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getZ());
-					Inventory tmp;
-					try {
-						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
-					} catch (CivTaskAbortException e) {
-						//e.printStackTrace();
-						CivLog.warning("Quarry (to Warehouse):"+e.getMessage());
-						return;
-					}
-					if (tmp == null) {
-						quarry.skippedCounter++;
-						return;
-					}
-					dest_inv_wh.addInventory(tmp);
-					for (ItemStack stack : tmp.getContents()) {
-						if (stack == null) {
-							full = false;
-							break;
+			if (warehouse || trommel) {
+				if (destinations_other.size() > 1) {
+					for (StructureChest dst : destinations_other) {
+						Inventory tmp;
+						try {
+							tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
+						} catch (CivTaskAbortException e) {
+							CivLog.warning("Quarry:"+e.getMessage());
+							return;
+						}
+						if (tmp == null) {
+							quarry.skippedCounter++;
+							return;
+						}
+						dest_inv_other.addInventory(tmp);
+						for (ItemStack stack : tmp.getContents()) {
+							if (stack == null) {
+								full = false;
+								break;
+							}
 						}
 					}
 				}
 			}
 			
-			if (destinations_tr != null) {
-				for (StructureChest dst : destinations_tr) {
-					//this.syncLoadChunk(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getZ());
-					Inventory tmp;
-					try {
-						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
-					} catch (CivTaskAbortException e) {
-						//e.printStackTrace();
-						CivLog.warning("Quarry (to Trommel):"+e.getMessage());
-						return;
-					}
-					if (tmp == null) {
-						quarry.skippedCounter++;
-						return;
-					}
-					dest_inv_tr.addInventory(tmp);
-					for (ItemStack stack : tmp.getContents()) {
-						if (stack == null) {
-							full = false;
-							break;
-						}
-					}
-				}
-			}
-			
-			for (StructureChest dst2 : destinations_reg) {
-				//this.syncLoadChunk(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getZ());
+			for (StructureChest dst : destinations) {
 				Inventory tmp;
 				try {
-					tmp = this.getChestInventory(dst2.getCoord().getWorldname(), dst2.getCoord().getX(), dst2.getCoord().getY(), dst2.getCoord().getZ(), false);
+					tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
-					//e.printStackTrace();
 					CivLog.warning("Quarry:"+e.getMessage());
 					return;
 				}
@@ -189,7 +154,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					quarry.skippedCounter++;
 					return;
 				}
-				dest_inv_reg.addInventory(tmp);
+				dest_inv.addInventory(tmp);
 				for (ItemStack stack : tmp.getContents()) {
 					if (stack == null) {
 						full = false;
@@ -198,10 +163,8 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 			}
 			
-			if (full) {
-				/* Quarry destination chest is full, stop processing. */
-				return;
-			}
+			// Quarry destination chest is full, stop processing.
+			if (full) return;
 		} catch (InterruptedException e) {
 			return;
 		}
@@ -249,23 +212,26 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						try { //Try to add the new item to the dest chest, if we cant, oh well.
 							for (ItemStack ni : newItem) {
 								debug(quarry, "Updating inventory: "+ni);
-								if (warehouse) {
-									this.updateInventory(Action.ADD, dest_inv_wh, ni);
-								} else if (trommel) {
-									ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)));
-									// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
-									if (cti != null && ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data &&
-												quarry.getTown().saved_trommel_level >= cti.level) {
-										this.updateInventory(Action.ADD, dest_inv_tr, ni);
+								if (dest_inv_other != null) {
+									if (trommel) {
+										ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(ni), ItemManager.getData(ni)).toUpperCase());
+										// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
+										if (cti != null && quarry.getTown().saved_trommel_level >= cti.level) {
+											this.updateInventory(Action.ADD, dest_inv_other, ni);
+										} else {
+											this.updateInventory(Action.ADD, dest_inv, ni);
+										}
+									} else if (warehouse) {
+										this.updateInventory(Action.ADD, dest_inv_other, ni);
 									} else {
-										this.updateInventory(Action.ADD, dest_inv_wh, ni);
+										this.updateInventory(Action.ADD, dest_inv, ni);
 									}
-									this.updateInventory(Action.ADD, dest_inv_wh, ni);
 								} else {
-									this.updateInventory(Action.ADD, dest_inv_reg, ni);
+									this.updateInventory(Action.ADD, dest_inv, ni);
 								}
 							}
 						} catch (InterruptedException e) {
+							CivLog.warning("Quarry:"+e.getMessage());
 							return;
 						}
 						break quarrytask;

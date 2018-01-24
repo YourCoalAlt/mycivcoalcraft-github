@@ -474,13 +474,13 @@ public class Blacksmith extends Structure {
 		v.setAI(false);
 		v.setCustomName("Blacksmith Smelter");
 		v.setProfession(Profession.BLACKSMITH);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openSmeltGUI(Player p, Town town) {

@@ -18,7 +18,6 @@
  */
 package com.avrgaming.civcraft.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +44,6 @@ public class ConfigBuildableInfo {
 	public String update_event = "";
 	public String onBuild_event = "";
 	public int limit = 0;
-	public ArrayList<String> signs = new ArrayList<String>();
 	public Integer cost = 0;
 	public Integer upkeep = 0;
 	public Integer hammer_cost = 0;
@@ -68,15 +66,8 @@ public class ConfigBuildableInfo {
 				if (town.hasStructure(require_structure)) {
 					if (limit == 0 || town.getStructureTypeCount(id) < limit) {					
 						boolean capitol = town.isCapitol();
-
-						if (id.equals("s_townhall") && capitol) {
-							return false;
-						}
-						
-						if (id.equals("s_capitol") && !capitol) {
-							return false;
-						}
-						
+						if (id.equals("s_townhall") && capitol) return false;
+						if (id.equals("s_capitol") && !capitol) return false;
 						return true;
 					}
 				}
@@ -106,7 +97,7 @@ public class ConfigBuildableInfo {
 			sinfo.update_event = (String)obj.get("update_event");
 			sinfo.onBuild_event = (String)obj.get("onBuild_event");
 			sinfo.limit = (Integer)obj.get("limit");
-			//TODO handle signs
+			
 			sinfo.cost = (Integer)obj.get("cost");
 			sinfo.upkeep = (Integer)obj.get("upkeep");
 			sinfo.hammer_cost = (Integer)obj.get("hammer_cost");

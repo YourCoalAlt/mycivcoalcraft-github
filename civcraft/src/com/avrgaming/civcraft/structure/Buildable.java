@@ -954,7 +954,6 @@ public abstract class Buildable extends SQLObject {
 	
 	public synchronized void buildRepairTemplate(Template tpl, Block centerBlock) {
 		HashMap<Chunk, Chunk> chunkUpdates = new HashMap<Chunk, Chunk>();
-		
 		for (int x = 0; x < tpl.size_x; x++) {
 			for (int y = 0; y < tpl.size_y; y++) {
 				for (int z = 0; z < tpl.size_z; z++) {
@@ -967,7 +966,6 @@ public abstract class Buildable extends SQLObject {
 						}
 						
 						chunkUpdates.put(b.getChunk(), b.getChunk());
-						
 						if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
 							Sign s2 = (Sign)b.getState();
 							s2.setLine(0, tpl.blocks[x][y][z].message[0]);

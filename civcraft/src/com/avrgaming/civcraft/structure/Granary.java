@@ -99,13 +99,13 @@ public class Granary extends Structure {
 		v.setAI(false);
 		v.setCustomName("Granary Food Storage");
 		v.setProfession(Profession.NITWIT);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openStorageGUI(Player p, Town town) {
@@ -184,13 +184,13 @@ public class Granary extends Structure {
 		v.setAI(false);
 		v.setCustomName("Granary Tasks");
 		v.setProfession(Profession.NITWIT);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openTaskGUI(Player p, Town town) {

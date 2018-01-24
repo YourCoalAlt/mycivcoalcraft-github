@@ -73,7 +73,13 @@ public class Market extends Structure {
 		v.setAI(false);
 		v.setCustomName("Market Tradesman");
 		v.setProfession(Profession.FARMER);
-		CivGlobal.addStructureVillager(v);
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
+		}
 	}
 	
 	public void openMainMenu(Player p) {

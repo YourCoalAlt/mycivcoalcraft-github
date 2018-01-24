@@ -35,8 +35,8 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.ItemManager;
 
 /* https://github.com/gvlfm78/BukkitOldCombatMechanics */
@@ -328,14 +328,13 @@ public class MinecraftListener implements Listener {
 			}
 		}
 		
-		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
-			if (cc.getChunkCoord().getChunk() == teleportLocation.getChunk()) {
+			ChunkCoord cc = new ChunkCoord(teleportLocation);
+			if (CivGlobal.getCultureChunk(cc) != null && cc.getChunk() == teleportLocation.getChunk()) {
 				CivMessage.sendError(p, "We accidently tried teleporting you to a civilization's culture borders. Recalculating new placement...");
 				x = -(rX/2) + (rand.nextInt(rX)) - (rand.nextInt(rX)/10);
 				z = -(rZ/2) + (rand.nextInt(rZ)) - (rand.nextInt(rZ)/10);
 				isOnLand = false;
 				isClearAbove = false;
-			}
 		}
 		
 		p.setInvulnerable(true);

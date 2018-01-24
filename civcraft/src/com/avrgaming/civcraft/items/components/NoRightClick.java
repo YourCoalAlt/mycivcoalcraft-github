@@ -8,16 +8,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import gpl.AttributeUtil;
 
 public class NoRightClick extends ItemComponent {
-
+	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrUtil) {
 	}
-
 	
-	@SuppressWarnings("deprecation")
 	public void onInteract(PlayerInteractEvent event) {
 		if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			event.getPlayer().updateInventory();
 			event.setCancelled(true);
 			return;
 		}

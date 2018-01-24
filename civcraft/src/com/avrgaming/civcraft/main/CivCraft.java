@@ -22,12 +22,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Villager;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -116,7 +113,6 @@ import com.avrgaming.civcraft.threading.timers.AnnouncementTimer;
 import com.avrgaming.civcraft.threading.timers.BeakerTimer;
 import com.avrgaming.civcraft.threading.timers.CalculateScoreTimer;
 import com.avrgaming.civcraft.threading.timers.ChangeGovernmentTimer;
-import com.avrgaming.civcraft.threading.timers.CountdownTimer;
 import com.avrgaming.civcraft.threading.timers.ParticleEffectTimer;
 import com.avrgaming.civcraft.threading.timers.PlayerLocationCacheUpdate;
 import com.avrgaming.civcraft.threading.timers.PlayerProximityComponentTimer;
@@ -129,7 +125,6 @@ import com.avrgaming.civcraft.threading.timers.UpdateEventTimer;
 import com.avrgaming.civcraft.threading.timers.WindmillTimer;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
-import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
@@ -159,7 +154,8 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.syncTimer(PlayerLocationCacheUpdate.class.getName(), new PlayerLocationCacheUpdate(), 0, 10);
 		TaskMaster.asyncTimer("RandomEventSweeper", new RandomEventSweeper(), 0, TimeTools.toTicks(10));
 		
-		TaskMaster.asyncTimer("CountdownTimer", new CountdownTimer(), TimeTools.toTicks(1));
+		// BeakerTimer now runs task to check if player should be unbanned/unmuted.
+//		TaskMaster.asyncTimer("CountdownTimer", new CountdownTimer(), TimeTools.toTicks(1));
 		TaskMaster.asyncTimer("PlayerTagUpdateTimer", new PlayerTagUpdateTimer(), TimeTools.toTicks(10));
 		TaskMaster.asyncTimer("ActionBarUpdateTimer", new ActionBarUpdateTimer(), TimeTools.toTicks(1));
 		
@@ -167,7 +163,7 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.asyncTimer("ParticleEffectTimer", new ParticleEffectTimer(), TimeTools.toTicks(1, 7));
 		TaskMaster.asyncTimer("UpdateEventTimer", new UpdateEventTimer(), TimeTools.toTicks(1));
 		TaskMaster.asyncTimer("RegenTimer", new RegenTimer(), TimeTools.toTicks(5));
-
+		
 		TaskMaster.asyncTimer("BeakerTimer", new BeakerTimer(60), TimeTools.toTicks(60));
 		TaskMaster.syncTimer("UnitTrainTimer", new UnitTrainTimer(), TimeTools.toTicks(1));
 
@@ -341,28 +337,7 @@ public final class CivCraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
-		
-		int chunksSearched = 0;
-		int villagersRemoved = 0;
-		for (TownChunk tc : CivGlobal.getTownChunks()) {
-			Chunk chunk = tc.getChunkCoord().getChunk();
-			if (!chunk.isLoaded()) chunk.load();
-			
-			for (Entity e : chunk.getEntities()) {
-				if (e instanceof Villager) {
-					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
-					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
-						villagersRemoved++;
-						v.setHealth(0);
-						e.remove();
-					}
-				}
-			}
-			
-			chunksSearched++;
-			chunk.unload();
-		}
-		CivMessage.global(CivColor.Gold+"Removed "+villagersRemoved+" villagers from "+chunksSearched+" town chunks.");
+		CivGlobal.resetGlobalVillagers();
 		
 		isDisable = true;
 		SQLUpdate.save();

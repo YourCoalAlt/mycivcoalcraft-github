@@ -705,7 +705,7 @@ upgrades:
       action: 'set_warehouse_level, 2'
       cost: 20000
       require_upgrade:
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
       category: 'warehouse'
 #
@@ -714,7 +714,88 @@ upgrades:
       action: 'set_warehouse_level, 3'
       cost: 40000
       require_upgrade: 'upgrade_warehouse_level_2'
-      require_tech: 'tech_masonry'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_4'
+      name: 'Upgrade Warehouse Level 4'
+      action: 'set_warehouse_level, 4'
+      cost: 60000
+      require_upgrade: 'upgrade_warehouse_level_3'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_5'
+      name: 'Upgrade Warehouse Level 5'
+      action: 'set_warehouse_level, 5'
+      cost: 80000
+      require_upgrade: 'upgrade_warehouse_level_4'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_6'
+      name: 'Upgrade Warehouse Level 6'
+      action: 'set_warehouse_level, 6'
+      cost: 100000
+      require_upgrade: 'upgrade_warehouse_level_5'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_7'
+      name: 'Upgrade Warehouse Level 7'
+      action: 'set_warehouse_level, 7'
+      cost: 125000
+      require_upgrade: 'upgrade_warehouse_level_6'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_8'
+      name: 'Upgrade Warehouse Level 8'
+      action: 'set_warehouse_level, 8'
+      cost: 150000
+      require_upgrade: 'upgrade_warehouse_level_7'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_9'
+      name: 'Upgrade Warehouse Level 9'
+      action: 'set_warehouse_level, 9'
+      cost: 175000
+      require_upgrade: 'upgrade_warehouse_level_8'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_10'
+      name: 'Upgrade Warehouse Level 10'
+      action: 'set_warehouse_level, 10'
+      cost: 200000
+      require_upgrade: 'upgrade_warehouse_level_9'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_11'
+      name: 'Upgrade Warehouse Level 11'
+      action: 'set_warehouse_level, 11'
+      cost: 250000
+      require_upgrade: 'upgrade_warehouse_level_10'
+      require_tech: 'tech_doesnotexist'
+      require_structure: 's_warehouse'
+      category: 'warehouse'
+#
+    - id: 'upgrade_warehouse_level_12'
+      name: 'Upgrade Warehouse Level 12'
+      action: 'set_warehouse_level, 12'
+      cost: 300000
+      require_upgrade: 'upgrade_warehouse_level_11'
+      require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
       category: 'warehouse'
 #

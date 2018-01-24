@@ -10,6 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
@@ -95,23 +96,23 @@ public class ModeratorCommand extends CommandBase {
 			s = CivGlobal.getResident(getPlayer());
 		}
 		
-		Resident res = CivGlobal.getResident(args[1]);
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd h:mm:ss a z");
 		if (s != null) sdf.setTimeZone(TimeZone.getTimeZone(s.getTimezone())); else sdf.setTimeZone(TimeZone.getDefault());
 		
-		String out = CivColor.LightBlue+res.getName()+"'s Status;";
-		if (res.isBanned()) {
-			out += CivColor.Rose+"Banned, Reason:;"+CivColor.RESET+res.getBannedMessage()+";";
-			out += CivColor.Rose+"Unbanned at:;"+CivColor.Yellow+sdf.format(res.getBannedLength());
+		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
+		String out = CivColor.LightBlue+al.getPlayer().getName()+"'s Status;";
+		if (al.isBanned()) {
+			out += CivColor.Rose+"Banned, Reason:;"+CivColor.RESET+al.getBanMessage()+";";
+			out += CivColor.Rose+"Unbanned at:;"+CivColor.Yellow+sdf.format(al.getBanLength());
 		} else {
 			out += CivColor.LightGreen+"Not Banned :)";
 		}
 		
 		out += ";";
 		
-		if (res.isMuted()) {
-			out += CivColor.Rose+"Muted, Reason:;"+CivColor.RESET+res.getMutedMessage()+";";
-			out += CivColor.Rose+"Unmuted at:;"+CivColor.Yellow+sdf.format(res.getMutedLength());
+		if (al.isMuted()) {
+			out += CivColor.Rose+"Muted, Reason:;"+CivColor.RESET+al.getMuteMessage()+";";
+			out += CivColor.Rose+"Unmuted at:;"+CivColor.Yellow+sdf.format(al.getMuteLength());
 		} else {
 			out += CivColor.LightGreen+"Not Muted :)";
 		}
@@ -181,21 +182,21 @@ public class ModeratorCommand extends CommandBase {
 		}
 		String message = buffer.toString();
 		
-		Resident res = CivGlobal.getResident(args[1]);
-		if (res != null) {
+		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
+		if (al != null) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Banned", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" banned by "+name);
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Banned", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" banned by "+name);
 			}
-			res.setBanned(true);
-			res.setBannedMessage(message);
-			res.setBannedLength(sec, min, hours);
+			al.setBanned(true);
+			al.setBanMessage(message);
+			al.setBanLength(sec, min, hours);
 			try {
-				res.saveNow();
+				al.saveNow();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			TaskMaster.syncTask(new PlayerModerationBan(res.getName(), sender.getName(), message, hours, min, sec));
-			CivMessage.globalModerator(CivColor.RoseBold+"[Banned] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" has been banned by "+name+CivColor.RESET+
+			TaskMaster.syncTask(new PlayerModerationBan(al.getPlayer().getName(), sender.getName(), message, hours, min, sec));
+			CivMessage.globalModerator(CivColor.RoseBold+"[Banned] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been banned by "+name+CivColor.RESET+
 					". Length: "+CivColor.LightGreenItalic+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+CivColor.RESET+". Reason:"+CivColor.LightGreenItalic+message);
 		} else {
 			throw new CivException("Cannot ban player. Please check your arguments are correct: /mod ban [player] [seconds] [minutes] [hours] [reason...]");
@@ -215,18 +216,18 @@ public class ModeratorCommand extends CommandBase {
 			throw new CivException("Enter a player name to unban.");
 		}
 		
-		Resident res = CivGlobal.getResident(args[1]);
-		if (res != null && res.isBanned()) {
+		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
+		if (al != null && al.isBanned()) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unbanned", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" unbanned by "+name);
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unbanned", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" unbanned by "+name);
 			}
-			res.resetBannedLength();
-			res.setBanned(false);
-			res.setBannedMessage("null");
-			CivMessage.globalModerator(CivColor.LightGreenBold+"[Unbanned] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" has been unbanned by "+name+CivColor.RESET+".");
-			res.saveNow();
+			al.resetBanLength();
+			al.setBanned(false);
+			al.setBanMessage("null");
+			CivMessage.globalModerator(CivColor.LightGreenBold+"[Unbanned] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been unbanned by "+name+CivColor.RESET+".");
+			al.saveNow();
 			CivMessage.sendSuccess(sender, "Unbanned "+args[1]+".");
-		} else if (!res.isBanned()) {
+		} else if (!al.isBanned()) {
 			throw new CivException(args[1]+", is not banned.");
 		} else {
 			throw new CivException("Couldn't find "+args[1]+".");
@@ -262,26 +263,27 @@ public class ModeratorCommand extends CommandBase {
 		}
 		String message = buffer.toString();
 		
-		Resident res = CivGlobal.getResident(args[1]);
-		if (res != null) {
-			CivMessage.sendSound(res, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
+		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
+		if (al != null) {
+			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Muted", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" muted by "+name);
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Muted", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" muted by "+name);
 			}
-			res.setMuted(true);
-			res.setMutedMessage(message);
-			res.setMutedLength(sec, min, hours);
+			al.setMuted(true);
+			al.setMuteMessage(message);
+			al.setMuteLength(sec, min, hours);
 			try {
-				res.saveNow();
+				al.saveNow();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			CivMessage.globalModerator(CivColor.RoseBold+"[Muted] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" has been muted by "+name+CivColor.RESET+
+			CivMessage.globalModerator(CivColor.RoseBold+"[Muted] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been muted by "+name+CivColor.RESET+
 					". Length: "+CivColor.LightGreenItalic+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+CivColor.RESET+". Reason:"+CivColor.LightGreenItalic+message);
 			
+			Resident res = CivGlobal.getResident(args[1]);
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy h:mm:ss a z");
 			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-			Date date = new Date(res.getMutedLength());
+			Date date = new Date(al.getMuteLength());
 			String out = CivColor.LightBlueBold+"§« CivilizationCraft §»;"+
 					" ;"+
 					CivColor.RoseBold+"Muted By "+CivColor.GrayBold+"§» "+CivColor.RESET+name+";"+
@@ -311,19 +313,19 @@ public class ModeratorCommand extends CommandBase {
 			throw new CivException("Enter a player name to unmute.");
 		}
 		
-		Resident res = CivGlobal.getResident(args[1]);
-		if (res != null && res.isMuted()) {
-			CivMessage.sendSound(res, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
+		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
+		if (al != null && al.isMuted()) {
+			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unmuted", CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" unmuted by "+name);
+				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unmuted", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" unmuted by "+name);
 			}
-			res.resetMutedLength();
-			res.setMuted(false);
-			res.setMutedMessage("null");
-			CivMessage.globalModerator(CivColor.LightGreenBold+"[Unmute] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+res.getName()+CivColor.RESET+" has been unmuted by "+name+CivColor.RESET+".");
-			res.saveNow();
+			al.resetMuteLength();
+			al.setMuted(false);
+			al.setMuteMessage("null");
+			CivMessage.globalModerator(CivColor.LightGreenBold+"[Unmute] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been unmuted by "+name+CivColor.RESET+".");
+			al.saveNow();
 			CivMessage.sendSuccess(sender, "Unmuted "+args[1]+".");
-		} else if (!res.isMuted()) {
+		} else if (!al.isMuted()) {
 			throw new CivException(args[1]+", is not muted.");
 		} else {
 			throw new CivException("Couldn't find "+args[1]+".");

@@ -143,7 +143,13 @@ public class Warehouse extends Structure {
 		v.setAI(false);
 		v.setCustomName("Warehouse Guide");
 		v.setProfession(Profession.LIBRARIAN);
-		CivGlobal.addStructureVillager(v);
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
+		}
 	}
 	
 	public void openToggleGUI(Player p, Town town) {

@@ -24,6 +24,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.moderator.ModeratorCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -41,9 +42,10 @@ public class ChatListener implements Listener {
 			return;
 		}
 		
+		AccountLogger al = CivGlobal.getAccount(p.getUniqueId().toString());
 		if (!resident.isInteractiveMode() && !resident.isCivChat() && !resident.isTownChat()) {
-			if (resident.isMuted()) {
-				CivMessage.sendError(resident, "You are muted! Reason: "+resident.getMutedMessage());
+			if (al.isMuted()) {
+				CivMessage.sendError(resident, "You are muted! Reason: "+al.getMuteMessage());
 				event.setCancelled(true);
 				return;
 			}

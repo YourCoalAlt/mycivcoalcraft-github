@@ -119,14 +119,6 @@ public class Resident extends SQLObject {
 	private String timezone;
 	public boolean pvptag = false;
 	
-	private boolean banned = false;
-	private String bannedMessage = "null";
-	private long bannedLength = 0;
-	
-	private boolean muted = false;
-	private String mutedMessage = "null";
-	private long mutedLength = 0;
-	
 	private long registered;
 	private long lastOnline;
 	private int daysTilEvict;
@@ -215,12 +207,6 @@ public class Resident extends SQLObject {
 					"`daysTilEvict` mediumint DEFAULT NULL," +
 					"`givenKit` bool NOT NULL DEFAULT '0'," +
 					"`timezone` mediumtext,"+
-					"`banned` bool NOT NULL DEFAULT '0'," +
-					"`bannedMessage` mediumtext DEFAULT NULL,"+
-					"`bannedLength` BIGINT DEFAULT '0'," + 
-					"`muted` bool NOT NULL DEFAULT '0'," +
-					"`mutedMessage` mediumtext DEFAULT NULL,"+
-					"`mutedLength` BIGINT DEFAULT '0'," + 
 					"`savedInventory` mediumtext DEFAULT NULL,"+
 					"`isProtected` bool NOT NULL DEFAULT '0',"+
 					"`flags` mediumtext DEFAULT NULL,"+
@@ -245,36 +231,6 @@ public class Resident extends SQLObject {
 			if (!SQL.hasColumn(TABLE_NAME, "pvptag")) {
 				CivLog.info("\tCouldn't find `pvptag` for resident.");
 				SQL.addColumn(TABLE_NAME, "`pvptag` bool NOT NULL DEFAULT '0'");
-			}
-			
-			if (!SQL.hasColumn(TABLE_NAME, "banned")) {
-				CivLog.info("\tCouldn't find `banned` for resident.");
-				SQL.addColumn(TABLE_NAME, "`banned` bool default 0");
-			}			
-			
-			if (!SQL.hasColumn(TABLE_NAME, "bannedMessage")) {
-				CivLog.info("\tCouldn't find `bannedMessage` for resident.");
-				SQL.addColumn(TABLE_NAME, "`bannedMessage` mediumtext default null");
-			}
-			
-			if (!SQL.hasColumn(TABLE_NAME, "bannedLength")) {
-				CivLog.info("\tCouldn't find `bannedLength` for resident.");
-				SQL.addColumn(TABLE_NAME, "`bannedLength` bigint default 0");
-			}
-			
-			if (!SQL.hasColumn(TABLE_NAME, "muted")) {
-				CivLog.info("\tCouldn't find `muted` for resident.");
-				SQL.addColumn(TABLE_NAME, "`muted` bool default 0");
-			}			
-			
-			if (!SQL.hasColumn(TABLE_NAME, "mutedMessage")) {
-				CivLog.info("\tCouldn't find `mutedMessage` for resident.");
-				SQL.addColumn(TABLE_NAME, "`mutedMessage` mediumtext default null");
-			}
-			
-			if (!SQL.hasColumn(TABLE_NAME, "mutedLength")) {
-				CivLog.info("\tCouldn't find `mutedLength` for resident.");
-				SQL.addColumn(TABLE_NAME, "`mutedLength` bigint default 0");
 			}
 			
 			if (!SQL.hasColumn(TABLE_NAME, "last_ip")) {
@@ -321,14 +277,6 @@ public class Resident extends SQLObject {
 		this.lastIP = rs.getString("last_ip");
 		this.debugTown = rs.getString("debug_town");
 		this.pvptag = rs.getBoolean("pvptag");
-		
-		this.banned = rs.getBoolean("banned");
-		this.bannedMessage = rs.getString("bannedMessage");
-		this.bannedLength = rs.getLong("bannedLength");
-		
-		this.muted = rs.getBoolean("muted");
-		this.mutedMessage = rs.getString("mutedMessage");
-		this.mutedLength = rs.getLong("mutedLength");
 
 		if (rs.getString("uuid").equalsIgnoreCase("UNKNOWN")) {
 			this.uid = null;
@@ -403,14 +351,6 @@ public class Resident extends SQLObject {
 		}
 		
 		hashmap.put("pvptag", this.pvptag);
-		
-		hashmap.put("banned", this.isBanned());
-		hashmap.put("bannedMessage", this.getBannedMessage());
-		hashmap.put("bannedLength", this.getBannedLength());
-		
-		hashmap.put("muted", this.isMuted());
-		hashmap.put("mutedMessage", this.getMutedMessage());
-		hashmap.put("mutedLength", this.getMutedLength());
 		
 		hashmap.put("lastOnline", this.getLastOnline());
 		hashmap.put("registered", this.getRegistered());
@@ -1598,63 +1538,6 @@ public class Resident extends SQLObject {
 	
 	
 	
-	//Muting
-	public boolean isMuted() {
-		return muted;
-	}
-
-	public void setMuted(boolean muted) {
-		this.muted = muted;
-	}
-	
-	public void setMutedMessage(String msg) {
-		this.mutedMessage = msg;
-	}
-	
-	public String getMutedMessage() {
-		return mutedMessage;
-	}
-	
-	public void setMutedLength(int sec, int min, int hours) {
-		this.mutedLength = System.currentTimeMillis() + (hours*60*60*1000) + (min*60*1000) + (sec*1000);
-	}
-	
-	public void resetMutedLength() {
-		this.mutedLength = 0;
-	}
-	
-	public Long getMutedLength() {
-		return mutedLength;
-	}
-	
-	// Banning
-	public boolean isBanned() {
-		return banned;
-	}
-
-	public void setBanned(boolean banned) {
-		this.banned = banned;
-	}
-	
-	public void setBannedMessage(String msg) {
-		this.bannedMessage = msg;
-	}
-	
-	public String getBannedMessage() {
-		return bannedMessage;
-	}
-	
-	public void setBannedLength(int sec, int min, int hours) {
-		this.bannedLength = System.currentTimeMillis() + (hours*60*60*1000) + (min*60*1000) + (sec*1000);
-	}
-	
-	public void resetBannedLength() {
-		this.bannedLength = 0;
-	}
-	
-	public Long getBannedLength() {
-		return bannedLength;
-	}
 	
 	
 	

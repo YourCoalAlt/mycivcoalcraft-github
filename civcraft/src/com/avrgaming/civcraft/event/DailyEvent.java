@@ -22,8 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.CultureProcessAsyncTask;
@@ -54,12 +54,11 @@ public class DailyEvent implements EventInterface {
 			dayExecuted = cal.get(Calendar.DAY_OF_MONTH);
 			TaskMaster.syncTask(new DailyTimer(), 0);
 		} else {
-			String error = "Daily Event was trying to execute twice on day "+dayExecuted+"!";
-			try {
-				throw new CivException(error);
-			} catch (CivException e) {
-				CivLog.error(error);
-//				e.printStackTrace();
+			if (CivGlobal.debugDateBypass) {
+				
+				CivLog.warning("Daily Event was to executed twice on day "+dayExecuted+" due to debugDateBypass!");
+			} else {
+				CivLog.error("Daily Event was trying to execute twice on day "+dayExecuted+"!");
 			}
 		}
 	}

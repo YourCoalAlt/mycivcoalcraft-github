@@ -30,13 +30,9 @@ public class _BuildingInventory implements GuiAction {
 			guiInventory.setItem(i, is);
 		}
 		
-		ItemStack si = LoreGuiItem.build("Global Structure Info", ItemManager.getId(Material.FENCE), 0, CivColor.LightGrayItalic+"An in-game wiki for all structure information.");
-		si = LoreGuiItem.setAction(si, "_BuildingStructureListInventory");
-		guiInventory.setItem(0, si);
-		
 		ItemStack bs = LoreGuiItem.build("Build a Structure", ItemManager.getId(Material.BRICK_STAIRS), 0, CivColor.LightGrayItalic+"An in-game wiki for all structure information.");
 		bs = LoreGuiItem.setAction(bs, "_BuildingStructureBuildInventory");
-		guiInventory.setItem(2, bs);
+		guiInventory.setItem(0, bs);
 		
 		/* Add back buttons. */
 		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");

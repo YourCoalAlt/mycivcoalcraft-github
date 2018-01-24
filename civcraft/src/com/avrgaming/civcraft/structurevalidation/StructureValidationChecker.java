@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
-import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.war.War;
@@ -25,7 +24,7 @@ public class StructureValidationChecker implements Runnable {
 			if (struct.isIgnoreFloating()) continue;
 			
 			try {
-				CivLog.warning("Doing a structure validate...");
+//				CivLog.warning("Doing a structure validate...");
 				struct.validate(null);
 			} catch (CivException e) {
 				e.printStackTrace();
@@ -33,7 +32,7 @@ public class StructureValidationChecker implements Runnable {
 			
 			synchronized (this) {
 				try {
-					this.wait(10000);
+					this.wait(5000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

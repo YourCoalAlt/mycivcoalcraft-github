@@ -177,13 +177,13 @@ public class Bank extends Structure {
 		v.setAI(false);
 		v.setCustomName(this.getTown().getName()+"'s Bank Teller");
 		v.setProfession(Profession.LIBRARIAN);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openToolGUI(Player p, Town town) {

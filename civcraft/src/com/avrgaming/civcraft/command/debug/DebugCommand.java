@@ -101,7 +101,6 @@ import com.avrgaming.civcraft.threading.tasks.ChunkGenerateTask;
 import com.avrgaming.civcraft.threading.tasks.CultureProcessAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.PostBuildSyncTask;
 import com.avrgaming.civcraft.threading.tasks.TradeGoodPostGenTask;
-import com.avrgaming.civcraft.threading.tasks.TrommelAsyncTask;
 import com.avrgaming.civcraft.threading.timers.DailyTimer;
 import com.avrgaming.civcraft.util.AsciiMap;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -167,11 +166,9 @@ public class DebugCommand extends CommandBase {
 		commands.put("touches", "[town] - prints a list of friendly touches for this town's culture.");
 		commands.put("listconquered", "shows a list of conquered civilizations.");
 		commands.put("blockinfo", "[x] [y] [z] shows block info for this block.");
-		commands.put("trommel", "[name] - turn on this town's trommel debugging.");
 		commands.put("fakeresidents", "[town] [count] - Adds this many fake residents to a town.");
 		commands.put("clearresidents", "[town] - clears this town of it's random residents.");
 		commands.put("biomehere", "- shows you biome info where you're standing.");
-		commands.put("scout", "[civ] - enables debugging for scout towers in this civ.");
 		commands.put("showinv", "shows you an inventory");
 		commands.put("setspecial", "sets special stuff");
 		commands.put("getspecial", "gets the special stuff");
@@ -279,7 +276,7 @@ public class DebugCommand extends CommandBase {
 	
 	public void datebypass_cmd() {
 		CivGlobal.debugDateBypass = !CivGlobal.debugDateBypass;
-		CivMessage.send(sender, "Date bypass is now:"+CivGlobal.debugDateBypass);
+		CivMessage.send(sender, "Date bypass is now "+CivGlobal.debugDateBypass);
 	}
 	
 	// TODO Test, code from https://www.spigotmc.org/threads/getting-a-players-ping.276272/
@@ -717,20 +714,6 @@ public class DebugCommand extends CommandBase {
 		Backpack.spawnGuiBook(getPlayer(), true);
 	}
 	
-	public void scout_cmd() throws CivException {
-		Civilization civ = getNamedCiv(1);
-		
-		if (!civ.scoutDebug) {
-			civ.scoutDebug = true;
-			civ.scoutDebugPlayer = getPlayer().getName();
-			CivMessage.sendSuccess(sender, "Enabled scout tower debugging in "+civ.getName());
-		} else {
-			civ.scoutDebug = false;
-			civ.scoutDebugPlayer = null;
-			CivMessage.sendSuccess(sender, "Disabled scout tower debugging in "+civ.getName());
-		}
-	}
-	
 	public void biomehere_cmd() throws CivException {
 		Player player = getPlayer();
 		
@@ -773,18 +756,6 @@ public class DebugCommand extends CommandBase {
 			}
 		}
 		CivMessage.sendSuccess(sender, "Added "+count+" residents.");
-	}
-	
-	public void trommel_cmd() throws CivException {
-		Town town = getNamedTown(1);
-		
-		if (TrommelAsyncTask.debugTowns.contains(town.getName())) {
-			TrommelAsyncTask.debugTowns.remove(town.getName());
-		} else {
-			TrommelAsyncTask.debugTowns.add(town.getName());
-		}
-		
-		CivMessage.send(sender, "Trommel toggled.");
 	}
 	
 	public void blockinfo_cmd() throws CivException {

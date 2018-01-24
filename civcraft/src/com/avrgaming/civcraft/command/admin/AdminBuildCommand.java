@@ -60,6 +60,8 @@ public class AdminBuildCommand extends CommandBase {
 	}
 	
 	public void postbuild_cmd() throws IOException, CivException {
+		CivGlobal.resetGlobalVillagers();
+		CivMessage.global("Refreshing PostBuildTask on structures, may cause lag...");
 		for (Buildable b : CivGlobal.getStructures()) {
 			Template tpl = Template.getTemplate(b.getSavedTemplatePath(), null);
 			TaskMaster.syncTask(new PostBuildSyncTask(tpl, b));

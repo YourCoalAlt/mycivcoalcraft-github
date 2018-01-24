@@ -29,9 +29,9 @@ public class DateUtil {
 	
 	private static boolean isAfter(Date d, int value, int m) {
 		Date now = new Date();
-		if (CivGlobal.debugDateBypass) { return true; }
-		if (d == null) { return true; }
-		if (now.getTime() > (d.getTime() + value*m)) { return true; }
+		if (CivGlobal.debugDateBypass) return true;
+		if (d == null) return true;
+		if (now.getTime() > (d.getTime() + value*m)) return true;
 		return false;
 	}
 }

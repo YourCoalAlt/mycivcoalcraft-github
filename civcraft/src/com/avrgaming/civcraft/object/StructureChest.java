@@ -65,7 +65,5 @@ public class StructureChest {
 	public void setChestId(int chestId) {
 		this.chestId = chestId;
 	}
-
-	
 	
 }

@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
@@ -88,6 +89,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.PlayerChunkNotifyAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.PlayerKickBan;
 import com.avrgaming.civcraft.threading.tasks.PlayerLoginAsyncTask;
+import com.avrgaming.civcraft.threading.timers.CountdownTimer;
 import com.avrgaming.civcraft.threading.timers.PlayerLocationCacheUpdate;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
@@ -143,6 +145,17 @@ public class PlayerListener implements Listener {
 		Resident res = CivGlobal.getResident(event.getPlayer());
 		if (!res.hasChatEnabled()) {
 			event.setCancelled(true);
+			
+			List<Player> playerRecipients = new ArrayList<Player>();
+			for (Player recipient : event.getRecipients()) {
+				if (recipient.getName().equals(event.getPlayer().getName())) continue;
+				Resident resTwo = CivGlobal.getResident(recipient);
+				if (resTwo.hasChatEnabled()) {
+					playerRecipients.add(recipient);
+				}
+			}
+			event.getRecipients().clear();
+			event.getRecipients().addAll(playerRecipients);
 		}
 	}
 	
@@ -200,6 +213,8 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) throws InvalidNameException {
+		TaskMaster.asyncTask("CountdownTimer", new CountdownTimer(), 0);
+		
 		Player p = event.getPlayer();
 		Resident res = CivGlobal.getResident(p);
 		CivLog.info("Scheduling Player Login Task for:"+p.getName());
@@ -260,14 +275,15 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		if (res.isBanned()) {
+		AccountLogger al = CivGlobal.getAccount(p.getUniqueId().toString());
+		if (al.isBanned()) {
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 			sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-			Date date = new Date(res.getBannedLength());
+			Date date = new Date(al.getBanLength());
 			String msg = (" §b§l« CivilizationCraft »"+"\n"+
 					" "+"\n"+
 					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
-					"§c§lReason §r§8»§ §fBanned: "+res.getBannedMessage()+"\n"+
+					"§c§lReason §r§8»§ §fBanned: "+al.getBanMessage()+"\n"+
 					"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
 					" "+"\n"+
 					" "+"\n"+

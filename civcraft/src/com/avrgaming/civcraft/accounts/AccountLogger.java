@@ -24,6 +24,18 @@ public class AccountLogger extends SQLObject {
 	private UUID uid;
 	private ArrayList<String> logged_ips = new ArrayList<String>();
 	
+	private boolean banned = false;
+	private String banMessage = "null";
+	private long banLength = 0;
+	
+	private boolean muted = false;
+	private String muteMessage = "null";
+	private long muteLength = 0;
+	
+//	private boolean ipBanned = false;
+//	private String ipBanMessage = "null";
+//	private long ipBanLength = 0;
+	
 	public static String TABLE_NAME = "ACCOUNT_LOGGER";
 	public AccountLogger(ResultSet rs) throws SQLException, InvalidNameException {
 		this.load(rs);
@@ -41,18 +53,54 @@ public class AccountLogger extends SQLObject {
 					"`id` int(11) unsigned NOT NULL auto_increment," +
 					"`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN',"+
 					"`logged_ips` mediumtext DEFAULT NULL," +
+					"`banned` bool NOT NULL DEFAULT '0'," +
+					"`bannedMessage` mediumtext DEFAULT NULL,"+
+					"`bannedLength` BIGINT DEFAULT '0'," + 
+					"`muted` bool NOT NULL DEFAULT '0'," +
+					"`mutedMessage` mediumtext DEFAULT NULL,"+
+					"`mutedLength` BIGINT DEFAULT '0'," + 
 					"PRIMARY KEY (`id`)" + ")";
 			SQL.makeTable(table_create);
 			CivLog.info("Created "+TABLE_NAME+" Table");
 		} else {
 			if (!SQL.hasColumn(TABLE_NAME, "uuid")) {
-				CivLog.info("\tCouldn't find `uuid` for resident.");
+				CivLog.info("\tCouldn't find `uuid` for account_logger.");
 				SQL.addColumn(TABLE_NAME, "`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN'");
 			}
 			
 			if (!SQL.hasColumn(TABLE_NAME, "logged_ips")) {
-				CivLog.info("\tCouldn't find `logged_ips` for resident.");
+				CivLog.info("\tCouldn't find `logged_ips` for account_logger.");
 				SQL.addColumn(TABLE_NAME, "`logged_ips` mediumtext DEFAULT NULL,");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "banned")) {
+				CivLog.info("\tCouldn't find `banned` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`banned` bool default 0");
+			}			
+			
+			if (!SQL.hasColumn(TABLE_NAME, "bannedMessage")) {
+				CivLog.info("\tCouldn't find `bannedMessage` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`bannedMessage` mediumtext default null");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "bannedLength")) {
+				CivLog.info("\tCouldn't find `bannedLength` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`bannedLength` bigint default 0");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "muted")) {
+				CivLog.info("\tCouldn't find `muted` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`muted` bool default 0");
+			}			
+			
+			if (!SQL.hasColumn(TABLE_NAME, "mutedMessage")) {
+				CivLog.info("\tCouldn't find `mutedMessage` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`mutedMessage` mediumtext default null");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "mutedLength")) {
+				CivLog.info("\tCouldn't find `mutedLength` for account_logger.");
+				SQL.addColumn(TABLE_NAME, "`mutedLength` bigint default 0");
 			}
 			
 			CivLog.info(TABLE_NAME+" table OK!");
@@ -67,6 +115,14 @@ public class AccountLogger extends SQLObject {
 		else this.uid = UUID.fromString(rs.getString("uuid"));
 		
 		if (rs.getString("logged_ips") != null) this.setIPsFromString(rs.getString("logged_ips"));
+		
+		this.banned = rs.getBoolean("banned");
+		this.banMessage = rs.getString("bannedMessage");
+		this.banLength = rs.getLong("bannedLength");
+		
+		this.muted = rs.getBoolean("muted");
+		this.muteMessage = rs.getString("mutedMessage");
+		this.muteLength = rs.getLong("mutedLength");
 	}
 	
 	@Override
@@ -88,6 +144,15 @@ public class AccountLogger extends SQLObject {
 			}
 			hashmap.put("logged_ips", finalips);
 		}
+		
+		hashmap.put("banned", this.isBanned());
+		hashmap.put("bannedMessage", this.getBanMessage());
+		hashmap.put("bannedLength", this.getBanLength());
+		
+		hashmap.put("muted", this.isMuted());
+		hashmap.put("mutedMessage", this.getMuteMessage());
+		hashmap.put("mutedLength", this.getMuteLength());
+		
 		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	
@@ -96,6 +161,7 @@ public class AccountLogger extends SQLObject {
 		SQL.deleteByName(this.getName(), TABLE_NAME);
 	}
 	
+	//UUID/Player
 	public UUID getUUID() {
 		return uid;
 	}
@@ -120,6 +186,7 @@ public class AccountLogger extends SQLObject {
 		return CivGlobal.getResidentViaUUID(uid);
 	}
 	
+	//IP Addresses
 	private void setIPsFromString(String ip) {
 		String[] split = ip.split(",");
 		for (String str : split) {
@@ -136,5 +203,63 @@ public class AccountLogger extends SQLObject {
 	
 	public ArrayList<String> getIPsFromString() {
 		return this.logged_ips;
+	}
+	
+	//Muting
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
+	
+	public void setMuteMessage(String msg) {
+		this.muteMessage = msg;
+	}
+	
+	public String getMuteMessage() {
+		return muteMessage;
+	}
+	
+	public void setMuteLength(int sec, int min, int hours) {
+		this.muteLength = System.currentTimeMillis() + (hours*60*60*1000) + (min*60*1000) + (sec*1000);
+	}
+	
+	public void resetMuteLength() {
+		this.muteLength = 0;
+	}
+	
+	public Long getMuteLength() {
+		return muteLength;
+	}
+	
+	// Banning
+	public boolean isBanned() {
+		return banned;
+	}
+
+	public void setBanned(boolean banned) {
+		this.banned = banned;
+	}
+	
+	public void setBanMessage(String msg) {
+		this.banMessage = msg;
+	}
+	
+	public String getBanMessage() {
+		return banMessage;
+	}
+	
+	public void setBanLength(int sec, int min, int hours) {
+		this.banLength = System.currentTimeMillis() + (hours*60*60*1000) + (min*60*1000) + (sec*1000);
+	}
+	
+	public void resetBanLength() {
+		this.banLength = 0;
+	}
+	
+	public Long getBanLength() {
+		return banLength;
 	}
 }

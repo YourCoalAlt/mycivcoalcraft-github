@@ -114,7 +114,7 @@ public class CivGlobal {
 	
 	public static final double MIN_FRAME_DISTANCE = 3.0;
 	
-	public static Map<Villager, Location> structureVillagers = new ConcurrentHashMap<Villager, Location>();
+	public static Map<String, Villager> structureVillagers = new ConcurrentHashMap<String, Villager>();
 	
 	private static Map<String, QuestionBaseTask> questions = new ConcurrentHashMap<String, QuestionBaseTask>();
 	public static Map<String, CivQuestionTask> civQuestions = new ConcurrentHashMap<String, CivQuestionTask>();
@@ -155,7 +155,6 @@ public class CivGlobal {
 	public static Map<Integer, Boolean> CivColorInUse = new ConcurrentHashMap<Integer, Boolean>();
 	public static TradeGoodPreGenerate preGenerator = new TradeGoodPreGenerate();
 	
-	//TODO fix the duplicate score issue...
 	public static TreeMap<Integer, Civilization> civilizationScores = new TreeMap<Integer, Civilization>();
 	public static TreeMap<Integer, Town> townScores = new TreeMap<Integer, Town>();
 	
@@ -239,20 +238,36 @@ public class CivGlobal {
 		loadCompleted = true;
 	}
 	
-	public static void addStructureVillager(Villager v) {
-		structureVillagers.put(v, v.getLocation());
+	public static void addStructureVillager(String named, Villager v) {
+		structureVillagers.put(named, v);
 	}
 	
-	public static Location getStructureVillager(Villager v) {
-		return structureVillagers.get(v);
+	public static Villager getStructureVillager(String named) {
+		return structureVillagers.get(named);
 	}
 	
-	public static Location getStructureVillagerLoc(Villager v) {
-		return structureVillagers.get(v);
+	public static Villager removeStructureVillager(String named) {
+		return structureVillagers.remove(named);
 	}
 	
-	public static Location removeStructureVillager(Villager v) {
-		return structureVillagers.remove(v);
+	public static void resetGlobalVillagers() {
+		int chunksSearched = 0;
+		int villagersRemoved = 0;
+		for (TownChunk tc : CivGlobal.getTownChunks()) {
+			Chunk chunk = tc.getChunkCoord().getChunk();
+			if (!chunk.isLoaded()) chunk.load();
+			for (Entity e : chunk.getEntities()) {
+				if (e instanceof Villager) {
+					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
+					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+						CivGlobal.removeStructureVillager(tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString());
+						villagersRemoved++; v.setHealth(0); e.remove();
+					}
+				}
+			}
+			chunksSearched++; chunk.unload();
+		}
+		CivMessage.global(CivColor.Gold+"Removed "+villagersRemoved+" villagers from "+chunksSearched+" town chunks.");
 	}
 	
 	public static void checkForInvalidStructures() {

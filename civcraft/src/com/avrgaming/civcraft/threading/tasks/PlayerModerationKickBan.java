@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
@@ -31,9 +32,10 @@ public class PlayerModerationKickBan implements Runnable {
 			return;
 		}
 		Resident res = CivGlobal.getResident(p);
+		AccountLogger al = CivGlobal.getAccount(p.getUniqueId().toString());
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
 		sdf.setTimeZone(TimeZone.getTimeZone(res.getTimezone()));
-		Date date = new Date(res.getBannedLength());
+		Date date = new Date(al.getBanLength());
 		
 		p.kickPlayer(" §b§l« CivilizationCraft »"+"\n"+
 				" "+"\n"+

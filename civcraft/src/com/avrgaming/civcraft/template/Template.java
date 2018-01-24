@@ -121,11 +121,11 @@ public class Template {
 		attachableTypes.add(CivData.TORCH);
 		attachableTypes.add(CivData.REDSTONE_WIRE);
 		attachableTypes.add(CivData.WHEAT_CROP);
-//		attachableTypes.add(CivData.SIGN);
+		attachableTypes.add(CivData.SIGN);
 		attachableTypes.add(CivData.WOOD_DOOR);
 		attachableTypes.add(CivData.LADDER);
 		attachableTypes.add(CivData.RAIL);
-//		attachableTypes.add(CivData.WALL_SIGN);
+		attachableTypes.add(CivData.WALL_SIGN);
 		attachableTypes.add(CivData.LEVER);
 		attachableTypes.add(CivData.STONE_PLATE);
 		attachableTypes.add(CivData.IRON_DOOR);
@@ -658,7 +658,6 @@ public class Template {
 			
 			// look for signs.
 			if (blockId == CivData.WALL_SIGN || blockId == CivData.SIGN) {
-				
 				if (locTypeSplit.length > 2) {
 					
 					// The first character on special signs needs to be a /.

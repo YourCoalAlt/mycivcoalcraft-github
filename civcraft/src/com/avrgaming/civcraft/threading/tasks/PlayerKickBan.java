@@ -20,10 +20,10 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.object.Resident;
 
 public class PlayerKickBan implements Runnable {
 
@@ -49,9 +49,9 @@ public class PlayerKickBan implements Runnable {
 		}
 		
 		if (ban) {
-			Resident resident = CivGlobal.getResident(player);
-			resident.setBanned(true);
-			resident.save();
+			AccountLogger al = CivGlobal.getAccount(player.getUniqueId().toString());
+			al.setBanned(true);
+			al.save();
 		}
 		
 		if (kick) {

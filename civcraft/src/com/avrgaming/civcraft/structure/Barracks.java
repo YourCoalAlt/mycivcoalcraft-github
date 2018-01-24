@@ -431,13 +431,13 @@ public class Barracks extends Structure {
 		v.setAI(false);
 		v.setCustomName("Barracks Trainer");
 		v.setProfession(Profession.LIBRARIAN);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openUnitTrainGUI(Player p, Town t) {
@@ -507,7 +507,13 @@ public class Barracks extends Structure {
 		v.setAI(false);
 		v.setCustomName("Barracks Repair Master");
 		v.setProfession(Profession.BLACKSMITH);
-		CivGlobal.addStructureVillager(v);
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
+		}
 	}
 	
 	public void openRepairGUI(Player p, Town t) {
@@ -552,7 +558,13 @@ public class Barracks extends Structure {
 		v.setAI(false);
 		v.setCustomName("Barracks Unit Upgrader");
 		v.setProfession(Profession.BLACKSMITH);
-		CivGlobal.addStructureVillager(v);
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
+		}
 	}
 	
 	public void openUnitUpgradeGUI_DISABLED_UNTIL_CODED(Player p, Town t) {

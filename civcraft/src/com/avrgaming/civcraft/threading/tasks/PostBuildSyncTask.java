@@ -40,6 +40,7 @@ import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.SimpleBlock;
+import com.avrgaming.civcraft.util.SimpleBlock.Type;
 
 public class PostBuildSyncTask implements Runnable {
 
@@ -71,18 +72,21 @@ public class PostBuildSyncTask implements Runnable {
 			}
 		}
 			
-	for (BlockCoord relativeCoord : tpl.attachableLocations) {
+		for (BlockCoord relativeCoord : tpl.attachableLocations) {
 			SimpleBlock sb = tpl.blocks[relativeCoord.getX()][relativeCoord.getY()][relativeCoord.getZ()];
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
-
+			
+			if (sb.getType() == CivData.WALL_SIGN || sb.getType() == CivData.SIGN) {
+				if (sb.specialType == Type.COMMAND) continue;
+			}
+			
 			Block block = absCoord.getBlock();
 			if (ItemManager.getId(block) != sb.getType()) {
 				ItemManager.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
 			}
 		}
 		
-		/*
-		 * Use the location's of the command blocks in the template and the buildable's corner 
+		/* Use the location's of the command blocks in the template and the buildable's corner 
 		 * to find their real positions. Then perform any special building we may want to do
 		 * at those locations.
 		 */
@@ -104,13 +108,12 @@ public class PostBuildSyncTask implements Runnable {
 				buildable.addStructureChest(structChest);
 				CivGlobal.addStructureChest(structChest);
 				
-				/* Convert sign data to chest data.*/
+				//  Convert sign data to chest data.
 				block = absCoord.getBlock();
 				if (ItemManager.getId(block) != CivData.CHEST) {		
 					byte chestData = CivData.convertSignDataToChestData((byte)sb.getData());
-					ItemManager.setTypeId(block, CivData.CHEST);
-					ItemManager.setData(block, chestData, true);
-				
+					ItemManager.setTypeIdAndData(block, CivData.CHEST, chestData, true);
+					
 					Chest chest = (Chest)block.getState();
 					MaterialData data = chest.getData();
 					ItemManager.setData(data, chestData);
@@ -124,8 +127,7 @@ public class PostBuildSyncTask implements Runnable {
 					structSign = new StructureSign(absCoord, buildable);
 				}
 				block = absCoord.getBlock();
-				ItemManager.setTypeId(block, sb.getType());
-				ItemManager.setData(block, sb.getData());
+				ItemManager.setTypeIdAndData(block, sb.getType(), sb.getData(), true);
 				
 				structSign.setDirection(ItemManager.getData(block.getState()));
 				for (String key : sb.keyvalues.keySet()) {
@@ -137,13 +139,11 @@ public class PostBuildSyncTask implements Runnable {
 				structSign.setOwner(buildable);
 				buildable.addStructureSign(structSign);
 				CivGlobal.addStructureSign(structSign);
-				
 				break;
 			case "/itemframe":
 				String strvalue = sb.keyvalues.get("id");
 				if (strvalue != null) {
 					int index = Integer.valueOf(strvalue);
-					
 					if (buildable instanceof TownHall) {
 						TownHall townhall = (TownHall)buildable;
 						townhall.createGoodieItemFrame(absCoord, index, sb.getData());
@@ -152,7 +152,6 @@ public class PostBuildSyncTask implements Runnable {
 				}
 				break;
 			case "/tradeoutpost":
-				/* Builds the trade outpost tower at this location. */
 				if (buildable instanceof TradeOutpost) {
 					TradeOutpost outpost = (TradeOutpost)buildable;
 					outpost.setTradeOutpostTower(absCoord);
@@ -236,9 +235,7 @@ public class PostBuildSyncTask implements Runnable {
 				
 				/* Convert sign data to enchanting table.*/
 				block = absCoord.getBlock();
-				if (ItemManager.getId(block) != CivData.ENCHANTMENT_TABLE) {
-					ItemManager.setTypeId(block, CivData.ENCHANTMENT_TABLE);
-				}
+				ItemManager.setTypeId(block, CivData.ENCHANTMENT_TABLE);
 				break;
 			}
 			

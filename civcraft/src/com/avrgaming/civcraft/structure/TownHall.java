@@ -559,13 +559,13 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setAI(false);
 		v.setCustomName(this.getTown().getName()+"'s Handy Assistant");
 		v.setProfession(Profession.PRIEST);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openMainInfoGUI(Player p, Town t) {
@@ -797,13 +797,13 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setAI(false);
 		v.setCustomName(this.getTown().getName()+"'s Quest Viewer");
 		v.setProfession(Profession.LIBRARIAN);
-		for (Villager vg : CivGlobal.structureVillagers.keySet()) {
-			if (vg.getLocation().equals(v.getLocation())) {
-				CivGlobal.removeStructureVillager(v);
-				v.remove();
-			}
+		
+		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		if (CivGlobal.getStructureVillager(vilKey) != null) {
+			v.setHealth(0); v.remove();
+		} else {
+			CivGlobal.addStructureVillager(vilKey, v);
 		}
-		CivGlobal.addStructureVillager(v);
 	}
 	
 	public void openTownQuestGUI(Player p, Town t) {

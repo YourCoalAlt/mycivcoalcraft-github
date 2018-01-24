@@ -24,6 +24,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
+import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class BeakerTimer extends CivAsyncTask {
 	
@@ -34,6 +35,7 @@ public class BeakerTimer extends CivAsyncTask {
 	
 	@Override
 	public void run() {
+		TaskMaster.asyncTask("CountdownTimer", new CountdownTimer(), 0);
 		for (Civilization civ : CivGlobal.getCivs()) {
 			if (civ.getCapitolName() == null) {
 				CivMessage.sendCiv(civ, "ERROR: your capitol name is not set right! No research is progressing. Contact an admin.");
