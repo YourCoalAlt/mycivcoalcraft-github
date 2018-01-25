@@ -598,7 +598,7 @@ public class CustomItemManager implements Listener {
 		if (event.getEntity() instanceof Villager) {
 			Villager v = (Villager) event.getEntity();
 			TownChunk tc = CivGlobal.getTownChunk(v.getLocation());
-			if (tc != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+			if (tc != null && v.getCustomName() != null) {
 				String vilKey = tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
 				if (CivGlobal.getStructureVillager(vilKey) != null) {
 					v.setHealth(0); v.remove();

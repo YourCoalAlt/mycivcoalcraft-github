@@ -259,7 +259,7 @@ public class CivGlobal {
 			for (Entity e : chunk.getEntities()) {
 				if (e instanceof Villager) {
 					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
-					if (v.getCustomName() != null && !v.getCustomName().equalsIgnoreCase("civcraft_villager")) {
+					if (v.getCustomName() != null) {
 						CivGlobal.removeStructureVillager(tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString());
 						villagersRemoved++; v.setHealth(0); e.remove();
 					}

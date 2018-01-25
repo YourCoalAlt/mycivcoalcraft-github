@@ -37,7 +37,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 
 	public static void debug(Quarry quarry, String msg) {
 		if (debugTowns.contains(quarry.getTown().getName())) {
-			CivLog.warning("QuarryDebug:"+quarry.getTown().getName()+":"+msg);
+			CivLog.warning("QuarryDebug:"+quarry.getTown().getName()+": "+msg);
 		}
 	}	
 	
@@ -47,11 +47,10 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	
 	public void processQuarryUpdate() {
 		if (!quarry.isActive()) {
-			debug(quarry, "quarry inactive...");
+			debug(quarry, "Quarry inactive...");
 			return;
 		}
 		
-		debug(quarry, "Processing quarry...");
 		// Grab each CivChest object we'll require.
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
 		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
@@ -59,36 +58,33 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		
 		boolean trommel = false;
 		boolean warehouse = false;
-		for (Structure s : quarry.getTown().getStructures()) {
-			if (s instanceof Warehouse) {
-				warehouse = true;
-				debug(quarry, "Sending output to Warehouse");
-				Warehouse wh = (Warehouse) s;
-				if (wh.isComplete() && wh.isEnabled()) {
-					if (wh.getQuarryCollector() == 1) {
-						for (StructureChest sc : wh.structureChests.values()) {
-							if (sc.getChestId() <= wh.getLevel()) {
-								destinations_other.add(sc);
-							}
-						}
-					} else if (wh.getQuarryCollector() == 2) {
-						trommel = true;
-						debug(quarry, "Sending output to Trommel");
-						for (Structure s2 : quarry.getTown().getStructures()) {
-							if (s2 instanceof Trommel) {
-								Trommel tS = (Trommel) s2;
-								for (StructureChest sc : tS.getAllChestsById(1)) {
-									destinations_other.add(sc);
-								}
-							}
+		
+		Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
+		if (whs != null) {
+			if (whs.isComplete() && whs.isEnabled()) {
+				if (whs.getQuarryCollector() == 1) {
+					warehouse = true;
+					debug(quarry, "Sending output: Warehouse");
+					for (StructureChest sc : whs.structureChests.values()) {
+						if (sc.getChestId() <= whs.getLevel()) {
+							destinations_other.add(sc);
 						}
 					}
+				} else if (whs.getQuarryCollector() == 2) {
+					trommel = true;
+					debug(quarry, "Sending output: Trommel");
+					Trommel trs = (Trommel) quarry.getTown().getStructureByType("s_trommel");
+					for (StructureChest sc : trs.getAllChestsById(1)) {
+						destinations_other.add(sc);
+					}
+				} else if (whs.getQuarryCollector() == 0) {
+					debug(quarry, "Sending output: Quarry");
 				}
 			}
 		}
 		
 		if (sources.size() < 1 || destinations.size() < 1) {
-			CivLog.error("Bad main dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size());
+			CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; trommel: "+trommel+", warehouse: "+warehouse);
 			return;
 		}
 		
@@ -98,14 +94,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		MultiInventory dest_inv_other = new MultiInventory();
 
 		try {
-			for (StructureChest src : sources) {
-				//this.syncLoadChunk(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getZ());				
+			for (StructureChest src : sources) {			
 				Inventory tmp;
 				try {
 					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
-					//e.printStackTrace();
-					CivLog.warning("Quarry:"+e.getMessage());
+					CivLog.warning("Quarry: "+e.getMessage());
 					return;
 				}
 				if (tmp == null) {
@@ -124,47 +118,51 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						try {
 							tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 						} catch (CivTaskAbortException e) {
-							CivLog.warning("Quarry:"+e.getMessage());
+							CivLog.warning("Quarry: "+e.getMessage());
 							return;
 						}
 						if (tmp == null) {
 							quarry.skippedCounter++;
 							return;
 						}
-						dest_inv_other.addInventory(tmp);
-						for (ItemStack stack : tmp.getContents()) {
-							if (stack == null) {
-								full = false;
-								break;
-							}
-						}
+						
+						if (tmp.firstEmpty() != -1) {
+							dest_inv_other.addInventory(tmp);
+							full = false;
+							break;
+						} else continue;
 					}
-				}
-			}
-			
-			for (StructureChest dst : destinations) {
-				Inventory tmp;
-				try {
-					tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
-				} catch (CivTaskAbortException e) {
-					CivLog.warning("Quarry:"+e.getMessage());
+				} else {
+					CivLog.error("Bad OTHER dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations_other.size());
 					return;
 				}
-				if (tmp == null) {
-					quarry.skippedCounter++;
-					return;
-				}
-				dest_inv.addInventory(tmp);
-				for (ItemStack stack : tmp.getContents()) {
-					if (stack == null) {
+			} else {
+				for (StructureChest dst : destinations) {
+					Inventory tmp;
+					try {
+						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
+					} catch (CivTaskAbortException e) {
+						CivLog.warning("Quarry: "+e.getMessage());
+						return;
+					}
+					if (tmp == null) {
+						quarry.skippedCounter++;
+						return;
+					}
+					
+					if (tmp.firstEmpty() != -1) {
+						dest_inv_other.addInventory(tmp);
 						full = false;
 						break;
-					}
+					} else continue;
 				}
 			}
 			
-			// Quarry destination chest is full, stop processing.
-			if (full) return;
+			// destination chest is full, stop processing.
+			if (full) {
+				debug(quarry, "Outputs full, cancelling.");
+				return;
+			}
 		} catch (InterruptedException e) {
 			return;
 		}
@@ -277,66 +275,34 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					Random rand = new Random();
 					ConfigGovernment gov = quarry.getCiv().getGovernment();
 					int processRate = (int) (gov.quarry_process_rate*100);
+					int processing = processRate / 100;
+					int chance = processRate - (processing*100);
 					
-					if (processRate < 100) {
-						int hundo = rand.nextInt(101);
-						if (hundo > processRate) {
-							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Penalty at "+hundo+" > "+processRate);
+					if (processing <= 0) {
+						if (chance > 0) {
+							int types = rand.nextInt(100);
+							if (types >= chance) {
+								debug(quarry, "Skipped; Govt. "+gov.displayName+"; Greater Penalty at "+types+" > "+processRate);
+							} else {
+								processQuarryUpdate();
+								debug(quarry, "Processed; Govt. "+gov.displayName+"; Lesser Success at "+processRate);
+							}
 						} else {
-							processQuarryUpdate();
-							debug(quarry, "Processed; Govt. "+gov.displayName+"; Success at "+hundo+" < "+processRate);
+							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0");
 						}
-					}
-					
-					if (processRate == 100) {
-						processQuarryUpdate();
-						debug(quarry, "Processed; Govt. "+gov.displayName+"; Success at 100% Rate");
-					}
-					
-					if (processRate > 100 && processRate < 200) {
-						processQuarryUpdate();
-						debug(quarry, "Processed; Govt. "+gov.displayName+"; Success at "+processRate+"% Rate");
-						int onetwohundo = rand.nextInt(processRate);
-						if (onetwohundo > 100) {
+					} else {
+						for (int i = processing; i > 0; i--) {
 							processQuarryUpdate();
-							debug(quarry, "Lucky Double Processed; Govt. "+gov.displayName+"; Bonus at "+onetwohundo+" > 100");
-						}
-					}
-					
-					if (processRate == 200) {
-						processQuarryUpdate();
-						processQuarryUpdate();
-						debug(quarry, "Standard Double Processed; Govt. "+gov.displayName+"; Success at 200% Rate");
-					}
-					
-					if (processRate > 200 && processRate < 300) {
-						processQuarryUpdate();
-						processQuarryUpdate();
-						debug(quarry, "Processed; Govt. "+gov.displayName+"; Success at "+processRate+"% Rate");
-						int twothreehundo = rand.nextInt(processRate);
-						if (twothreehundo > 200) {
-							processQuarryUpdate();
-							debug(quarry, "Lucky Double Processed; Govt. "+gov.displayName+"; Bonus at "+twothreehundo+" > 200");
-						}
-					}
-					
-					if (processRate == 200) {
-						processQuarryUpdate();
-						processQuarryUpdate();
-						processQuarryUpdate();
-						debug(quarry, "Standard Double Processed; Govt. "+gov.displayName+"; Success at 200% Rate");
-					}
-					
-					if (processRate > 300) {
-						debug(quarry, "Max Process Rate Exceeded, reducing...");
-						processQuarryUpdate();
-						processQuarryUpdate();
-						processQuarryUpdate();
-						debug(quarry, "Processed; Govt. "+gov.displayName+"; Success at "+processRate+"% Rate");
-						int threefourhundo = rand.nextInt(processRate);
-						if (threefourhundo > 300) {
-							processQuarryUpdate();
-							debug(quarry, "Lucky Double Processed; Govt. "+gov.displayName+"; Bonus at "+threefourhundo+" > 300");
+							debug(quarry, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
+							if (chance > 0) {
+								int types = rand.nextInt(100);
+								if (types >= chance) {
+									debug(quarry, "Skipped; Govt. "+gov.displayName+"; Lesser Penalty at "+types+" > "+processRate);
+								} else {
+									processQuarryUpdate();
+									debug(quarry, "Bonus Process; Govt. "+gov.displayName+"; Bonus at "+types+" <= "+processRate);
+								}
+							}
 						}
 					}
 				} catch (Exception e) {

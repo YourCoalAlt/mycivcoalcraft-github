@@ -59,7 +59,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.event.server.BroadcastMessageEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
@@ -133,51 +132,34 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemMend(PlayerItemMendEvent event) {
 		if (LoreEnhancement.isWeaponOrArmor(event.getItem())) {
 			event.setCancelled(true);
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Resident res = CivGlobal.getResident(event.getPlayer());
-		if (!res.hasChatEnabled()) {
+		Resident recp = CivGlobal.getResident(event.getPlayer());
+		if (!recp.hasChatEnabled()) {
+			CivMessage.sendError(recp, "Your chat is disabled!");
 			event.setCancelled(true);
-			
-			List<Player> playerRecipients = new ArrayList<Player>();
-			for (Player recipient : event.getRecipients()) {
-				if (recipient.getName().equals(event.getPlayer().getName())) continue;
-				Resident resTwo = CivGlobal.getResident(recipient);
-				if (resTwo.hasChatEnabled()) {
-					playerRecipients.add(recipient);
-				}
-			}
-			event.getRecipients().clear();
-			event.getRecipients().addAll(playerRecipients);
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onBroadcastMessage(BroadcastMessageEvent event) {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (CommandSender cs : event.getRecipients()) {
-			if (cs instanceof Player) {
-				players.add((Player) cs);
-			}
 		}
 		
-		for (Player recipient : players) {
+		List<Player> playerRecipients = new ArrayList<Player>();
+		for (Player recipient : event.getRecipients()) {
 			Resident res = CivGlobal.getResident(recipient);
-			if (!res.hasChatEnabled()) {
-				event.setCancelled(true);
+			if (res.hasChatEnabled()) {
+				playerRecipients.add(recipient);
 			}
 		}
+		event.getRecipients().clear();
+		event.getRecipients().addAll(playerRecipients);
 	}
 	
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		ArrayList<Player> players = new ArrayList<Player>();
 		for (CommandSender cs : event.getRecipients()) {
@@ -186,7 +168,29 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
+		List<Player> playerRecipients = new ArrayList<Player>();
 		for (Player recipient : players) {
+			Resident res = CivGlobal.getResident(recipient);
+			if (res.hasChatEnabled()) {
+				playerRecipients.add(recipient);
+			} else {
+				if (recipient.getName().equals(res.getName())) {
+					String msg = event.getMessage().toLowerCase();
+					if (msg.substring(0, 1).equals("/")) {
+						if (msg.contains("/msg") || msg.contains("/tell") || msg.contains("/whisper") || msg.contains("/r") ||
+								msg.contains("/reply") || msg.contains("/broadcast") || msg.contains("/bcast") || msg.contains("/bc") ||
+								msg.contains("/shout")) {
+							CivMessage.sendError(res, "Your chat is disabled!");
+							event.setCancelled(true);
+						}
+					}
+				}
+			}
+		}
+		event.getRecipients().clear();
+		event.getRecipients().addAll(playerRecipients);
+		
+/*		for (Player recipient : players) {
 			Resident res = CivGlobal.getResident(recipient);
 			if (!res.hasChatEnabled()) {
 				String msg = event.getMessage().toLowerCase();
@@ -208,7 +212,7 @@ public class PlayerListener implements Listener {
 					event.setCancelled(true);
 				}
 			}
-		}
+		}*/
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

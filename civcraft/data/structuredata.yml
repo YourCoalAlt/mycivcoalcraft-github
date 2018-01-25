@@ -746,34 +746,40 @@ mine_tasks:
      required:
          - 331;0,16
      reward: 10
+     qexp: 0.8
 #
    - task: 2
      required:
          - 331;0,32
      reward: 25
+     qexp: 1.6
 #
    - task: 3
      required:
          - 331;0,48
      reward: 40
+     qexp: 2.4
 #
    - task: 4
      required:
          - 331;0,64
          - 263;0,8
      reward: 55
+     qexp: 3.2
 #
    - task: 5
      required:
          - 331;0,80
          - 263;0,16
      reward: 70
+     qexp: 4.0
 #
    - task: 6
      required:
          - 331;0,96
          - 263;0,24
      reward: 85
+     qexp: 4.8
 #
    - task: 7
      required:
@@ -781,6 +787,7 @@ mine_tasks:
          - 263;0,32
          - 265;0,4
      reward: 100
+     qexp: 5.6
 #
    - task: 8
      required:
@@ -788,6 +795,7 @@ mine_tasks:
          - 263;0,40
          - 265;0,8
      reward: 115
+     qexp: 6.4
 #
    - task: 9
      required:
@@ -795,6 +803,7 @@ mine_tasks:
          - 263;0,48
          - 265;0,12
      reward: 130
+     qexp: 7.2
 #
    - task: 10
      required:
@@ -803,6 +812,7 @@ mine_tasks:
          - 265;0,16
          - 388;0,2
      reward: 145
+     qexp: 8.0
 #
    - task: 11
      required:
@@ -811,6 +821,7 @@ mine_tasks:
          - 265;0,20
          - 388;0,4
      reward: 160
+     qexp: 8.8
 #
    - task: 12
      required:
@@ -819,6 +830,7 @@ mine_tasks:
          - 265;0,24
          - 388;0,6
      reward: 175
+     qexp: 9.2
 #======================================#
 #========== > Lab Settings < ==========#
 #======================================#

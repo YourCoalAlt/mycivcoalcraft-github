@@ -1718,17 +1718,17 @@ public class Resident extends SQLObject {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
+//							int time = 20*60*5;
 							p2.removePotionEffect(PotionEffectType.SLOW);
 							p2.removePotionEffect(PotionEffectType.BLINDNESS);
-							p2.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*60*5, 0), true);
-							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*60*5, 0), true);
-							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20*60*5, 0), true);
-							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*5, 0), true);
+							// TODO fix, it is not decreasing time when given to player
+//							p2.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, time, 0), true);
+//							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time, 0), true);
+//							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, time, 0), true);
+//							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, time, 0), true);
+//							CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
 						}
 					}.runTaskTimer(CivCraft.getPlugin(), 0L, 1L);
-					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
-					
-					Thread.sleep(1000*4);
 					
 					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);

@@ -156,7 +156,7 @@ public class Library extends Structure {
 		for (LibraryEnchantment enchant : this.enchantments) {
 			StructureSign sign = getSignFromSpecialId(count);
 			if (sign == null) {
-				CivLog.error("sign from special id was null, id:"+count);
+				CivLog.error("sign for library from special id was null, id: "+count);
 				return;
 			}
 			sign.setText(enchant.displayName+"\n"+

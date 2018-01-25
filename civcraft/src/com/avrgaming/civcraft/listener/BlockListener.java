@@ -271,14 +271,15 @@ public class BlockListener implements Listener {
 			if (event.getDamager() instanceof Player) {
 				Player p = (Player) event.getDamager();
 				Resident res = CivGlobal.getResident(p);
-				if (res.isPermOverride()) {
-					return;
-				} else {
-					event.setCancelled(true);
-					CivMessage.sendError(event.getDamager(), "Cannot damage teh villagers!");
+				if (event.getEntity().getCustomName() != null) {
+					if (res.isPermOverride()) {
+						return;
+					} else {
+						event.setCancelled(true);
+						CivMessage.sendError(event.getDamager(), "Cannot damage teh villagers!");
+						return;
+					}
 				}
-			} else {
-				event.setCancelled(true);
 			}
 		}
 		
@@ -301,14 +302,12 @@ public class BlockListener implements Listener {
 			return;
 		}
 
-		if (event.getDamager() instanceof Arrow) {
-
-		}
+//		if (event.getDamager() instanceof Arrow) {
+//		}
 
 		if (event.getDamager() instanceof Fireball) {
 			CannonFiredCache cfc = CivCache.cannonBallsFired.get(event.getDamager().getUniqueId());
 			if (cfc != null) {
-
 				cfc.setHit(true);
 				cfc.destroy(event.getDamager());
 				event.setDamage((double)cfc.getFromTower().getDamage());
