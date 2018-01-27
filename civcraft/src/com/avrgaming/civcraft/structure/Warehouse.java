@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,6 +30,8 @@ import com.avrgaming.civcraft.util.SimpleBlock;
 public class Warehouse extends Structure {
 	
 	private int level = 1;
+	public int skippedCounter = 0;
+	public ReentrantLock lock = new ReentrantLock();
 	
 	private boolean gotoTrommel = false;
 	

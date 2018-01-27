@@ -27,6 +27,10 @@ tips:
    # This controls the timer for it, so a wrong value will mess up the display rate for tips.
    amount: 9
 
+timers:
+   # How many seconds to update structures (quarry, trommel, etc)
+   struc_process: 10
+
 ### Note: The 'fortune' number is the modifier per level from max drop,
 ### meaning fortune III max drop = max_drop + (max_drop_fortune * enchant.level)
 ### (Ex. max drop = 5, max_drop_fortune = 2, fortune V --- max drop = 5 + (2*5) = 15

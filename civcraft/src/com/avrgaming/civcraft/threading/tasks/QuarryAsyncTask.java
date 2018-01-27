@@ -14,6 +14,7 @@ import com.avrgaming.civcraft.config.ConfigQuarry;
 import com.avrgaming.civcraft.config.ConfigQuarryItem;
 import com.avrgaming.civcraft.config.ConfigTrommelItem;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
+import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
@@ -46,45 +47,29 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	}
 	
 	public void processQuarryUpdate() {
-		if (!quarry.isActive()) {
-			debug(quarry, "Quarry inactive...");
-			return;
-		}
-		
 		// Grab each CivChest object we'll require.
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
 		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
 		ArrayList<StructureChest> destinations_other = new ArrayList<StructureChest>();
 		
 		boolean trommel = false;
-		boolean warehouse = false;
 		
 		Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
 		if (whs != null) {
 			if (whs.isComplete() && whs.isEnabled()) {
-				if (whs.getQuarryCollector() == 1) {
-					warehouse = true;
-					debug(quarry, "Sending output: Warehouse");
-					for (StructureChest sc : whs.structureChests.values()) {
-						if (sc.getChestId() <= whs.getLevel()) {
-							destinations_other.add(sc);
-						}
-					}
-				} else if (whs.getQuarryCollector() == 2) {
-					trommel = true;
-					debug(quarry, "Sending output: Trommel");
+				if (whs.getQuarryCollector() == 2) {
+					debug(quarry, "Output directed to Trommel");
 					Trommel trs = (Trommel) quarry.getTown().getStructureByType("s_trommel");
 					for (StructureChest sc : trs.getAllChestsById(1)) {
+						trommel = true;
 						destinations_other.add(sc);
 					}
-				} else if (whs.getQuarryCollector() == 0) {
-					debug(quarry, "Sending output: Quarry");
 				}
 			}
 		}
 		
 		if (sources.size() < 1 || destinations.size() < 1) {
-			CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; trommel: "+trommel+", warehouse: "+warehouse);
+			CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; trommel: "+trommel);
 			return;
 		}
 		
@@ -111,7 +96,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			
 			boolean full = true;
 			
-			if (warehouse || trommel) {
+			if (trommel) {
 				if (destinations_other.size() > 1) {
 					for (StructureChest dst : destinations_other) {
 						Inventory tmp;
@@ -151,7 +136,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					}
 					
 					if (tmp.firstEmpty() != -1) {
-						dest_inv_other.addInventory(tmp);
+						dest_inv.addInventory(tmp);
 						full = false;
 						break;
 					} else continue;
@@ -169,7 +154,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		
 		debug(quarry, "Processing quarry:"+quarry.skippedCounter+1);
 		for (int i = 0; i < quarry.skippedCounter+1; i++) {
-			quarrytask: for (Inventory inv : source_inv.getInventories()) {
+			for (Inventory inv : source_inv.getInventories()) {
 				int index = -1;
 				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
 					index++;
@@ -219,8 +204,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 										} else {
 											this.updateInventory(Action.ADD, dest_inv, ni);
 										}
-									} else if (warehouse) {
-										this.updateInventory(Action.ADD, dest_inv_other, ni);
 									} else {
 										this.updateInventory(Action.ADD, dest_inv, ni);
 									}
@@ -232,7 +215,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							CivLog.warning("Quarry:"+e.getMessage());
 							return;
 						}
-						break quarrytask;
+						break;
 					}
 				}
 			}
@@ -269,15 +252,20 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	}
 	
 	public void run() {
+		if (!quarry.isActive()) {
+			debug(quarry, "Quarry Disabed...");
+			return;
+		}
+		
 		if (this.quarry.lock.tryLock()) {
 			try {
-				try {
-					Random rand = new Random();
-					ConfigGovernment gov = quarry.getCiv().getGovernment();
-					int processRate = (int) (gov.quarry_process_rate*100);
-					int processing = processRate / 100;
-					int chance = processRate - (processing*100);
-					
+				Random rand = new Random();
+				ConfigGovernment gov = quarry.getCiv().getGovernment();
+				int processRate = (int) (gov.quarry_process_rate*100);
+				int processing = processRate / 100;
+				int chance = processRate - (processing*100);
+				
+				for (int t = 0; t < CivSettings.getInteger(CivSettings.gameConfig, "timers.struc_process"); t++) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
@@ -291,7 +279,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0");
 						}
 					} else {
-						for (int i = processing; i > 0; i--) {
+						for (int i = 0; i < processing; i++) {
 							processQuarryUpdate();
 							debug(quarry, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
 							if (chance > 0) {
@@ -305,9 +293,9 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							}
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
 			} finally {
 				this.quarry.lock.unlock();
 			}

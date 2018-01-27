@@ -168,6 +168,7 @@ public class CivGlobal {
 	//TODO convert this to completely static?
 	private static SessionDatabase sdb;
 
+	public static boolean warehousesEnabled = true;
 	public static boolean quarriesEnabled = true;
 	public static boolean trommelsEnabled = true;
 	public static boolean towersEnabled = true;

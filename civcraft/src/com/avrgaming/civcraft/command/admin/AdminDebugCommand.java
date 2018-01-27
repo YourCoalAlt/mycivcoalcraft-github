@@ -25,6 +25,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.threading.tasks.QuarryAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.TrommelAsyncTask;
+import com.avrgaming.civcraft.threading.tasks.WarehouseAsyncTask;
 
 public class AdminDebugCommand extends CommandBase {
 
@@ -33,9 +34,22 @@ public class AdminDebugCommand extends CommandBase {
 		command = "/ad debug";
 		displayName = "Admin Debug";
 		
+		commands.put("warehouse", "[town] - turn on this town's warehouse debugging.");
 		commands.put("trommel", "[town] - turn on this town's trommel debugging.");
 		commands.put("quarry", "[town] - turn on this town's trommel debugging.");
 		commands.put("scout", "[civ] - enables debugging for scout towers in this civ.");
+	}
+	
+	public void warehouse_cmd() throws CivException {
+		Town town = getNamedTown(1);
+		boolean type = false;
+		if (WarehouseAsyncTask.debugTowns.contains(town.getName())) {
+			WarehouseAsyncTask.debugTowns.remove(town.getName());
+		} else {
+			type = true;
+			WarehouseAsyncTask.debugTowns.add(town.getName());
+		}
+		CivMessage.send(sender, "Warehouse(s) debug in "+town.getName()+" toggled to "+type+".");
 	}
 	
 	public void trommel_cmd() throws CivException {

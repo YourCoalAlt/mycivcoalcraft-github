@@ -697,6 +697,7 @@ structures:
     template_y_shift: 0
     displayName: Warehouse
     require_tech: 'tech_material_placement'
+    update_event: warehouse_transfer
     limit: 1
     cost: 50000
     upkeep: 2500

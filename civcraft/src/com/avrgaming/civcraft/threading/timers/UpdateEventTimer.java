@@ -29,6 +29,7 @@ import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.QuarryAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.TrommelAsyncTask;
+import com.avrgaming.civcraft.threading.tasks.WarehouseAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 
 public class UpdateEventTimer extends CivAsyncTask {
@@ -57,6 +58,10 @@ public class UpdateEventTimer extends CivAsyncTask {
 					if (struct.getUpdateEvent().equals("quarry_process")) {
 						if (!CivGlobal.quarriesEnabled) continue;
 						TaskMaster.asyncTask("quarry-"+struct.getCorner().toString(), new QuarryAsyncTask(struct), 0);
+					}
+					if (struct.getUpdateEvent().equals("warehouse_transfer")) {
+						if (!CivGlobal.warehousesEnabled) continue;
+						TaskMaster.asyncTask("warehouse-"+struct.getCorner().toString(), new WarehouseAsyncTask(struct), 0);
 					}
 				}
 				struct.onUpdate();
