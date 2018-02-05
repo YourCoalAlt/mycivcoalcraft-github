@@ -39,7 +39,6 @@ public class ChunkGenerateTask implements Runnable {
 	
 	@Override
 	public void run() {
-	
 		int maxgen = 10;
 		int i = 0;
 
@@ -48,17 +47,13 @@ public class ChunkGenerateTask implements Runnable {
 				i++;
 				
 				Chunk chunk = Bukkit.getWorld("world").getChunkAt(x, z);
-				if (!chunk.load(true)) {
-				}
-				
-				if (!chunk.unload(true)) {
-				}
+				if (!chunk.load(true)) { }
+				if (!chunk.unload(true)) { }
 				
 				if (i > maxgen) {
 					TaskMaster.syncTask(new ChunkGenerateTask(x, z, stopX, stopZ));
 					return;
 				}
-				
 			}
 		}
 	}

@@ -32,7 +32,11 @@ public class PayCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-	
+		if (!(sender instanceof Player)) {
+			CivMessage.sendErrorPlayerCmd(sender);
+			return false;
+		}
+		
 		try {
 			Player player = CivGlobal.getPlayer(sender.getName());
 			Resident resident = CivGlobal.getResident(player);

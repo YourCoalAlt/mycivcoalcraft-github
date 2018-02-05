@@ -43,7 +43,6 @@ import com.avrgaming.civcraft.command.KillCommand;
 import com.avrgaming.civcraft.command.PayCommand;
 import com.avrgaming.civcraft.command.ReportCommand;
 import com.avrgaming.civcraft.command.SelectCommand;
-import com.avrgaming.civcraft.command.TestCommand;
 import com.avrgaming.civcraft.command.VoteCommand;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.command.admin.AdminGUICommand;
@@ -277,7 +276,6 @@ public final class CivCraft extends JavaPlugin {
 		// Init commands
 		getCommand("cmat").setExecutor(new CMatCommand());
 		getCommand("backpack").setExecutor(new BackpackCommand());
-		getCommand("test").setExecutor(new TestCommand());
 		getCommand("town").setExecutor(new TownCommand());
 		getCommand("resident").setExecutor(new ResidentCommand());
 		getCommand("dbg").setExecutor(new DebugCommand());

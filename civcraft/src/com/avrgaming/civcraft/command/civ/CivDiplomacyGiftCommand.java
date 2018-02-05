@@ -56,7 +56,7 @@ public class CivDiplomacyGiftCommand extends CommandBase {
 			throw new CivException("Civilization already has an offer pending, wait 30 seconds and try again.");			
 		}
 		
-		task = new CivQuestionTask(toCiv, fromCiv, message, 30000, finishedFunction);
+		task = new CivQuestionTask(toCiv, fromCiv, message, 30 * 1000, finishedFunction);
 		CivGlobal.civQuestions.put(toCiv.getName(), task);
 		TaskMaster.asyncTask("", task, 0);
 	}

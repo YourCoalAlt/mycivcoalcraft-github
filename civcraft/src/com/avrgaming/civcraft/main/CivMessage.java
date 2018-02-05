@@ -123,6 +123,10 @@ public class CivMessage {
 		send(sender, CivColor.LightGrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+message);
 	}
 	
+	public static void sendErrorPlayerCmd(Object sender) {		
+		send(sender, CivColor.LightGrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+"Only a player can execute this command.");
+	}
+	
 	public static void sendErrorNoRepeat(Object sender, String line) {
 		if (sender instanceof Player) {
 			Player player = (Player)sender;

@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -259,7 +258,6 @@ public class ResidentCommand extends CommandBase {
 		}
 		
 		Resident resident = getNamedResident(1);
-		
 		show(sender, resident);
 	}
 
@@ -290,11 +288,26 @@ public class ResidentCommand extends CommandBase {
     	show(sender, resident);
 	}
 	
-	public static void show(CommandSender sender, Resident resident) {
+	public static void show(CommandSender sender, Resident resident) throws CivException {
 		CivMessage.sendHeading(sender, "Resident "+resident.getName());
-		Date lastOnline = new Date(resident.getLastOnline());
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
-		CivMessage.send(sender, CivColor.Green+"Last Online:"+CivColor.LightGreen+sdf.format(lastOnline));
+		
+		if (sender.isOp()) {
+			CivMessage.send(sender, CivColor.LightGrayBold+" -- OP Debug -- ");
+			CivMessage.send(sender, "id: "+resident.getId());
+			CivMessage.send(sender, "registered: "+resident.getRegistered());
+			CivMessage.send(sender, "spy exposure: "+resident.getSpyExposure());
+			CivMessage.send(sender, "protected: "+resident.isProtected());
+			CivMessage.send(sender, CivColor.LightGrayBold+" -------------- ");
+		}
+		
+		if (CivGlobal.getPlayer(resident).isOnline()) {
+			CivMessage.send(sender, CivColor.LightBlue+"Is Currently Online");
+		} else {
+			Date lastOnline = new Date(resident.getLastOnline());
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");
+			CivMessage.send(sender, CivColor.Green+"Last Online at "+CivColor.LightGreen+sdf.format(lastOnline));
+		}
+		
 		if (resident.hasTown()) {
 			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGreen+resident.getTownString()+", "+resident.getCivString());
 		} else {
@@ -302,8 +315,8 @@ public class ResidentCommand extends CommandBase {
 		}
 		
 		if (sender.getName().equalsIgnoreCase(resident.getName()) || sender.isOp()) {
-			CivMessage.send(sender, CivColor.Green+"Personal Treasury: "+CivColor.LightGreen+resident.getTreasury().getBalance()+" "+
-								  CivColor.Green+"Taxes Owed: "+CivColor.LightGreen+(resident.getPropertyTaxOwed()+resident.getFlatTaxOwed()));
+			CivMessage.send(sender, CivColor.Green+"Personal Treasury: "+CivColor.LightGreen+resident.getTreasury().getBalance()+" Coins");
+			CivMessage.send(sender, CivColor.Green+"Taxes Owed: "+CivColor.LightGreen+(resident.getPropertyTaxOwed()+resident.getFlatTaxOwed()));
 			if (resident.hasTown()) {
 				if (resident.getSelectedTown() != null) {
 					CivMessage.send(sender, CivColor.Green+"Selected Town: "+CivColor.LightGreen+resident.getSelectedTown().getName());
@@ -314,7 +327,7 @@ public class ResidentCommand extends CommandBase {
 		}
 		
 		if (resident.getTreasury().inDebt()) {
-			CivMessage.send(resident, CivColor.Yellow+"In Debt "+resident.getTreasury().getDebt()+" coins!");
+			CivMessage.send(resident, CivColor.Yellow+"In Debt "+resident.getTreasury().getDebt()+" Coins!");
 		}
 		
 		if (resident.getDaysTilEvict() > 0) {
@@ -340,7 +353,7 @@ public class ResidentCommand extends CommandBase {
 			CivMessage.send(sender, CivColor.Yellow+" None ");
 		}
 		
-		try {
+/*		try {
 			OfflinePlayer p = CivGlobal.getOfflinePlayer(resident);
 			if (p.isOnline()) {
 				CivMessage.send(sender, CivColor.LightGreen+"Currently Online and validated.");
@@ -350,7 +363,7 @@ public class ResidentCommand extends CommandBase {
 		} catch (CivException e) {
 			CivMessage.send(sender, CivColor.Rose+"Invalid player...? Contact an admin.");
 			e.printStackTrace();
-		}	
+		}*/
 	}
 	
 	@Override

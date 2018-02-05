@@ -2,14 +2,12 @@ name: CivCraft
 main: com.avrgaming.civcraft.main.CivCraft
 softdepends: [dynmap, HolographicDisplays, NametagEdit, TitleAPI, VanishNoPacket, WorldBorder]
 author: YourCoal
-version: 1.9.4
+version: 1.9.5
 
 commands:
     cmat:
         aliases:
     backpack:
-        aliases:
-    test:
         aliases:
     town:
         aliases: [t]

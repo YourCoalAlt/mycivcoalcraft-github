@@ -1,0 +1,69 @@
+Chichen Itza:
+- Decreases the amount of towns the civ needs for Conquest Victory from 75% to 60%.
+- Increases the hitpoints of all Control Points of a town by 15 HP.
+- Increases the hitpoints of all strategic structures by 20%.
+- Decreases the upkeep of all strategic structures by 20%.
+
+*NEW* Colosseum:
+- 50% chance to do +1 damage to control blocks.
+- 10% chance to do double damage to control blocks.
+- 50% chance to get obsidian from quarry every pickaxe mine.
+
+Council of Eight:
+- All towns not in your civ recieve 1,000 coins a day.
+- You can no longer declare war on anyone.
+- Begins countdown of Diplomatic victory.
+
+*NEW* Gardens of Versailles:
+- Reduces the unhappiness of towns in civilization by 50%.
+- Removes the unhappiness of conquered towns in the civilization.
+
+*NEW* Globe Theatre:
+- You always gain culture from hourly tick beaker conversion even while researching.
+- Increases culture rate for host town by 0.2% for each town in the world, maxed at 10%.
+- Converts happiness to culture multiplied by culture level of the town for every town in the civ, unless happiness is less than 0.
+
+*NEW* Grand Ship Ingermanland:
+- Increases all water structure's HP by 20%.
+- Increases the output of rare fish & materials in Fishing Boats by 30%.
+
+*NEW* Mother Tree:
+- Reduces the plot cost by 50% in all towns of the civ.
+- Increases the limit of tile improvements to the host town by 100%.
+
+Notre Dame:
+- Reduces time between government switching by 50%.
+- No longer able to go into anarchy, stays in government until switch.
+- Every town in the world generates 50 coins multiplied by that town level a day not at war with host civ, or 100 coins multiplied by that town level a day if the towns have no wars.
+
+*NEW* Taj Mahal:
+- Your respawn time is 75% faster during WarTime.
+- All War Camps in the civ have twice as many hitpoints.
+- During upkeep, the host town culture output for the day is split evenly between all towns in the world.
+
+The Colossus:
+- The Bank in the host town gets increased sell rate by 30%
+- 2% of the 3 closest towns upkeep gets paid by the host town.
+- Reduces the upkeep of the host town by 25%
+
+The Great Library:
+- Offers unique enchantments only available to the host civ's members.
+- Increases beaker rate to all founded towns of the civilization by 10%.
+- Increases effectiveness of this Town's income tax converted to beakers by 70%.
+
+*NEW* The Great Lighthouse:
+- Increase range of all towers in host town by 15%.
+- All Scout Towers in host civ now apply glowing effect for 4 seconds
+- All Scout Towers in host civ now report player's health, unit, and armor/weapon type.
+- Increase trade income in the host town by 50%.
+
+The Great Pyramids:
+- Increases Cottage coin output by 15% in all towns of the civ.
+- Reduces the Cottage material consumption by 1/4 in the host town.
+- Leeches 2% of the culture output per hour from the nearest 3 towns.
+- Increases hammer rate to all founded towns of the civilization by 10%.
+
+The Hanging Gardens:
+- Increases crop growth rates by 50% across the civilization.
+- Regenerates a player's health at half heart per tick when inside city borders.
+- Players food level will be above 15 as long as they are in their civ borders, allies, or peace, or if it is WarTime.

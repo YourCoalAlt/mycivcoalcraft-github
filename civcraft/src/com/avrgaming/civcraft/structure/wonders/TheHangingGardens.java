@@ -22,13 +22,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
+import com.avrgaming.civcraft.object.CultureChunk;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
+import com.avrgaming.civcraft.war.War;
 
 public class TheHangingGardens extends Wonder {
 
@@ -81,24 +86,35 @@ public class TheHangingGardens extends Wonder {
 			for (Resident res : t.getResidents()) {
 				try {
 					Player player = CivGlobal.getPlayer(res);
+					if (player.isDead() || !player.isValid()) continue;
 					
-					if (player.isDead() || !player.isValid()) {
-						continue;
+					// Health
+					Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+					if (player.getHealth() < maxHP) {
+						TownChunk tc = CivGlobal.getTownChunk(player.getLocation());
+						if (tc != null && tc.getTown() == this.getTown()) {
+							if (player.getHealth() >= (maxHP-1)) {
+								player.setHealth(maxHP);
+							} else {
+								player.setHealth(player.getHealth() + 1);
+							}
+						}
 					}
 					
-					if (player.getHealth() >= 20) {
-						continue;
-					}
-					
-					TownChunk tc = CivGlobal.getTownChunk(player.getLocation());
-					if (tc == null || tc.getTown() != this.getTown()) {
-						continue;
-					}
-					
-					if (player.getHealth() >= 19.0) {
-						player.setHealth(20);
-					} else {
-						player.setHealth(player.getHealth() + 1);
+					// Food Level (NOT SATURATION)
+					int maxFood = 15; // TODO make config? Not full player, just making their lives easier.
+					if (player.getFoodLevel() < maxFood) {
+						CultureChunk cc = CivGlobal.getCultureChunk(player.getLocation());
+						if (cc != null) {
+							DiplomaticRelation.Status status = cc.getCiv().getDiplomacyManager().getRelationStatus(player);
+							if (status == Status.ALLY || status == Status.PEACE || War.isWarTime()) {
+								if (player.getFoodLevel() >= (maxFood-1)) {
+									player.setFoodLevel(maxFood);
+								} else {
+									player.setFoodLevel(player.getFoodLevel() + 1);
+								}
+							}
+						}
 					}
 				} catch (CivException e) {
 					//Player not online;

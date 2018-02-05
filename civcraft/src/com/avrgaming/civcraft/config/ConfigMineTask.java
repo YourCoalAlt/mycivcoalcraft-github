@@ -15,6 +15,7 @@ public class ConfigMineTask {
 	public int task;
 	public Map<ArrayList<String>, Integer> required;
 	public int reward;
+	public double quest_exp;
 	
 	public ConfigMineTask() {
 	}
@@ -22,6 +23,7 @@ public class ConfigMineTask {
 	public ConfigMineTask(ConfigMineTask currentlvl) {
 		this.task = currentlvl.task;
 		this.reward = currentlvl.reward;
+		this.quest_exp = currentlvl.quest_exp;
 		this.required = new HashMap<ArrayList<String>, Integer>();
 		for (Entry<ArrayList<String>, Integer> entry : currentlvl.required.entrySet()) {
 			this.required.put(entry.getKey(), entry.getValue());
@@ -50,6 +52,7 @@ public class ConfigMineTask {
 			minetask.task = (Integer)cl.get("task");
 			minetask.required = required_list;
 			minetask.reward = (Integer)cl.get("reward");
+			minetask.quest_exp = (Integer)cl.get("qexp");
 			mine_tasks.put(minetask.task, minetask);
 		}
 		CivLog.info("Loaded "+mine_tasks.size()+" Mine Tasks.");		

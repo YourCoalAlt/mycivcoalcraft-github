@@ -26,17 +26,15 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.threading.tasks.PlayerQuestionTask;
-import com.avrgaming.civcraft.threading.tasks.TemplateSelectQuestionTask;
 
 public class SelectCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (!(sender instanceof Player)) {
-			CivMessage.sendError(sender, "Only a player can execute this command.");
+			CivMessage.sendErrorPlayerCmd(sender);
 			return false;
 		}
-		
 		
 		if (args.length < 1) {
 			CivMessage.sendError(sender, "Enter a number.");
@@ -44,15 +42,9 @@ public class SelectCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		
 		PlayerQuestionTask task = (PlayerQuestionTask) CivGlobal.getQuestionTask(player.getName());
 		if (task == null) {
 			CivMessage.sendError(sender, "No question to respond to.");
-			return false;
-		}
-		
-		if (!(task instanceof TemplateSelectQuestionTask)) {
-			CivMessage.sendError(sender, "Cannot respond to the current question.");
 			return false;
 		}
 		

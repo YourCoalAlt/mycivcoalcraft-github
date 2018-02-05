@@ -35,7 +35,7 @@ global:
    join_civ_cooldown: 1
 
    # Distance things must be built away from spawn.
-   distance_from_spawn: 640.0
+   distance_from_spawn: 768.0
 
    # max distance players can be apart for trading
    max_trade_distance: 10.0
@@ -73,10 +73,10 @@ civ:
     town_distance_base_upkeep: 100
 
     # Multiplier used to make distance upkeep expoential, greater = higher upkeep
-    town_distance_multiplier: 0.2
+    town_distance_multiplier: 0.25
 
     # Multiplier used when a town's culture doesnt connect to the capitals culture.
-    town_distance_multiplier_outside_culture: 0.75
+    town_distance_multiplier_outside_culture: 0.8
 
     # Maximum amount of distance upkeep anybody can pay per town
     town_distance_upkeep_max: 500000

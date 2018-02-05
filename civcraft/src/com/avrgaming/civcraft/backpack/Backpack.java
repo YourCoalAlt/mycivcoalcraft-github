@@ -197,49 +197,6 @@ public class Backpack {
 		}
 	}
 	
-/*	public static void showMiningRates(Player player) {
-		miningRateInv = null;
-		if (miningRateInv == null) {
-			miningRateInv = Bukkit.getServer().createInventory(player, 9*3, "Mining Drops");
-			
-			Resident res = CivGlobal.getResident(player);
-			ResidentExperience re = CivGlobal.getResidentE(player);
-			if (res != null && re != null) {
-//				ConfigEXPFishingLevel fishinglvl = CivSettings.expFishingLevels.get(re.getFishingLevel());
-				for (ConfigEXPMining d : CivSettings.resxpMiningBlocks.values()) {
-					double mod = re.getFishingLevel() + 1; mod /= 2;
-					
-					String out = "";
-					out += CivColor.Green+"Type: "+CivColor.LightGreen+"Ore;";
-					DecimalFormat df = new DecimalFormat("#.##");
-					out += CivColor.Green+"XP Orbs: "+CivColor.LightGreen+"N/A;";
-					out += CivColor.Green+"Fishing XP: "+CivColor.LightGreen+Double.valueOf(df.format((d.resxp*mod)));
-					
-					out += ";"+CivColor.LightGray+"Vanilla Item";
-					ItemStack mining = LoreGuiItem.build(CivColor.White+CivData.getDisplayName(d.id, 0), d.id, 0, out.split(";"));
-					miningRateInv.addItem(mining);
-				}
-			} else {
-				ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, 
-						CivColor.Rose+"Error getting experience.",
-						CivColor.RESET+"Relog or contact an admin!");
-				miningRateInv.addItem(mining);
-			}
-			
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Experience Menu");
-			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
-			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-			backButton = LoreGuiItem.setActionData(backButton, "invName", experienceHelpInv.getName());
-			miningRateInv.setItem((9*3)-1, backButton);
-			
-			LoreGuiItemListener.guiInventories.put(miningRateInv.getName(), miningRateInv);
-		}
-		
-		if (player != null && player.isOnline() && player.isValid()) {
-			player.openInventory(miningRateInv);	
-		}
-	}*/
-	
 	public static void showTownMenu(Player p) {
 		Resident res = CivGlobal.getResident(p);
 		if (res != null) {

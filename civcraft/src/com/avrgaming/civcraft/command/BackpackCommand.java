@@ -16,7 +16,7 @@ public class BackpackCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (!(sender instanceof Player)) {
-			CivMessage.sendError(sender, "Only a player can execute this command.");
+			CivMessage.sendErrorPlayerCmd(sender);
 			return false;
 		}
 		

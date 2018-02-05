@@ -32,7 +32,4 @@ public class UnitSaveAsyncTask implements Runnable {
 	public void run() {
 		barracks.saveProgress();
 	}
-	
-	
-	
 }

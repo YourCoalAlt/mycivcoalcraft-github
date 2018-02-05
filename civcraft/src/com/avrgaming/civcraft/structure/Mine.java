@@ -25,6 +25,7 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
+import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.StructureChest;
@@ -85,14 +86,18 @@ public class Mine extends Structure {
 		
 		for (StructureChest c : chests) {
 			task.syncLoadChunk(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getZ());
-			Inventory tmp;
 			try {
-				tmp = task.getChestInventory(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getY(), c.getCoord().getZ(), true);
+				Inventory tmp = task.getChestInventory(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getY(), c.getCoord().getZ(), true);
+				multiInv.addInventory(tmp);
 			} catch (CivTaskAbortException e) {
-				return Result.STAGNATE;
+				CivLog.warning("Mine Inv: "+e.getMessage());
 			}
-			multiInv.addInventory(tmp);
 		}
+		
+		if (multiInv.getInventories().size() < 1) {
+			return Result.STAGNATE;
+		}
+		
 		getConsumeComponent().setSource(multiInv);
 		getConsumeComponent().setConsumeRate(1.0);
 		Result result = getConsumeComponent().processConsumption();
@@ -104,33 +109,33 @@ public class Mine extends Structure {
 		Result result = this.consume(task);
 		switch (result) {
 		case STARVE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
 					CivColor.Rose+"fell "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+".");
 			break;
 		case LEVELDOWN:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()+1)+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getLevel()+1)+" "+getDisplayName()+" consumption "+
 					CivColor.Rose+"de-leveled "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
 					CivColor.Green+getConsumeComponent().getLevel()+CivColor.LightGreen+".");
 			break;
 		case STAGNATE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
 					CivColor.Rose+"stagnated "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case GROW:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
 					CivColor.Green+"rose "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case LEVELUP:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getConsumeComponent().getLevel()-1)+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+(getLevel()-1)+" "+getDisplayName()+" consumption "+
 					CivColor.Green+"leveled up "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". It is now level "+
 					getConsumeComponent().getLevel()+". ");
 			break;
 		case MAXED:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
 					CivColor.LightPurple+"is maxed "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		case UNKNOWN:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" "+getDisplayName()+" consumption "+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
 					CivColor.GrayBold+"UNKNOWN "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		default:
@@ -156,13 +161,8 @@ public class Mine extends Structure {
 	}
 	
 	public double getBonusHammers() {
-		if (!this.isComplete()) {
-			return 0.0;
-		}
-		
-		if (getConsumeComponent().getLevel() <= 0) {
-			return 0.0;
-		}
+		if (!this.isComplete()) return 0.0;
+		if (getConsumeComponent().getLevel() < 1) return 0.0;
 		
 		ConfigMineLevel lvl = CivSettings.mineLevels.get(getLevel());
 		int total_production = (int) (lvl.hammers*this.getTown().getMineRate().total);
@@ -170,8 +170,10 @@ public class Mine extends Structure {
 //			total_production *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 //		}
 		
-		double buff = 1.0 + this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
+		double buff = 0.0;
+		buff += this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
 		total_production *= buff;
+		
 		if (this.getCiv().hasTechnology("tech_resource_efficiency")) {
 			double tech_bonus;
 			try {

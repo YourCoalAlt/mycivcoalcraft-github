@@ -121,8 +121,6 @@ public class DebugCommand extends CommandBase {
 		command = "/dbg";
 		displayName = "Debug";
 		
-		commands.put("resident", "[name] - prints out the resident identified by name.");
-		commands.put("town", "[name] - prints out the town identified by name.");
 		commands.put("townchunk", " gets the town chunk you are standing in and prints it.");
 		commands.put("newday", "Runs the new day code, collects taxes ... etc.");
 		commands.put("civ", "[name] prints out civ info.");
@@ -151,9 +149,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("cleartradesigns", "clears extra trade signs above trade outpots");
 		commands.put("restoresigns", "restores all structure signs");
 		commands.put("regenchunk", "regens every chunk that has a trade good in it");
-		commands.put("quickcodereload", "Reloads the quick code plugin");
-		commands.put("loadbans", "Loads bans from ban list into global table");
-		commands.put("setallculture", "[amount] - sets all towns culture in the world to this amount.");
 		commands.put("timers", "show all the timer information.");
 		commands.put("shownbt", "shows the current nbt data for this item in the logs");
 		commands.put("addnbt", "adds a custom tag to the item in your hand.");
@@ -181,7 +176,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("circle", "[int] - draws a circle at your location, with this radius.");
 		commands.put("loadperks", "loads perks for yourself");
 		commands.put("colorme", "[hex] adds nbt color value to item held.");
-		commands.put("preview", "show a single block preview at your feet.");
 		commands.put("sql", "Show SQL health info.");
 		commands.put("templatetest", "tests out some new template stream code.");
 		commands.put("buildspawn", "[civname] [capitolname] Builds spawn from spawn template.");
@@ -197,7 +191,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("cannon", "builds a war cannon.");
 		commands.put("saveinv", "save an inventory");
 		commands.put("restoreinv", "restore your inventory.");
-		commands.put("arenainfo", "Shows arena info for this player.");
 	}
 	
 	public void saveinv_cmd() throws CivException {
@@ -271,6 +264,7 @@ public class DebugCommand extends CommandBase {
 		Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
 		player.setHealth(maxHP);
 		player.setFoodLevel(50);
+		player.setSaturation(50f);
 		CivMessage.send(player, "Healed.");
 	}
 	
@@ -558,25 +552,6 @@ public class DebugCommand extends CommandBase {
 		}
 		
 		CivMessage.send(sender, makeInfoString(stats, CivColor.Green, CivColor.LightGreen));
-	}
-	
-	public void preview_cmd() throws CivException {
-//		Player player = getPlayer();
-//		PlayerBlockChangeUtil util = new PlayerBlockChangeUtil();
-//		
-//		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-//		PacketContainer mapChunk =  manager.createPacket(Packets.Server.MAP_CHUNK);
-//		
-//		mapChunk.getBytes().write(arg0, arg1)
-//		//Packet3CExplosion expo = new Packet3CExplosion();
-//		//Packet51MapChunk c = new Packet51MapChunk();
-//		c.
-//		//mapChunk.set
-//		
-//		
-//		//util.addUpdateBlock(player.getName(), new BlockCoord(player.getLocation().add(0, -1, 0)), CivData.WOOD, 3);
-//		//util.sendUpdate(player.getName());
-//		//CivMessage.sendSuccess(player, "Changed block");
 	}
 	
 	public void colorme_cmd() throws CivException {
@@ -909,14 +884,11 @@ public class DebugCommand extends CommandBase {
 //	}
 	
 	public void timers_cmd() {
-		
 		CivMessage.sendHeading(sender, "Timers");
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd h:mm:ss a z");
-
+		
 		CivMessage.send(sender, "Now:"+sdf.format(new Date()));
 		for (EventTimer timer : EventTimer.timers.values()) {
-			
-			
 			CivMessage.send(sender, timer.getName());
 			CivMessage.send(sender, "    next:"+sdf.format(timer.getNext()));
 			if (timer.getLast().getTime().getTime() == 0) {
@@ -924,41 +896,15 @@ public class DebugCommand extends CommandBase {
 			} else {
 				CivMessage.send(sender, "    last:"+sdf.format(timer.getLast()));
 			}
-			
 		}
-		
-	}
-	
-	public void setallculture_cmd() throws CivException {
-		Integer culture = getNamedInteger(1);
-		
-		for (Town town : CivGlobal.getTowns()) {
-			town.addAccumulatedCulture(culture);
-			town.save();
-		}
-		
-		CivGlobal.processCulture();
-		CivMessage.sendSuccess(sender, "Set all town culture to "+culture+" points.");
-	}
-		
-	public void quickcodereload_cmd() {
-		
-		Bukkit.getPluginManager().getPlugin("QuickCode");
-		
-		
 	}
 	
 	public void regenchunk_cmd() {
-	
 		World world = Bukkit.getWorld("world");
-
 		for(ChunkCoord coord : CivGlobal.preGenerator.goodPicks.keySet()) {
-			
 			world.regenerateChunk(coord.getX(), coord.getZ());
 			CivMessage.send(sender, "Regened:"+coord);
 		}
-		
-		
 	}
 	
 	public void restoresigns_cmd() {
@@ -1397,19 +1343,6 @@ public class DebugCommand extends CommandBase {
 		showBasicHelp();
 	}
 	
-	public void town_cmd() throws CivException {
-		if (args.length < 2) {
-			CivMessage.sendError(sender, "Specifiy a town name.");
-			return;
-		}
-		
-		Town town = getNamedTown(1);
-		
-		CivMessage.sendHeading(sender, "Town "+town.getName());
-		CivMessage.send(sender, "id:"+town.getId()+" level: "+town.getLevel());
-		
-	}
-	
 	public void townchunk_cmd() {
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
@@ -1423,20 +1356,6 @@ public class DebugCommand extends CommandBase {
 			
 			CivMessage.send(sender, "id:"+tc.getId()+" coord:"+tc.getChunkCoord());
 		}
-	}
-	
-	public void resident_cmd() throws CivException {
-		if (args.length < 2) {
-			CivMessage.sendError(sender, "Specifiy a resident name.");
-			return;
-		}
-		
-		Resident res = getNamedResident(1);
-		
-		CivMessage.sendHeading(sender, "Resident "+res.getName());
-		CivMessage.send(sender, "id: "+res.getId()+" lastOnline: "+res.getLastOnline()+" registered: "+res.getRegistered());
-		CivMessage.send(sender, "debt: "+res.getTreasury().getDebt());
-
 	}
 
 	@Override

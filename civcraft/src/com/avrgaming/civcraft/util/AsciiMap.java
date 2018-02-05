@@ -29,8 +29,8 @@ import com.avrgaming.civcraft.object.TownChunk;
 
 public class AsciiMap {
 
-	private static final int width = 9;
-	private static final int height = 40;	
+	private static final int width = 10;
+	private static final int height = 36;	
 	
 	public static List<String> getMapAsString(Location center) {
 		ArrayList<String> out = new ArrayList<String>();
@@ -50,7 +50,7 @@ public class AsciiMap {
 		
 		//ChunkCoord currentChunk = new ChunkCoord(center);
 		for (int x = 0; x < width; x++) {
-			String outRow = new String("         ");
+			String outRow = new String("          ");
 			for (int z = 0; z < height; z++) {
 				String color = CivColor.White;
 								
