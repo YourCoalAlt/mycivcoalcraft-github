@@ -29,7 +29,7 @@ import com.avrgaming.civcraft.main.CivLog;
 public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 	public String id;
 	public String name;
-	public Integer value;
+	public Double value;
 	//public String bonus;
 	public boolean water;
 	public HashMap<String, ConfigBuff> buffs = new HashMap<String, ConfigBuff>();
@@ -57,7 +57,7 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 			ConfigTradeGood good = new ConfigTradeGood();
 			good.id = (String)g.get("id");
 			good.name = (String)g.get("name");
-			good.value = (Integer)g.get("value");
+			good.value = (Double)g.get("value");
 			loadBuffsString(good, (String)g.get("buffs"));
 			good.water = false;
 			good.material = (Integer)g.get("material");
@@ -73,7 +73,7 @@ public class ConfigTradeGood implements Comparable<ConfigTradeGood> {
 			ConfigTradeGood good = new ConfigTradeGood();
 			good.id = (String)g.get("id");
 			good.name = (String)g.get("name");
-			good.value = (Integer)g.get("value");
+			good.value = (Double)g.get("value");
 			loadBuffsString(good, (String)g.get("buffs"));
 			good.water = true;
 			good.material = (Integer)g.get("material");

@@ -110,7 +110,7 @@ public class Store extends Structure {
 			
 			sign.setText("Buy 64\n"+
 		             mat.name+"\n"+
-				     "For "+(int)mat.price+" Coins\n"+
+				     "For "+mat.price+" Coins\n"+
 		             getNonResidentFeeString());
 			sign.update();
 			count++;
@@ -137,30 +137,27 @@ public class Store extends Structure {
 	
 	
 	
-	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, int price) {
+	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, double price) {
 		Resident resident;
-		int payToTown = (int) (price*this.getNonResidentFee());
+		double payToTown = price*this.getNonResidentFee();
 		try {
-				
-				resident = CivGlobal.getResident(player.getName());
-				Town t = resident.getTown();
-			
-				if (t == this.getTown()) {
-					// Pay no taxes! You're a member.
-					resident.buyItem(itemName, id, data, price, amount);
-					CivMessage.send(player, CivColor.LightGreen + "Bought "+amount+" "+itemName+" for "+ price+ " coins.");
-					return;
-				} else {
-					// Pay non-resident taxes
-					resident.buyItem(itemName, id, data, price + payToTown, amount);
-					getTown().deposit(payToTown);
-					CivMessage.send(player, CivColor.Yellow + "Paid "+ payToTown+" coins in non-resident taxes.");
-				}
-			
+			resident = CivGlobal.getResident(player.getName());
+			Town t = resident.getTown();
+			if (t == this.getTown()) {
+				// Pay no taxes! You're a member.
+				resident.buyItem(itemName, id, data, price, amount);
+				CivMessage.send(player, CivColor.LightGreen + "Bought "+amount+" "+itemName+" for "+ price+ " coins.");
+				return;
+			} else {
+				// Pay non-resident taxes
+				resident.buyItem(itemName, id, data, price + payToTown, amount);
+				getTown().deposit(payToTown);
+				CivMessage.send(player, CivColor.Yellow + "Paid "+ payToTown+" coins in non-resident taxes.");
 			}
-			catch (CivException e) {
-				CivMessage.send(player, CivColor.Rose + e.getMessage());
-			}
+			
+		} catch (CivException e) {
+			CivMessage.send(player, CivColor.Rose + e.getMessage());
+		}
 		return;
 	}
 

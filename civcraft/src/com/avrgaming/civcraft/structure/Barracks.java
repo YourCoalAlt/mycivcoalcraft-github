@@ -105,28 +105,52 @@ public class Barracks extends Structure {
 			return;
 		}
 		
-		if (!getTown().getTreasury().hasEnough(unit.cost)) {
-			CivMessage.sendError(r, "Not enough coins to train unit. We require "+unit.cost+" coins.");
-			return;
-		}
-		
 		if (this.trainingUnit != null) {
 			CivMessage.sendError(r, "Already training a "+this.trainingUnit.name+".");
 			return;
 		}
 		
+		double coinCost = unit.cost;
 		if (unit.id.equals("u_settler")) {
-			if (!this.getCiv().getLeaderGroup().hasMember(r) && !this.getCiv().getAdviserGroup().hasMember(r)) {
-				CivMessage.sendError(r, "You must be an adivser to the civilization in order to build a Settler.");
+			if (!this.getCiv().getLeaderGroup().hasMember(r)) {
+				CivMessage.sendError(r, "You must be a leader to the civilization in order to build a Settler.");
 				return;
 			}
+			coinCost = addPriceOfPreviousSettlers(unit.cost);
 		}
 		
-		getTown().getTreasury().withdraw(unit.cost);
+		if (!getTown().getTreasury().hasEnough(coinCost)) {
+			CivMessage.sendError(r, "Not enough coins to train unit. We require "+coinCost+" coins.");
+			return;
+		}
+		
+		getTown().getTreasury().withdraw(coinCost);
 		this.setCurrentHammers(0.0);
 		this.setTrainingUnit(unit);
 		CivMessage.sendTown(getTown(), "We've begun training a "+unit.name+"!");
+		if (unit.id.equals("u_settler")) {
+			CivGlobal.getSessionDB().add("settlers:" + this.getCiv().getId(), "1", this.getTown().getId(), this.getCiv().getId(), this.getId());
+		}
 		this.updateTraining();
+	}
+	
+	private double addPriceOfPreviousSettlers(Double cost) {
+		int previousSettlers = 1;
+		Double coinCost = cost;
+
+		ArrayList<String> keys = new ArrayList<String>();
+		keys.add(""+this.getCiv().getName());
+		keys.add(""+this.getCiv().getId());
+		for (String key : keys) {
+			ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("settlers:"+key);
+			if (entries != null) {
+				for (SessionEntry entry : entries) {
+					previousSettlers += Integer.parseInt(entry.value);
+				}
+			}
+		}
+		coinCost *= previousSettlers;
+		return coinCost;
 	}
 	
 	public boolean canRepairItem(ItemStack repair) {
@@ -161,7 +185,7 @@ public class Barracks extends Structure {
 		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(repair);
 		try {
-			int totalCost;
+			double totalCost;
 			if (craftMat.hasComponent("RepairCost")) {
 				RepairCost getRepairCost = (RepairCost)craftMat.getComponent("RepairCost");
 				int repairCost = getRepairCost.getInt("value");
@@ -172,7 +196,7 @@ public class Barracks extends Structure {
 					double maxDura = repair.getType().getMaxDurability();
 					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
 				}
-				int subTotal = (int) (repairCost + duraCost);
+				double subTotal = repairCost + duraCost;
 				totalCost = subTotal;
 			} else {
 				double baseTierRepair = CivSettings.getDouble(CivSettings.structureConfig, "barracks.base_tier_repair");
@@ -188,9 +212,10 @@ public class Barracks extends Structure {
 					duraCost = Math.pow(itemDura, (maxDura-Math.abs(0.001*(itemDura-maxDura)))/maxDura);
 				}
 				double subTotal = (fromTier + duraCost);
-				totalCost = (int) subTotal;
+				totalCost = subTotal;
 			}
 			
+			totalCost = Math.round(totalCost);
 			InteractiveRepairItem repairItem = new InteractiveRepairItem(totalCost, player.getName(), repair);
 			repairItem.displayMessage();
 			res.setInteractiveMode(repairItem);
@@ -201,7 +226,7 @@ public class Barracks extends Structure {
 		}
 	}
 	
-	public static void repairItem(int cost, String playerName, ItemStack stack) {
+	public static void repairItem(double cost, String playerName, ItemStack stack) {
 		Player player;
 		try {
 			player = CivGlobal.getPlayer(playerName);
@@ -469,8 +494,13 @@ public class Barracks extends Structure {
 			} else {
 				String out = "";
 				
-				if (t.hasEnough(u.cost)) out += CivColor.GreenBold+"Cost: "+CivColor.LightGreen+u.cost+" Coins;";
-				else out += CivColor.RedBold+"Cost: "+CivColor.Rose+u.cost+" Coins;";
+				double unitCost = u.cost;
+				if (u.id.equals("u_settler")) {
+					unitCost = addPriceOfPreviousSettlers(u.cost);
+				}
+				
+				if (t.hasEnough(unitCost)) out += CivColor.GreenBold+"Cost: "+CivColor.LightGreen+unitCost+" Coins;";
+				else out += CivColor.RedBold+"Cost: "+CivColor.Rose+unitCost+" Coins;";
 				
 				out += CivColor.LightGreen+"       "+u.hammer_cost+" Hammers;";
 				

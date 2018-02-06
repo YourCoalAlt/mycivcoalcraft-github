@@ -102,9 +102,9 @@ public class Grocer extends Structure {
 		return null;
 	}
 	
-	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, int price) {
+	public void sign_buy_material(Player player, String itemName, int id, byte data, int amount, double price) {
 		Resident resident;
-		int payToTown = (int) Math.round(price*this.getNonResidentFee());
+		double payToTown = Math.round(price*this.getNonResidentFee());
 		try {
 				
 				resident = CivGlobal.getResident(player.getName());

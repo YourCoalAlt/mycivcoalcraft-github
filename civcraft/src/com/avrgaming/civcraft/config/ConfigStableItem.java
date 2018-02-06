@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.main.CivLog;
 
 public class ConfigStableItem {
 	public String name;
-	public Integer cost;
+	public Double cost;
 	public int store_id;
 	public int item_id;
 	public int horse_id;
@@ -40,7 +40,7 @@ public class ConfigStableItem {
 			ConfigStableItem itm = new ConfigStableItem();
 			
 			itm.name = (String)level.get("name");
-			itm.cost = (Integer)level.get("cost");
+			itm.cost = (Double)level.get("cost");
 			itm.store_id = (Integer)level.get("store_id");
 			itm.item_id = (Integer)level.get("item_id");
 			itm.horse_id = (Integer)level.get("horse_id");

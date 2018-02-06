@@ -36,7 +36,7 @@ public class ConfigUnit {
 	public String require_tech;
 	public String require_struct;
 	public String require_upgrade;
-	public Integer cost;
+	public Double cost;
 	public Integer hammer_cost;
 	public int limit;
 	public int destroy_chance;
@@ -57,7 +57,7 @@ public class ConfigUnit {
 			unit.require_tech = (String)b.get("require_tech");
 			unit.require_struct = (String)b.get("require_struct");
 			unit.require_upgrade = (String)b.get("require_upgrade");
-			unit.cost = (Integer)b.get("cost");
+			unit.cost = (Double)b.get("cost");
 			unit.hammer_cost = (Integer)b.get("hammer_cost");
 			unit.limit = (Integer)b.get("limit");
 			if ((Integer)b.get("destroy_chance") != null) { unit.destroy_chance = (Integer)b.get("destroy_chance"); } else { unit.destroy_chance = 0; }

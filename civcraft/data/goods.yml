@@ -113,7 +113,7 @@ hemispheres:
 land_goods:
     - id: 'good_citrus'
       name: Citrus
-      value: 125
+      value: 125.0
       rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 351 # dye
@@ -123,7 +123,7 @@ land_goods:
 #
     - id: 'good_cocoa'
       name: Cocoa
-      value: 500
+      value: 500.0
       rarity: 4
       buffs: 'buff_advanced_touring, buff_year_of_plenty, buff_preservative'
       material: 351 # dye
@@ -133,7 +133,7 @@ land_goods:
 #
     - id: 'good_coffee'
       name: Coffee
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_rush, buff_extraction, buff_innovation'
       material: 390 # flower pot
@@ -144,7 +144,7 @@ land_goods:
 #
     - id: 'good_copper'
       name: Copper
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_advanced_tooling, buff_construction'
       material: 369 # blaze rod
@@ -154,7 +154,7 @@ land_goods:
 #
     - id: 'good_corn'
       name: Corn
-      value: 125
+      value: 125.0
       rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 371 # gold nugget
@@ -164,7 +164,7 @@ land_goods:
 #
     - id: 'good_cotton'
       name: Cotton
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fine_art, buff_hedonism'
       material: 351 # dye
@@ -174,7 +174,7 @@ land_goods:
 #
     - id: 'good_gems'
       name: Gems
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_barter, buff_greed, buff_monopoly'
       material: 388 # emerald
@@ -185,7 +185,7 @@ land_goods:
 #
     - id: 'good_grapes'
       name: Grapes
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_hedonism, buff_year_of_plenty'
       material: 372 # nether wart seed
@@ -195,7 +195,7 @@ land_goods:
 #
     - id: 'good_guarana'
       name: Guarana
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_rush, buff_extraction, buff_medicine'
       material: 351 # dye
@@ -206,7 +206,7 @@ land_goods:
 #
     - id: 'good_hemlock'
       name: Hemlock
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
       material: 31 # tall grass
@@ -217,7 +217,7 @@ land_goods:
 #
     - id: 'good_herbs'
       name: Herbs
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_medicine, buff_year_of_plenty'
       material: 31 # tall grass
@@ -227,7 +227,7 @@ land_goods:
 #
     - id: 'good_horses'
       name: Horses
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_advanced_tooling, buff_year_of_plenty'
       material: 415 # rabbit hide
@@ -237,7 +237,7 @@ land_goods:
 #
     - id: 'good_incense'
       name: Incense
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fine_art, buff_innovation'
       material: 362 # melon seed
@@ -247,7 +247,7 @@ land_goods:
 #
     - id: 'good_ivory'
       name: Ivory
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fine_art, buff_monopoly'
       material: 406 # nether quartz
@@ -257,7 +257,7 @@ land_goods:
 #
     - id: 'good_jade'
       name: Jade
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_advanced_touring, buff_fine_art'
       material: 295 # seeds
@@ -267,7 +267,7 @@ land_goods:
 #
     - id: 'good_limestone'
       name: Limestone
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_barricade, buff_construction'
       material: 1 # stone
@@ -277,7 +277,7 @@ land_goods:
 #
     - id: 'good_Marble'
       name: Marble
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_construction, buff_fine_art'
       material: 1 # stone
@@ -287,7 +287,7 @@ land_goods:
 #
     - id: 'good_niter'
       name: Niter
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_advanced_tooling, buff_advanced_mixing'
       material: 263 # coal
@@ -297,7 +297,7 @@ land_goods:
 #
     - id: 'good_oil'
       name: Oil
-      value: 500
+      value: 500.0
       rarity: 4
       buffs: 'buff_advanced_tooling, buff_advanced_mixing, buff_extraction, buff_fire_bomb'
       material: 351 # dye
@@ -308,7 +308,7 @@ land_goods:
 #
     - id: 'good_olives'
       name: Olives
-      value: 125
+      value: 125.0
       rarity: 1
       buffs: 'buff_hedonism'
       material: 434 # beetroot
@@ -318,7 +318,7 @@ land_goods:
 #
     - id: 'good_papyrus'
       name: Papyrus
-      value: 125
+      value: 125.0
       rarity: 1
       buffs: 'buff_innovation'
       material: 351 # Ink sack
@@ -328,7 +328,7 @@ land_goods:
 #
     - id: 'good_pelts'
       name: Pelts
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fine_art, buff_monopoly'
       material: 334 # leather
@@ -338,7 +338,7 @@ land_goods:
 #
     - id: 'good_poison_ivy'
       name: "Poison Ivy"
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_espionage, buff_sabotage, buff_dirty_money'
       material: 106 # vines
@@ -349,7 +349,7 @@ land_goods:
 #
     - id: 'good_silver'
       name: Silver
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_barter, buff_hedonism'
       material: 265 # iron ingot
@@ -359,7 +359,7 @@ land_goods:
 #
     - id: 'good_spice'
       name: Spice
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_preservative'
       material: 435 # beetroot seeds
@@ -369,7 +369,7 @@ land_goods:
 #
     - id: 'good_tobacco'
       name: Tobacco
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_greed, buff_fine_art, buff_monopoly'
       material: 338 # sugar canes
@@ -381,7 +381,7 @@ land_goods:
 water_goods: 
     - id: 'good_coral'
       name: Coral
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_monopoly, buff_innovation'
       material: 401 # firework rocket
@@ -391,7 +391,7 @@ water_goods:
 #
     - id: 'good_crabs'
       name: Crabs
-      value: 250
+      value: 250.0
       rarity: 1
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 432 # chorus fruit
@@ -401,7 +401,7 @@ water_goods:
 #
     - id: 'good_pearls'
       name: Pearls
-      value: 375
+      value: 375.0
       rarity: 3
       buffs: 'buff_advanced_mixing, buff_greed, buff_monopoly'
       material: 410 # prismarine crystals
@@ -412,7 +412,7 @@ water_goods:
 #
     - id: 'good_rice'
       name: Rice
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_innovation'
       material: 361 # pumpkin seeds
@@ -422,7 +422,7 @@ water_goods:
 #
     - id: 'good_salmon'
       name: Salmon
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 349 # raw fish
@@ -432,7 +432,7 @@ water_goods:
 #
     - id: 'good_salt'
       name: Salt
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_advanced_touring, buff_fine_art'
       material: 353 # sugar
@@ -442,7 +442,7 @@ water_goods:
 #
     - id: 'good_shrimp'
       name: Shrimp
-      value: 250
+      value: 250.0
       rarity: 2
       buffs: 'buff_fishing, buff_year_of_plenty'
       material: 349 # raw fish
@@ -452,7 +452,7 @@ water_goods:
 #
     - id: 'good_tuna'
       name: Tuna
-      value: 125
+      value: 125.0
       rarity: 1
       buffs: 'buff_year_of_plenty'
       material: 349 # fish
@@ -462,7 +462,7 @@ water_goods:
 #
     - id: 'good_whale'
       name: Whale
-      value: 500
+      value: 500.0
       rarity: 4
       buffs: 'buff_advanced_tooling, buff_extraction, buff_fine_art, buff_innovation'
       material: 345 # compass

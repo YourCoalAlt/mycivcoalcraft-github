@@ -33,7 +33,7 @@ public class ConfigTech {
 	public String id;
 	public String name;
 	public double beaker_cost;
-	public Integer cost;
+	public Double cost;
 	public String require_techs;
 	public Integer points;
 	
@@ -46,7 +46,7 @@ public class ConfigTech {
 			tech.id = (String)confTech.get("id");
 			tech.name = (String)confTech.get("name");
 			tech.beaker_cost = (Integer)confTech.get("beaker_cost")+.0;
-			tech.cost = (Integer)confTech.get("cost");
+			tech.cost = (Double)confTech.get("cost");
 			tech.require_techs = (String)confTech.get("require_techs");
 			tech.points = (Integer)confTech.get("points");
 			
@@ -83,7 +83,7 @@ public class ConfigTech {
 		return Math.floor(this.cost * Math.max(rate, .01));
 	}*/
 	
-	public int getAdjustedTechCost(Civilization civ) {
+	public double getAdjustedTechCost(Civilization civ) {
 		return cost;
 	}
 	

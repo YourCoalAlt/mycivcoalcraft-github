@@ -304,7 +304,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 		CivMessage.sendTown(buildable.getTown(), CivColor.Rose+"You can no longer build "+buildable.getDisplayName()+" since it was built in a far away land.");
 		
 		//Refund the town half the cost of the wonder.
-		int refund = (int)(buildable.getCost() / 2);			
+		double refund = buildable.getCost() / 2;			
 		buildable.getTown().deposit(refund);
 
 		CivMessage.sendTown(buildable.getTown(), CivColor.Yellow+"Town was refunded 50% ("+refund+" coins) of the cost to build the wonder.");

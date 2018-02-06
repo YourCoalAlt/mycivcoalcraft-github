@@ -285,7 +285,7 @@ public class Resident extends SQLObject {
 		}
 		
 		this.treasury = new EconObject(this);
-		this.getTreasury().setBalance(rs.getInt("coins"), false);
+		this.getTreasury().setBalance(rs.getDouble("coins"), false);
 		this.setGivenKit(rs.getBoolean("givenKit"));
 		this.setTimezone(rs.getString("timezone"));
 		this.loadFlagSaveString(rs.getString("flags"));
@@ -328,7 +328,7 @@ public class Resident extends SQLObject {
 		this.setLastOnline(rs.getLong("lastOnline"));
 		this.setRegistered(rs.getLong("registered"));
 		this.setDaysTilEvict(rs.getInt("daysTilEvict"));
-		this.getTreasury().setDebt(rs.getInt("debt"));
+		this.getTreasury().setDebt(rs.getDouble("debt"));
 		this.loadFriendsFromSaveString(rs.getString("friends"));
 		if (rs.getString("alts") != null) this.setAlts(rs.getString("alts")); // split
 		if (rs.getString("mailData") != null) this.setMailData(rs.getString("mailData")); // split
@@ -558,12 +558,9 @@ public class Resident extends SQLObject {
 		this.save();
 	}
 	
-	public Integer getPropertyTaxOwed() {
-		int total = 0;
-		
-		if (this.getTown() == null) {
-			return total;
-		}
+	public Double getPropertyTaxOwed() {
+		double total = 0;
+		if (this.getTown() == null) return total;
 		
 		for (TownChunk tc : this.getTown().getTownChunks()) {
 			if (tc.perms.getOwner() == this) {
@@ -799,7 +796,7 @@ public class Resident extends SQLObject {
 		return amount - leftoverAmount;
 	}
 	
-	public boolean buyItem(String itemName, int id, byte data, int price, int amount) throws CivException {
+	public boolean buyItem(String itemName, int id, byte data, double price, int amount) throws CivException {
 		if (!this.getTreasury().hasEnough(price)) {
 			throw new CivException("Not enough coins.");
 		}

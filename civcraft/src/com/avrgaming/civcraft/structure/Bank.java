@@ -52,12 +52,11 @@ public class Bank extends Structure {
 	}
 	
 	public double getBankExchangeRate() {
-		double rate = 0.0;
+		double rate = 0.4;
 		ConfigBankLevel cbl = CivSettings.bankLevels.get(level);
 		if (cbl != null) {
 			rate = cbl.exchange_rate;
 		} else {
-			rate = 0.4;
 			CivLog.warning("null exchange rate .:. cannot find level: "+level+" for town "+this.getTown().getName());
 			CivMessage.sendTown(this.getTown(), "null exchange rate .:. cannot find level: "+level+" for your bank. Contact an admin.");
 		}
@@ -123,7 +122,7 @@ public class Bank extends Structure {
 	@Override
 	public void onDailyEvent() {
 		double effectiveInterestRate = interestRate;
-		if (effectiveInterestRate == 0) {
+		if (effectiveInterestRate == 0.0) {
 			this.getTown().getTreasury().setPrincipalAmount(0);
 			return;
 		}

@@ -22,7 +22,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
-import com.avrgaming.civcraft.config.ConfigEXPMining;
 import com.avrgaming.civcraft.config.ConfigFishing;
 import com.avrgaming.civcraft.config.ConfigMaterial;
 import com.avrgaming.civcraft.config.ConfigMaterialCategory;
@@ -58,10 +57,10 @@ public class Backpack {
 		if (experienceHelpInv == null) {
 			experienceHelpInv = Bukkit.getServer().createInventory(player, 9*3, "Experience Categories");
 			
-			ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, CivColor.LightGray+"« Click for Rates »");
-			mining = LoreGuiItem.setAction(mining, "OpenInventory");
-			mining = LoreGuiItem.setActionData(mining, "invType", "showMiningRates");
-			experienceHelpInv.addItem(mining);
+//			ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, CivColor.LightGray+"« Click for Rates »");
+//			mining = LoreGuiItem.setAction(mining, "OpenInventory");
+//			mining = LoreGuiItem.setActionData(mining, "invType", "showMiningRates");
+//			experienceHelpInv.addItem(mining);
 			
 			ItemStack fishing = LoreGuiItem.build(CivColor.LightBlueBold+"Fishing", CivData.RAW_FISH, 0, CivColor.LightGray+"« Click for Rates »");
 			fishing = LoreGuiItem.setAction(fishing, "OpenInventory");
@@ -82,7 +81,7 @@ public class Backpack {
 		}
 	}
 	
-	public static void showMiningRates(Player player) {
+/*	public static void showMiningRates(Player player) {
 		miningRateInv = null;
 		if (miningRateInv == null) {
 			miningRateInv = Bukkit.getServer().createInventory(player, 9*3, "Mining Drops");
@@ -121,7 +120,7 @@ public class Backpack {
 		if (player != null && player.isOnline() && player.isValid()) {
 			player.openInventory(miningRateInv);	
 		}
-	}
+	}*/
 	
 	public static void showFishingRates(Player player) {
 		fishingRateInv = null;

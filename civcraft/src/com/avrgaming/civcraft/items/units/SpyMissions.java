@@ -608,7 +608,7 @@ public class SpyMissions extends UnitItemMaterial {
 		}
 		
 		if(processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
-			int amount = (int)(tc.getTown().getTreasury().getBalance()*0.25);
+			double amount = tc.getTown().getTreasury().getBalance()*0.25;
 			if (amount > 0) {
 				tc.getTown().getTreasury().withdraw(amount);
 				resident.getTown().getTreasury().deposit(amount);

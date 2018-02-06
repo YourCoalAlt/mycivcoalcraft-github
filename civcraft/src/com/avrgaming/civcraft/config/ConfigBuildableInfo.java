@@ -44,8 +44,8 @@ public class ConfigBuildableInfo {
 	public String update_event = "";
 	public String onBuild_event = "";
 	public int limit = 0;
-	public Integer cost = 0;
-	public Integer upkeep = 0;
+	public Double cost = 0.0;
+	public Double upkeep = 0.0;
 	public Integer hammer_cost = 0;
 	public int max_hitpoints = 0;
 	public Boolean destroyable = false;
@@ -98,8 +98,8 @@ public class ConfigBuildableInfo {
 			sinfo.onBuild_event = (String)obj.get("onBuild_event");
 			sinfo.limit = (Integer)obj.get("limit");
 			
-			sinfo.cost = (Integer)obj.get("cost");
-			sinfo.upkeep = (Integer)obj.get("upkeep");
+			sinfo.cost = (Double)obj.get("cost");
+			sinfo.upkeep = (Double)obj.get("upkeep");
 			sinfo.hammer_cost = (Integer)obj.get("hammer_cost");
 			sinfo.max_hitpoints = (Integer)obj.get("max_hitpoints");
 			sinfo.destroyable = (Boolean)obj.get("destroyable");

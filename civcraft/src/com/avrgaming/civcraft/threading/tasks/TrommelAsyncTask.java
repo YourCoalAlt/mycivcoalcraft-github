@@ -70,6 +70,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 					return;
 				}
 				
+				// If inventory as what we want, add it and forget any others.
 				boolean brk = false;
 				for (ListIterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
 					ItemStack stack = iter.next();
@@ -85,7 +86,6 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				}
 				
 				if (brk) break;
-//				source_inv.addInventory(tmp);
 			}
 			
 			boolean full = true;

@@ -218,7 +218,7 @@ public abstract class Wonder extends Buildable {
 		CivMessage.global("The "+CivColor.LightGreen+this.getDisplayName()+CivColor.White+" has been unbuilt by "+this.getTown().getName()
 				+"("+this.getTown().getCiv().getName()+") with the undo command.");
 				
-		int refund = this.getCost();
+		double refund = this.getCost();
 		this.getTown().deposit(refund);
 		CivMessage.sendTown(getTown(), "Town refunded "+refund+" coins.");
 		

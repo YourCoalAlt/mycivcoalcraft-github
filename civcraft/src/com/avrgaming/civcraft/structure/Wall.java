@@ -63,12 +63,12 @@ public class Wall extends Structure {
 
 	private static int HEIGHT;
 	private static int MAX_HEIGHT;
-	private static int COST_PER_SEGMENT;
+	private static double COST_PER_SEGMENT;
 	
 	public static void init_settings() throws InvalidConfiguration {
 		HEIGHT = CivSettings.getInteger(CivSettings.warConfig, "wall.height");
 		MAX_HEIGHT = CivSettings.getInteger(CivSettings.warConfig, "wall.maximum_height");
-		COST_PER_SEGMENT = CivSettings.getInteger(CivSettings.warConfig, "wall.cost_per_segment");
+		COST_PER_SEGMENT = CivSettings.getDouble(CivSettings.warConfig, "wall.cost_per_segment");
 	}
 	
 	public Map<BlockCoord, WallBlock> wallBlocks = new HashMap<BlockCoord, WallBlock>();
@@ -109,7 +109,7 @@ public class Wall extends Structure {
 	
 	@Override
 	public void processUndo() throws CivException {
-		int refund = 0;
+		double refund = 0;
 		for (WallBlock wb : wallBlocks.values()) {
 			
 			Material material = ItemManager.getMaterial(wb.getOldId());
@@ -290,7 +290,7 @@ public class Wall extends Structure {
 		int verticalSegments = this.buildWallSegment(player, first, second, 0, simpleBlocks, 0);
 		
 		// Pay the piper
-		int cost = verticalSegments*COST_PER_SEGMENT;
+		double cost = verticalSegments*COST_PER_SEGMENT;
 		if (!this.getTown().getTreasury().hasEnough(cost)) {
 			
 			for (WallBlock wb : this.wallBlocks.values()) {
@@ -512,8 +512,7 @@ public class Wall extends Structure {
 	
 	@Override
 	public void repairStructure() throws CivException {
-		int cost = getRepairCost();
-		
+		double cost = getRepairCost();
 		if (!this.isValidWall()) {
 			throw new CivException("This wall is no longer valid and cannot be repaired. Walls can no longer overlap with protected structure blocks, demolish this wall instead.");
 		}

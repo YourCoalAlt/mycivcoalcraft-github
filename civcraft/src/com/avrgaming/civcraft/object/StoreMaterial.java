@@ -22,12 +22,12 @@ public class StoreMaterial {
 	public int type;
 	public byte data;
 	public String name;
-	public Integer price;
+	public Double price;
 	
 	public StoreMaterial(String strtype, String strdata, String strname, String strprice) {		
 		type = Integer.valueOf(strtype);
 		data = Integer.valueOf(strdata).byteValue();
 		name = strname;
-		price = Integer.valueOf(strprice);
+		price = Double.valueOf(strprice);
 	}
 }

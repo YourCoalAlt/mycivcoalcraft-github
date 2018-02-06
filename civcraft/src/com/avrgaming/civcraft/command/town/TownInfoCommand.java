@@ -358,9 +358,9 @@ public class TownInfoCommand extends CommandBase {
 			}
 		}
 			
-		HashMap<String, Integer> structsByName = new HashMap<String, Integer>();
+		HashMap<String, Double> structsByName = new HashMap<String, Double>();
 		for (Structure struct : town.getStructures()) {
-			Integer upkeep = structsByName.get(struct.getConfigId());
+			Double upkeep = structsByName.get(struct.getConfigId());
 			if (upkeep == null) {
 				structsByName.put(struct.getDisplayName(), struct.getUpkeepCost());
 			} else {
@@ -371,7 +371,7 @@ public class TownInfoCommand extends CommandBase {
 				
 		CivMessage.sendHeading(sender, town.getName()+" Structure Info");
 		for (String structName : structsByName.keySet()) {
-			Integer upkeep = structsByName.get(structName);
+			Double upkeep = structsByName.get(structName);
 			CivMessage.send(sender, CivColor.Green+structName+" Upkeep: "+CivColor.LightGreen+upkeep);
 			
 		}

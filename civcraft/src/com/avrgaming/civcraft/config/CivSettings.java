@@ -196,7 +196,7 @@ public class CivSettings {
 	public static int gold_rate;
 	public static int diamond_rate;
 	public static int emerald_rate;
-	public static Integer startingCoins;
+	public static Double startingCoins;
 	
 	public static ArrayList<String> kitItems = new ArrayList<String>();
 	public static HashMap<Integer, ConfigRemovedRecipes> removedRecipies = new HashMap<Integer, ConfigRemovedRecipes>();
@@ -273,7 +273,7 @@ public class CivSettings {
 		gold_rate = CivSettings.getInteger(civConfig, "ore_rates.gold");
 		diamond_rate = CivSettings.getInteger(civConfig, "ore_rates.diamond");
 		emerald_rate = CivSettings.getInteger(civConfig, "ore_rates.emerald");
-		startingCoins = CivSettings.getInteger(civConfig, "global.starting_coins");
+		startingCoins = CivSettings.getDouble(civConfig, "global.starting_coins");
 		
 		alwaysCrumble.add(CivData.BEDROCK);
 		alwaysCrumble.add(CivData.GOLD_ORE);

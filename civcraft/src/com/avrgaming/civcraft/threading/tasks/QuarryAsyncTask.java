@@ -91,7 +91,23 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					quarry.skippedCounter++;
 					return;
 				}
-				source_inv.addInventory(tmp);
+				
+				// If inventory as what we want, add it and forget any others.
+				boolean brk = false;
+				for (ListIterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
+					ItemStack stack = iter.next();
+					if (stack == null) continue;
+					
+					ConfigQuarryItem cqi = CivSettings.quarryItems.get(ItemManager.getId(stack));
+					if (cqi == null) continue;
+					else {
+						source_inv.addInventory(tmp);
+						brk = true;
+						break;
+					}
+				}
+				
+				if (brk) break;
 			}
 			
 			boolean full = true;

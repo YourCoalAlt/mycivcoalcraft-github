@@ -28,11 +28,11 @@ public class LibraryEnchantment {
 	public Enchantment enchant;
 	public LoreEnhancement enhancement;
 	public int level;
-	public Integer price;
+	public Double price;
 	public String name;
 	public String displayName;
 
-	public LibraryEnchantment(String name, int lvl, int p) throws CivException {
+	public LibraryEnchantment(String name, int lvl, double price) throws CivException {
 		enchant = Library.getEnchantFromString(name.toLowerCase().replace(" ", "_"));
 		if (enchant == null)  {
 			if (!name.contains("LoreEnhancement")) name = "LoreEnhancement"+name;
@@ -41,7 +41,7 @@ public class LibraryEnchantment {
 			if (enhancement == null) throw new CivException("Could not create CivEnchantment:"+name+". Couldn't find enchantment or enhancement.");
 		}
 		level = lvl;
-		price = p;
+		this.price = price;
 		
 		this.name = name;
 		if (enchant != null) displayName = name.replace("_", " ");

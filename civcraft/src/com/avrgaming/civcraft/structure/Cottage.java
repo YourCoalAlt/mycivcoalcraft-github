@@ -345,7 +345,7 @@ public class Cottage extends Structure {
 		}
 		
 		
-		int total_coins = (int)Math.round(lvl.coins*this.getTown().getCottageRate());
+		double total_coins = Math.round(lvl.coins*this.getTown().getCottageRate());
 		if (this.getTown().getBuffManager().hasBuff("buff_pyramid_cottage_bonus")) {
 			total_coins *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 		}
@@ -362,7 +362,7 @@ public class Cottage extends Structure {
 		
 	//	this.getTown().depositTaxed(total_coins);
 	//	attrComp.setValue(total_coins);
-		int taxesPaid = (int) (total_coins*this.getTown().getDepositCiv().getIncomeTaxRate());
+		double taxesPaid = total_coins*this.getTown().getDepositCiv().getIncomeTaxRate();
 
 		String stateMessage = "";
 		switch (result) {

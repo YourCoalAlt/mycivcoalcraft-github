@@ -106,7 +106,7 @@ public class DailyTimer implements Runnable {
 		}
 		
 		for (Civilization civ : CivGlobal.getCivs()) {
-			if (civ.isAdminCiv()) { continue; }
+			if (civ.isAdminCiv()) continue;
 			
 			try {
 				double total = civ.payUpkeep();
@@ -124,7 +124,7 @@ public class DailyTimer implements Runnable {
 	
 	private void payTownUpkeep() {
 		for (Town t : CivGlobal.getTowns()) {
-			if (t.getCiv().isAdminCiv()) { continue; }
+			if (t.getCiv().isAdminCiv()) continue;
 			try {
 				double total = t.payUpkeep();
 				if (t.inDebt()) {
@@ -140,13 +140,13 @@ public class DailyTimer implements Runnable {
 	
 	private void collectTownTaxes() {
 		for (Civilization civ : CivGlobal.getCivs()) {
-			if (civ.isAdminCiv()) { continue; }
+			if (civ.isAdminCiv()) continue;
 			
 			double total = 0;
 			for (Town t : civ.getTowns()) {
 				try {
 					double taxrate = t.getDepositCiv().getIncomeTaxRate();
-					int townTotal = 0;
+					double townTotal = 0;
 					
 					townTotal += t.collectPlotTax();
 					townTotal += t.collectFlatTax();

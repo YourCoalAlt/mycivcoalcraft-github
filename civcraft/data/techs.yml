@@ -23,7 +23,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_doesnotexist'
     name: 'doesnotexist'
     beaker_cost: 0
-    cost: 0
+    cost: 0.0
     points: 0
     tier: 0
     unlocks:
@@ -38,7 +38,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_efficiency'
     name: 'efficiency'
     beaker_cost: 0
-    cost: 0
+    cost: 0.0
     points: 0
     tier: 0
     unlocks:
@@ -48,7 +48,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_material_placement'
     name: 'material placement'
     beaker_cost: 0
-    cost: 0
+    cost: 0.0
     points: 0
     tier: 0
     unlocks:
@@ -61,7 +61,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_armory'
     name: 'Armory'
     beaker_cost: 500
-    cost: 4000
+    cost: 4000.0
     points: 50
     tier: 1
     unlocks:
@@ -73,7 +73,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_mining'
     name: 'Mining'
     beaker_cost: 500
-    cost: 4000
+    cost: 4000.0
     points: 50
     tier: 1
     unlocks:
@@ -86,7 +86,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_irrigation'
     name: 'Irrigation'
     beaker_cost: 500
-    cost: 4000
+    cost: 4000.0
     points: 50
     tier: 1
     unlocks:
@@ -98,7 +98,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_deforestation'
     name: 'Deforestation'
     beaker_cost: 500
-    cost: 4000
+    cost: 4000.0
     points: 50
     tier: 1
     unlocks:
@@ -109,7 +109,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_mysticism'
     name: 'Mysticism'
     beaker_cost: 500
-    cost: 4000
+    cost: 4000.0
     points: 50
     tier: 1
     unlocks:
@@ -125,7 +125,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_blacksmithing'
     name: 'Blacksmithing'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -139,7 +139,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_masonry'
     name: 'Masonry'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -150,7 +150,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_writing'
     name: 'Writing'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -161,7 +161,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_animal_husbandry'
     name: 'Animal Husbandry'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -173,7 +173,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_pottery'
     name: 'Pottery'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -184,7 +184,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_code_of_laws'
     name: 'Code of Laws'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -196,7 +196,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_religion'
     name: 'Religion'
     beaker_cost: 1000
-    cost: 7500
+    cost: 7500.0
     points: 100
     tier: 2
     unlocks:
@@ -210,7 +210,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_exploration_and_strength'
     name: 'Exploration and Strength'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -223,7 +223,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_metal_casting'
     name: 'Metal Casting'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -234,7 +234,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_smelting'
     name: 'Smelting'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -245,7 +245,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_leather_crafting'
     name: 'Leather Crafting'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -256,7 +256,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_archery'
     name: 'Archery'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -267,7 +267,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_advanced_masonry'
     name: 'Advanced Masonry'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -279,7 +279,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_productivity'
     name: 'Productivity'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -291,7 +291,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_experimentation'
     name: 'Experimentation'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -303,7 +303,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_housing'
     name: 'Housing'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -315,7 +315,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_language'
     name: 'Language'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -328,7 +328,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_heritage'
     name: 'Heritage'
     beaker_cost: 2000
-    cost: 15000
+    cost: 15000.0
     points: 200
     tier: 3
     unlocks:
@@ -343,7 +343,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_trading'
     name: 'Trading'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -356,7 +356,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_shipbuilding'
     name: 'Shipbuilding'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -368,7 +368,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_horseback_riding'
     name: 'Horseback Riding'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -378,7 +378,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_objectification'
     name: 'Objectification*'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -389,7 +389,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_currency'
     name: 'Currency'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -401,7 +401,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_priesthood'
     name: 'Priesthood'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -412,7 +412,7 @@ techs: #Note: Pts = Beakers/10
   - id: 'tech_brewing'
     name: 'Brewing'
     beaker_cost: 3750
-    cost: 30000
+    cost: 30000.0
     points: 375
     tier: 4
     unlocks:
@@ -427,7 +427,7 @@ techs: #Note: Pts = Beakers/10
 #  - id: 'tech_'
 #    name: ''
 #    beaker_cost: 
-#    cost: 
+#    cost: .0
 #    points: 
 #    tier: 5
 #    unlocks:

@@ -95,7 +95,7 @@ public class EconCommand extends CommandBase {
 		validEcon();
 		
 		Civilization civ = getNamedCiv(1);
-		Integer amount = getNamedInteger(2);
+		Double amount = getNamedDouble(2);
 		civ.getTreasury().setDebt(amount);
 		civ.save();
 		
@@ -106,7 +106,7 @@ public class EconCommand extends CommandBase {
 		validEcon();
 		
 		Town town = getNamedTown(1);
-		Integer amount = getNamedInteger(2);
+		Double amount = getNamedDouble(2);
 		town.getTreasury().setDebt(amount);
 		town.save();
 		
@@ -117,7 +117,7 @@ public class EconCommand extends CommandBase {
 		validEcon();
 		
 		Resident resident = getNamedResident(1);
-		Integer amount = getNamedInteger(2);
+		Double amount = getNamedDouble(2);
 		resident.getTreasury().setDebt(amount);
 		resident.save();
 		
@@ -135,7 +135,7 @@ public class EconCommand extends CommandBase {
 
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			resident.getTreasury().deposit(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -155,7 +155,7 @@ public class EconCommand extends CommandBase {
 
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			resident.getTreasury().setBalance(amount);
 			CivMessage.sendSuccess(sender, "Set "+args[2]+" to "+args[1]);
 			
@@ -175,7 +175,7 @@ public class EconCommand extends CommandBase {
 
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			resident.getTreasury().withdraw(amount);
 			CivMessage.sendSuccess(sender, "Subtracted "+args[2]+" to "+args[1]);
 			
@@ -195,7 +195,7 @@ public class EconCommand extends CommandBase {
 		
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			town.getTreasury().deposit(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -215,7 +215,7 @@ public class EconCommand extends CommandBase {
 
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			town.getTreasury().setBalance(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -235,7 +235,7 @@ public class EconCommand extends CommandBase {
 
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			town.getTreasury().withdraw(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -255,7 +255,7 @@ public class EconCommand extends CommandBase {
 		
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			civ.getTreasury().deposit(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -275,7 +275,7 @@ public class EconCommand extends CommandBase {
 		
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			civ.getTreasury().setBalance(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			
@@ -295,7 +295,7 @@ public class EconCommand extends CommandBase {
 		
 		try {
 			
-			Integer amount = Integer.valueOf(args[2]);
+			Double amount = Double.valueOf(args[2]);
 			civ.getTreasury().withdraw(amount);
 			CivMessage.sendSuccess(sender, "Added "+args[2]+" to "+args[1]);
 			

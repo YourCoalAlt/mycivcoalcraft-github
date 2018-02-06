@@ -22,7 +22,7 @@ town:
     max_town_chunk_protrude: 3
 
     # Amount of upkeep to charge per resident.
-    upkeep_per_resident: 100
+    upkeep_per_resident: 100.0
 
     # Number of mins players must wait between refresh.
     buildable_refresh_cooldown: 10
@@ -41,86 +41,86 @@ town:
 town_levels:
     - level: 1
       title: 'Settlement'
-      upkeep: 200
+      upkeep: 200.0
       plots: 32
-      plot_cost: 200
+      plot_cost: 200.0
       tile_improvements: 4
 #
     - level: 2
       title: 'Hamlet'
-      upkeep: 500
+      upkeep: 500.0
       plots: 64
-      plot_cost: 500
+      plot_cost: 500.0
       tile_improvements: 6
 #
     - level: 3
       title: 'Large Hamlet'
-      upkeep: 750
+      upkeep: 750.0
       plots: 128
-      plot_cost: 750
+      plot_cost: 750.0
       tile_improvements: 8
 #
     - level: 4
       title: 'Village'
-      upkeep: 1250
+      upkeep: 1250.0
       plots: 192
-      plot_cost: 1500
+      plot_cost: 1500.0
       tile_improvements: 11
 #
     - level: 5
       title: 'Large Village'
-      upkeep: 2000
+      upkeep: 2000.0
       plots: 256
-      plot_cost: 3250
+      plot_cost: 3250.0
       tile_improvements: 14
 #
     - level: 6
       title: 'Town'
-      upkeep: 3500
+      upkeep: 3500.0
       plots: 384
-      plot_cost: 5000
+      plot_cost: 5000.0
       tile_improvements: 17
 #
     - level: 7
       title: 'Large Town'
-      upkeep: 5000
+      upkeep: 5000.0
       plots: 512
-      plot_cost: 9000
+      plot_cost: 9000.0
       tile_improvements: 20
 #
     - level: 8
       title: 'City'
-      upkeep: 7500
+      upkeep: 7500.0
       plots: 768
-      plot_cost: 15000
+      plot_cost: 15000.0
       tile_improvements: 24
 #
     - level: 9
       title: 'Large City'
-      upkeep: 12500
+      upkeep: 12500.0
       plots: 1024
-      plot_cost: 22500
+      plot_cost: 22500.0
       tile_improvements: 28
 #
     - level: 10
       title: 'Metropolis'
-      upkeep: 25000
+      upkeep: 25000.0
       plots: 2048
-      plot_cost: 37500
+      plot_cost: 37500.0
       tile_improvements: 32
 #
     - level: 11
       title: 'Large Metropolis'
-      upkeep: 40000
+      upkeep: 40000.0
       plots: 4096
-      plot_cost: 50000
+      plot_cost: 50000.0
       tile_improvements: 36
 #
     - level: 12
       title: 'Megapolis'
-      upkeep: 67500
+      upkeep: 67500.0
       plots: 8192
-      plot_cost: 80000
+      plot_cost: 80000.0
       tile_improvements: 40
 #
 #
@@ -138,7 +138,7 @@ town_levels:
 upgrades:
     - id: 'upgrade_town_level_2'
       name: 'Hamlet'
-      cost: 10000
+      cost: 10000.0
       action: 'set_town_level,2'
       require_upgrade:
       require_tech: 'tech_code_of_laws'
@@ -146,7 +146,7 @@ upgrades:
       
     - id: 'upgrade_town_level_3'
       name: 'Village'
-      cost: 20000
+      cost: 20000.0
       action: 'set_town_level,3'
       require_upgrade: 'upgrade_town_level_2'
       require_tech: 'tech_priesthood'
@@ -154,7 +154,7 @@ upgrades:
 
     - id: 'upgrade_town_level_4'
       name: 'Large Village'
-      cost: 30000
+      cost: 35000.0
       action: 'set_town_level,4'
       require_upgrade: 'upgrade_town_level_3'
       require_tech: 'tech_monarchy'
@@ -162,7 +162,7 @@ upgrades:
 
     - id: 'upgrade_town_level_5'
       name: 'Town'
-      cost: 50000
+      cost: 50000.0
       action: 'set_town_level,5'
       require_upgrade: 'upgrade_town_level_4'
       require_tech: 'tech_currency'
@@ -170,7 +170,7 @@ upgrades:
 
     - id: 'upgrade_town_level_6'
       name: 'Large Town'
-      cost: 125000
+      cost: 125000.0
       action: 'set_town_level,6'
       require_upgrade: 'upgrade_town_level_5'
       require_tech: 'tech_alchemy'
@@ -178,7 +178,7 @@ upgrades:
 
     - id: 'upgrade_town_level_7'
       name: 'City'
-      cost: 250000
+      cost: 250000.0
       action: 'set_town_level,7'
       require_upgrade: 'upgrade_town_level_6'
       require_tech: 'tech_construction'
@@ -186,7 +186,7 @@ upgrades:
 
     - id: 'upgrade_town_level_8'
       name: 'Large City'
-      cost: 500000
+      cost: 500000.0
       action: 'set_town_level,8'
       require_upgrade: 'upgrade_town_level_7'
       require_tech: 'tech_innovation'
@@ -194,7 +194,7 @@ upgrades:
 
     - id: 'upgrade_town_level_9'
       name: 'Metropolis'
-      cost: 1000000
+      cost: 1000000.0
       action: 'set_town_level,9'
       require_upgrade: 'upgrade_town_level_8'
       require_tech: 'tech_scientific_method'
@@ -204,7 +204,7 @@ upgrades:
     # Bank Upgrades 
     - id: 'upgrade_bank_level_2'
       name: 'Bank Level 2'
-      cost: 4000
+      cost: 8000.0
       action: 'set_bank_level,2'
       require_upgrade:
       require_tech: 'tech_code_of_laws'
@@ -213,7 +213,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_3'
       name: 'Bank Level 3'
-      cost: 6000
+      cost: 10000.0
       action: 'set_bank_level,3'
       require_upgrade: 'upgrade_bank_level_2'
       require_tech: 'tech_writing'
@@ -222,7 +222,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_4'
       name: 'Bank Level 4'
-      cost: 12000
+      cost: 12000.0
       action: 'set_bank_level,4'
       require_upgrade: 'upgrade_bank_level_3'
       require_tech: 'tech_monarchy'
@@ -231,7 +231,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_5'
       name: 'Bank Level 5'
-      cost: 14000
+      cost: 14000.0
       action: 'set_bank_level,5'
       require_upgrade: 'upgrade_bank_level_4'
       require_tech: 'tech_currency'
@@ -240,7 +240,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_6'
       name: 'Bank Level 6'
-      cost: 16000
+      cost: 16000.0
       action: 'set_bank_level,6'
       require_upgrade: 'upgrade_bank_level_5'
       require_tech: 'tech_economics'
@@ -249,7 +249,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_7'
       name: 'Bank Level 7'
-      cost: 18000
+      cost: 18000.0
       action: 'set_bank_level,7'
       require_upgrade: 'upgrade_bank_level_6'
       require_tech: 'tech_nationalism'
@@ -258,7 +258,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_8'
       name: 'Bank Level 8'
-      cost: 20000
+      cost: 20000.0
       action: 'set_bank_level,8'
       require_upgrade: 'upgrade_bank_level_7'
       require_tech: 'tech_construction'
@@ -267,7 +267,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_9'
       name: 'Bank Level 9'
-      cost: 22000
+      cost: 22000.0
       action: 'set_bank_level,9'
       require_upgrade: 'upgrade_bank_level_8'
       require_tech: 'tech_innovation'
@@ -276,7 +276,7 @@ upgrades:
     
     - id: 'upgrade_bank_level_10'
       name: 'Bank Level 10'
-      cost: 24000
+      cost: 24000.0
       action: 'set_bank_level,10'
       require_upgrade: 'upgrade_bank_level_9'
       require_tech: 'tech_scientific_method'
@@ -285,7 +285,7 @@ upgrades:
 #
     - id: 'upgrade_bank_interest_level_1'
       name: 'Bank Interest I'
-      cost: 2500
+      cost: 2500.0
       action: 'set_bank_interest,0.0075'
       require_upgrade: 'upgrade_bank_level_2'
       require_tech: 'tech_writing'
@@ -294,7 +294,7 @@ upgrades:
 #
     - id: 'upgrade_bank_interest_level_2'
       name: 'Bank Interest II'
-      cost: 5000
+      cost: 5000.0
       action: 'set_bank_interest,0.0125'
       require_upgrade: 'upgrade_bank_interest_level_1'
       require_tech: 'tech_currency'
@@ -303,7 +303,7 @@ upgrades:
 #
     - id: 'upgrade_bank_interest_level_3'
       name: 'Bank Interest III'
-      cost: 10000
+      cost: 10000.0
       action: 'set_bank_interest,0.02'
       require_upgrade: 'upgrade_bank_interest_level_2'
       require_tech: 'tech_nationalism'
@@ -312,7 +312,7 @@ upgrades:
 #
     - id: 'upgrade_bank_interest_level_4'
       name: 'Bank Interest IV'
-      cost: 20000
+      cost: 20000.0
       action: 'set_bank_interest,0.035'
       require_upgrade: 'upgrade_bank_interest_level_3'
       require_tech: 'tech_innovation'
@@ -321,7 +321,7 @@ upgrades:
 #
     - id: 'upgrade_bank_interest_level_5'
       name: 'Bank Interest V'
-      cost: 40000
+      cost: 40000.0
       action: 'set_bank_interest,0.0575'
       require_upgrade: 'upgrade_bank_interest_level_4'
       require_tech: 'tech_enlightenment'
@@ -350,7 +350,7 @@ upgrades:
     - id: 'upgrade_store_material_soul_sand'
       name: 'Stock Store with Soul Sand'
       action: 'set_store_material, 88, 0, Soul Sand, 320'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -359,7 +359,7 @@ upgrades:
     - id: 'upgrade_store_material_netherrack'
       name: 'Stock Store with Netherrack'
       action: 'set_store_material, 87, 0, Netherrack, 320'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -370,7 +370,7 @@ upgrades:
     - id: 'upgrade_store_material_nether_brick'
       name: 'Stock Store with Nether Brick'
       action: 'set_store_material, 405, 0, Nether Brick, 250'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -379,7 +379,7 @@ upgrades:
     - id: 'upgrade_store_material_quartz'
       name: 'Stock Store with Quartz'
       action: 'set_store_material, 406, 0, Quartz, 320'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -388,7 +388,7 @@ upgrades:
     - id: 'upgrade_store_material_blaze_rod'
       name: 'Stock Store with Blaze Rod'
       action: 'set_store_material, 369, 0, Blaze Rod, 3000'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -397,7 +397,7 @@ upgrades:
     - id: 'upgrade_store_material_magma_cream'
       name: 'Stock Store with Magma Cream'
       action: 'set_store_material, 378, 0, Magma Cream, 4500'
-      cost: 350
+      cost: 350.0
       require_tech:
       require_structure: 's_store'
       category: 'Store'
@@ -405,7 +405,7 @@ upgrades:
     - id: 'upgrade_store_material_glowstone_dust'
       name: 'Stock Store with Glowstone Dust'
       action: 'set_store_material, 348, 0, Glowstone Dust, 2500'
-      cost: 350
+      cost: 350.0
       require_upgrade:
       require_tech:
       require_structure: 's_store'
@@ -419,7 +419,7 @@ upgrades:
     - id: 'upgrade_library_level_2'
       name: 'Upgrade Library Level 2'
       action: 'set_library_level, 2'
-      cost: 5000
+      cost: 5000.0
       require_upgrade:
       require_tech: 'tech_artillery'
       require_structure: 's_library'
@@ -428,7 +428,7 @@ upgrades:
     - id: 'upgrade_library_level_3'
       name: 'Upgrade Library Level 3'
       action: 'set_library_level, 3'
-      cost: 10000
+      cost: 10000.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech: 'tech_efficiency'
       require_structure: 's_library'
@@ -437,7 +437,7 @@ upgrades:
     - id: 'upgrade_library_level_4'
       name: 'Upgrade Library Level 4'
       action: 'set_library_level, 4'
-      cost: 15000
+      cost: 15000.0
       require_upgrade: 'upgrade_library_level_3'
       require_tech: 'tech_advanced_efficiency'
       require_structure: 's_library'
@@ -446,7 +446,7 @@ upgrades:
     - id: 'research_looting_1'
       name: 'Research Looting I'
       action: 'enable_library_enchantment, Looting, 1, 50'
-      cost: 125
+      cost: 125.0
       require_upgrade:
       require_tech:
       require_structure: 's_library'
@@ -455,7 +455,7 @@ upgrades:
     - id: 'research_looting_2'
       name: 'Research Looting II'
       action: 'enable_library_enchantment, Looting, 2, 250'
-      cost: 375
+      cost: 375.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech:
       require_structure: 's_library'
@@ -464,7 +464,7 @@ upgrades:
     - id: 'research_efficiency_1'
       name: 'Research Efficiency I'
       action: 'enable_library_enchantment, Efficiency, 1, 15'
-      cost: 75
+      cost: 75.0
       require_upgrade:
       require_tech:
       require_structure: 's_library'
@@ -473,7 +473,7 @@ upgrades:
     - id: 'research_efficiency_2'
       name: 'Research Efficiency II'
       action: 'enable_library_enchantment, Efficiency, 2, 75'
-      cost: 500
+      cost: 500.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech:
       require_structure: 's_library'
@@ -482,7 +482,7 @@ upgrades:
     - id: 'research_efficiency_3'
       name: 'Research Efficiency III'
       action: 'enable_library_enchantment, Efficiency, 3, 200'
-      cost: 875
+      cost: 875.0
       require_upgrade: 'upgrade_library_level_3'
       require_tech:
       require_structure: 's_library'
@@ -491,7 +491,7 @@ upgrades:
     - id: 'research_efficiency_4'
       name: 'Research Efficiency IV'
       action: 'enable_library_enchantment, Efficiency, 4, 750'
-      cost: 2500
+      cost: 2500.0
       require_upgrade: 'upgrade_library_level_3'
       require_tech:
       require_structure: 's_library'
@@ -500,7 +500,7 @@ upgrades:
     - id: 'research_efficiency_5'
       name: 'Research Efficiency V'
       action: 'enable_library_enchantment, Efficiency, 5, 1500'
-      cost: 3750
+      cost: 3750.0
       require_upgrade: 'upgrade_library_level_4'
       require_tech:
       require_structure: 's_library'
@@ -509,7 +509,7 @@ upgrades:
     - id: 'research_fortune_1'
       name: 'Research Fortune I'
       action: 'enable_library_enchantment, Fortune, 1, 750'
-      cost: 1500
+      cost: 1500.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech:
       require_structure: 's_library'
@@ -518,7 +518,7 @@ upgrades:
     - id: 'research_silk_touch_1'
       name: 'Research Silk Touch I'
       action: 'enable_library_enchantment, Silk_Touch, 1, 1000'
-      cost: 2500
+      cost: 2500.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech:
       require_structure: 's_library'
@@ -527,7 +527,7 @@ upgrades:
     - id: 'research_soulbound'
       name: 'Research SoulBound'
       action: 'enable_library_enchantment, LoreEnhancementSoulBound, 1, 30000'
-      cost: 2500
+      cost: 2500.0
       require_upgrade: 'upgrade_library_level_2'
       require_tech:
       require_structure: 's_library'
@@ -536,7 +536,7 @@ upgrades:
     - id: 'research_feather_falling_1'
       name: 'Research Feather Falling I'
       action: 'enable_library_enchantment, Feather_Falling, 1, 1000'
-      cost: 2500
+      cost: 2500.0
       require_upgrade: 'upgrade_library_level_4'
       require_tech:
       require_structure: 's_library'
@@ -546,7 +546,7 @@ upgrades:
     - id: 'upgrade_grocer_level_2'
       name: 'Upgrade Grocer Level 2'
       action: 'set_grocer_level, 2'
-      cost: 2500
+      cost: 2500.0
       require_upgrade:
       require_tech: 'tech_trade'
       require_structure: 's_grocer'
@@ -555,7 +555,7 @@ upgrades:
     - id: 'upgrade_grocer_level_3'
       name: 'Upgrade Grocer Level 3'
       action: 'set_grocer_level, 3'
-      cost: 3000
+      cost: 3000.0
       require_upgrade: 'upgrade_grocer_level_2'
       require_tech: 'tech_commerce'
       require_structure: 's_grocer'
@@ -564,7 +564,7 @@ upgrades:
     - id: 'upgrade_grocer_level_4'
       name: 'Upgrade Grocer Level 4'
       action: 'set_grocer_level, 4'
-      cost: 5000
+      cost: 5000.0
       require_upgrade: 'upgrade_grocer_level_3'
       require_tech: 'tech_global_trade'
       require_structure: 's_grocer'
@@ -574,7 +574,7 @@ upgrades:
     - id: 'upgrade_granary_level_2'
       name: 'Upgrade Granary Level 2'
       action: 'set_granary_level, 2'
-      cost: 7500
+      cost: 7500.0
       require_upgrade:
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -583,7 +583,7 @@ upgrades:
     - id: 'upgrade_granary_level_3'
       name: 'Upgrade Granary Level 3'
       action: 'set_granary_level, 3'
-      cost: 15000
+      cost: 15000.0
       require_upgrade: 'upgrade_granary_level_2'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -592,7 +592,7 @@ upgrades:
     - id: 'upgrade_granary_level_4'
       name: 'Upgrade Granary Level 4'
       action: 'set_granary_level, 4'
-      cost: 22500
+      cost: 22500.0
       require_upgrade: 'upgrade_granary_level_3'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -601,7 +601,7 @@ upgrades:
     - id: 'upgrade_granary_level_5'
       name: 'Upgrade Granary Level 5'
       action: 'set_granary_level, 5'
-      cost: 30000
+      cost: 30000.0
       require_upgrade: 'upgrade_granary_level_4'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -610,7 +610,7 @@ upgrades:
     - id: 'upgrade_granary_level_6'
       name: 'Upgrade Granary Level 6'
       action: 'set_granary_level, 6'
-      cost: 37500
+      cost: 37500.0
       require_upgrade: 'upgrade_granary_level_5'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -619,7 +619,7 @@ upgrades:
     - id: 'upgrade_granary_level_7'
       name: 'Upgrade Granary Level 7'
       action: 'set_granary_level, 7'
-      cost: 45000
+      cost: 45000.0
       require_upgrade: 'upgrade_granary_level_6'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -628,7 +628,7 @@ upgrades:
     - id: 'upgrade_granary_level_8'
       name: 'Upgrade Granary Level 8'
       action: 'set_granary_level, 8'
-      cost: 52500
+      cost: 52500.0
       require_upgrade: 'upgrade_granary_level_7'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'
@@ -638,7 +638,7 @@ upgrades:
     - id: 'upgrade_trommel_material_granite'
       name: 'Upgrade Trommel Level 2 [Granite]'
       action: 'set_trommel_level, 2'
-      cost: 10000
+      cost: 10000.0
       require_upgrade:
       require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
@@ -647,7 +647,7 @@ upgrades:
     - id: 'upgrade_trommel_material_diorite'
       name: 'Upgrade Trommel Level 3 [Diorite]'
       action: 'set_trommel_level, 3'
-      cost: 15000
+      cost: 15000.0
       require_upgrade: 'upgrade_trommel_material_granite'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
@@ -656,7 +656,7 @@ upgrades:
     - id: 'upgrade_trommel_level_andesite'
       name: 'Upgrade Trommel Level 4 [Andesite]'
       action: 'set_trommel_level, 4'
-      cost: 20000
+      cost: 20000.0
       require_upgrade: 'upgrade_trommel_material_diorite'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_trommel'
@@ -666,7 +666,7 @@ upgrades:
     - id: 'upgrade_quarry_level_2'
       name: 'Upgrade Quarry Level 2 [Stone Pickaxe]'
       action: 'set_quarry_level, 2'
-      cost: 25000
+      cost: 25000.0
       require_upgrade:
       require_tech: 'tech_doesnotexist'
       require_structure: 's_quarry'
@@ -675,7 +675,7 @@ upgrades:
     - id: 'upgrade_quarry_level_3'
       name: 'Upgrade Quarry Level 3 [Iron Pickaxe]'
       action: 'set_quarry_level, 3'
-      cost: 50000
+      cost: 50000.0
       require_upgrade: 'upgrade_quarry_level_2'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_quarry'
@@ -684,7 +684,7 @@ upgrades:
     - id: 'upgrade_quarry_level_4'
       name: 'Upgrade Quarry Level 4 [Diamond Pickaxe]'
       action: 'set_quarry_level, 4'
-      cost: 75000
+      cost: 75000.0
       require_upgrade: 'upgrade_quarry_level_3'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_quarry'
@@ -693,7 +693,7 @@ upgrades:
     - id: 'upgrade_quarry_level_5'
       name: 'Upgrade Quarry Level 5 [Gold Pickaxe]'
       action: 'set_quarry_level, 5'
-      cost: 100000
+      cost: 100000.0
       require_upgrade: 'upgrade_quarry_level_4'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_quarry'
@@ -703,7 +703,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_2'
       name: 'Upgrade Warehouse Level 2'
       action: 'set_warehouse_level, 2'
-      cost: 20000
+      cost: 20000.0
       require_upgrade:
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -712,7 +712,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_3'
       name: 'Upgrade Warehouse Level 3'
       action: 'set_warehouse_level, 3'
-      cost: 40000
+      cost: 40000.0
       require_upgrade: 'upgrade_warehouse_level_2'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -721,7 +721,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_4'
       name: 'Upgrade Warehouse Level 4'
       action: 'set_warehouse_level, 4'
-      cost: 60000
+      cost: 60000.0
       require_upgrade: 'upgrade_warehouse_level_3'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -730,7 +730,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_5'
       name: 'Upgrade Warehouse Level 5'
       action: 'set_warehouse_level, 5'
-      cost: 80000
+      cost: 80000.0
       require_upgrade: 'upgrade_warehouse_level_4'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -739,7 +739,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_6'
       name: 'Upgrade Warehouse Level 6'
       action: 'set_warehouse_level, 6'
-      cost: 100000
+      cost: 100000.0
       require_upgrade: 'upgrade_warehouse_level_5'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -748,7 +748,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_7'
       name: 'Upgrade Warehouse Level 7'
       action: 'set_warehouse_level, 7'
-      cost: 125000
+      cost: 125000.0
       require_upgrade: 'upgrade_warehouse_level_6'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'
@@ -757,7 +757,7 @@ upgrades:
     - id: 'upgrade_warehouse_level_8'
       name: 'Upgrade Warehouse Level 8'
       action: 'set_warehouse_level, 8'
-      cost: 150000
+      cost: 150000.0
       require_upgrade: 'upgrade_warehouse_level_7'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_warehouse'

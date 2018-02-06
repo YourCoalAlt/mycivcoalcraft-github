@@ -68,11 +68,11 @@ public class HourlyEvent implements EventInterface {
 		if (!CivGlobal.tradeEnabled) return;
 		CivGlobal.checkForDuplicateGoodies();
 		for (Town town : CivGlobal.getTowns()) {
-			int payment = TradeGood.getTownTradePayment(town);
+			double payment = TradeGood.getTownTradePayment(town);
 			if (payment <= 0) continue;
 			
 			DecimalFormat df = new DecimalFormat();
-			int taxesPaid = (int) (payment*town.getDepositCiv().getIncomeTaxRate());
+			double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
 			if (taxesPaid > 0) {
 				town.getTreasury().deposit(payment - taxesPaid);
 				town.getDepositCiv().taxPayment(town, taxesPaid);

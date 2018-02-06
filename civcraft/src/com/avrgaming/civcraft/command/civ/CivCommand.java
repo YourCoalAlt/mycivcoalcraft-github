@@ -168,7 +168,7 @@ public class CivCommand extends CommandBase {
 		}
 		
 		
-		int revolutionFee = motherCiv.getRevolutionFee();
+		double revolutionFee = motherCiv.getRevolutionFee();
 		
 		if (args.length < 2 || !args[1].equalsIgnoreCase("yes")) {
 			CivMessage.send(sender, CivColor.Yellow+ChatColor.BOLD+"For a measly "+revolutionFee+" we could fund a revolution and get our old civ back!");
@@ -437,7 +437,7 @@ public class CivCommand extends CommandBase {
 		
 		Resident resident = getResident();
 		Civilization civ = getSenderCiv();
-		Integer amount = getNamedInteger(1);
+		Double amount = getNamedDouble(1);
 		
 		try {
 			if (amount < 1) {
@@ -458,7 +458,7 @@ public class CivCommand extends CommandBase {
 		
 		Resident resident = getResident();
 		Civilization civ = getSenderCiv();
-		Integer amount = getNamedInteger(1);
+		Double amount = getNamedDouble(1);
 		
 		try {
 			if (amount < 1) {

@@ -41,7 +41,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 10000
+    cost: 10000.0
     hammer_cost: 2500
     limit: 0
     item_id: 330
@@ -56,7 +56,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 20000
+    cost: 20000.0
     hammer_cost: 2000
     limit: 1
     item_id: 381
@@ -72,7 +72,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 10000
+    cost: 10000.0
     hammer_cost: 1000
     limit: 1
     destroy_chance: 5
@@ -89,7 +89,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 10000
+    cost: 10000.0
     hammer_cost: 1000
     limit: 1
     destroy_chance: 5
@@ -107,7 +107,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 15000
+    cost: 15000.0
     hammer_cost: 1500
     limit: 1
     item_id: 281
@@ -123,7 +123,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 40000
+    cost: 40000.0
     hammer_cost: 4000
     limit: 1
     item_id: 131
@@ -139,7 +139,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 40000
+    cost: 40000.0
     hammer_cost: 4000
     limit: 1
     item_id: 416
@@ -156,7 +156,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 50000
+    cost: 50000.0
     hammer_cost: 5000
     limit: 1
     item_id: 282
@@ -173,7 +173,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 100000
+    cost: 100000.0
     hammer_cost: 10000
     limit: 1
     item_id: 198
@@ -190,7 +190,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 100000
+    cost: 100000.0
     hammer_cost: 10000
     limit: 1
     item_id: 439
@@ -207,7 +207,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 125000
+    cost: 125000.0
     hammer_cost: 12500
     limit: 1
     item_id: 442
@@ -222,7 +222,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 50000
+    cost: 50000.0
     hammer_cost: 5000
     limit: 1
     item_id: 148
@@ -237,7 +237,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 100000
+    cost: 100000.0
     hammer_cost: 10000
     limit: 1
     item_id: 137
@@ -252,7 +252,7 @@ units:
     require_tech: 'tech_armory'
     require_struct:
     require_upgrade:
-    cost: 100000
+    cost: 100000.0
     hammer_cost: 10000
     limit: 1
     item_id: 432

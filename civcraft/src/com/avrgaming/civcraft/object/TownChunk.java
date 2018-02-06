@@ -49,8 +49,8 @@ public class TownChunk extends SQLObject {
 	 * Price vs value, price is what the owner is currently selling it for,
 	 * value is the amount that it was last purchased at, used for taxes.
 	 */
-	private int value;
-	private int price;
+	private double value;
+	private double price;
 	private boolean outpost;
 	
 	public PlotPermissions perms = new PlotPermissions();
@@ -86,8 +86,8 @@ public class TownChunk extends SQLObject {
 				 "`groups` mediumtext DEFAULT NULL," +
 				 "`permissions` mediumtext NOT NULL," +
 				 "`for_sale` bool NOT NULL DEFAULT '0'," +
-				 "`value` int(11) NOT NULL DEFAULT '0'," +
-				 "`price` int(11) NOT NULL DEFAULT '0'," +
+				 "`value` double NOT NULL DEFAULT '0'," +
+				 "`price` double NOT NULL DEFAULT '0'," +
 				 "`outpost` bool DEFAULT '0'," +			 
 			//	 "FOREIGN KEY (owner_id) REFERENCES "+SQL.tb_prefix+Resident.TABLE_NAME+"(id),"+
 			//	 "FOREIGN KEY (town_id) REFERENCES "+SQL.tb_prefix+Town.TABLE_NAME+"(id),"+
@@ -208,11 +208,9 @@ public class TownChunk extends SQLObject {
 		this.chunkLocation = chunkLocation;
 	}
 	
-	public static Integer getNextPlotCost(Town town) {
-		
+	public static Double getNextPlotCost(Town town) {
 		ConfigTownLevel effectiveTownLevel = CivSettings.townLevels.get(CivSettings.townLevels.size());
 		int currentPlotCount = town.getTownChunks().size();
-			
 		for (ConfigTownLevel lvl : CivSettings.townLevels.values()) {
 			if (currentPlotCount < lvl.plots) {
 				if (effectiveTownLevel.plots > lvl.plots) {
@@ -220,8 +218,6 @@ public class TownChunk extends SQLObject {
 				}
 			}
 		}
-		
-		
 		return effectiveTownLevel.plot_cost;		
 	}
 
@@ -230,8 +226,7 @@ public class TownChunk extends SQLObject {
 			throw new CivException("This plot is already claimed.");
 		}
 		
-		Integer cost = getNextPlotCost(town);
-		
+		Double cost = getNextPlotCost(town);
 		if (!town.hasEnough(cost)) {
 			throw new CivException("The town does not have the required "+cost+" coins to claim this plot.");
 		}
@@ -421,7 +416,7 @@ public class TownChunk extends SQLObject {
 		this.forSale = forSale;
 	}
 
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
 
@@ -469,7 +464,7 @@ public class TownChunk extends SQLObject {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	

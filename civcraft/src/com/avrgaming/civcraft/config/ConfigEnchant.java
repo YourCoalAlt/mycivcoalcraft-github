@@ -30,7 +30,7 @@ public class ConfigEnchant {
 	public String id;
 	public String name;
 	public String description;
-	public Integer cost;
+	public Double cost;
 	public String enchant_id;
 	
 	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigEnchant> enchant_map) {
@@ -42,11 +42,11 @@ public class ConfigEnchant {
 			enchant.id = (String)level.get("id");
 			enchant.name = (String)level.get("name");
 			enchant.description = (String)level.get("description");
-			enchant.cost = (Integer)level.get("cost");
+			enchant.cost = (Double)level.get("cost");
 			enchant.enchant_id = (String)level.get("enchant_id");			
 			enchant_map.put(enchant.id, enchant);
 		}
-		CivLog.info("Loaded "+enchant_map.size()+" enchantments.");		
+		CivLog.info("Loaded "+enchant_map.size()+" Enchantments.");		
 	}
 
 	

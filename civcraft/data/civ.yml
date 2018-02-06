@@ -29,7 +29,7 @@ global:
    # Exchange rate you get using /resident exchange instead of using a bank.
    exchange_rate: 0.4
 
-   starting_coins: 750
+   starting_coins: 750.0
 
    # Number of hours that must pass before a resident can join a different civ
    join_civ_cooldown: 1
@@ -63,14 +63,14 @@ global:
 
 civ:
     # Amount of static upkeep civ's pay for each new town (minus the capital)
-    town_upkeep: 400
+    town_upkeep: 400.0
 
     # Formula for distance upkeep is:
     # upkeep = town_distance_base_upkeep * ( distance ^ town_distance_multiplier )
     #
 
     # Base amount of upkeep paid for town distance to capital
-    town_distance_base_upkeep: 100
+    town_distance_base_upkeep: 100.0
 
     # Multiplier used to make distance upkeep expoential, greater = higher upkeep
     town_distance_multiplier: 0.25
@@ -79,7 +79,7 @@ civ:
     town_distance_multiplier_outside_culture: 0.8
 
     # Maximum amount of distance upkeep anybody can pay per town
-    town_distance_upkeep_max: 500000
+    town_distance_upkeep_max: 500000.0
 
     # Base beaker rate, usually set to 1, increase to make research faster.
     base_beaker_rate: 1.0
@@ -100,16 +100,16 @@ civ:
     min_gift_age: 14
 
     # Amount of coins to charge per town gifted.
-    gift_cost_per_town: 50000
+    gift_cost_per_town: 50000.0
 
     # Amount of hours civs have to wait until a town is gifted or merged.
     gift_cooldown_hours: 24
 
 ore_rates:
-    iron: 20
-    gold: 200
-    diamond: 400
-    emerald: 500
+    iron: 20.0
+    gold: 200.0
+    diamond: 400.0
+    emerald: 500.0
 
 # These are end condition configurations...
 end_conditions:

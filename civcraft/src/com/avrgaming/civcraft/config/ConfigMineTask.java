@@ -52,7 +52,7 @@ public class ConfigMineTask {
 			minetask.task = (Integer)cl.get("task");
 			minetask.required = required_list;
 			minetask.reward = (Integer)cl.get("reward");
-			minetask.quest_exp = (Integer)cl.get("qexp");
+			minetask.quest_exp = (Double)cl.get("qexp");
 			mine_tasks.put(minetask.task, minetask);
 		}
 		CivLog.info("Loaded "+mine_tasks.size()+" Mine Tasks.");		

@@ -198,9 +198,9 @@ public class TradeGood extends SQLObject {
 	public void setCoord(BlockCoord coord) {
 		this.coord = coord;
 	}
-	public static Integer getBaseValue(TradeGood good) {
+	public static Double getBaseValue(TradeGood good) {
 		ConfigTradeGood configTradeGood = good.getInfo();
-		int value = configTradeGood.value;
+		double value = configTradeGood.value;
 		return value;
 	}
 	
@@ -245,15 +245,15 @@ public class TradeGood extends SQLObject {
 		return 0;
 	}
 	
-	public static Integer getTradeGoodValue(BonusGoodie goodie, Town town) {
+	public static Double getTradeGoodValue(BonusGoodie goodie, Town town) {
 		TradeGood good = goodie.getOutpost().getGood();
-		int value = getBaseValue(good);
+		double value = getBaseValue(good);
 		int goodMax;
 		try {
 			goodMax = (Integer)CivSettings.getInteger(CivSettings.goodsConfig, "trade_good_multiplier_max");
 		} catch (InvalidConfiguration e) {
 			e.printStackTrace();
-			return 0;
+			return 0.0;
 		}
 		int effectiveCount = getTradeGoodCount(goodie, town);
 		effectiveCount -= 1;
@@ -268,12 +268,12 @@ public class TradeGood extends SQLObject {
 		rate += getTradeGoodIncomeBonus(good, town);
 		
 		value *= rate;
-		return (int) value;
+		return value;
 	}
 	
-	public static Integer getTownBaseGoodPaymentViaGoodie(Town town) {
+	public static Double getTownBaseGoodPaymentViaGoodie(Town town) {
 		// Find trade goods from goodies in town hall.
-		int total_payment = 0;
+		double total_payment = 0;
 		
 		for (BonusGoodie goodie : town.getBonusGoodies()) {
 			TradeOutpost outpost = (TradeOutpost)goodie.getOutpost();
@@ -290,17 +290,17 @@ public class TradeGood extends SQLObject {
 				continue;
 			}
 			
-			int payment = getTradeGoodValue(goodie, town);
+			double payment = getTradeGoodValue(goodie, town);
 			total_payment += payment;
 		}
 		
 		return total_payment;
 	}
 	
-	public static Integer getTownTradePayment(Town town) {
-		int total_payment = getTownBaseGoodPaymentViaGoodie(town);
+	public static Double getTownTradePayment(Town town) {
+		double total_payment = getTownBaseGoodPaymentViaGoodie(town);
 		total_payment *= town.getTradeRate();
-		return (int) total_payment;
+		return total_payment;
 	}
 
 

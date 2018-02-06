@@ -635,7 +635,7 @@ public class TownCommand extends CommandBase {
 				throw new CivException("Cannot withdraw less than 1 coins from your treasury.");
 			}
 			amount = Math.floor(amount);
-			if(!town.getTreasury().payTo(resident.getTreasury(), Integer.valueOf(args[1]))) {
+			if(!town.getTreasury().payTo(resident.getTreasury(), amount)) {
 				throw new CivException("The town does not have that much.");
 			}
 		} catch (NumberFormatException e) {
@@ -651,7 +651,7 @@ public class TownCommand extends CommandBase {
 		
 		Resident resident = getResident();
 		Town town = getSelectedTown();
-		Integer amount = getNamedInteger(1);
+		Double amount = getNamedDouble(1);
 		
 		try {
 			if (amount < 1) {
@@ -672,7 +672,7 @@ public class TownCommand extends CommandBase {
 		
 		Resident resident = getResident();
 		Town town = getSelectedTown();
-		Integer amount = getNamedInteger(1);
+		Double amount = getNamedDouble(1);
 		
 		try {
 			if (amount < 1) {

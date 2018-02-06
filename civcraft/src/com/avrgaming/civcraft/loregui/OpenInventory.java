@@ -52,9 +52,9 @@ public class OpenInventory implements GuiAction {
 				case "showExperienceHelp":
 					Backpack.showExperienceHelp(player);
 					break;
-				case "showMiningRates":
-					Backpack.showMiningRates(player);
-					break;
+//				case "showMiningRates":
+//					Backpack.showMiningRates(player);
+//					break;
 				case "showFishingRates":
 					Backpack.showFishingRates(player);
 					break;
