@@ -21,7 +21,7 @@ techs: #Note: Pts = Beakers/10
 #======== > Tier 0 < ========# # We will use this as a town mechanic to unlock techs (w/ beaker items?)
 #============================#
   - id: 'tech_doesnotexist'
-    name: 'doesnotexist'
+    name: 'tech_doesnotexist'
     beaker_cost: 0
     cost: 0.0
     points: 0
@@ -36,7 +36,7 @@ techs: #Note: Pts = Beakers/10
     require_techs:
 #
   - id: 'tech_efficiency'
-    name: 'efficiency'
+    name: 'tech_efficiency'
     beaker_cost: 0
     cost: 0.0
     points: 0
@@ -46,13 +46,23 @@ techs: #Note: Pts = Beakers/10
     require_techs:
 #
   - id: 'tech_material_placement'
-    name: 'material placement'
+    name: 'tech_material_placement'
     beaker_cost: 0
     cost: 0.0
     points: 0
     tier: 0
     unlocks:
       - "quarry"
+    require_techs:
+#
+  - id: 'tech_hanging_gardens'
+    name: 'tech_hanging_gardens'
+    beaker_cost: 0
+    cost: 0.0
+    points: 0
+    tier: 0
+    unlocks:
+      - "wonder"
     require_techs:
 #
 #============================#

@@ -119,6 +119,7 @@ import com.avrgaming.civcraft.threading.timers.PlayerTagUpdateTimer;
 import com.avrgaming.civcraft.threading.timers.ProjectileComponentTimer;
 import com.avrgaming.civcraft.threading.timers.ReduceExposureTimer;
 import com.avrgaming.civcraft.threading.timers.RegenTimer;
+import com.avrgaming.civcraft.threading.timers.StructureProcessTimer;
 import com.avrgaming.civcraft.threading.timers.UnitTrainTimer;
 import com.avrgaming.civcraft.threading.timers.UpdateEventTimer;
 import com.avrgaming.civcraft.threading.timers.WindmillTimer;
@@ -138,7 +139,9 @@ public final class CivCraft extends JavaPlugin {
 	private static JavaPlugin plugin;
 	public static boolean isDisable = false;
 	public static boolean isStarted = false;
+	
 	public static String worldName;
+	public static Integer structure_process;
 	
 	private void startTimers() {
 		
@@ -164,10 +167,13 @@ public final class CivCraft extends JavaPlugin {
 		
 		TaskMaster.asyncTimer("BeakerTimer", new BeakerTimer(60), TimeTools.toTicks(60));
 		TaskMaster.syncTimer("UnitTrainTimer", new UnitTrainTimer(), TimeTools.toTicks(1));
-
+		
+		TaskMaster.asyncTimer("UpdateEventTimer", new UpdateEventTimer(), TimeTools.toTicks(1));
+		
 		try {
-			int struc_process_time = CivSettings.getInteger(CivSettings.gameConfig, "timers.struc_process");
-			TaskMaster.asyncTimer("UpdateEventTimer", new UpdateEventTimer(), TimeTools.toTicks(struc_process_time));
+			int structure_process_time = CivSettings.getInteger(CivSettings.gameConfig, "timers.structure_process");
+			TaskMaster.asyncTimer("StructureProcessTimer", new StructureProcessTimer(), TimeTools.toTicks(structure_process_time));
+			structure_process = structure_process_time;
 			
 			int exposure_time = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
 			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));

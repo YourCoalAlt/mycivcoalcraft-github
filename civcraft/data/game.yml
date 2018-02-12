@@ -1,8 +1,8 @@
 # Used for various things in the plugin including: random TP, 
 world:
    name: 'world'
-   radius_x: 8000
-   radius_z: 8000
+   radius_x: 7500
+   radius_z: 7500
    # Amount of distance to take off for uneven (circle) world borders
    randomevent_debuffer: 2500
 # Controls the PvP aspect of the game.
@@ -19,7 +19,7 @@ inventory:
 
 # Farm Settings
 farm:
-   grow_tick_rate: 20
+   grow_tick_rate: 30
 
 # Tips Accouncing Settings
 tips:
@@ -29,7 +29,7 @@ tips:
 
 timers:
    # How many seconds to update structures (quarry, trommel, etc)
-   struc_process: 10
+   structure_process: 2
 
 ### Note: The 'fortune' number is the modifier per level from max drop,
 ### meaning fortune III max drop = max_drop + (max_drop_fortune * enchant.level)

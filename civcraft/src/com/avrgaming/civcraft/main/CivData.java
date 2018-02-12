@@ -19,8 +19,6 @@
 package com.avrgaming.civcraft.main;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 
 import com.avrgaming.civcraft.exception.InvalidBlockLocation;
 import com.avrgaming.civcraft.util.BlockSnapshot;
@@ -141,6 +139,7 @@ public class CivData {
 	public static final int FENCE = 85;
 	public static final int PUMPKIN = 86;
 	public static final int NETHERRACK = 87;
+	public static final int SOULSAND = 88;
 	public static final int GLOWSTONE = 89;
 	
 	public static final int REDSTONE_REPEATER_OFF = 93;
@@ -635,18 +634,6 @@ public class CivData {
 		return hasAir;
 	}
 	
-	public static boolean canGrowMushroom(BlockState blockState) {
-		int[][] offset = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
-		boolean hasAir = false;
-		for (int i = 0; i < 4; i++) {
-			Block nextBlock = blockState.getBlock().getRelative(offset[i][0], 0, offset[i][1]);
-			if (ItemManager.getId(nextBlock) == CivData.AIR) {
-				hasAir = true;
-			}
-		}
-		return hasAir;
-	}
-	
 /*	public static boolean canSugarcaneGrow(BlockSnapshot bs) {
 		int total = 1; //include our block
 		BlockSnapshot nextBlock = bs;
@@ -720,10 +707,6 @@ public class CivData {
 		case MELON_STEM:
 		case PUMPKIN_STEM:
 			return canGrowFromStem(bs);
-		
-		//case REDMUSHROOM:
-		//case BROWNMUSHROOM:
-		//	return canGrowMushroom(blockState);
 			
 //		case SUGARCANE_BLOCK:	
 //			return canSugarcaneGrow(bs);

@@ -94,10 +94,6 @@ public class PlayerReviveTask implements Runnable {
 			e.printStackTrace();
 		}
 		
-		player.teleport(loc);		
-		
+		player.teleport(loc);
 	}
-
-	
-	
 }

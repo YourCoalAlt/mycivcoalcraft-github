@@ -13,15 +13,16 @@ import com.avrgaming.civcraft.config.ConfigGovernment;
 import com.avrgaming.civcraft.config.ConfigTrommel;
 import com.avrgaming.civcraft.config.ConfigTrommelItem;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.Trommel;
+import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -140,7 +141,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
 						ArrayList<ConfigTrommel> dropped = getRandomDrops(trommel.getTown(), cti.item, cti.item_data);
 						if (dropped.size() == 0) {
-							newItem.add(getUselessDrop());
+							newItem.add(getReturnDrop());
 						} else {
 							for (ConfigTrommel d : dropped) {
 								if (d.custom_id != null) {
@@ -168,7 +169,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		trommel.skippedCounter = 0;
 	}
 	
-	private ItemStack getUselessDrop() {
+	private ItemStack getReturnDrop() {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 3) {
@@ -194,6 +195,11 @@ public class TrommelAsyncTask extends CivAsyncTask {
 			destinations.addAll(trommel.getAllChestsById(2));
 		}
 		
+		Warehouse whs = (Warehouse) trommel.getTown().getStructureByType("s_warehouse");
+		if (whs != null) {
+			
+		}
+		
 		if (this.trommel.lock.tryLock()) {
 			try {
 				Random rand = new Random();
@@ -202,7 +208,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				int processing = processRate / 100;
 				int chance = processRate - (processing*100);
 				
-				for (int t = 0; t < CivSettings.getInteger(CivSettings.gameConfig, "timers.struc_process"); t++) {
+				for (int t = 0; t < CivCraft.structure_process; t++) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
@@ -231,8 +237,6 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						}
 					}
 				}
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
 			} finally {
 				this.trommel.lock.unlock();
 			}

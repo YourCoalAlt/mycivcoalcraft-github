@@ -169,6 +169,7 @@ public class CivGlobal {
 	private static SessionDatabase sdb;
 
 	public static boolean warehousesEnabled = true;
+	public static boolean lumbermillsEnabled = true;
 	public static boolean quarriesEnabled = true;
 	public static boolean trommelsEnabled = true;
 	public static boolean towersEnabled = true;

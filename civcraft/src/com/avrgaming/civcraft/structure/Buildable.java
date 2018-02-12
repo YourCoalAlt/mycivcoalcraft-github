@@ -258,7 +258,7 @@ public abstract class Buildable extends SQLObject {
 	}
 	
 	public boolean isActive() {	
-		return this.isComplete() && !isDestroyed() && isEnabled();
+		return isComplete() && !isDestroyed() && !isDeleted() && isEnabled();
 	}
 
 	public abstract void processUndo() throws CivException;
@@ -607,23 +607,23 @@ public abstract class Buildable extends SQLObject {
 			} else if (dir.equalsIgnoreCase("west")) {
 				loc.setZ(loc.getZ() - (z_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setX(loc.getX()+32);
+				loc.setX(loc.getX() - (SHIFT_OUT * (x_size / 16)));
 			} else if (dir.equalsIgnoreCase("north")) {
 				loc.setX(loc.getX() - (x_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setZ(loc.getZ()+32);
+				loc.setZ(loc.getZ() - (SHIFT_OUT * (z_size / 16)));
 			} else if (dir.equalsIgnoreCase("south")) {
 				loc.setX(loc.getX() - (x_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setZ(loc.getZ()+ SHIFT_OUT);
+				loc.setZ(loc.getZ() + SHIFT_OUT);
 			}
 //		}   
 		if (info.templateYShift != 0) {
 			// Y-Shift based on the config, this allows templates to be built underground.
 			loc.setY(loc.getY() + info.templateYShift);
 			
-			if (loc.getY() < 1) {
-				throw new CivException("Cannot build here, too close to bedrock.");
+			if (loc.getY() < 2) {
+				throw new CivException("Cannot build here, too close to bedrock. (Current Y: "+loc.getY()+", must be greater than 2.)");
 			}
 		}
 		return loc;
@@ -636,19 +636,19 @@ public abstract class Buildable extends SQLObject {
 //		if (this.isTile() || this.isOutpost()) {
 //			// just put the center at 0,0 of this chunk?
 //			loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-//		} else {  
-			if (dir.equalsIgnoreCase("east")) {
+//		} else {
+			if (dir.equalsIgnoreCase("east")) {				
 				loc.setZ(loc.getZ() - (z_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setX(loc.getX() + SHIFT_OUT);
+				loc.setX(loc.getX() + SHIFT_OUT);				
 			} else if (dir.equalsIgnoreCase("west")) {
 				loc.setZ(loc.getZ() - (z_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setX(loc.getX() - SHIFT_OUT);
+				loc.setX(loc.getX() - (SHIFT_OUT * (x_size / 16)));
 			} else if (dir.equalsIgnoreCase("north")) {
 				loc.setX(loc.getX() - (x_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setZ(loc.getZ() - SHIFT_OUT);
+				loc.setZ(loc.getZ() - (SHIFT_OUT * (z_size / 16)));
 			} else if (dir.equalsIgnoreCase("south")) {
 				loc.setX(loc.getX() - (x_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
@@ -659,7 +659,7 @@ public abstract class Buildable extends SQLObject {
 			// Y-Shift based on the config, this allows templates to be built underground.
 			loc.setY(loc.getY() + this.getTemplateYShift());
 			
-			if (loc.getY() < 1) {
+			if (loc.getY() < 2) {
 				throw new CivException("Cannot build here, too close to bedrock.");
 			}
 		}
@@ -1278,21 +1278,20 @@ public abstract class Buildable extends SQLObject {
 					}
 					
 					if (CivSettings.alwaysCrumble.contains(ItemManager.getId(coord.getBlock()))) {
-						ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
+						ItemManager.setTypeId(coord.getBlock(), CivData.SOULSAND);
 						continue;
 					}
-								
-					Random rand = new Random();
 					
-					// Each block has a 10% chance to turn into gravel
-					if (rand.nextInt(100) <= 10) {
+					Random rand = new Random();
+					// Each block has a 15% chance to turn into gravel
+					if (rand.nextInt(100) < 15) {
 						ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
 						ItemManager.setData(coord.getBlock(), 0, true);
 						continue;
 					}
 					
-					// Each block has a 50% chance of starting a fire
-					if (rand.nextInt(100) <= 50) {
+					// Each block has a 10% chance of starting a fire
+					if (rand.nextInt(100) < 10) {
 						ItemManager.setTypeId(coord.getBlock(), CivData.FIRE);
 						ItemManager.setData(coord.getBlock(), 0, true);
 						continue;
@@ -1564,9 +1563,13 @@ public abstract class Buildable extends SQLObject {
 		}
 	}
 	
-	public boolean hasTemplate() { return info.has_template; }
-	public boolean canRestoreFromTemplate() { return true; }
+	public boolean hasTemplate() {
+		return info.has_template;
+	}
 	
+	public boolean canRestoreFromTemplate() {
+		return true;
+	}
 	
 	public void onInvalidPunish() {
 		BlockCoord center = this.getCenterLocation();

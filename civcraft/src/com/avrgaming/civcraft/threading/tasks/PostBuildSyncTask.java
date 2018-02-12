@@ -19,6 +19,7 @@
 package com.avrgaming.civcraft.threading.tasks;
 
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.material.MaterialData;
@@ -76,11 +77,15 @@ public class PostBuildSyncTask implements Runnable {
 			SimpleBlock sb = tpl.blocks[relativeCoord.getX()][relativeCoord.getY()][relativeCoord.getZ()];
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
 			
+			Block block = absCoord.getBlock();
+			if (absCoord.getBlock().getType() == Material.WEB) {
+				ItemManager.setTypeIdAndData(block, CivData.AIR, (byte)0, false);
+			}
+			
 			if (sb.getType() == CivData.WALL_SIGN || sb.getType() == CivData.SIGN) {
 				if (sb.specialType == Type.COMMAND) continue;
 			}
 			
-			Block block = absCoord.getBlock();
 			if (ItemManager.getId(block) != sb.getType()) {
 				ItemManager.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
 			}

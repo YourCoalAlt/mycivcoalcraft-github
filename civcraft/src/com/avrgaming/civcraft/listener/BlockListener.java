@@ -1020,18 +1020,16 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockGrowEvent(BlockGrowEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation().add(0, -1, 0));
-		if (CivGlobal.vanillaGrowthLocations.contains(bcoord)) {
-			// Allow vanilla growth on these plots.
-			return;
-		}
+		// Allow vanilla growth on these plots
+		if (CivGlobal.vanillaGrowthLocations.contains(bcoord)) return;
 		
 		Block b = event.getBlock();
+		Material t = b.getRelative(0, -1, 0).getType();
+		// Allow sugarcane and cactus to grow without warnings
+		if (ItemManager.getId(t) == CivData.SUGARCANE_BLOCK || ItemManager.getId(t) == CivData.CACTUS) return;
+		
 		if (Farm.isBlockControlled(b)) { // Can only grow on farm plots.
 			event.setCancelled(true);
-		} else if (b.getType() == Material.AIR) {
-			if (b.getRelative(0, -1, 0).getType() == Material.SUGAR_CANE_BLOCK) {
-				event.setCancelled(false);
-			}
 		} else {
 			CivLog.warning(b.getType()+" has uncontrolled growing, it grew at: "+b.getX()+","+b.getY()+","+b.getZ());
 		}

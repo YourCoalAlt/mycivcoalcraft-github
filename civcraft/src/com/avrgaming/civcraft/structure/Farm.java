@@ -41,8 +41,7 @@ import com.avrgaming.civcraft.util.ItemManager;
 public class Farm extends Structure {
 	
 	public static final long GROW_TICK_RATE = (int)CivSettings.getIntegerGameConfig("farm.grow_tick_rate");
-	public static final int CROP_GROW_LIGHT_LEVEL = 8;
-	public static final int MUSHROOM_GROW_LIGHT_LEVEL = 12;
+	public static final int CROP_GROW_LIGHT_LEVEL = 7;
 	public static final int MAX_SUGARCANE_HEIGHT = 3;
 	
 	private FarmChunk fc = null;
@@ -51,7 +50,7 @@ public class Farm extends Structure {
 	protected Farm(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
 	}
-
+	
 	public Farm(ResultSet rs) throws SQLException, CivException {
 		super(rs);
 		build_farm(this.getCorner().getLocation());
@@ -89,11 +88,9 @@ public class Farm extends Structure {
 		CivGlobal.addFarmChunk(fc.getCoord(), fc);
 		this.fc = fc;
 	}
-
+	
 	public static boolean isBlockControlled(Block b) {
 		switch (ItemManager.getId(b)) {
-		//case CivData.BROWNMUSHROOM:
-		//case CivData.REDMUSHROOM:
 		case CivData.COCOA_CROP:
 		case CivData.MELON:
 		case CivData.MELON_STEM:
@@ -105,18 +102,22 @@ public class Farm extends Structure {
 		case CivData.BEETROOT_CROP:
 		case CivData.NETHERWART_CROP:
 //		case CivData.SUGARCANE_BLOCK:
-//			return true;
-//		case CivData.AIR:
-//			CivLog.warning("AIR block trying to grow? At: "+b.getX()+","+b.getY()+","+b.getZ());
 			return true;
+			
+/*		case CivData.AIR:
+			Block b2 = b.getRelative(0, -1, 0);
+			if (ItemManager.getId(b2.getType()) == CivData.SUGARCANE_BLOCK) {
+				return true;
+			} else {
+				CivLog.warning("AIR block trying to grow? At: "+b.getX()+","+b.getY()+","+b.getZ());
+				return false;
+			}*/
 		}
 		return false;
 	}
-
+	
 	public void saveMissedGrowths() {
-		
 		class AsyncSave implements Runnable {
-
 			Farm farm;
 			int missedTicks;
 			
@@ -128,7 +129,6 @@ public class Farm extends Structure {
 			@Override
 			public void run() {
 				ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(getSessionKey());
-				
 				if (entries == null || entries.size() == 0) {
 					if (missedTicks > 0) {
 						farm.sessionAdd(getSessionKey(), ""+missedTicks);
@@ -142,9 +142,7 @@ public class Farm extends Structure {
 					CivGlobal.getSessionDB().update(entries.get(0).request_id, getSessionKey(), ""+missedTicks);
 				}
 			}
-			
 		}
-	
 		TaskMaster.asyncTask(new AsyncSave(this, this.fc.getMissedGrowthTicks()), 0);
 	}
 	
@@ -157,7 +155,6 @@ public class Farm extends Structure {
 		ArrayList<SessionEntry> entries = new ArrayList<SessionEntry>();
 		entries = CivGlobal.getSessionDB().lookup(getSessionKey());
 		int missedGrowths = 0;
-		
 		if (entries.size() > 0) {
 			missedGrowths = Integer.valueOf(entries.get(0).value);
 		} 
@@ -169,7 +166,6 @@ public class Farm extends Structure {
 				this.missedGrowths = missedGrowths;
 			}
 			
-			
 			@Override
 			public void run() {
 				fc.setMissedGrowthTicks(missedGrowths);
@@ -177,10 +173,9 @@ public class Farm extends Structure {
 				saveMissedGrowths();
 			}
 		}
-
 		TaskMaster.asyncTask(new AsyncTask(missedGrowths), 0);
 	}
-
+	
 	public void setLastEffectiveGrowth(double effectiveGrowthRate) {
 		this.lastEffectiveGrowthRate = effectiveGrowthRate;
 	}

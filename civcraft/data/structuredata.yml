@@ -56,6 +56,62 @@ repairable_items:
    - 'civ_diamond_leggings'
    - 'civ_diamond_boots'
 #======================================#
+#====== > Lumber Mill Settings < ======#
+#======================================#
+lumbermill_items:
+   - item: 271
+     max_dura: 59
+     level: 1
+   - item: 275
+     max_dura: 131
+     level: 2
+   - item: 258
+     max_dura: 250
+     level: 3
+   - item: 279
+     max_dura: 1561
+     level: 4
+   - item: 286
+     max_dura: 32
+     level: 5
+# Rare, Uncommon, Common, Junk
+lumbermill_drops:
+#====> Wooden Pickaxe <====#
+  - type: WoodPickApple
+    input: 271
+    type_id: 260
+    loot_type: 'common'
+    drop_chance: 0.05
+#
+#====> Stone Pickaxe <====#
+  - type: WoodPickApple
+    input: 275
+    type_id: 260
+    loot_type: 'common'
+    drop_chance: 0.05
+#
+#====> Iron Pickaxe <====#
+  - type: WoodPickApple
+    input: 258
+    type_id: 260
+    loot_type: 'common'
+    drop_chance: 0.05
+#
+#====> Diamond Pickaxe <====#
+  - type: WoodPickApple
+    input: 279
+    type_id: 260
+    loot_type: 'common'
+    drop_chance: 0.05
+#
+#====> Gold Pickaxe <====#
+  - type: WoodPickApple
+    input: 286
+    type_id: 260
+    loot_type: 'common'
+    drop_chance: 0.05
+#
+#======================================#
 #======== > Quarry  Settings < ========#
 #======================================#
 quarry_items:
@@ -522,6 +578,7 @@ cottage_levels:
          - 297,3
          - 391,3
          - 392,1
+         - 434,1
      count: 72
      coins: 250.0
 #
@@ -530,6 +587,7 @@ cottage_levels:
          - 297,3
          - 391,3
          - 392,2
+         - 434,2
      count: 96
      coins: 325.0
 #
@@ -538,7 +596,8 @@ cottage_levels:
          - 297,4
          - 391,4
          - 392,3
-         - 434,1
+         - 434,3
+         - 353,3
      count: 120
      coins: 400.0
 #
@@ -547,7 +606,8 @@ cottage_levels:
          - 297,5
          - 391,5
          - 392,4
-         - 434,2
+         - 434,4
+         - 353,6
      count: 168
      coins: 475.0
 #
@@ -556,8 +616,9 @@ cottage_levels:
          - 297,6
          - 391,6
          - 392,5
-         - 434,3
-         - 353,3
+         - 434,5
+         - 353,8
+         - 400,3
      count: 216
      coins: 550.0
 #
@@ -566,37 +627,44 @@ cottage_levels:
          - 297,6
          - 391,6
          - 392,6
-         - 434,4
-         - 353,6
-     count: 288
+         - 434,6
+         - 353,10
+         - 400,6
+     count: 264
      coins: 625.0
 #======================================#
 #======== > Granary Settings < ========#
 #======================================#
-granary_levels:
-   - level: 1
-     max_storage: 256
-   - level: 2
-     max_storage: 512
-   - level: 3
-     max_storage: 896
-   - level: 4
-     max_storage: 1280
-   - level: 5
-     max_storage: 1792
-   - level: 6
-     max_storage: 2304
-   - level: 7
-     max_storage: 2944
-   - level: 8
-     max_storage: 3584
-#
+# All food Cottages need HAS to be listed here:
 granary_food:
    - food: 297
    - food: 391
    - food: 392
    - food: 434
    - food: 353
+   - food: 400
+#
+granary_levels:
+   - level: 1
+     max_storage: 512
+   - level: 2
+     max_storage: 768
+   - level: 3
+     max_storage: 1152
+   - level: 4
+     max_storage: 1664
+   - level: 5
+     max_storage: 2304
+   - level: 6
+     max_storage: 3072
+   - level: 7
+     max_storage: 3968
+   - level: 8
+     max_storage: 4992
+   - level: 9
+     max_storage: 6144
+   - level: 10
+     max_storage: 7424
 #
 granary_tasks:
    - task: 1
@@ -741,6 +809,15 @@ mine_levels:
      amount: 24
      count: 144
 #
+   - level: 7
+     hammers: 350.0
+     amount: 28
+     count: 168
+   - level: 8
+     hammers: 400.0
+     amount: 32
+     count: 192
+#
 mine_tasks:
    - task: 1
      required:
@@ -864,6 +941,16 @@ lab_levels:
      beakers: 300.0
      amount: 24
      count: 144
+#
+   - level: 7
+     beakers: 350.0
+     amount: 28
+     count: 168
+#
+   - level: 8
+     beakers: 400.0
+     amount: 32
+     count: 192
 #
 lab_tasks:
    - task: 1

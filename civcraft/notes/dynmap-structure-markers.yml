@@ -27,7 +27,7 @@ flower: Monument
 skull: Arrow Tower
 anchor: Shipyard
 minecart: Trommel
-truck: Trade Outpost/Trade Boat
+truck: Lumber Mill
 gear: Quarry
 portal: Portal Network
 door: 
@@ -40,8 +40,8 @@ pin:
 redflag: 
 orangeflag: 
 yellowflag: 
-greenflag: 
-blueflag: 
+greenflag: Trade Outpost
+blueflag: Trade Boat
 purpleflag: 
 pinkflag: 
 pirateflag: 

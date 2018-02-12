@@ -92,12 +92,7 @@ public class Market extends Structure {
 				CivColor.RESET+" "
 				));
 		
-		for (int id = 0; id < 200; id++) {
-			ConfigMarketItem mat = CivSettings.marketItems.get(id);
-			if (mat == null) {
-				continue;
-			}
-			
+		for (ConfigMarketItem mat : CivSettings.marketItems.values()) {
 			if (mat.custom_id == null) {
 				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, CivColor.LightGray+" « Click for Options » ");
 				inv.addItem(is);

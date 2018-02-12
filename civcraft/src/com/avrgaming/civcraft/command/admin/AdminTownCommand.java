@@ -59,6 +59,7 @@ public class AdminTownCommand extends CommandBase {
 		commands.put("claim", "[town] - forcibly claims the plot you stand on for this named town.");
 		commands.put("unclaim", "forcibly unclaims the plot you stand on.");
 		commands.put("hammerrate", "[town] [amount] set this town's hammer rate to this amount.");
+		commands.put("beakerrate", "[town] [amount] set this town's beaker rate to this amount.");
 		commands.put("addmayor", "[town] [player] - adds the player as a mayor of this town.");
 		commands.put("addassistant", "[town] [player] - adds this player as an assistant to this town.");
 		commands.put("rmmayor", "[town] [player] - remove this player as a mayor from this town.");
@@ -429,18 +430,27 @@ public class AdminTownCommand extends CommandBase {
 	
 	public void hammerrate_cmd() throws CivException {
 		if (args.length < 3) {
-			throw new CivException("Enter a town name and amount");
+			throw new CivException("Enter a town name and amount.");
 		}
 		
 		Town town = getNamedTown(1);
+		double amt = Double.valueOf(args[2]);
 		
-		try {
-			town.setHammerRate(Double.valueOf(args[2]));
-			CivMessage.sendSuccess(sender, "Set "+args[1]+" hammer rate to "+args[2]);
-		} catch (NumberFormatException e) {
-			throw new CivException(args[2]+" is not a number.");
+		town.setHammerRate(amt);
+		CivMessage.sendSuccess(sender, "Set "+args[1]+" hammer rate to "+args[2]+".");
+		town.save();
+	}
+	
+	public void beakerrate_cmd() throws CivException {
+		if (args.length < 3) {
+			throw new CivException("Enter a town name and amount.");
 		}
 		
+		Town town = getNamedTown(1);
+		double amt = Double.valueOf(args[2]);
+		
+		town.setBeakerRate(amt);
+		CivMessage.sendSuccess(sender, "Set "+args[1]+" beaker rate to "+args[2]+".");
 		town.save();
 	}
 	

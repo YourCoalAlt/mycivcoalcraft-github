@@ -1,24 +1,13 @@
 package com.avrgaming.civcraft.backpack;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
-import java.util.Base64;
 import java.util.LinkedList;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
@@ -32,13 +21,10 @@ import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import gpl.AttributeUtil;
 
@@ -410,158 +396,90 @@ public class Backpack {
 		player.openInventory(craftingHelpInventory);
 	}
 	
-	// https://bukkit.org/threads/create-your-own-custom-head-texture.424286/
-	public static ItemStack getPlayerHead(Player p) {
-		try {
-			ItemStack is = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-			SkullMeta meta = (SkullMeta) is.getItemMeta();
-			
-			byte[] encodedData = null;
-			Resident res = CivGlobal.getResident(p);
-			GameProfile gp = new GameProfile(p.getUniqueId(), p.getName());
-			if (res.textureInfo == null) {
-				String trimmedUUID = p.getUniqueId().toString().replace("-", "");
-				URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/"+trimmedUUID);
-				
-				String inputLine;
-				URLConnection conn = url.openConnection();
-				// open the stream and put it into BufferedReader
-				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				inputLine = br.readLine();
-				br.close();
-				
-				String ua1 = ("{\"id\":\""+trimmedUUID+"\",\"name\":\""+p.getName()+"\",\"properties\":[{\"name\":\"textures\",\"value\":\""); String ua2 = ("\"}]}");
-				String newLine1 = inputLine.replace(ua1, "").replace(ua2, "");
-				String decode1 = new String(DatatypeConverter.parseBase64Binary(newLine1));
-				
-				String ub2 = ("\"}}}");
-				int tosub = 103+p.getName().length();
-				String newLine2 = decode1.substring(tosub).replace(ub2, "").replace("\"SKIN\":{\"url\":\"", "").replaceAll("}", "");
-				
-				if (decode1.contains(newLine2)) {
-					if (newLine2.length() > 0) {
-						if (newLine2.contains("\"CAPE\"")) { // TODO Figure out how to ignore capes and only get head data.
-							encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-							CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, cape interference, setting to default.");
-							CivLog.warning("Warning! Cannot get player head for Backpack, cape interference, setting to default.");
-						} else {
-							encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\""+newLine2+"\"}}}").getBytes());
-						}
-					} else {
-						encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-						CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, texutre was null, setting to default.");
-						CivLog.warning("Warning! Cannot get player head for Backpack, texture was null, setting to default.");
-					}
-				} else {
-					encodedData = "http://textures.minecraft.net/texture/456eec1c2169c8c60a7ae436abcd2dc5417d56f8adef84f11343dc1188fe138".getBytes();
-					CivMessage.sendError(p, "Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
-					CivLog.warning("Warning! Cannot get player head for Backpack, Unknown Reason, setting to default.");
-				}
-			} else {
-				encodedData = res.textureInfo;
-			}
-			
-			res.textureInfo = encodedData;
-			gp.getProperties().put("textures", new Property("textures", new String(encodedData)));
-			Field profileField = meta.getClass().getDeclaredField("profile");
-			profileField.setAccessible(true);
-			profileField.set(meta, gp);
-			
-			is.setItemMeta(meta);
-			return is;
-		} catch (IOException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public static void spawnGuiBook(Player player, boolean openGUI) {
 		guiInventory = null;
-		if (guiInventory == null) {
-			guiInventory = Bukkit.getServer().createInventory(player, 9*3, "CivCraft Information");
-			//00 01 02 03 04 05 06 07 08
-			//09 10 11 12 13 14 15 16 17
-			//18 19 20 21 22 23 24 25 26
+		
+		guiInventory = Bukkit.getServer().createInventory(player, 9*3, "CivCraft Information");
+		//00 01 02 03 04 05 06 07 08
+		//09 10 11 12 13 14 15 16 17
+		//18 19 20 21 22 23 24 25 26
+		
+		Resident res = CivGlobal.getResident(player);
+		ResidentExperience re = CivGlobal.getResidentE(player);
+		if (res != null && re != null) {
+			ConfigEXPGenericLevel questlvl = CivSettings.expGenericLevels.get(re.getQuestLevel());
+			ConfigEXPGenericLevel mininglvl = CivSettings.expGenericLevels.get(re.getMiningLevel());
+			ConfigEXPGenericLevel fishinglvl = CivSettings.expGenericLevels.get(re.getFishingLevel());
+			ConfigEXPGenericLevel weapondrylvl = CivSettings.expGenericLevels.get(re.getWeapondryLevel());
 			
-			Resident res = CivGlobal.getResident(player);
-			ResidentExperience re = CivGlobal.getResidentE(player);
-			if (res != null && re != null) {
-				ConfigEXPGenericLevel questlvl = CivSettings.expGenericLevels.get(re.getQuestLevel());
-				ConfigEXPGenericLevel mininglvl = CivSettings.expGenericLevels.get(re.getMiningLevel());
-				ConfigEXPGenericLevel fishinglvl = CivSettings.expGenericLevels.get(re.getFishingLevel());
-				ConfigEXPGenericLevel weapondrylvl = CivSettings.expGenericLevels.get(re.getWeapondryLevel());
-				
-				String town = "None"; if (res.hasTown()) town = res.getTown().getName();
-				String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
-				
-				ItemStack playerInfo = LoreGuiItem.buildWithStack(CivColor.WhiteBold+player.getName(), getPlayerHead(player),
-						CivColor.LightGreen+"Coins: "+CivColor.Yellow+res.getTreasury().getBalance(),
-						CivColor.LightGreen+"Town, Civ: "+CivColor.Yellow+town+", "+civ,
-						CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+questlvl.level+" ("+re.getQuestEXP()+"/"+questlvl.amount+" XP)",
-						CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+mininglvl.level+" ("+re.getMiningEXP()+"/"+mininglvl.amount+" XP)",
-						CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
-						CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
-						CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+weapondrylvl.level+" ("+re.getWeapondryEXP()+"/"+weapondrylvl.amount+" XP)",
-						CivColor.LightGray+"« Click for Experience Info »");
-				playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
-				playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
-				guiInventory.setItem(0, playerInfo);
-			} else {
-				ItemStack playerInfo = LoreGuiItem.build("Player Info", ItemManager.getId(Material.SKULL_ITEM), 3,
-						CivColor.RoseItalic+"Error, Resident Invalid?");
-				guiInventory.setItem(0, playerInfo);
-			}
+			String town = "None"; if (res.hasTown()) town = res.getTown().getName();
+			String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
 			
-			ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-			resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
-			resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
-			guiInventory.setItem(2, resMail);
-			
-			ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
-			craftRec = LoreGuiItem.setAction(craftRec, "OpenInventory");
-			craftRec = LoreGuiItem.setActionData(craftRec, "invType", "showCraftingHelp");
-			guiInventory.setItem(4, craftRec);
-			
-			ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", ItemManager.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
-			gameInfo = LoreGuiItem.setAction(gameInfo, "OpenInventory");
-			gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
-			guiInventory.setItem(8, gameInfo);
-			
-			ItemStack civMenu = LoreGuiItem.build("Civilization Menu", ItemManager.getId(Material.BLAZE_ROD), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-//			civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
-//			civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
-			guiInventory.setItem(9, civMenu);
-			
-			ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", ItemManager.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
-			civDip = LoreGuiItem.setAction(civDip, "DiplomaticMenu");
-			guiInventory.setItem(14, civDip);
-			
-//			ItemStack perkMenu = LoreGuiItem.build("Perk Menu", ItemManager.getId(Material.BOOK_AND_QUILL), 0, CivColor.Gold+"<Click to View>");
-//			perkMenu = LoreGuiItem.setAction(perkMenu, "ShowPerkPage");
-//			guiInventory.setItem(15, perkMenu);
-			
-			ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
-			townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
-			townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
-			guiInventory.setItem(18, townMenu);
-			
-			ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
-			buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
-			guiInventory.setItem(19, buildMenu);
-			
-			ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
-			newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
-			guiInventory.setItem(25, newsInfo);
-			
-			ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-//			turorialMenu = LoreGuiItem.setAction(turorialMenu, "BuildTutorialMenu");
-			guiInventory.setItem(26, turorialMenu);
-			
-			
-			LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);
-			}
+			ItemStack playerInfo = LoreGuiItem.buildWithStack(CivColor.WhiteBold+player.getName(), ItemManager.spawnPlayerHead(player, CivColor.WhiteBold+player.getName()),
+					CivColor.LightGreen+"Coins: "+CivColor.Yellow+res.getTreasury().getBalance(),
+					CivColor.LightGreen+"Town, Civ: "+CivColor.Yellow+town+", "+civ,
+					CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+questlvl.level+" ("+re.getQuestEXP()+"/"+questlvl.amount+" XP)",
+					CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+mininglvl.level+" ("+re.getMiningEXP()+"/"+mininglvl.amount+" XP)",
+					CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
+					CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
+					CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
+					CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+weapondrylvl.level+" ("+re.getWeapondryEXP()+"/"+weapondrylvl.amount+" XP)",
+					CivColor.LightGray+"« Click for Experience Info »");
+			playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
+			playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
+			guiInventory.setItem(0, playerInfo);
+		} else {
+			ItemStack playerInfo = LoreGuiItem.build("Player Info", ItemManager.getId(Material.SKULL_ITEM), 3,
+					CivColor.RoseItalic+"Error, Resident Invalid?");
+			guiInventory.setItem(0, playerInfo);
+		}
+		
+		ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+		resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
+		resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
+		guiInventory.setItem(2, resMail);
+		
+		ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
+		craftRec = LoreGuiItem.setAction(craftRec, "OpenInventory");
+		craftRec = LoreGuiItem.setActionData(craftRec, "invType", "showCraftingHelp");
+		guiInventory.setItem(4, craftRec);
+		
+		ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", ItemManager.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
+		gameInfo = LoreGuiItem.setAction(gameInfo, "OpenInventory");
+		gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
+		guiInventory.setItem(8, gameInfo);
+		
+		ItemStack civMenu = LoreGuiItem.build("Civilization Menu", ItemManager.getId(Material.BLAZE_ROD), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+//		civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
+//		civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
+		guiInventory.setItem(9, civMenu);
+		
+		ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", ItemManager.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
+		civDip = LoreGuiItem.setAction(civDip, "DiplomaticMenu");
+		guiInventory.setItem(14, civDip);
+		
+//		ItemStack perkMenu = LoreGuiItem.build("Perk Menu", ItemManager.getId(Material.BOOK_AND_QUILL), 0, CivColor.Gold+"<Click to View>");
+//		perkMenu = LoreGuiItem.setAction(perkMenu, "ShowPerkPage");
+//		guiInventory.setItem(15, perkMenu);
+		
+		ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
+		townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
+		townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
+		guiInventory.setItem(18, townMenu);
+		
+		ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
+		buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
+		guiInventory.setItem(19, buildMenu);
+		
+		ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
+		newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
+		guiInventory.setItem(25, newsInfo);
+		
+		ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+//		turorialMenu = LoreGuiItem.setAction(turorialMenu, "BuildTutorialMenu");
+		guiInventory.setItem(26, turorialMenu);
+		
+		LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);
 		if (openGUI) {
 			player.openInventory(guiInventory);
 		}

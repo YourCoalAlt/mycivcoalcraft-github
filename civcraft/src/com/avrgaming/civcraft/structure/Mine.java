@@ -162,7 +162,7 @@ public class Mine extends Structure {
 	
 	public double getBonusHammers() {
 		if (!this.isComplete()) return 0.0;
-		if (getConsumeComponent().getLevel() < 1) return 0.0;
+		if (getConsumeComponent().getLevel() <= 0) return 0.0;
 		
 		ConfigMineLevel lvl = CivSettings.mineLevels.get(getLevel());
 		int total_production = (int) (lvl.hammers*this.getTown().getMineRate().total);
@@ -170,7 +170,7 @@ public class Mine extends Structure {
 //			total_production *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 //		}
 		
-		double buff = 0.0;
+		double buff = 1.0;
 		buff += this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
 		total_production *= buff;
 		

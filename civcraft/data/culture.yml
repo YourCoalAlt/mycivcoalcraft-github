@@ -68,6 +68,21 @@ culture_levels:
       chunks: 32
 #
 culture_biomes:
+#======================#
+#= Water/Isld. Biomes =#
+#======================#
+    - name: MUSHROOM_ISLAND
+      happiness: 0.05
+      production: 1.5
+      science: 4.0
+      growth: 1.25
+#
+    - name: MUSHROOM_ISLAND
+      happiness: 0.03
+      production: 1.0
+      science: 2.5
+      growth: 0.75
+#
     - name: BEACHES
       happiness: 0.05
       production: 1.0
@@ -75,22 +90,22 @@ culture_biomes:
       growth: 1.0
 #
     - name: COLD_BEACH
-      happiness: 0.01
+      happiness: 0.02
       production: 1.0
       science: 3.0
       growth: 1.0
 #
     - name: STONE_BEACH
-      happiness: 0.01
+      happiness: 0.02
       production: 4.0
       science: 2.0
       growth: 0.0
 #
     - name: OCEAN
       happiness: 0.015
-      production: 0.0
+      production: 0.5
       science: 3.0
-      growth: 1.0
+      growth: 0.75
 #
     - name: DEEP_OCEAN
       happiness: 0.005
@@ -99,7 +114,7 @@ culture_biomes:
       growth: 0.0
 #
     - name: RIVER
-      happiness: 0.025
+      happiness: 0.04
       production: 1.0
       science: 2.0
       growth: 3.5
@@ -111,46 +126,46 @@ culture_biomes:
       growth: 1.0
 #
     - name: FROZEN_RIVER
-      happiness: 0.01
+      happiness: 0.02
       production: 1.0
       science: 2.5
       growth: 2.0
-# ======================#
-# ===== Hot Biomes =====#
-# ======================#
+#======================#
+#===== Hot Biomes =====#
+#======================#
     - name: DESERT
-      happiness: 0.02
-      production: 1.25
+      happiness: 0.03
+      production: 0.75
       science: 1.0
-      growth: 1.5
+      growth: 1.25
 #
     - name: DESERT_HILLS
       happiness: 0.025
       production: 2.0
       science: 1.0
-      growth: 1.0
+      growth: 0.5
 #
     - name: MUTATED_DESERT
       coins: 0.0
       happiness: 0.01
-      production: 3.5
-      science: 1.0
+      production: 3.0
+      science: 1.25
       growth: 0.0
 #
     - name: MESA
-      happiness: 0.025
+      happiness: 0.03
       production: 1.5
       science: 2.5
       growth: 1.0
 #
     - name: MESA_CLEAR_ROCK
-      happiness: 0.01
+      happiness: 0.015
       production: 2.5
       science: 2.0
       growth: 0.0
 #
     - name: MESA_ROCK
-      happiness: 0.0
+      happiness: 0.005
       production: 2.0
       science: 1.5
       growth: 1.0
@@ -172,13 +187,38 @@ culture_biomes:
       production: 1.0
       science: 1.0
       growth: 1.0
-# =======================#
-# ===== Lush Biomes =====#
-# =======================#
+#
+    - name: SAVANNA
+      happiness: 0.03
+      production: 1.0
+      science: 1.0
+      growth: 1.5
+#
+    - name: SAVANNA_ROCK
+      happiness: 0.04
+      production: 1.5
+      science: 0.75
+      growth: 1.5
+#
+    - name: MUTATED_SAVANNA
+      happiness: 0.01
+      production: 3.0
+      science: 0.5
+      growth: 0.25
+#
+    - name: MUTATED_SAVANNA_ROCK
+      happiness: 0.01
+      production: 2.5
+      science: 0.5
+      growth: 0.75
+#
+#=======================#
+#===== Lush Biomes =====#
+#=======================#
     - name: PLAINS
       happiness: 0.025
-      production: 2.0
-      science: 1.0
+      production: 1.5
+      science: 0.75
       growth: 1.5
 #
     - name: MUTATED_PLAINS
@@ -194,13 +234,13 @@ culture_biomes:
       growth: 2.0
 #
     - name: FOREST_HILLS
-      happiness: 0.025
+      happiness: 0.015
       production: 2.5
       science: 1.0
       growth: 1.5
 #
     - name: MUTATED_FOREST
-      happiness: 0.04
+      happiness: 0.05
       production: 4.0
       science: 1.0
       growth: 1.0
@@ -251,9 +291,9 @@ culture_biomes:
 #
     - name: MUTATED_SWAMPLAND
       happiness: 0.015
-      production: 3.0
+      production: 2.5
       science: 2.0
-      growth: 1.0
+      growth: 1.5
 #
     - name: JUNGLE
       happiness: 0.015
@@ -284,7 +324,123 @@ culture_biomes:
       production: 2.0
       science: 1.0
       growth: 1.5
+#=======================#
+#===== Cold Biomes =====#
+#=======================#
+    - name: EXTREME_HILLS
+      happiness: 0.015
+      production: 3.25
+      science: 0.25
+      growth: 0.25
 #
+    - name: EXTREME_HILLS_WITH_TREES
+      happiness: 0.005
+      production: 3.5
+      science: 0.0
+      growth: 0.5
+#
+    - name: MUTATED_EXTREME_HILLS
+      happiness: 0.005
+      production: 3.75
+      science: 0.5
+      growth: 0.0
+#
+    - name: MUTATED_EXTREME_HILLS_WITH_TREES
+      happiness: 0.0
+      production: 3.25
+      science: 0.5
+      growth: 0.5
+#
+    - name: SMALLER_EXTREME_HILLS
+      happiness: 0.015
+      production: 2.5
+      science: 0.75
+      growth: 0.5
+#
+    - name: TAIGA
+      happiness: 0.02
+      production: 1.5
+      science: 0.75
+      growth: 0.75
+#
+    - name: TAIGA_HILLS
+      happiness: 0.01
+      production: 2.0
+      science: 0.5
+      growth: 0.25
+#
+    - name: MUTATED_TAIGA
+      happiness: 0.01
+      production: 2.5
+      science: 0.5
+      growth: 0.5
+#
+    - name: REDWOOD_TAIGA
+      happiness: 0.02
+      production: 1.5
+      science: 1.0
+      growth: 0.75
+#
+    - name: REDWOOD_TAIGA_HILLS
+      happiness: 0.01
+      production: 2.25
+      science: 0.5
+      growth: 0.25
+#
+    - name: MUTATED_REDWOOD_TAIGA
+      happiness: 0.0
+      production: 2.0
+      science: 0.75
+      growth: 0.5
+#
+    - name: MUTATED_REDWOOD_TAIGA_HILLS
+      happiness: 0.0
+      production: 2.75
+      science: 0.5
+      growth: 0.25
+#
+#=======================#
+#===== Snow Biomes =====#
+#=======================#
+    - name: ICE_FLATS
+      happiness: 0.02
+      production: 1.0
+      science: 0.75
+      growth: 0.5
+#
+    - name: ICE_MOUNTAINS
+      happiness: 0.01
+      production: 1.75
+      science: 1.0
+      growth: 0.25
+#
+    - name: MUTATED_ICE_FLATS
+      happiness: 0.02
+      production: 0.75
+      science: 3.0
+      growth: 0.25
+#
+    - name: TAIGA_COLD
+      happiness: 0.015
+      production: 1.25
+      science: 1.5
+      growth: 0.25
+#
+    - name: TAIGA_COLD_HILLS
+      happiness: 0.01
+      production: 1.75
+      science: 1.0
+      growth: 0.25
+#
+    - name: MUTATED_TAIGA_COLD
+      happiness: 0.005
+      production: 3.0
+      science: 0.25
+      growth: 0.25
+#
+#=======================#
+#=== Unknown  Biomes ===#
+#=======================#
     - name: UNKNOWN
       happiness: 0.01
       production: 0.5

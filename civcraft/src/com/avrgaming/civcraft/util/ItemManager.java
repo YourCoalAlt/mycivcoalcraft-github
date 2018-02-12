@@ -8,10 +8,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+
+import com.avrgaming.civcraft.main.CivData;
+import com.avrgaming.civcraft.main.CivMessage;
 
 
 /*
@@ -180,6 +184,34 @@ public class ItemManager {
 			return true;
 		}
 		return false;
+	}
+	
+	// TODO arraylist?
+	public static boolean givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
+		if (name == null) name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
+		if (p.getInventory().firstEmpty() == -1) {
+			if (msg && amt > 0) {
+				CivMessage.send(p, CivColor.LightGreen+"You've dropped "+CivColor.LightPurple+amt+" "+name);
+			}
+			for (int i = 0; i < amt; i++) {
+				p.getWorld().dropItemNaturally(dropLoc, stack);
+			}
+			return false;
+		}
+		
+		if (msg && amt > 0) {
+			CivMessage.send(p, CivColor.LightGreen+"You've recieved "+CivColor.LightPurple+amt+" "+name);
+		}
+		
+		for (int i = 0; i < amt; i++) {
+			p.getInventory().addItem(stack);
+		}
+		return true;
+	}
+	
+	public static boolean dropPlayerEXP(Player p, Location dropLoc, int amt) {
+		((ExperienceOrb)p.getWorld().spawn(p.getLocation(), ExperienceOrb.class)).setExperience(amt);
+		return true;
 	}
 	
 }

@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.ItemManager;
 
 public class PickRandomBlock extends RandomEventComponent {
-
+	
 	@Override
 	public void process() {
 		class SyncTask implements Runnable {
@@ -42,24 +42,24 @@ public class PickRandomBlock extends RandomEventComponent {
 				
 				BlockCoord bcoord = null;
 				ChunkCoord coord = null;
-				for (int i = 0; i < 10; i++) {
+				for (int i = 0; i < 20; i++) {
 					Random rand = new Random();
 					int randX = rand.nextInt(range_x) - (max_x/16);
 					int randZ = rand.nextInt(range_z) - (max_z/16);
 					coord = new ChunkCoord("world", randX, randZ);
 					
 					// Make sure its not in someone's culture.
-					if(CivGlobal.getCultureChunk(coord) != null) continue;
+					if (CivGlobal.getCultureChunk(coord) != null) continue;
 					
-					/* Search for a 'valid' block to be used as breakable in the chunk. */
-					int startY = rand.nextInt(20) + 4; /* Select a y somewhere between 4 and 24. */
+					// Search for a 'valid' block to be used as breakable in the chunk.
+					int startY = rand.nextInt(10) + 10; // Select a y somewhere between 10 and 20
 					for (int x = 0; x < 16; x++) {
 						for (int z = 0; z < 16; z++) {
-							for (int y = startY; y < 50; y++) { /* no need to check higher than 128, unlikely to find a good block. */
+							for (int y = startY; y < 50; y++) { // no need to check higher than 50, unlikely to find a good block.
 								Block block = coord.getChunk().getBlock(x, y, z);
 								//CivLog.debug("checking a block:"+block.toString());
 								
-								if (ItemManager.getId(block) == CivData.STONE || ItemManager.getId(block) == CivData.GRAVEL) {
+								if (ItemManager.getId(block) == CivData.STONE) {
 									bcoord = new BlockCoord(block);
 									break;
 								}
@@ -73,7 +73,7 @@ public class PickRandomBlock extends RandomEventComponent {
 				}
 				
 				if (bcoord == null || coord == null) {
-					CivLog.warning("Couldn't find a suitable block for PickRandomBlock after 10 retries.");
+					CivLog.warning("Couldn't find a suitable block for PickRandomBlock after 20 retries.");
 					return;
 				}
 

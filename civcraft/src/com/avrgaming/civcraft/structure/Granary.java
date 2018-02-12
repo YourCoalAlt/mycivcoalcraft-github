@@ -57,7 +57,7 @@ public class Granary extends Structure {
 	
 	@Override
 	public void onPostBuild(BlockCoord absCoord, SimpleBlock sb) {
-		this.level = getTown().saved_granary_level;
+		this.level = getTown().saved_structures_default_level;
 		
 		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
 			Material m = ItemManager.getMaterial(f.food);

@@ -72,14 +72,15 @@ public class Capitol extends TownHall {
 	private void changeIndex(int newIndex) {
 		ArrayList<RespawnLocationHolder> respawnables = this.getTown().getCiv().getAvailableRespawnables();
 		if (this.respawnSign != null) {
-			try {
+			if (newIndex > respawnables.size()) {
+				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(0).getRespawnName());
+				index = 0;
+			} else if (newIndex < 0) {
+				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(respawnables.size()).getRespawnName());
+				index = respawnables.size();
+			} else {
 				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(newIndex).getRespawnName());
 				index = newIndex;
-			} catch (IndexOutOfBoundsException e) {
-				if (respawnables.size() > 0) {
-					this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(0).getRespawnName());
-					index = 0;
-				}
 			}
 			this.respawnSign.update();
 		} else {
@@ -93,14 +94,35 @@ public class Capitol extends TownHall {
 		Resident resident = CivGlobal.getResident(player);
 		if (resident == null) return;
 		
+		Boolean hasPermission = false;
+		if (resident.getTown().isMayor(resident) || resident.getTown().isAssistant(resident) ||
+				resident.getCiv().getLeaderGroup().hasMember(resident) || resident.getCiv().getAdviserGroup().hasMember(resident)) {
+			if (resident.getTown().getMotherCiv().equals(this.getCiv())) {
+				hasPermission = true;
+			}
+		}
+		
 		switch (sign.getAction()) {
 		case "prev":
-			changeIndex((index-1));
+			if (hasPermission) {
+				changeIndex((index-1));
+			} else {
+				CivMessage.sendError(resident, "Must be a leader, adviser, or a mayor or assistant of a town in the mother civ to change respawn location.");
+			}
 			break;
 		case "next":
-			changeIndex((index+1));
+			if (hasPermission) {
+				changeIndex((index+1));
+			} else {
+				CivMessage.sendError(resident, "Must be a leader, adviser, or a mayor or assistant of a town in the mother civ to change respawn location.");
+			}
 			break;
 		case "respawn":
+			if (resident.getTown() != this.getTown()) {
+				CivMessage.sendError(resident, "Cannot use repawn signs of a civ that is not yours!");
+			return;	
+			}
+			
 			ArrayList<RespawnLocationHolder> respawnables =  this.getTown().getCiv().getAvailableRespawnables();
 			if (index >= respawnables.size()) {
 				index = 0;
@@ -189,10 +211,9 @@ public class Capitol extends TownHall {
 	public void createControlPoint(BlockCoord absCoord) {
 		Location centerLoc = absCoord.getLocation();
 		/* Build the bedrock tower. */
-		//for (int i = 0; i < 1; i++) {
 		Block b = centerLoc.getBlock();
-		ItemManager.setTypeId(b, ItemManager.getId(Material.SANDSTONE)); ItemManager.setData(b, 0);
 		
+		ItemManager.setTypeId(b, ItemManager.getId(Material.SANDSTONE)); ItemManager.setData(b, 0);
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
 		

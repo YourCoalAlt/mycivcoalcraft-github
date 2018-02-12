@@ -94,6 +94,13 @@ public class Structure extends Buildable {
 				struct = (Structure) new Trommel(rs);
 			}
 			break;
+		case "s_lumbermill":
+			if (rs == null) {
+				struct = (Structure) new LumberMill(center, id, town);
+			} else {
+				struct = (Structure) new LumberMill(rs);
+			}
+			break;
 		case "ti_mine":
 			if (rs == null) {
 				struct = (Structure) new Mine(center, id, town);

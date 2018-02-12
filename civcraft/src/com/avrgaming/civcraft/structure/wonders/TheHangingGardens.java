@@ -29,10 +29,10 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
-import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.war.War;
 
 public class TheHangingGardens extends Wonder {
@@ -89,7 +89,7 @@ public class TheHangingGardens extends Wonder {
 					if (player.isDead() || !player.isValid()) continue;
 					
 					// Health
-					Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+					Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 					if (player.getHealth() < maxHP) {
 						TownChunk tc = CivGlobal.getTownChunk(player.getLocation());
 						if (tc != null && tc.getTown() == this.getTown()) {

@@ -72,7 +72,6 @@ import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementSoulBound;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreStoreage;
-import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -93,7 +92,6 @@ import com.avrgaming.civcraft.structure.Capitol;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Wall;
-import com.avrgaming.civcraft.tasks.TradeGoodSignCleanupTask;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.template.TemplateStream;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -123,6 +121,8 @@ public class DebugCommand extends CommandBase {
 		
 		commands.put("townchunk", " gets the town chunk you are standing in and prints it.");
 		commands.put("newday", "Runs the new day code, collects taxes ... etc.");
+		
+		
 		commands.put("civ", "[name] prints out civ info.");
 		commands.put("map", "shows a town chunk map of the current area.");
 		commands.put("culturechunk", "gets the culture chunk you are standing in and prints it.");
@@ -146,12 +146,9 @@ public class DebugCommand extends CommandBase {
 		commands.put("setspeed", "[speed] - set your speed to this");
 		commands.put("tradegenerate", "generates trade goods at picked locations");
 		commands.put("createtradegood", "[good_id] - creates a trade goodie here.");
-		commands.put("cleartradesigns", "clears extra trade signs above trade outpots");
 		commands.put("restoresigns", "restores all structure signs");
 		commands.put("regenchunk", "regens every chunk that has a trade good in it");
 		commands.put("timers", "show all the timer information.");
-		commands.put("shownbt", "shows the current nbt data for this item in the logs");
-		commands.put("addnbt", "adds a custom tag to the item in your hand.");
 		commands.put("loretest", "tests if the magic lore is set.");
 		commands.put("loreset", "adds magic lore tag.");
 		commands.put("giveold", "[name] [first lore]");
@@ -160,7 +157,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("refreshchunk", "refreshes the chunk you're standing in.. for science.");
 		commands.put("touches", "[town] - prints a list of friendly touches for this town's culture.");
 		commands.put("listconquered", "shows a list of conquered civilizations.");
-		commands.put("blockinfo", "[x] [y] [z] shows block info for this block.");
 		commands.put("fakeresidents", "[town] [count] - Adds this many fake residents to a town.");
 		commands.put("clearresidents", "[town] - clears this town of it's random residents.");
 		commands.put("biomehere", "- shows you biome info where you're standing.");
@@ -185,7 +181,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("heal", "heals you....");
 		commands.put("skull", "[player] [title]");
 		commands.put("giveperk", "<id> gives yourself this perk id.");
-		commands.put("packet", "sends custom auth packet.");	
 		commands.put("disablemap", "disables zan's minimap");
 		commands.put("world", "Show world debug options");
 		commands.put("cannon", "builds a war cannon.");
@@ -224,12 +219,6 @@ public class DebugCommand extends CommandBase {
 		CivMessage.sendSuccess(player, "Disabled.");
 	}
 	
-	public void packet_cmd() throws CivException {
-		Player player = getPlayer();
-		player.sendPluginMessage(CivCraft.getPlugin(), "CAC", "Test Message".getBytes());
-		CivMessage.sendSuccess(player, "Sent test message");
-	}
-	
 	public void giveperk_cmd() throws CivException {
 		Resident resident = getResident();
 		String perkId = getNamedString(1, "Enter a perk ID");		
@@ -261,7 +250,7 @@ public class DebugCommand extends CommandBase {
 	
 	public void heal_cmd() throws CivException {
 		Player player = getPlayer();
-		Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+		Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 		player.setHealth(maxHP);
 		player.setFoodLevel(50);
 		player.setSaturation(50f);
@@ -733,16 +722,6 @@ public class DebugCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Added "+count+" residents.");
 	}
 	
-	public void blockinfo_cmd() throws CivException {
-		int x = getNamedInteger(1);
-		int y = getNamedInteger(2);
-		int z = getNamedInteger(3);
-		
-		Block b = Bukkit.getWorld("world").getBlockAt(x,y,z);
-		
-		CivMessage.send(sender, "type:"+ItemManager.getId(b)+" data:"+ItemManager.getData(b)+" name:"+b.getType().name());
-	}
-	
 	public void listconquered_cmd() {
 		CivMessage.sendHeading(sender, "Conquered Civs");
 		String out = "";
@@ -865,24 +844,6 @@ public class DebugCommand extends CommandBase {
 		}
 	}
 	
-//	public void shownbt_cmd() throws CivException {
-//		Player player = getPlayer();
-//		
-//		org.bukkit.inventory.ItemStack inHand = player.getInventory().getItemInMainHand();
-//		if (inHand != null) {
-//			NBT.debugPrintItemTags(inHand);
-//		}
-//	}
-	
-//	public void addnbt_cmd() throws CivException {
-//		Player player = getPlayer();
-//		
-//		org.bukkit.inventory.ItemStack inHand = player.getInventory().getItemInMainHand();
-//		if (inHand != null) {
-//			NBT.addCustomTag("RJTEST", 1337, inHand);
-//		}
-//	}
-	
 	public void timers_cmd() {
 		CivMessage.sendHeading(sender, "Timers");
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd h:mm:ss a z");
@@ -935,29 +896,7 @@ public class DebugCommand extends CommandBase {
 				s.setLine(3, lines[3]);
 			}
 			s.update();
-			
-			
 		}
-		
-		
-	}
-	
-	public void cleartradesigns_cmd() throws CivException {
-		CivMessage.send(sender, "Starting task");
-		
-		if (args.length < 3) {
-			throw new CivException("bad arg count");
-		}
-		
-		try {
-			Integer xoff = Integer.valueOf(args[1]);
-			Integer zoff = Integer.valueOf(args[2]);
-			TaskMaster.syncTask(new TradeGoodSignCleanupTask(getPlayer().getName(), xoff, zoff));
-
-		} catch (NumberFormatException e) {
-			throw new CivException("Bad number format");
-		}
-		
 	}
 	
 	

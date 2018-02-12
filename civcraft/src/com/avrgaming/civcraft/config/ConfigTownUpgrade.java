@@ -213,14 +213,14 @@ public class ConfigTownUpgrade {
 				}
 			}
 			break;
-		case "set_granary_level":
+		case "saved_structures_default_level":
 			for (Structure structure : town.getStructures()) {
 				if (structure != null && (structure instanceof Granary)) {
 					Granary granary = (Granary)structure;
 					if (granary.getLevel() < Integer.valueOf(args[1].trim())) {
 						granary.setLevel(Integer.valueOf(args[1].trim()));
-						town.saved_granary_level = granary.getLevel();
-						CivMessage.sendTown(town, "The Granary is now level "+granary.getLevel()+"!");
+						town.saved_structures_default_level = granary.getLevel();
+						CivMessage.sendTown(town, "The Town's Default Structure level is now level "+granary.getLevel()+"!");
 					}
 				}
 			}

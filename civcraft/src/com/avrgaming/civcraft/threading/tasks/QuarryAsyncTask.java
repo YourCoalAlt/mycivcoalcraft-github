@@ -14,9 +14,9 @@ import com.avrgaming.civcraft.config.ConfigQuarry;
 import com.avrgaming.civcraft.config.ConfigQuarryItem;
 import com.avrgaming.civcraft.config.ConfigTrommelItem;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.StructureChest;
@@ -31,14 +31,13 @@ import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class QuarryAsyncTask extends CivAsyncTask {
-
-	Quarry quarry;
 	
+	Quarry quarry;
 	public static HashSet<String> debugTowns = new HashSet<String>();
-
+	
 	public static void debug(Quarry quarry, String msg) {
 		if (debugTowns.contains(quarry.getTown().getName())) {
-			CivLog.warning("QuarryDebug:"+quarry.getTown().getName()+": "+msg);
+			CivLog.warning("QuarryDebug: "+quarry.getTown().getName()+": "+msg);
 		}
 	}	
 	
@@ -51,7 +50,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
 		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
 		ArrayList<StructureChest> destinations_other = new ArrayList<StructureChest>();
-		
 		boolean trommel = false;
 		
 		Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
@@ -196,7 +194,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
 						ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cqi.item);
 						if (dropped.size() == 0) {
-							newItem.add(getUselessDrop());
+							newItem.add(getReturnDrop());
 						} else {
 							for (ConfigQuarry d : dropped) {
 								if (d.custom_id != null) {
@@ -239,7 +237,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		quarry.skippedCounter = 0;
 	}
 	
-	private ItemStack getUselessDrop() {
+	private ItemStack getReturnDrop() {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 2) {
@@ -253,17 +251,19 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	
 	private ItemStack getStoneDrop() {
 		Random rand = new Random();
-		int uselessDrop = rand.nextInt(8);
-		if (uselessDrop >= 0 && uselessDrop <= 1) {
+		int uselessDrop = rand.nextInt(10);
+		if (uselessDrop >= 0 && uselessDrop <= 2) {
+			return ItemManager.createItemStack(CivData.COBBLESTONE, 1);
+		} else if (uselessDrop >= 3 && uselessDrop <= 4) {
 			return ItemManager.createItemStack(CivData.STONE, 1);
-		} else if (uselessDrop == 2) {
+		} else if (uselessDrop == 5) {
 			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.GRANITE);
-		} else if (uselessDrop == 3) {
+		} else if (uselessDrop == 6) {
 			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.DIORITE);
-		} else if (uselessDrop == 4) {
+		} else if (uselessDrop == 7) {
 			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.ANDESITE);
 		} else {
-			return ItemManager.createItemStack(CivData.COBBLESTONE, 1);
+			return ItemManager.createItemStack(CivData.AIR, 1);
 		}
 	}
 	
@@ -281,7 +281,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				int processing = processRate / 100;
 				int chance = processRate - (processing*100);
 				
-				for (int t = 0; t < CivSettings.getInteger(CivSettings.gameConfig, "timers.struc_process"); t++) {
+				for (int t = 0; t < CivCraft.structure_process; t++) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
@@ -310,8 +310,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						}
 					}
 				}
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
 			} finally {
 				this.quarry.lock.unlock();
 			}
@@ -323,7 +321,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 	public ArrayList<ConfigQuarry> getRandomDrops(Town t, int input) {
 		Random rand = new Random();		
 		ArrayList<ConfigQuarry> dropped = new ArrayList<ConfigQuarry>();
-		
 		for (ConfigQuarry d : CivSettings.quarryDrops) {
 			if (d.input == input) {
 				double dc = d.drop_chance;

@@ -54,9 +54,7 @@ public class Armor extends ItemComponent {
 	public void onDefense(EntityDamageByEntityEvent event, ItemStack stack) {
 		double def = this.getDouble("value");
 //		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-//		if (craftMat == null) {
-//			return;
-//		}
+//		if (craftMat == null) return;
 		
 		double extraDef = 0.0;
 		AttributeUtil attrs = new AttributeUtil(stack);
@@ -82,20 +80,19 @@ public class Armor extends ItemComponent {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
 			for (PotionEffect effect : p.getActivePotionEffects()) {
-				if (effect.getType().toString().contains(PotionEffectType.WEAKNESS.toString())) {
+				if (effect.getType().equals(PotionEffectType.WEAKNESS)) {
 					int weaknessDmg = 2+(2*effect.getAmplifier());
 					def -= weaknessDmg;
 				}
 				
-				if (effect.getType().toString().contains(PotionEffectType.INCREASE_DAMAGE.toString())) {
+				if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
 					int strengthDmg = 2+(2*effect.getAmplifier());
 					def += strengthDmg;
 				}
 			}
 			
-			ConfigUnit u = Unit.getPlayerUnit(p);
-			
 			double unitperk = 1.0;
+			ConfigUnit u = Unit.getPlayerUnit(p);
 			if (u != null) { 
 //				if (u.id.equals("u_warrior")) def *= Unit.warrior_atk_dmg;
 //				else if (u != null && u.id.equals("u_archer")) def *= Unit.archer_atk_dmg;

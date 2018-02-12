@@ -36,11 +36,8 @@ import gpl.AttributeUtil;
 
 public class StructureBlockHitEvent implements Runnable {
 
-	/*
-	 * Called when a structure block is hit, this async task quickly determines
-	 * if the block hit should take damage during war.
-	 * 
-	 */
+	/* Called when a structure block is hit, this async task quickly determines
+	 * if the block hit should take damage during war. */
 	String playerName;
 	BlockCoord coord;
 	BuildableDamageBlock dmgBlock;
@@ -65,7 +62,6 @@ public class StructureBlockHitEvent implements Runnable {
 			return;
 		}
 		if (dmgBlock.allowDamageNow(player)) {
-			// Do our damage.
 			int damage = 1;
 			LoreMaterial material = LoreMaterial.getMaterial(player.getInventory().getItemInMainHand());
 			if (material != null) {
@@ -75,13 +71,12 @@ public class StructureBlockHitEvent implements Runnable {
 			if (player.getInventory().getItemInMainHand() != null && !player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
 				AttributeUtil attrs = new AttributeUtil(player.getInventory().getItemInMainHand());
 				for (LoreEnhancement enhance : attrs.getEnhancements()) {
-					damage = enhance.onStructureBlockBreak(dmgBlock, damage);
+					int addDamage = enhance.onStructureBlockBreak(dmgBlock, damage);
+					CivMessage.send(player, CivColor.LightGray+enhance.getDisplayName()+" "+enhance.getLevel(attrs)+" does "+(addDamage)+" extra damage!");
+					damage += addDamage;
 				}
 			}
 			
-			if (damage > 1) {
-				CivMessage.send(player, CivColor.LightGray+"Punchout does "+(damage-1)+" extra damage!");
-			}
 			WarStats.incrementPlayerDamageBuildings(player.getName(), damage);
 			dmgBlock.getOwner().onDamage(damage, world, player, dmgBlock.getCoord(), dmgBlock);
 		} else {

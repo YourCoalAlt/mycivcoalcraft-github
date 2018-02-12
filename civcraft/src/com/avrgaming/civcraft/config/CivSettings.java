@@ -114,6 +114,8 @@ public class CivSettings {
 	public static FileConfiguration structuredataConfig; /* structuredata.yml */
 	public static ArrayList<String> repairableItems = new ArrayList<String>();
 	public static Map<Integer, ConfigBankLevel> bankLevels = new HashMap<Integer, ConfigBankLevel>();
+	public static Map<Integer, ConfigLumberMillItem> lumbermillItems = new HashMap<Integer, ConfigLumberMillItem>();
+	public static ArrayList<ConfigLumberMill> lumbermillDrops = new ArrayList<ConfigLumberMill>();
 	public static Map<Integer, ConfigQuarryItem> quarryItems = new HashMap<Integer, ConfigQuarryItem>();
 	public static ArrayList<ConfigQuarry> quarryDrops = new ArrayList<ConfigQuarry>();
 	public static Map<String, ConfigTrommelItem> trommelItems = new HashMap<String, ConfigTrommelItem>();
@@ -505,6 +507,8 @@ public class CivSettings {
 		ConfigLabTask.loadConfig(structuredataConfig, labTasks);
 		ConfigLabLevel.loadConfig(structuredataConfig, labLevels);
 		ConfigBankLevel.loadConfig(structuredataConfig, bankLevels);
+		ConfigLumberMillItem.loadConfig(structuredataConfig, lumbermillItems);
+		ConfigLumberMill.loadConfig(structuredataConfig, lumbermillDrops);
 		ConfigQuarryItem.loadConfig(structuredataConfig, quarryItems);
 		ConfigQuarry.loadConfig(structuredataConfig, quarryDrops);
 		ConfigTrommelItem.loadConfig(structuredataConfig, trommelItems);
@@ -882,7 +886,7 @@ public class CivSettings {
 		}
 		return null;
 	}
-
+	
 	public static int getCottageMaxLevel() {
 		int returnLevel = 0;
 		for (Integer level : cottageLevels.keySet()) {
@@ -890,10 +894,9 @@ public class CivSettings {
 				returnLevel = level;
 			}
 		}
-		
 		return returnLevel;
 	}
-
+	
 	public static int getMineMaxLevel() {
 		int returnLevel = 0;
 		for (Integer level : mineLevels.keySet()) {
@@ -901,10 +904,9 @@ public class CivSettings {
 				returnLevel = level;
 			}
 		}
-		
 		return returnLevel;
 	}
-
+	
 	public static int getMaxCultureLevel() {
 		int returnLevel = 0;
 		for (Integer level : cultureLevels.keySet()) {
@@ -912,11 +914,9 @@ public class CivSettings {
 				returnLevel = level;
 			}
 		}
-		
 		return returnLevel;
 		
 	}
-
 	
 	public static ConfigCultureBiomeInfo getCultureBiome(String name) {
 		ConfigCultureBiomeInfo biomeInfo = cultureBiomes.get(name);

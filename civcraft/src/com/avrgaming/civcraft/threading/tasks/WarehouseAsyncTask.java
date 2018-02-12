@@ -8,10 +8,9 @@ import java.util.Random;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGovernment;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.structure.Quarry;
@@ -43,7 +42,12 @@ public class WarehouseAsyncTask extends CivAsyncTask {
 	public void processWarehouseUpdate() {
 //		boolean trommel = false;
 		
-		if (sources.size() < 1 || destinations.size() < 1) {
+		if (sources.size() <1) {
+			debug(warehouse, "No sources to transport, cancelling.");
+			return;
+		}
+		
+		if (destinations.size() < 1) {
 			CivLog.error("Bad dest chests for warehouse in town: "+warehouse.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; ");
 			return;
 		}
@@ -214,7 +218,7 @@ public class WarehouseAsyncTask extends CivAsyncTask {
 				int processing = processRate / 100;
 				int chance = processRate - (processing*100);
 				
-				for (int t = CivSettings.getInteger(CivSettings.gameConfig, "timers.struc_process"); t > 0; t--) {
+				for (int t = CivCraft.structure_process; t > 0; t--) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
@@ -243,8 +247,6 @@ public class WarehouseAsyncTask extends CivAsyncTask {
 						}
 					}
 				}
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
 			} finally {
 				this.warehouse.lock.unlock();
 			}

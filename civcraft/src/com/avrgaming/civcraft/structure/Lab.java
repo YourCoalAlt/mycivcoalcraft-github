@@ -205,13 +205,8 @@ public class Lab extends Structure {
 	}
 	
 	public double getBonusBeakers() {
-		if (!this.isComplete()) {
-			return 0.0;
-		}
-		
-		if (getConsumeComponent().getLevel() <= 0) {
-			return 0.0;
-		}
+		if (!this.isComplete()) return 0.0;
+		if (getConsumeComponent().getLevel() <= 0) return 0.0;
 		
 		ConfigLabLevel lvl = CivSettings.labLevels.get(getLevel());
 		int total_production = (int) (lvl.beakers*this.getTown().getLabRate().total);
@@ -219,8 +214,10 @@ public class Lab extends Structure {
 //			total_production *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
 //		}
 		
-		double buff = 1.0 + this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
+		double buff = 1.0;
+		buff += this.getTown().getBuffManager().getEffectiveDouble(Buff.ADVANCED_TOOLING);
 		total_production *= buff;
+		
 		if (this.getCiv().hasTechnology("tech_resource_efficiency")) {
 			double tech_bonus;
 			try {

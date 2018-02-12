@@ -2,84 +2,82 @@ general_levels:
     - level: 0
       amount: 0
     - level: 1
-      amount: 10
+      amount: 20
     - level: 2
-      amount: 25
+      amount: 45
     - level: 3
-      amount: 75
+      amount: 100
     - level: 4
-      amount: 150
+      amount: 225
     - level: 5
-      amount: 250
-    - level: 6
       amount: 450
+    - level: 6
+      amount: 875
     - level: 7
-      amount: 775
+      amount: 1250
     - level: 8
-      amount: 1225
-    - level: 9
       amount: 1800
-    - level: 10
+    - level: 9
       amount: 2450
-    - level: 11
+    - level: 10
       amount: 3175
-    - level: 12
+    - level: 11
       amount: 3975
-    - level: 13
+    - level: 12
       amount: 4875
-    - level: 14
+    - level: 13
       amount: 5900
-    - level: 15
+    - level: 14
       amount: 7050
-    - level: 16
+    - level: 15
       amount: 8325
-    - level: 17
+    - level: 16
       amount: 9775
-    - level: 18
+    - level: 17
       amount: 11400
-    - level: 19
+    - level: 18
       amount: 13300
-    - level: 20
+    - level: 19
       amount: 15475
-    - level: 21
+    - level: 20
       amount: 18075
-    - level: 22
+    - level: 21
       amount: 21100
-    - level: 23
+    - level: 22
       amount: 24550
-    - level: 24
+    - level: 23
       amount: 28425
-    - level: 25
+    - level: 24
       amount: 32725
-    - level: 26
+    - level: 25
       amount: 37700
-    - level: 27
+    - level: 26
       amount: 43400
-    - level: 28
+    - level: 27
       amount: 50200
-    - level: 29
+    - level: 28
       amount: 58100
-    - level: 30
+    - level: 29
       amount: 67100
-    - level: 31
+    - level: 30
       amount: 78100
-    - level: 32
+    - level: 31
       amount: 93100
-    - level: 33
+    - level: 32
       amount: 113100
-    - level: 34
+    - level: 33
       amount: 139100
-    - level: 35
+    - level: 34
       amount: 172100
-    - level: 36
+    - level: 35
       amount: 213100
-    - level: 37
+    - level: 36
       amount: 266100
-    - level: 38
+    - level: 37
       amount: 355100
-    - level: 39
+    - level: 38
       amount: 418100
-    - level: 40
+    - level: 39
       amount: 517100
 # If we continue, this is the last eqation used @ level 40 (517100):
 # //calc 1800+650+725+800+900+1025+1150+1275+1450+1625+1900+2175+2600+3025+3450+3875+4300+4975+5700+6800+7900+9000+11000+15000+20000+26000+33000+41000+53000+69000+83000+99000

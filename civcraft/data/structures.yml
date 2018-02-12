@@ -553,13 +553,34 @@ structures:
           biomes: 'OCEAN,TAGIA,DESERT'
           attribute: 'BEAKERS'
           value: '0.05'
+#
+  - id: s_lumbermill
+    itemId: 390
+    itemData: 0
+    position: 25
+    template: lumbermill
+    template_y_shift: 0
+    displayName: Lumber Mill
+    require_tech: 'tech_deforestation'
+    update_event: lumbermill_process
+    limit: 1
+    cost: 10000.0
+    upkeep: 375.0
+    hammer_cost: 500
+    points: 35
+    max_hitpoints: 250
+    components:
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'CULTURE'
+          value: '2.5'
 # Row 4
   - id: ti_farm
     itemId: 290
     itemData: 0
     position: 27
     template: farm
-    template_y_shift: -1
+    template_y_shift: -2
     displayName: Farm
     require_tech: 'tech_irrigation'
     onBuild_event: build_farm

@@ -175,8 +175,9 @@ public class Town extends SQLObject {
 	public int saved_quarry_level = 1;
 	public int saved_trommel_level = 1;
 	public int saved_warehouse_level = 1;
+	public int saved_lumber_mill_level = 1;
 	
-	public int saved_granary_level = 1;
+	public int saved_structures_default_level = 1;
 	
 	public int saved_bank_level = 1;
 	public double saved_bank_interest_amount = 0.0;
@@ -292,8 +293,8 @@ public class Town extends SQLObject {
 		assistantGroupName = "assistants";
 
 		this.setTreasury(new EconObject(this));
-		this.getTreasury().setBalance(rs.getInt("coins"), false);
-		this.setDebt(rs.getInt("debt"));
+		this.getTreasury().setBalance(rs.getDouble("coins"), false);
+		this.setDebt(rs.getDouble("debt"));
 		
 		String outlawRaw = rs.getString("outlaws");
 		if (outlawRaw != null) {
@@ -641,8 +642,12 @@ public class Town extends SQLObject {
 		this.extraHammers = extraHammers;
 	}
 	
-	public void setHammerRate(double hammerRate) {
-		this.extraHammerRate = hammerRate;
+	public void setHammerRate(double rate) {
+		this.extraHammerRate = rate;
+	}
+	
+	public void setBeakerRate(double rate) {
+		this.extraBeakerRate = rate;
 	}
 	
 	public static Town newTown(Resident resident, String name, Civilization civ, boolean free, boolean capitol, 
@@ -2996,7 +3001,7 @@ public class Town extends SQLObject {
 			for (Component comp : struct.attachedComponents) {
 				if (comp instanceof AttributeBase) {
 					AttributeBase as = (AttributeBase)comp;
-					if (as.getString("attribute").equalsIgnoreCase("HAMMERS")) {
+					if (as.getString("attribute").equalsIgnoreCase("BEAKERS")) {
 						structures += as.getGenerated();
 					}
 				}
@@ -3116,7 +3121,7 @@ public class Town extends SQLObject {
 			}
 		} else {
 			rate /= 5;
-			rates.put("Global Rate", this.extraHammerRate);
+			rates.put("Global Rate", this.extraBeakerRate);
 			rate *= this.extraBeakerRate;
 		}
 		return new AttrSource(rates, rate, null);

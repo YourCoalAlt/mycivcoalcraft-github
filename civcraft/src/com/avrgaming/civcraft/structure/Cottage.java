@@ -35,6 +35,7 @@ import com.avrgaming.civcraft.components.ConsumeLevelComponent.Result;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCottageLevel;
 import com.avrgaming.civcraft.config.ConfigGranaryFood;
+import com.avrgaming.civcraft.config.ConfigGranaryLevel;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
@@ -134,66 +135,32 @@ public class Cottage extends Structure {
 	}
 	
 	public void generateCoins(CivAsyncTask task) {
-		Granary granary = null;
-		if (!this.isActive()) {
-			return;
-		}
+		Granary granary = (Granary) this.getTown().getStructureByType("s_granary");
+		if (granary == null) return;
+		if (!this.isActive()) return;
 		
-		/* Build a multi-inv from granaries. */
+		// Build a multi-inv from granaries.
 		MultiInventory multiInv = new MultiInventory();
+		int types = CivSettings.granaryFood.keySet().size();
+		ConfigGranaryLevel cgl = CivSettings.granaryLevels.get(this.getTown().saved_structures_default_level);
 		
-		for (Structure struct : this.getTown().getStructures()) {
-			if (struct instanceof Granary) {
-				granary = (Granary) struct;
-				Inventory inv = Bukkit.createInventory(null, 9*999, granary.getTown().getName()+" temp granary");
-//				Map<Integer, Integer> stored = new HashMap<Integer, Integer>();
-				for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
-					Material m = ItemManager.getMaterial(f.food);
-					String key = granary.getStorageKey(granary, m.toString().toLowerCase());
-					ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
-					if (entry != null && !entry.isEmpty()) {
-						SessionEntry se = entry.get(0);
-						String fName = se.key.replace(granary.getConfigId()+"_"+granary.getCorner().toString()+"_", "");
-						Material mat = ItemManager.getMaterial(fName.toUpperCase());
-//						int fType = ItemManager.getId(mat);
-						ItemStack is = new ItemStack(mat, Integer.valueOf(se.value));
-						inv.addItem(is);
-//						stored.put(fType, Integer.valueOf(se.value));
-					}
-				}
-				multiInv.addInventory(inv);
+		Inventory inv = Bukkit.createInventory(null, 9*(((int) types*(cgl.max_storage/9))+(9*types)), granary.getTown().getName()+" temp granary");
+		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
+			Material m = ItemManager.getMaterial(f.food);
+			String key = granary.getStorageKey(granary, m.toString().toLowerCase());
+			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
+			if (entry != null && !entry.isEmpty()) {
+				SessionEntry se = entry.get(0);
+				String fName = se.key.replace(granary.getConfigId()+"_"+granary.getCorner().toString()+"_", "");
+				Material mat = ItemManager.getMaterial(fName.toUpperCase());
+				ItemStack is = new ItemStack(mat, Integer.valueOf(se.value));
+				inv.addItem(is);
 			}
 		}
+		multiInv.addInventory(inv);
 		
-		
-		
-/*		for (Structure struct : this.getTown().getStructures()) {
-			if (struct instanceof Granary) {
-				ArrayList<StructureChest> chests = struct.getAllChestsById(1);
-				
-				// Make sure the chunk is loaded and add it to the inventory.
-				try {
-					for (StructureChest c : chests) {
-						task.syncLoadChunk(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getZ());
-						Inventory tmp;
-						try {
-							tmp = task.getChestInventory(c.getCoord().getWorldname(), c.getCoord().getX(), c.getCoord().getY(), c.getCoord().getZ(), true);
-							multiInv.addInventory(tmp);
-						} catch (CivTaskAbortException e) {
-							e.printStackTrace();
-						}
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}*/
 		
 		getConsumeComponent().setSource(multiInv);
-//		for (ItemStack is : multiInv.getContents()) {
-//			CivMessage.global(is.getType()+" "+is.getAmount());
-//		}
-		
 		double cottage_consume_mod = 1.0; //allows buildings and govs to change the totals for cottage consumption.
 
 		if (this.getTown().getBuffManager().hasBuff(Buff.REDUCE_CONSUME)) {
@@ -215,80 +182,20 @@ public class Cottage extends Structure {
 		getConsumeComponent().clearEquivExchanges();
 		
 		
-		
-/*		ConfigCottageLevel level = CivSettings.cottageLevels.get(getConsumeComponent().getLevel());
-		
-		Granary granary = null;
-		boolean nullGranary = true;
-		boolean hasRequiredFood = false;
-		for (Structure s : getTown().getStructures()) {
-			if (s instanceof Granary) {
-				granary = (Granary) s;
-				nullGranary = false;
-			}
-		}
-		
-		Map<Integer, Integer> required = new HashMap<Integer, Integer>();
-		for (Integer i : level.consumes.keySet()) {
-			required.put(i, level.consumes.get(i));
-		}
-		
-		Map<Integer, Integer> stored = new HashMap<Integer, Integer>();
-		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
-			Material m = ItemManager.getMaterial(f.food);
-			String key = granary.getStorageKey(granary, m.toString().toLowerCase());
-			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
-			if (entry != null && !entry.isEmpty()) {
-				SessionEntry se = entry.get(0);
-				String fName = se.key.replace(granary.getConfigId()+"_"+granary.getCorner().toString()+"_", "");
-				Material mat = ItemManager.getMaterial(fName.toUpperCase());
-				int fType = ItemManager.getId(mat);
-				stored.put(fType, Integer.valueOf(se.value));
-			}
-		}
-		
-		for (Integer r : required.keySet()) {
-			for (Integer s : stored.keySet()) {
-				if (r.intValue() == s.intValue()) {
-					CivMessage.global(CivColor.RedBold+"====");
-					if (stored.get(s) >= required.get(r)) {
-						hasRequiredFood = true;
-						CivMessage.sendTown(getTown(), r+" =t= "+s);
-						CivMessage.sendTown(getTown(), stored.get(s)+" >= "+required.get(r));
-					}
-				} else {
-					CivMessage.sendTown(getTown(), r+"  t  "+s);
-					CivMessage.sendTown(getTown(), stored.get(s)+" < "+required.get(r));
-				}
-			}
-		}
-		
-		if (nullGranary) {
-			CivMessage.sendTown(getTown(), "No granary found in the town!");
-			return;
-		}
-		
-		if (!hasRequiredFood) {
-			CivMessage.sendTown(getTown(), "Not enough food in granary!");
-			return;
-		}*/
-		
-		
-		
-		/* Bail early for results that do not generate coins. */
+		// Bail early for results that do not generate coins.
 		switch (result) {
 		case STARVE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" cottage "+CivColor.Rose+"starved"+
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" Cottage "+CivColor.Rose+"starved"+
 					getConsumeComponent().getCountString()+CivColor.LightGreen+" and generated no coins.");
 			return;
 		case LEVELDOWN:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+(getConsumeComponent().getLevel()+1)+" cottage "+CivColor.Red+"leveled-down"+CivColor.LightGreen+" and generated no coins.");
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+(getConsumeComponent().getLevel()+1)+" Cottage "+CivColor.Red+"leveled-down"+CivColor.LightGreen+" and generated no coins.");
 			return;
 		case STAGNATE:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" cottage "+CivColor.Yellow+"stagnated"+getConsumeComponent().getCountString()+CivColor.LightGreen+" and generated no coins.");
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" Cottage "+CivColor.Yellow+"stagnated"+getConsumeComponent().getCountString()+CivColor.LightGreen+" and generated no coins.");
 			return;
 		case UNKNOWN:
-			CivMessage.sendTown(getTown(), CivColor.LightGreen+CivColor.LightGreen+"Something "+CivColor.Purple+"unknown"+CivColor.LightGreen+" happened to a cottage. It generates no coins.");
+			CivMessage.sendTown(getTown(), CivColor.LightGreen+CivColor.LightGreen+"Something "+CivColor.Purple+"unknown"+CivColor.LightGreen+" happened to a Cottage. It generates no coins.");
 			return;
 		default:
 			break;
@@ -307,6 +214,24 @@ public class Cottage extends Structure {
 			lvl = CivSettings.cottageLevels.get(getConsumeComponent().getLevel());
 		}
 		
+		double total_coins = Math.round(lvl.coins*this.getTown().getCottageRate());
+		if (this.getTown().getBuffManager().hasBuff("buff_pyramid_cottage_bonus")) {
+			total_coins *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
+		}
+		
+		if (this.getCiv().hasTechnology("tech_taxation")) {
+			double taxation_bonus;
+			try {
+				taxation_bonus = CivSettings.getDouble(CivSettings.techsConfig, "taxation_cottage_buff");
+				total_coins *= taxation_bonus;
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+			}
+		}
+		
+		double taxesPaid = total_coins*this.getTown().getDepositCiv().getIncomeTaxRate();
+		this.getTown().getTreasury().deposit(total_coins - taxesPaid);
+		this.getTown().getDepositCiv().taxPayment(this.getTown(), taxesPaid);
 		
 		if (result == Result.LEVELUP || result == Result.GROW || result == Result.MAXED) {
 			Map<Integer, Integer> required = new HashMap<Integer, Integer>();
@@ -344,50 +269,27 @@ public class Cottage extends Structure {
 			}
 		}
 		
-		
-		double total_coins = Math.round(lvl.coins*this.getTown().getCottageRate());
-		if (this.getTown().getBuffManager().hasBuff("buff_pyramid_cottage_bonus")) {
-			total_coins *= this.getTown().getBuffManager().getEffectiveDouble("buff_pyramid_cottage_bonus");
-		}
-		
-		if (this.getCiv().hasTechnology("tech_taxation")) {
-			double taxation_bonus;
-			try {
-				taxation_bonus = CivSettings.getDouble(CivSettings.techsConfig, "taxation_cottage_buff");
-				total_coins *= taxation_bonus;
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-			}
-		}
-		
-	//	this.getTown().depositTaxed(total_coins);
-	//	attrComp.setValue(total_coins);
-		double taxesPaid = total_coins*this.getTown().getDepositCiv().getIncomeTaxRate();
-
 		String stateMessage = "";
 		switch (result) {
 		case GROW:
-			stateMessage = CivColor.Green+"grew"+getConsumeComponent().getCountString()+CivColor.LightGreen;
+			stateMessage = CivColor.Green+"grew "+getConsumeComponent().getCountString();
 			break;
 		case LEVELUP:
-			stateMessage = CivColor.Green+"leveled up"+CivColor.LightGreen;
+			stateMessage = CivColor.Green+"leveled up ";
 			break;
 		case MAXED:
-			stateMessage = CivColor.Green+"is maxed"+getConsumeComponent().getCountString()+CivColor.LightGreen;
+			stateMessage = CivColor.Green+"is maxed "+getConsumeComponent().getCountString();
 			break;
 		default:
 			break;
 		}
 		
 		if (taxesPaid > 0) {
-			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" cottage "+stateMessage+" and generated "+total_coins+" coins!"+
+			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+stateMessage+CivColor.LightGreen+". +"+total_coins+" Coins"+
 					CivColor.Yellow+" (Paid "+taxesPaid+" in taxes to "+this.getTown().getDepositCiv().getName()+")");
 		} else {
-			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" cottage "+stateMessage+" and generated "+total_coins+" coins!");
+			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" Cottage "+stateMessage+CivColor.LightGreen+". +"+total_coins+" Coins");
 		}
-		
-		this.getTown().getTreasury().deposit(total_coins - taxesPaid);
-		this.getTown().getDepositCiv().taxPayment(this.getTown(), taxesPaid);
 	}
 	
 	public int getLevel() {

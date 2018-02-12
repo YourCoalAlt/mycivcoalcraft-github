@@ -25,10 +25,9 @@ public class LoreEnhancementPunchout extends LoreEnhancement {
 	@Override
 	public int onStructureBlockBreak(BuildableDamageBlock sb, int damage) {
 		Random rand = new Random();
-		
 		if (damage <= 1) {
-			if (rand.nextInt(100) <= 50) {
-				damage += rand.nextInt(5)+1;
+			if (rand.nextInt(100) < 50) {
+				damage += rand.nextInt(3)+1;
 			}		
 		}
 		

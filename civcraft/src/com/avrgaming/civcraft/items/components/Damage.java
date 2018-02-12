@@ -61,9 +61,7 @@ public class Damage extends ItemComponent {
 	public void onAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
 		double dmg = this.getDouble("value");
 //		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-//		if (craftMat == null) {
-//			return;
-//		}
+//		if (craftMat == null) return;
 		
 		double extraAtt = 0.0;
 		AttributeUtil attrs = new AttributeUtil(inHand);
@@ -90,20 +88,19 @@ public class Damage extends ItemComponent {
 		if (event.getDamager() instanceof Player) {
 			Player p = (Player) event.getDamager();
 			for (PotionEffect effect : p.getActivePotionEffects()) {
-				if (effect.getType().toString().contains(PotionEffectType.WEAKNESS.toString())) {
+				if (effect.getType().equals(PotionEffectType.WEAKNESS)) {
 					int weaknessDmg = 2+(2*effect.getAmplifier());
 					dmg -= weaknessDmg;
 				}
 				
-				if (effect.getType().toString().contains(PotionEffectType.INCREASE_DAMAGE.toString())) {
+				if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
 					int strengthDmg = 2+(2*effect.getAmplifier());
 					dmg += strengthDmg;
 				}
 			}
 			
-			ConfigUnit u = Unit.getPlayerUnit(p);
-			
 			double unitperk = 1.0;
+			ConfigUnit u = Unit.getPlayerUnit(p);
 			if (u != null) { 
 				if (u.id.equals("u_warrior")) dmg *= Unit.warrior_atk_dmg;
 				else if (u != null && u.id.equals("u_archer")) dmg *= Unit.archer_atk_dmg;

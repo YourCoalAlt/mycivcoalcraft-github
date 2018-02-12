@@ -136,7 +136,7 @@ public class Bank extends Structure {
 					+CivColor.ITALIC+"(With this buff, our interest rate went from "+interestRate+"% to "+effectiveInterestRate+"%.)");
 		}
 		
-		int newCoins = (int)(principal*effectiveInterestRate);
+		double newCoins = principal*effectiveInterestRate;
 		if (newCoins != 0) {
 			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Our town earned "+newCoins+" coins from an interest rate of "
 					+effectiveInterestRate+"% and on a principal of "+principal+" coins.");

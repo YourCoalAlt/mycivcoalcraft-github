@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.backpack.Backpack;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
@@ -21,6 +22,19 @@ public class BackpackCommand implements CommandExecutor {
 		}
 		
 		Player p = (Player)sender;
+		
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("v") || args[0].equalsIgnoreCase("view")) {
+				CivMessage.sendSuccess(p, "Opened your backpack GUI.");
+				Backpack.spawnGuiBook(p, true);
+				return true;
+			} else {
+				CivMessage.sendError(p, "Invalid parameter '"+args[0]+"'");
+				return false;
+			}
+			
+		}
+		
 		for (ItemStack stack : p.getInventory().getContents()) {
 			if (stack == null) {
 				continue;
@@ -48,7 +62,7 @@ public class BackpackCommand implements CommandExecutor {
 				for (int i = 0; i < p.getInventory().getContents().length; i++) {
 					if (p.getInventory().getContents()[i] == null && i < 36) {
 						newSlot = i;
-						continue;
+						break;
 					}
 				}
 			}
