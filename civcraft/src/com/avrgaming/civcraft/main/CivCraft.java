@@ -171,9 +171,8 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.asyncTimer("UpdateEventTimer", new UpdateEventTimer(), TimeTools.toTicks(1));
 		
 		try {
-			int structure_process_time = CivSettings.getInteger(CivSettings.gameConfig, "timers.structure_process");
-			TaskMaster.asyncTimer("StructureProcessTimer", new StructureProcessTimer(), TimeTools.toTicks(structure_process_time));
-			structure_process = structure_process_time;
+			structure_process = CivSettings.getInteger(CivSettings.gameConfig, "timers.structure_process");
+			TaskMaster.asyncTimer("StructureProcessTimer", new StructureProcessTimer(), TimeTools.toTicks(structure_process));
 			
 			int exposure_time = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
 			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));
