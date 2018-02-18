@@ -45,7 +45,8 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		this.quarry = (Quarry)quarry;
 	}
 	
-	public void processQuarryUpdate() {
+	public void processQuarryUpdate(int update_ticks) {
+		debug(quarry, "(Skipped Counter: "+quarry.skippedCounter+")");
 		// Grab each CivChest object we'll require.
 		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
 		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
@@ -67,6 +68,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		}
 		
 		if (sources.size() < 1 || destinations.size() < 1) {
+			quarry.skippedCounter += update_ticks;
 			CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; trommel: "+trommel);
 			return;
 		}
@@ -82,11 +84,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				try {
 					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
+					quarry.skippedCounter += update_ticks;
 					CivLog.warning("Quarry: "+e.getMessage());
 					return;
 				}
 				if (tmp == null) {
-					quarry.skippedCounter++;
+					quarry.skippedCounter += update_ticks;
 					return;
 				}
 				
@@ -117,11 +120,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						try {
 							tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 						} catch (CivTaskAbortException e) {
+							quarry.skippedCounter += update_ticks;
 							CivLog.warning("Quarry: "+e.getMessage());
 							return;
 						}
 						if (tmp == null) {
-							quarry.skippedCounter++;
+							quarry.skippedCounter += update_ticks;
 							return;
 						}
 						
@@ -141,11 +145,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					try {
 						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 					} catch (CivTaskAbortException e) {
+						quarry.skippedCounter += update_ticks;
 						CivLog.warning("Quarry: "+e.getMessage());
 						return;
 					}
 					if (tmp == null) {
-						quarry.skippedCounter++;
+						quarry.skippedCounter += update_ticks;
 						return;
 					}
 					
@@ -159,6 +164,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			
 			// destination chest is full, stop processing.
 			if (full) {
+				quarry.skippedCounter += update_ticks;
 				debug(quarry, "Outputs full, cancelling.");
 				return;
 			}
@@ -166,8 +172,9 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		debug(quarry, "Processing quarry:"+quarry.skippedCounter+1);
-		for (int i = 0; i < quarry.skippedCounter+1; i++) {
+		int process_ticks = quarry.skippedCounter + update_ticks;
+		debug(quarry, "Processing quarry :"+process_ticks);
+		for (int i = 0; i < process_ticks; i++) {
 			for (Inventory inv : source_inv.getInventories()) {
 				int index = -1;
 				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
@@ -206,8 +213,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							}
 						}
 						
+						int new_skips = process_ticks;
 						try { //Try to add the new item to the dest chest, if we cant, oh well.
 							for (ItemStack ni : newItem) {
+								if (quarry.skippedCounter > 0) {
+									quarry.skippedCounter--;
+								}
 								debug(quarry, "Updating inventory: "+ni);
 								if (dest_inv_other != null) {
 									if (trommel) {
@@ -215,17 +226,22 @@ public class QuarryAsyncTask extends CivAsyncTask {
 										// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
 										if (cti != null && quarry.getTown().saved_trommel_level >= cti.level) {
 											this.updateInventory(Action.ADD, dest_inv_other, ni);
+											new_skips--;
 										} else {
 											this.updateInventory(Action.ADD, dest_inv, ni);
+											new_skips--;
 										}
 									} else {
 										this.updateInventory(Action.ADD, dest_inv, ni);
+										new_skips--;
 									}
 								} else {
 									this.updateInventory(Action.ADD, dest_inv, ni);
+									new_skips--;
 								}
 							}
 						} catch (InterruptedException e) {
+							quarry.skippedCounter += new_skips;
 							CivLog.warning("Quarry:"+e.getMessage());
 							return;
 						}
@@ -234,7 +250,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 			}
 		}
-		quarry.skippedCounter = 0;
+//		quarry.skippedCounter = 0;
 	}
 	
 	private ItemStack getReturnDrop() {
@@ -273,6 +289,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
+		int update_ticks = 0;
 		if (this.quarry.lock.tryLock()) {
 			try {
 				Random rand = new Random();
@@ -281,39 +298,53 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				int processing = processRate / 100;
 				int chance = processRate - (processing*100);
 				
+				int processes = 0;
+				int bonuses = 0;
+				int skips = 0;
+				int bonusesskips = 0;
 				for (int t = 0; t < CivCraft.structure_process; t++) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
 							if (types >= chance) {
-								debug(quarry, "Skipped; Govt. "+gov.displayName+"; Greater Penalty at "+types+" > "+processRate);
+								skips++;
+//								debug(quarry, "Skipped; Govt. "+gov.displayName+"; Greater Penalty at "+types+" > "+processRate);
 							} else {
-								processQuarryUpdate();
-								debug(quarry, "Processed; Govt. "+gov.displayName+"; Lesser Success at "+processRate);
+								processes++;
+								update_ticks++;
+//								debug(quarry, "Processed; Govt. "+gov.displayName+"; Lesser Success at "+processRate);
 							}
 						} else {
-							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0");
+							skips++;
+							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0, was sent "+processing);
 						}
 					} else {
 						for (int i = 0; i < processing; i++) {
-							processQuarryUpdate();
-							debug(quarry, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
+							processes++;
+							update_ticks++;
+//							debug(quarry, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
 							if (chance > 0) {
 								int types = rand.nextInt(100);
 								if (types >= chance) {
-									debug(quarry, "Skipped; Govt. "+gov.displayName+"; Lesser Penalty at "+types+" > "+processRate);
+									skips++;
+//									debug(quarry, "Skipped; Govt. "+gov.displayName+"; Lesser Penalty at "+types+" > "+processRate);
 								} else {
-									processQuarryUpdate();
-									debug(quarry, "Bonus Process; Govt. "+gov.displayName+"; Bonus at "+types+" <= "+processRate);
+									bonusesskips++;
+									update_ticks++;
+//									debug(quarry, "Bonus Process; Govt. "+gov.displayName+"; Bonus at "+types+" <= "+processRate);
 								}
 							}
 						}
 					}
 				}
+				// Added this dbg msg to cut down on spam in console... keeping other dbg msgs in case we need them.
+				debug(quarry, "Govt. "+gov.displayName+" at "+processRate+"%; Processes:"+processes+", Bonuses:"+bonuses+", Skips:"+skips+", Bonuses Skips:"+bonusesskips);
+				processQuarryUpdate(update_ticks);
 			} finally {
 				this.quarry.lock.unlock();
 			}
 		} else {
+			quarry.skippedCounter += update_ticks;
 			debug(this.quarry, "Failed to get lock while trying to start task, aborting.");
 		}
 	}

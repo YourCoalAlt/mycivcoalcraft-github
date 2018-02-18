@@ -10,14 +10,14 @@ governments:
     require_tech:
     hammer_rate: 3.0
     beaker_rate: 3.0
-    growth_rate: 5.5
-    culture_rate: 2.5
-    trade_rate: 3.5
+    growth_rate: 6.0
+    culture_rate: 3.0
+    trade_rate: 4.5
     housing_rate: 3.0
-    upkeep_rate: 0.25
+    upkeep_rate: 0.2
     maximum_tax_rate: 1.0
-    trommel_process_rate: 3.0
-    quarry_process_rate: 3.0
+    trommel_process_rate: 5.0
+    quarry_process_rate: 5.0
     power_type: mayor_all_power
 #
   - id: gov_anarchy
