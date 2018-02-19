@@ -23,7 +23,6 @@ import java.util.LinkedList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -60,8 +59,6 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.avrgaming.civcraft.cache.ArrowFiredCache;
-import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigRemovedRecipes;
 import com.avrgaming.civcraft.exception.CivException;
@@ -76,10 +73,8 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.threading.TaskMaster;
-import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 
 import gpl.AttributeUtil;
@@ -357,7 +352,6 @@ public class CustomItemManager implements Listener {
 		
 		if (event.getDamager() instanceof Arrow) {
 			LivingEntity shooter = (LivingEntity) ((Arrow)event.getDamager()).getShooter();
-			
 			if (shooter instanceof Player) {
 				ItemStack inHand = ((Player)shooter).getInventory().getItemInMainHand();
 				if (LoreMaterial.isCustom(inHand)) {
@@ -366,28 +360,6 @@ public class CustomItemManager implements Listener {
 				}
 			} else if (shooter instanceof Skeleton) {
 				return;
-			} else {
-				ArrowFiredCache afc = CivCache.arrowsFired.get(event.getDamager().getUniqueId());
-				if (afc != null) { //Arrow came from tower
-					afc.setHit(true);
-					afc.destroy(event.getDamager());
-					CivMessage.sendTownSound(afc.getFromTower().getTown(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 1.8f);
-					CivMessage.sendTown(afc.getFromTower().getTown(), "An Arrow Tower at "+afc.getFromTower().getTurretCenter().getX()+", "+
-								afc.getFromTower().getTurretCenter().getY()+", "+afc.getFromTower().getTurretCenter().getZ()+" has hit a target!");
-					
-					Resident defenderResident = CivGlobal.getResident(defendingPlayer);
-					if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == afc.getFromTower().getTown().getCiv()) {
-						// friendly fire from arrow towers reduced
-						event.setDamage((afc.getFromTower().getDamage()/4));
-						CivMessage.send(defenderResident, CivColor.LightGrayItalic+"Because you were just hit in friendly-fire by an arrow tower, damage was reduced bt 75%.");
-//						event.setCancelled(true);
-						return;
-					}
-					
-					/* Return after arrow tower does damage, do not apply armor defense. */
-					event.setDamage(afc.getFromTower().getDamage());
-					return;
-				}
 			}
 		} else if (event.getDamager() instanceof Player) {
 			ItemStack inHand = ((Player)event.getDamager()).getInventory().getItemInMainHand();

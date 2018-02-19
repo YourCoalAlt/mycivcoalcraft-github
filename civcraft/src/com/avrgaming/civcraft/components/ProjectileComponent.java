@@ -255,5 +255,4 @@ public abstract class ProjectileComponent extends Component {
 	public void setTurretCenter(Location turretCenter) {
 		this.turretCenter = turretCenter;
 	}
-	
 }

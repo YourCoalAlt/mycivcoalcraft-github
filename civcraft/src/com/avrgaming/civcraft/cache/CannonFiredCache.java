@@ -25,18 +25,18 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 
-import com.avrgaming.civcraft.structure.CannonTower;
+import com.avrgaming.civcraft.components.ProjectileCannonComponent;
 
 public class CannonFiredCache {
 	
-	private CannonTower fromTower;
+	private ProjectileCannonComponent fromTower;
 	private Location target;
 	private Fireball fireball;
 	private UUID uuid;
 	private Calendar expired;
 	private boolean hit = false;
 	
-	public CannonFiredCache(CannonTower fromTower, Location target, Fireball fireball) {
+	public CannonFiredCache(ProjectileCannonComponent fromTower, Location target, Fireball fireball) {
 		this.setFromTower(fromTower);
 		this.target = target;
 		this.fireball = fireball;
@@ -45,11 +45,11 @@ public class CannonFiredCache {
 		expired.set(Calendar.SECOND, 30);
 	}
 	
-	public CannonTower getFromTower() {
+	public ProjectileCannonComponent getFromTower() {
 		return fromTower;
 	}
 	
-	public void setFromTower(CannonTower fromTower) {
+	public void setFromTower(ProjectileCannonComponent fromTower) {
 		this.fromTower = fromTower;
 	}
 	

@@ -29,6 +29,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
@@ -302,15 +303,45 @@ public class BlockListener implements Listener {
 			return;
 		}
 
-//		if (event.getDamager() instanceof Arrow) {
-//		}
+		if (event.getDamager() instanceof Arrow) {
+			ArrowFiredCache afc = CivCache.arrowsFired.get(event.getDamager().getUniqueId());
+			if (afc != null) {
+				afc.setHit(true);
+				afc.destroy(event.getDamager());
+				CivMessage.sendTownSound(afc.getFromTower().getTown(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 1.8f);
+				CivMessage.sendTown(afc.getFromTower().getTown(), "An Arrow Tower at "+afc.getFromTower().getTurretCenter().getX()+", "+
+							afc.getFromTower().getTurretCenter().getY()+", "+afc.getFromTower().getTurretCenter().getZ()+" has hit a target!");
+				
+				Resident defenderResident = CivGlobal.getResident(defender);
+				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == afc.getFromTower().getTown().getCiv()) {
+					// friendly fire from arrow towers reduced
+					event.setDamage(afc.getFromTower().getDamage()/4);
+					CivMessage.send(defenderResident, CivColor.LightGrayItalic+"Because you were hit in friendly-fire by an Arrow Tower, damage was reduced by 75%.");
+				} else {
+					event.setDamage(afc.getFromTower().getDamage());
+				}
+				return;
+			}
+		}
 
 		if (event.getDamager() instanceof Fireball) {
 			CannonFiredCache cfc = CivCache.cannonBallsFired.get(event.getDamager().getUniqueId());
 			if (cfc != null) {
 				cfc.setHit(true);
 				cfc.destroy(event.getDamager());
-				event.setDamage((double)cfc.getFromTower().getDamage());
+				CivMessage.sendTownSound(cfc.getFromTower().getTown(), Sound.ENTITY_WITHER_AMBIENT, 1.0f, 1.35f);
+				CivMessage.sendTown(cfc.getFromTower().getTown(), "Cannon Tower at "+cfc.getFromTower().getTurretCenter().getX()+", "+
+							cfc.getFromTower().getTurretCenter().getY()+", "+cfc.getFromTower().getTurretCenter().getZ()+" has fired!");
+				
+				Resident defenderResident = CivGlobal.getResident(defender);
+				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == cfc.getFromTower().getTown().getCiv()) {
+					// friendly fire from arrow towers reduced
+					event.setDamage(cfc.getFromTower().getDamage()/4);
+					CivMessage.send(defenderResident, CivColor.LightGrayItalic+"Because you were hit in friendly-fire by a Cannon Tower, damage was reduced by 75%.");
+				} else {
+					event.setDamage(cfc.getFromTower().getDamage());
+				}
+				return;
 			}
 		}
 

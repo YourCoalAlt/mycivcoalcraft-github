@@ -21,14 +21,13 @@ package com.avrgaming.civcraft.components;
 import java.util.Random;
 
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
 import com.avrgaming.civcraft.cache.CannonExplosionProjectile;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
-import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -119,8 +118,9 @@ public class ProjectileCannonComponent extends ProjectileComponent {
 			TaskMaster.syncTask(task, rand.nextInt(7));
 		}
 		
-		CivMessage.sendTownSound(buildable.getTown(), Sound.ENTITY_WITHER_AMBIENT, 1.0f, 1.35f);
-		CivMessage.sendTown(buildable.getTown(), "Cannon Tower at "+turretLoc.getX()+", "+turretLoc.getY()+", "+turretLoc.getZ()+" has fired!");
+		// TODO make town toggle
+//		CivMessage.sendTownSound(buildable.getTown(), Sound.ENTITY_WITHER_AMBIENT, 1.0f, 1.35f);
+//		CivMessage.sendTown(buildable.getTown(), "Cannon Tower at "+turretLoc.getX()+", "+turretLoc.getY()+", "+turretLoc.getZ()+" has fired!");
 	}
 
 	public int getHalfSecondCount() {
@@ -129,5 +129,9 @@ public class ProjectileCannonComponent extends ProjectileComponent {
 
 	public void setHalfSecondCount(int halfSecondCount) {
 		this.halfSecondCount = halfSecondCount;
+	}
+
+	public Town getTown() {
+		return buildable.getTown();
 	}
 }

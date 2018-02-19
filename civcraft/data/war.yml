@@ -99,7 +99,7 @@ arrow_tower:
     fire_rate: 2.0
 
     # Distance before homing stops.
-    homing_stop_distance: 10.0
+    homing_stop_distance: 8.0
 
 cannon_tower:
     # Damage done by cannon blast
@@ -118,11 +118,11 @@ cannon_tower:
     speed: 6
 
     # Splash radius that damages players
-    splash: 24
+    splash: 16
 
     # Cannon tower fire rate
     # Defined in number of half-seconds to delay. Higher numbers is lower fire rate.
-    fire_rate: 7.0
+    fire_rate: 6.0
 
 wall:
    # Maximum height walls can be built at.

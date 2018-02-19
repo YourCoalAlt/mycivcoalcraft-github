@@ -75,6 +75,7 @@ public class ProjectileArrowComponent extends ProjectileComponent {
 			arrow.setFireTicks(1000);
 		}
 		
+		// TODO add town toggle msg to state if fired or not
 		CivCache.arrowsFired.put(arrow.getUniqueId(), new ArrowFiredCache(this, targetEntity, arrow));
 	}
 

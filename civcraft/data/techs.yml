@@ -65,6 +65,26 @@ techs: #Note: Pts = Beakers/10
       - "wonder"
     require_techs:
 #
+  - id: 'tech_artillery'
+    name: 'tech_artillery'
+    beaker_cost: 0
+    cost: 0.0
+    points: 0
+    tier: 0
+    unlocks:
+      - "arrow tower"
+    require_techs:
+#
+  - id: 'tech_gunpowder'
+    name: 'tech_gunpowder'
+    beaker_cost: 0
+    cost: 0.0
+    points: 0
+    tier: 0
+    unlocks:
+      - "cannon tower"
+    require_techs:
+#
 #============================#
 #======== > Tier 1 < ========#
 #============================#
