@@ -34,7 +34,6 @@ import com.avrgaming.civcraft.util.ItemManager;
 public class GivePlayerStartingKit implements Runnable {
 	
 	public String name;
-	
 	public GivePlayerStartingKit(String name) {
 		this.name = name;
 	}
@@ -50,7 +49,6 @@ public class GivePlayerStartingKit implements Runnable {
 					Integer type = Integer.valueOf(split[0]);
 					Integer amount = Integer.valueOf(split[1]);
 					int data = Integer.valueOf(split[2]);
-					
 					stack = ItemManager.createItemStack(type, amount, (short)data);
 				} catch (NumberFormatException e) {
 					String customMatID = split[0];
@@ -74,7 +72,7 @@ public class GivePlayerStartingKit implements Runnable {
 			}
 		} catch (CivException e) {
 		//	e.printStackTrace();
-			CivLog.warning("Tried to give starting kit to offline player:"+name);
+			CivLog.warning("Tried to give starting kit to offline player: "+name);
 			return;
 		}
 	}

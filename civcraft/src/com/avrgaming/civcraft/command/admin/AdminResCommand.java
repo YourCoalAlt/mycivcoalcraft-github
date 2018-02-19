@@ -33,6 +33,8 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.threading.TaskMaster;
+import com.avrgaming.civcraft.threading.tasks.GivePlayerStartingKit;
 
 public class AdminResCommand extends CommandBase {
 
@@ -49,15 +51,20 @@ public class AdminResCommand extends CommandBase {
 		commands.put("rtp", "Will randomly teleport you in the world.");
 		commands.put("togglechat", "Turn chat messages being sent on or off.");
 		commands.put("begin", "Does whole beginning process on first join (if player was null).");
+		commands.put("givekit", "[resident] - Gives this player a new starting kit.");
+	}
+	
+	public void givekit_cmd() throws CivException {
+		Resident res = getNamedResident(1);
+		TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
+		CivMessage.sendSuccess(sender, "Given kit to "+res.getName());
 	}
 	
 	public void begin_cmd() throws CivException {
-		if (!(sender instanceof Player)) {
-			throw new CivException("Can only redo begin for players.");
-		}
-		Player p = (Player) sender;
-		Resident res = CivGlobal.getResident(p);
+		Resident res = getNamedResident(1);
+		Player p = CivGlobal.getPlayer(res);
 		res.begin(res, p);
+		CivMessage.sendSuccess(sender, "Doing beginning title for "+res.getName());
 	}
 	
 	public void togglechat_cmd() throws CivException {
@@ -71,10 +78,8 @@ public class AdminResCommand extends CommandBase {
 	}
 	
 	public void rtp_cmd() throws CivException {
-		if (!(sender instanceof Player)) {
-			throw new CivException("Can only teleport players.");
-		}
-		Player p = (Player) sender;
+		Resident res = getNamedResident(1);
+		Player p = CivGlobal.getPlayer(res);
 		MinecraftListener.randomTeleport(p);
 	}
 	

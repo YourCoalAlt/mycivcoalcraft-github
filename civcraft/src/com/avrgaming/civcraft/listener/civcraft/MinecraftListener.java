@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Biome;
@@ -31,6 +33,7 @@ import com.avrgaming.civcraft.config.ConfigEXPMining;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -38,6 +41,8 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.ItemManager;
+import com.wimbli.WorldBorder.BorderData;
+import com.wimbli.WorldBorder.Config;
 
 /* https://github.com/gvlfm78/BukkitOldCombatMechanics */
 
@@ -232,7 +237,7 @@ public class MinecraftListener implements Listener {
 	}
 	
 	public static void randomTeleport(Player p) {
-		Location teleportLocation = null;
+		Location tpLoc = null;
 		boolean isOnLand = false;
 		boolean isClearAbove = false;
 		
@@ -253,17 +258,17 @@ public class MinecraftListener implements Listener {
 		int z = -(rZ/2) + (rand.nextInt(rZ)) - (rZ/10);
 		
 		while (!isOnLand) {
-			teleportLocation = new Location(p.getWorld(), x, y, z);
+			tpLoc = new Location(p.getWorld(), x, y, z);
 			Location teleportLocationBelow = new Location(p.getWorld(), x, y-1, z);
 			Location teleportLocationBelow2 = new Location(p.getWorld(), x, y-2, z);
-			if (teleportLocation.getBlock().getType() == Material.AIR &&
+			if (tpLoc.getBlock().getType() == Material.AIR &&
 					teleportLocationBelow.getBlock().getType() == Material.AIR &&
 					teleportLocationBelow2.getBlock().getType().isSolid() &&
 					
-					teleportLocation.getBlock().getBiome() != Biome.DEEP_OCEAN && teleportLocation.getBlock().getBiome() != Biome.FROZEN_OCEAN &&
-					teleportLocation.getBlock().getBiome() != Biome.OCEAN && teleportLocation.getBlock().getBiome() != Biome.FROZEN_RIVER &&
-					teleportLocation.getBlock().getBiome() != Biome.RIVER && teleportLocation.getBlock().getBiome() != Biome.BEACHES &&
-					teleportLocation.getBlock().getBiome() != Biome.COLD_BEACH && teleportLocation.getBlock().getBiome() != Biome.STONE_BEACH) {
+					tpLoc.getBlock().getBiome() != Biome.DEEP_OCEAN && tpLoc.getBlock().getBiome() != Biome.FROZEN_OCEAN &&
+					tpLoc.getBlock().getBiome() != Biome.OCEAN && tpLoc.getBlock().getBiome() != Biome.FROZEN_RIVER &&
+					tpLoc.getBlock().getBiome() != Biome.RIVER && tpLoc.getBlock().getBiome() != Biome.BEACHES &&
+					tpLoc.getBlock().getBiome() != Biome.COLD_BEACH && tpLoc.getBlock().getBiome() != Biome.STONE_BEACH) {
 				isOnLand = true;
 			} else {
 				if (x <= rX && x > 0) {
@@ -309,19 +314,36 @@ public class MinecraftListener implements Listener {
 			}
 		}
 		
-			ChunkCoord cc = new ChunkCoord(teleportLocation);
-			if (CivGlobal.getCultureChunk(cc) != null && cc.getChunk() == teleportLocation.getChunk()) {
-				CivMessage.sendError(p, "We accidently tried teleporting you to a civilization's culture borders. Recalculating new placement...");
-				x = -(rX/2) + (rand.nextInt(rX)) - (rand.nextInt(rX)/10);
-				z = -(rZ/2) + (rand.nextInt(rZ)) - (rand.nextInt(rZ)/10);
-				isOnLand = false;
-				isClearAbove = false;
+		ChunkCoord cc = new ChunkCoord(tpLoc);
+		if (CivGlobal.getCultureChunk(cc) != null && cc.getChunk() == tpLoc.getChunk()) {
+			CivMessage.sendError(p, "We accidently tried teleporting you to a civilization's culture borders. Recalculating new placement...");
+			randomTeleport(p);
+			return;
+		}
+		
+		if (CivSettings.hasWorldBorder) {
+			BorderData border = Config.Border(CivCraft.worldName);
+			if (border != null) {
+				if(!border.insideBorder(tpLoc.getX(), tpLoc.getZ(), Config.ShapeRound())) {
+					CivMessage.sendError(p, "We accidently tried teleporting you outside the world border. Recalculating new placement...");
+					randomTeleport(p);
+					return;
+				}
+			}
+		} else {
+			World w = Bukkit.getWorld(CivCraft.worldName);
+			double bs = w.getWorldBorder().getSize() / 2;
+			if (Math.abs(tpLoc.getX()) >= bs || Math.abs(tpLoc.getZ()) >= bs) {
+				CivMessage.sendError(p, "We accidently tried teleporting you outside the world border. Recalculating new placement...");
+				randomTeleport(p);
+				return;
+			}
 		}
 		
 		p.setInvulnerable(true);
 		p.setSaturation(20f);
-		p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
-		p.teleport(teleportLocation);
+		p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+		p.teleport(tpLoc);
 		p.setInvulnerable(false);
 		CivMessage.sendSuccess(p, "You have been randomly teleported to "+x+", "+y+", "+z+"!");
 	}
