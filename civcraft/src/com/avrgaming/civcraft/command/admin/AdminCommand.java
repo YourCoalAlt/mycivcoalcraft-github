@@ -115,6 +115,12 @@ public class AdminCommand extends CommandBase {
 		commands.put("reload", "Admin reload commands.");
 		commands.put("rxp", "Admin Resident Experience commands.");
 		commands.put("debug", "Admin Debugging commands.");
+		commands.put("mob", "Admin Mob commands.");
+	}
+	
+	public void mob_cmd() {
+		AdminMobCommand cmd = new AdminMobCommand();	
+		cmd.onCommand(sender, null, "mob", this.stripArgs(args, 1));
 	}
 	
 	public void rxp_cmd() {

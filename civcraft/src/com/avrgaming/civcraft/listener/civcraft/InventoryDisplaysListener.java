@@ -1027,6 +1027,11 @@ public class InventoryDisplaysListener implements Listener {
 				continue;
 			}
 			
+			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Sell Values")) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
 			if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() && stack.getItemMeta().getDisplayName().contains("[D] ")) {
 				inv.removeItem(stack);
 				continue;
