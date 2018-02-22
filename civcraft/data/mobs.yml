@@ -4,10 +4,32 @@ custom_mobs_enabled: true
 custom_mobs:
  - id: LESSER_YOBO
    name: '<lightgreen>Lesser Yobo'
-   name_visible: true
-   max_health: 20.0
+   visible: true
+   entity: Zombie
+   max_health: 15.5
    move_speed: 1.05
-   attack_dmg: 3.0
+   attack_dmg: 4.0
+   follow_range: 24.0
+   kb_resistance: 0.3
+   exp_min: 5
+   exp_max: 20
+   res_exp: 0.3
+   rxp_mod: 1.1
+   mod_type: 'Weapondry'
+   biomes:
+     - 'PLAINS'
+     - 'FOREST'
+   drops:
+     - '367,0,1,2,0.75,0.0,1,0'
+     - 'civ_crafted_stick,0,1,1,0.1,0.0,1,0'
+#
+ - id: GREATER_YOBO
+   name: '<yellow>Greater Yobo'
+   visible: true
+   entity: Zombie
+   max_health: 19.5
+   move_speed: 1.05
+   attack_dmg: 6.0
    follow_range: 24.0
    kb_resistance: 0.3
    exp_min: 5

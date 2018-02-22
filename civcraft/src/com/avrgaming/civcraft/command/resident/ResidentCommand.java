@@ -340,6 +340,9 @@ public class ResidentCommand extends CommandBase {
 		if (resident.getAlts() != null) {
 			for (String s : resident.getAlts()) {
 				AccountLogger al = CivGlobal.getAccount(s);
+				if (al == null) {
+					alts += "null?"; continue;
+				}
 				if (!alts.contains(al.getOfflinePlayer().getName()))
 					alts += al.getOfflinePlayer().getName()+", ";
 			}

@@ -7,11 +7,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
+import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.ConfigCustomMobs;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.mobs.CommonCustomMob;
 import com.avrgaming.civcraft.mobs.MobSpawner;
-import com.avrgaming.civcraft.mobs.MobSpawner.CustomMobLevel;
 import com.avrgaming.civcraft.mobs.MobSpawner.CustomMobType;
 import com.avrgaming.civcraft.mobs.timers.MobSpawnerTimer;
 import com.avrgaming.civcraft.util.CivColor;
@@ -35,21 +36,14 @@ public class AdminMobCommand extends CommandBase {
 	
 	public void spawn_cmd() throws CivException {
 		Player player = getPlayer();		
-		String mob = getNamedString(1, "name");
-		String lvl = getNamedString(2, "level");
+		String smob = getNamedString(1, "id");
 		
-		MobSpawner.CustomMobType type = CustomMobType.valueOf(mob.toUpperCase());
-		MobSpawner.CustomMobLevel level = CustomMobLevel.valueOf(lvl.toUpperCase());
-		
-		if (type == null) {
-			throw new CivException("no mob named:"+mob);
+		if (smob == null) {
+			throw new CivException("No custom mob with id: "+smob);
 		}
 		
-		if (level == null) {
-			throw new CivException("no level named:"+lvl);
-		}
-		
-		MobSpawner.spawnCustomMob(type, level, player.getLocation());
+		ConfigCustomMobs cmob = CivSettings.customMobs.get(smob);
+		MobSpawner.spawnCustomMob(cmob, player.getLocation());
 	}
 	
 	public void killall_cmd() throws CivException {

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.attribute.Attribute;
-import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
 
@@ -16,6 +15,7 @@ public class ConfigCustomMobs {
 	public String id;
 	public String name;
 	public Boolean visible;
+	public String entity;
 	public Double max_health;
 	public Double move_speed;
 	public Double attack_dmg;
@@ -26,7 +26,7 @@ public class ConfigCustomMobs {
 	public Double res_exp;
 	public Double rxp_mod;
 	public String mod_type;
-	public ArrayList<Biome> biomes = new ArrayList<Biome>();
+	public ArrayList<String> biomes = new ArrayList<String>();
 	public ArrayList<String> drops = new ArrayList<String>();
 	
 	
@@ -47,14 +47,15 @@ public class ConfigCustomMobs {
 		return false;
 	}*/
 	
-	public static void loadConfig(FileConfiguration cfg, String path, Map<String, ConfigCustomMobs> mobMap) {
+	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigCustomMobs> mobMap) {
 		mobMap.clear();
-		List<Map<?, ?>> custom_mobs = cfg.getMapList(path);
+		List<Map<?, ?>> custom_mobs = cfg.getMapList("custom_mobs");
 		for (Map<?, ?> cl : custom_mobs) {
 			ConfigCustomMobs minfo = new ConfigCustomMobs();
 			minfo.id = (String)cl.get("id");
 			minfo.name = (String)cl.get("name");
 			minfo.visible = (Boolean)cl.get("visible");
+			minfo.entity = (String)cl.get("entity");
 			minfo.max_health = (Double)cl.get("max_health");
 			minfo.move_speed = (Double)cl.get("move_speed");
 			minfo.attack_dmg = (Double)cl.get("attack_dmg");
@@ -68,9 +69,9 @@ public class ConfigCustomMobs {
 			
 			
 			@SuppressWarnings("unchecked")
-			ArrayList<Biome> biomes = (ArrayList<Biome>) cl.get("biomes");
+			ArrayList<String> biomes = (ArrayList<String>) cl.get("biomes");
 			if (biomes != null) {
-				for (Biome compObj : biomes) {
+				for (String compObj : biomes) {
 					minfo.biomes.add(compObj);	
 				}
 			}

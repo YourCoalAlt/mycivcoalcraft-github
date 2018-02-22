@@ -104,7 +104,9 @@ public class Resident extends SQLObject {
 	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
 	public ArrayList<String> mailData = new ArrayList<String>();
+	
 	public boolean isSuicidal = false;
+	public boolean isTPing = false;
 	
 	public static HashSet<String> allchatters = new HashSet<String>();
 	
@@ -1675,7 +1677,7 @@ public class Resident extends SQLObject {
 							p2.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20*24, 4));
 							p2.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*24, 4));
 						}
-					}.runTaskTimer(CivCraft.getPlugin(), 0L, 1L);
+					}.runTask(CivCraft.getPlugin());
 					
 					String resetS = CivColor.LightGrayItalic;
 					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
@@ -1714,16 +1716,14 @@ public class Resident extends SQLObject {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
-							p2.removePotionEffect(PotionEffectType.BLINDNESS);
-							p2.removePotionEffect(PotionEffectType.SLOW);
-//							int time = 20*60*5;
-//							p2.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, time, 0));
-//							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time, 0));
-//							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, time, 0));
-//							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, time, 0));
+							int time = 20*60*5;
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, time, 0));
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time, 0));
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, time, 0));
+							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, time, 0));
 						}
-					}.runTaskTimer(CivCraft.getPlugin(), 0L, 1L);
-//					
+					}.runTask(CivCraft.getPlugin());
+					
 					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
 					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);

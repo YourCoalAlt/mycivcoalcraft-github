@@ -38,6 +38,7 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -237,6 +238,13 @@ public class MinecraftListener implements Listener {
 	}
 	
 	public static void randomTeleport(Player p) {
+		Resident res = CivGlobal.getResident(p);
+		if (res == null || res.isTPing) {
+			CivLog.warning("Tried to teleport "+p.getName()+" while task was already running!");
+			return;
+		}
+		
+		res.isTPing = true;
 		Location tpLoc = null;
 		boolean isOnLand = false;
 		boolean isClearAbove = false;
@@ -317,6 +325,7 @@ public class MinecraftListener implements Listener {
 		ChunkCoord cc = new ChunkCoord(tpLoc);
 		if (CivGlobal.getCultureChunk(cc) != null && cc.getChunk() == tpLoc.getChunk()) {
 			CivMessage.sendError(p, "We accidently tried teleporting you to a civilization's culture borders. Recalculating new placement...");
+			res.isTPing = false;
 			randomTeleport(p);
 			return;
 		}
@@ -326,6 +335,7 @@ public class MinecraftListener implements Listener {
 			if (border != null) {
 				if(!border.insideBorder(tpLoc.getX(), tpLoc.getZ(), Config.ShapeRound())) {
 					CivMessage.sendError(p, "We accidently tried teleporting you outside the world border. Recalculating new placement...");
+					res.isTPing = false;
 					randomTeleport(p);
 					return;
 				}
@@ -335,6 +345,7 @@ public class MinecraftListener implements Listener {
 			double bs = w.getWorldBorder().getSize() / 2;
 			if (Math.abs(tpLoc.getX()) >= bs || Math.abs(tpLoc.getZ()) >= bs) {
 				CivMessage.sendError(p, "We accidently tried teleporting you outside the world border. Recalculating new placement...");
+				res.isTPing = false;
 				randomTeleport(p);
 				return;
 			}
@@ -345,6 +356,7 @@ public class MinecraftListener implements Listener {
 		p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 		p.teleport(tpLoc);
 		p.setInvulnerable(false);
+		res.isTPing = false;
 		CivMessage.sendSuccess(p, "You have been randomly teleported to "+x+", "+y+", "+z+"!");
 	}
 	

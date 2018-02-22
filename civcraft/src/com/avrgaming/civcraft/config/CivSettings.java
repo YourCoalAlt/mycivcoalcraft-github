@@ -102,6 +102,7 @@ public class CivSettings {
 	
 	public static FileConfiguration mobConfig; /* mobs.yml */
 	public static Map<String, ConfigMobs> custMobs = new HashMap<String, ConfigMobs>();
+	public static Map<String, ConfigCustomMobs> customMobs = new HashMap<String, ConfigCustomMobs>();
 	
 	public static FileConfiguration structureConfig; /* structures.yml */
 	public static Map<String, ConfigBuildableInfo> structures = new HashMap<String, ConfigBuildableInfo>();
@@ -501,6 +502,7 @@ public class CivSettings {
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
 		ConfigMobs.loadConfig(mobConfig, custMobs);
+		ConfigCustomMobs.loadConfig(mobConfig, customMobs);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
