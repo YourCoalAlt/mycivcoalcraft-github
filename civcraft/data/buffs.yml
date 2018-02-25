@@ -86,7 +86,7 @@ buffs:
 
     - id: 'buff_fishing'
       name: 'Fishing'
-      description: 'Allows uncooked fish to replace the need for bread. <lightgreen>1 fish = 2 bread<r>'
+      description: 'Allows all raw fish to replace the need for bread. <lightgreen>1 fish = 2 bread<r>'
       value: '2'
       stackable: false
     

@@ -61,7 +61,6 @@ public class MobListener implements Listener {
 		if (event.isCancelled()) return;
 		Entity mob = CustomMobListener.customMobs.get(event.getEntity().getUniqueId());
 		if (mob == null) {
-			CivMessage.global("null defense");
 			return;
 		}
 		
@@ -73,10 +72,7 @@ public class MobListener implements Listener {
 			return;
 		}
 		
-		CivMessage.global(mob.getCustomName()+" = "+cmob.name);
-		
 		double damage = event.getDamage() - cmob.defense_dmg;
-		CivMessage.global(event.getDamage()+" - "+cmob.defense_dmg+" = "+damage);
 		if (damage < 0.5) {
 			Player player = null;
 			if (event.getDamager() instanceof Arrow) {
@@ -96,7 +92,7 @@ public class MobListener implements Listener {
 			} else {
 				if (player != null) {
 					damage *= -1;
-					CivMessage.send(player, CivColor.LightGray+"Attack was ineffective by "+damage+" HP");
+					CivMessage.send(player, CivColor.LightGray+"Attack ineffective by "+damage+" HP");
 					damage = 0.0;
 				}
 			}

@@ -696,7 +696,7 @@ public class SpyMissions extends UnitItemMaterial {
 				if (rand.nextInt(100) < (int)(famine_chance*100)) {
 					for (Structure struct : tc.getTown().getStructures()) {
 						if (struct instanceof Cottage) {
-							((Cottage)struct).delevel();
+							((Cottage)struct).delevelSpy();
 						}
 					}
 					

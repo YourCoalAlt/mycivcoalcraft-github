@@ -6,7 +6,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.randomevents.RandomEventComponent;
 
-public class BeakerRate extends RandomEventComponent {
+public class ScienceRate extends RandomEventComponent {
 	
 	@Override
 	public void process() {

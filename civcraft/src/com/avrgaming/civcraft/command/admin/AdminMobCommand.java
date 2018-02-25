@@ -110,7 +110,7 @@ public class AdminMobCommand extends CommandBase {
 			}
 			
 		}
-		CivMessage.send(player, CivColor.Green+"Total Mobs:"+CivColor.LightGreen+total);
+		CivMessage.send(player, CivColor.Green+"Total Mobs: "+CivColor.LightGreen+total);
 	}
 	
 	@Override

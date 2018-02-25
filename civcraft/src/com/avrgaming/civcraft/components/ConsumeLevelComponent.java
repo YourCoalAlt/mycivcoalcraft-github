@@ -390,7 +390,7 @@ public class ConsumeLevelComponent extends Component {
 		if (hasEnoughToConsume()) {
 			consumeFromInventory();
 			
-			if ((this.count+1) >= currentCountMax) {
+			if ((this.count+1) > currentCountMax) {
 				// Level up?
 				Integer nextCountMax = levelCounts.get(this.level+1);
 				if (nextCountMax == null) {
@@ -399,17 +399,17 @@ public class ConsumeLevelComponent extends Component {
 				}
 				
 				this.count = 0;
-				if (hasEnoughToConsume()) {
+//				if (hasEnoughToConsume()) {
 					// we have what we need for the next level, process it as a levelup.
 					this.level++;
 					lastResult = Result.LEVELUP;
 					return lastResult;			
-				} else {
+/*				} else { // XXX Removed so we don't get x-1 / x consumption (ex. cottage 23/24) MAXED
 					// we don't have enough for the next level, process as a MAXED.
 					this.count = currentCountMax;
 					lastResult = Result.MAXED;
 					return lastResult;
-				}
+				}*/
 			} else {
 				// Grow
 				this.count++;

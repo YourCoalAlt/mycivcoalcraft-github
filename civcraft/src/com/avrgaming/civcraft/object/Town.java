@@ -2677,12 +2677,12 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().growth_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().growth_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -2694,29 +2694,28 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
-		rate /= 3;
 		return new AttrSource(rates, rate, null);
 	}*/
 	
 	public AttrSource getGrowthRate() {
-		double rate = 0.5;
+		double rate = 1.0;
 		HashMap<String, Double> rates = new HashMap<String, Double>();
 		
 		// Government
 		double gov = getGovernment().growth_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().growth_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Random Events
 		double rde = RandomEvent.getGrowthRate(this);
-		rate += rde;
+		rate *= rde;
 		rates.put("Random Events", rde);
 		
 		// Trade Goods
@@ -2738,7 +2737,7 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
 		if (grapes > 0) {
 			rates.put("Grapes [Hanging Gardens] (x"+(grapes)+")", buffs);
@@ -2757,24 +2756,21 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Structures", str);
-		rate += str;
+		rate *= str;
 		
 		// Captured Town Penalty
 		if (this.motherCiv != null) {
 			try {
 				double penalty = CivSettings.getDouble(CivSettings.warConfig, "war.captured_penalty");
 				rates.put("Captured Penalty", penalty);
-				rate += penalty;
-				rate /= 6;
+				rate *= penalty;
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 			}
-		} else {
-			rate /= 5;
-			
-			rates.put("Global Rate", this.extraGrowthRate);
-			rate *= this.extraGrowthRate;
 		}
+		
+		rates.put("Global Rate", this.extraGrowthRate);
+		rate *= this.extraGrowthRate;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -2865,12 +2861,12 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().hammer_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().hammer_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -2882,9 +2878,8 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
-		rate /= 3;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -2895,17 +2890,17 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().hammer_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().hammer_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Random Events
-		double rde = RandomEvent.getHammerRate(this);
-		rate += rde;
+		double rde = RandomEvent.getProductionRate(this);
 		rates.put("Random Events", rde);
+		rate *= rde;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -2917,7 +2912,7 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
 		// Structures
 		double str = 1.0;
@@ -2932,24 +2927,21 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Structures", str);
-		rate += str;
+		rate *= str;
 		
 		// Captured Town Penalty
 		if (this.motherCiv != null) {
 			try {
 				double penalty = CivSettings.getDouble(CivSettings.warConfig, "war.captured_penalty");
 				rates.put("Captured Penalty", penalty);
-				rate += penalty;
-				rate /= 6;
+				rate *= penalty;
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 			}
-		} else {
-			rate /= 5;
-			
-			rates.put("Global Rate", this.extraHammerRate);
-			rate *= this.extraHammerRate;
 		}
+		
+		rates.put("Global Rate", this.extraHammerRate);
+		rate *= this.extraHammerRate;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -3040,12 +3032,12 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().beaker_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().beaker_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -3057,9 +3049,8 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
-		rate /= 3;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -3070,17 +3061,17 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().beaker_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().beaker_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Random Events
-		double rde = RandomEvent.getBeakerRate(this);
-		rate += rde;
+		double rde = RandomEvent.getScienceRate(this);
 		rates.put("Random Events", rde);
+		rate *= rde;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -3092,7 +3083,7 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
 		// Structures
 		double str = 1.0;
@@ -3107,23 +3098,21 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Structures", str);
-		rate += str;
+		rate *= str;
 		
 		// Captured Town Penalty
 		if (this.motherCiv != null) {
 			try {
 				double penalty = CivSettings.getDouble(CivSettings.warConfig, "war.captured_penalty");
 				rates.put("Captured Penalty", penalty);
-				rate += penalty;
-				rate /= 6;
+				rate *= penalty;
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 			}
-		} else {
-			rate /= 5;
-			rates.put("Global Rate", this.extraBeakerRate);
-			rate *= this.extraBeakerRate;
 		}
+		
+		rates.put("Global Rate", this.extraBeakerRate);
+		rate *= this.extraBeakerRate;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -3214,12 +3203,12 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().culture_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().culture_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Trade Goods
 		double buffs = 1.0;
@@ -3231,9 +3220,8 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
-		rate /= 3;
 		return new AttrSource(rates, rate, null);
 	}
 	
@@ -3244,17 +3232,17 @@ public class Town extends SQLObject {
 		// Government
 		double gov = getGovernment().culture_rate;
 		rates.put("Government", gov);
-		rate += gov;
+		rate *= gov;
 		
 		// Happiness
 		double hap = this.getHappinessState().culture_rate;
 		rates.put("Happiness", hap);
-		rate += hap;
+		rate *= hap;
 		
 		// Random Events
 		double rde = RandomEvent.getCultureRate(this);
-		rate += rde;
 		rates.put("Random Events", rde);
+		rate *= rde;
 		
 		// Trade Goods
 		boolean pyramid = false;
@@ -3280,7 +3268,7 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Buffs (x"+(buffCount)+")", buffs);
-		rate += buffs;
+		rate *= buffs;
 		
 		if (pyramid) {
 			rates.put("Leeching [Great Pyramid]", pyr);
@@ -3299,20 +3287,17 @@ public class Town extends SQLObject {
 			}
 		}
 		rates.put("Structures", str);
-		rate += str;
+		rate *= str;
 		
 		// Captured Town Penalty
 		if (this.motherCiv != null) {
 			try {
 				double penalty = CivSettings.getDouble(CivSettings.warConfig, "war.captured_penalty");
 				rates.put("Captured Penalty", penalty);
-				rate += penalty;
-				rate /= 6;
+				rate *= penalty;
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 			}
-		} else {
-			rate /= 5;
 		}
 		return new AttrSource(rates, rate, null);
 	}
@@ -3568,13 +3553,6 @@ public class Town extends SQLObject {
 		this.attributeCache.put("UNHAPPINESS", cache);
 		return as;
 	}
-
-	public double getHappiness11Percentage() {
-		double total_happiness = getAverageHappiness().total;
-		double total_unhappiness = getAverageUnhappiness().total;
-		double total = total_happiness + total_unhappiness;
-		return total_happiness/total;
-	}
 	
 	public Integer getHappiness() {
 		int total_happiness = (int) getAverageHappiness().total;
@@ -3648,7 +3626,7 @@ public class Town extends SQLObject {
 					int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, cornerLoc.getWorldname());
 					if (type == CivData.AIR) {
 						if (canSupport > 0) {
-							// Set block to dirt
+							// Set block
 							Bukkit.getWorld("world").getBlockAt(absX, y, absZ).setType(Material.COBBLESTONE);
 							canSupport--;
 							supported++;

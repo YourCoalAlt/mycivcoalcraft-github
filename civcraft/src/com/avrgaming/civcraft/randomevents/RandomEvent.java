@@ -23,11 +23,11 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.SQLObject;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.randomevents.components.BeakerRate;
 import com.avrgaming.civcraft.randomevents.components.CultureRate;
 import com.avrgaming.civcraft.randomevents.components.GrowthRate;
-import com.avrgaming.civcraft.randomevents.components.HammerRate;
 import com.avrgaming.civcraft.randomevents.components.Happiness;
+import com.avrgaming.civcraft.randomevents.components.ProductionRate;
+import com.avrgaming.civcraft.randomevents.components.ScienceRate;
 import com.avrgaming.civcraft.randomevents.components.Unhappiness;
 import com.avrgaming.civcraft.util.CivColor;
 import com.mysql.jdbc.StringUtils;
@@ -433,8 +433,8 @@ public class RandomEvent extends SQLObject {
 		return trate;	
 	}
 
-	public static double getHammerRate(Town town) {
-		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(HammerRate.getKey(town));
+	public static double getProductionRate(Town town) {
+		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(ProductionRate.getKey(town));
 		double trate = 1.0;
 		ArrayList<SessionEntry> removed = new ArrayList<SessionEntry>();
 		for (SessionEntry entry : entries) {
@@ -458,8 +458,8 @@ public class RandomEvent extends SQLObject {
 		return trate;	
 	}
 	
-	public static double getBeakerRate(Town town) {
-		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(BeakerRate.getKey(town));
+	public static double getScienceRate(Town town) {
+		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup(ScienceRate.getKey(town));
 		double trate = 1.0;
 		ArrayList<SessionEntry> removed = new ArrayList<SessionEntry>();
 		for (SessionEntry entry : entries) {

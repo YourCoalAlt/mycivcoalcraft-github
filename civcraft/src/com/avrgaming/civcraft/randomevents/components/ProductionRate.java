@@ -6,7 +6,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.randomevents.RandomEventComponent;
 
-public class HammerRate extends RandomEventComponent {
+public class ProductionRate extends RandomEventComponent {
 	
 	@Override
 	public void process() {
@@ -22,6 +22,6 @@ public class HammerRate extends RandomEventComponent {
 	}
 	
 	public static String getKey(Town town) {
-		return "randomevent:hammerrate"+town.getId();
+		return "randomevent:productionrate"+town.getId();
 	}
 }

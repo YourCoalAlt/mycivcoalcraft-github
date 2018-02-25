@@ -16,7 +16,7 @@ town:
 
     base_hammer_rate: 1.0
     base_beaker_rate: 1.0
-    base_growth_rate: 0.5
+    base_growth_rate: 0.25
 
     # Maximum number of blocks a town chunk can "protrude" from the main mass.
     max_town_chunk_protrude: 3
@@ -597,7 +597,7 @@ upgrades:
 # Granary Upgrades
     - id: 'upgrade_granary_level_2'
       name: 'Upgrade Granary Level 2'
-      action: 'set_granary_level, 2'
+      action: 'saved_structures_default_level, 2'
       cost: 7500.0
       require_upgrade:
       require_tech: 'tech_doesnotexist'
@@ -606,7 +606,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_3'
       name: 'Upgrade Granary Level 3'
-      action: 'set_granary_level, 3'
+      action: 'saved_structures_default_level, 3'
       cost: 15000.0
       require_upgrade: 'upgrade_granary_level_2'
       require_tech: 'tech_doesnotexist'
@@ -615,7 +615,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_4'
       name: 'Upgrade Granary Level 4'
-      action: 'set_granary_level, 4'
+      action: 'saved_structures_default_level, 4'
       cost: 22500.0
       require_upgrade: 'upgrade_granary_level_3'
       require_tech: 'tech_doesnotexist'
@@ -624,7 +624,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_5'
       name: 'Upgrade Granary Level 5'
-      action: 'set_granary_level, 5'
+      action: 'saved_structures_default_level, 5'
       cost: 30000.0
       require_upgrade: 'upgrade_granary_level_4'
       require_tech: 'tech_doesnotexist'
@@ -633,7 +633,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_6'
       name: 'Upgrade Granary Level 6'
-      action: 'set_granary_level, 6'
+      action: 'saved_structures_default_level, 6'
       cost: 37500.0
       require_upgrade: 'upgrade_granary_level_5'
       require_tech: 'tech_doesnotexist'
@@ -642,7 +642,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_7'
       name: 'Upgrade Granary Level 7'
-      action: 'set_granary_level, 7'
+      action: 'saved_structures_default_level, 7'
       cost: 45000.0
       require_upgrade: 'upgrade_granary_level_6'
       require_tech: 'tech_doesnotexist'
@@ -651,7 +651,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_8'
       name: 'Upgrade Granary Level 8'
-      action: 'set_granary_level, 8'
+      action: 'saved_structures_default_level, 8'
       cost: 52500.0
       require_upgrade: 'upgrade_granary_level_7'
       require_tech: 'tech_doesnotexist'
@@ -660,7 +660,7 @@ upgrades:
 #
     - id: 'upgrade_granary_level_9'
       name: 'Upgrade Granary Level 9'
-      action: 'set_granary_level, 9'
+      action: 'saved_structures_default_level, 9'
       cost: 60000.0
       require_upgrade: 'upgrade_granary_level_8'
       require_tech: 'tech_doesnotexist'
@@ -669,8 +669,8 @@ upgrades:
 #
     - id: 'upgrade_granary_level_10'
       name: 'Upgrade Granary Level 10'
-      action: 'set_granary_level, 10'
-      cost: 60000.0
+      action: 'saved_structures_default_level, 10'
+      cost: 67500.0
       require_upgrade: 'upgrade_granary_level_9'
       require_tech: 'tech_doesnotexist'
       require_structure: 's_granary'

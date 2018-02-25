@@ -414,16 +414,7 @@ public class TownInfoCommand extends CommandBase {
 				color = CivColor.Rose;
 			}
 			
-			double coins = cottage.getCoinsGenerated();
-			if (town.getCiv().hasTechnology("tech_taxation")) {
-				double taxation_bonus;
-				try {
-					taxation_bonus = CivSettings.getDouble(CivSettings.techsConfig, "taxation_cottage_buff");
-					coins *= taxation_bonus;
-				} catch (InvalidConfiguration e) {
-					e.printStackTrace();
-				}
-			}
+			double coins = cottage.getTotalCoinsGenerated(lvl.level, lvl.coins);
 			
 			if (!struct.isDestroyed()) {
 				out.add(color+"Cottage ("+struct.getCorner()+")");
