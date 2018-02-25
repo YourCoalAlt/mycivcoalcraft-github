@@ -3,7 +3,7 @@
 #
 happiness:
   # Amount of unhappiness per resident in the town.
-  per_resident: 0.2
+  per_resident: 0.3
   
   # Empire Unhappiness, how much unhappiness to add, per town, to the entire
   # civilization's towns.
@@ -36,29 +36,29 @@ happiness:
   # Static Happiness Levels per town
   town_levels:
     - level: 1
-      happiness: 10
-    - level: 2
-      happiness: 9
-    - level: 3
-      happiness: 8
-    - level: 4
-      happiness: 7
-    - level: 5
-      happiness: 6
-    - level: 6
       happiness: 5
-    - level: 7
+    - level: 2
       happiness: 4
-    - level: 8
+    - level: 3
       happiness: 3
-    - level: 9
+    - level: 4
       happiness: 2
-    - level: 10
+    - level: 5
       happiness: 1
+    - level: 6
+      happiness: 0
+    - level: 7
+      happiness: 0
+    - level: 8
+      happiness: -1
+    - level: 9
+      happiness: -2
+    - level: 10
+      happiness: -3
     - level: 11
-      happiness: 0
+      happiness: -4
     - level: 12
-      happiness: 0
+      happiness: -5
     
    #
    # Happiness States

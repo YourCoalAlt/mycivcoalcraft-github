@@ -288,7 +288,7 @@ public class Cottage extends Structure {
 			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+stateMessage+CivColor.LightGreen+". +"+total_coins+" Coins"+
 					CivColor.Yellow+" (Paid "+taxesPaid+" in taxes to "+this.getTown().getDepositCiv().getName()+")");
 		} else {
-			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"A level "+getConsumeComponent().getLevel()+" Cottage "+stateMessage+CivColor.LightGreen+". +"+total_coins+" Coins");
+			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+stateMessage+CivColor.LightGreen+". +"+total_coins+" Coins");
 		}
 	}
 	

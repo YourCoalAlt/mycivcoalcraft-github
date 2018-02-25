@@ -18,8 +18,6 @@
  */
 package com.avrgaming.civcraft.listener;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -43,7 +41,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -63,7 +60,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -86,19 +82,15 @@ import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigMobs;
 import com.avrgaming.civcraft.config.ConfigTempleSacrifice;
 import com.avrgaming.civcraft.exception.CivException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
-import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
-import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.mobs.CustomMobListener;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
-import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.StructureBlock;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.StructureSign;
@@ -143,13 +135,6 @@ public class BlockListener implements Listener {
 	/* Experimental, reuse the same object because it is single threaded. */
 	public static ChunkCoord coord = new ChunkCoord("", 0, 0);
 	public static BlockCoord bcoord = new BlockCoord("", 0,0,0);
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onEntityCatchFire(EntityCombustEvent event) {
-		if (event.getEntityType() == EntityType.ZOMBIE || event.getEntityType() == EntityType.SKELETON) {
-			event.setCancelled(true);
-		}
-	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockIgniteEvent(BlockIgniteEvent event) {
@@ -408,7 +393,6 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnCreateSpawnEvent(CreatureSpawnEvent event) {
-
 		if (event.getSpawnReason().equals(SpawnReason.BREEDING)) {
 			ChunkCoord coord = new ChunkCoord(event.getEntity().getLocation());
 			Pasture pasture = Pasture.pastureChunks.get(coord);
@@ -1434,20 +1418,16 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
 		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
-			if (ent.getType().equals(EntityType.BAT) || ent.getType().equals(EntityType.CAVE_SPIDER) || 
-					ent.getType().equals(EntityType.ENDERMAN) || ent.getType().equals(EntityType.POLAR_BEAR) || 
-					ent.getType().equals(EntityType.SPIDER) || ent.getType().equals(EntityType.PIG_ZOMBIE) || 
-					ent.getType().equals(EntityType.BLAZE) || ent.getType().equals(EntityType.CREEPER) || 
-					ent.getType().equals(EntityType.ELDER_GUARDIAN) || ent.getType().equals(EntityType.ENDERMITE) || 
-					ent.getType().equals(EntityType.EVOKER) || ent.getType().equals(EntityType.EVOKER_FANGS) || 
-					ent.getType().equals(EntityType.GHAST) || ent.getType().equals(EntityType.GUARDIAN) || 
-					ent.getType().equals(EntityType.HUSK) || ent.getType().equals(EntityType.MAGMA_CUBE) || 
-					ent.getType().equals(EntityType.SHULKER) || ent.getType().equals(EntityType.SILVERFISH) || 
-					ent.getType().equals(EntityType.SKELETON) || ent.getType().equals(EntityType.STRAY) || 
-					ent.getType().equals(EntityType.VEX) || ent.getType().equals(EntityType.VINDICATOR) || 
-					ent.getType().equals(EntityType.WITCH) || ent.getType().equals(EntityType.WITHER_SKELETON) || 
-					ent.getType().equals(EntityType.ZOMBIE) || ent.getType().equals(EntityType.ZOMBIE_VILLAGER)) {
-				CivLog.debug("Removing "+ent.getType().toString()+" on ChunkUnloadEvent");
+			if (CustomMobListener.customMobs.get(ent.getUniqueId()) != null) {
+				CustomMobListener.customMobs.remove(ent.getUniqueId());
+				CustomMobListener.mobList.remove(ent.getUniqueId());
+				ent.remove();
+				continue;
+			}
+			
+			
+			if (CivSettings.restrictedSpawns.containsKey(ent.getType())) {
+				CivLog.debug("Removing Restricted Entity "+ent.getType().toString()+" on ChunkUnloadEvent");
 				ent.remove();
 			}
 		}
@@ -1455,29 +1435,24 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onChunkLoadEvent(ChunkLoadEvent event) {
+		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
+			if (CustomMobListener.customMobs.get(ent.getUniqueId()) != null) {
+				CustomMobListener.customMobs.remove(ent.getUniqueId());
+				CustomMobListener.mobList.remove(ent.getUniqueId());
+				ent.remove();
+				continue;
+			}
+			
+			if (CivSettings.restrictedSpawns.containsKey(ent.getType())) {
+				CivLog.debug("Removing Restricted Entity "+ent.getType().toString()+" on ChunkLoadEvent");
+				ent.remove();
+			}
+		}
+		
 		ChunkCoord coord = new ChunkCoord(event.getChunk());
 		FarmChunk fc = CivGlobal.getFarmChunk(coord);
 		if (fc == null) return;
 		
-		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
-			if (ent.getType().equals(EntityType.BAT) || ent.getType().equals(EntityType.CAVE_SPIDER) || 
-					ent.getType().equals(EntityType.ENDERMAN) || ent.getType().equals(EntityType.POLAR_BEAR) || 
-					ent.getType().equals(EntityType.SPIDER) || ent.getType().equals(EntityType.PIG_ZOMBIE) || 
-					ent.getType().equals(EntityType.BLAZE) || ent.getType().equals(EntityType.CREEPER) || 
-					ent.getType().equals(EntityType.ELDER_GUARDIAN) || ent.getType().equals(EntityType.ENDERMITE) || 
-					ent.getType().equals(EntityType.EVOKER) || ent.getType().equals(EntityType.EVOKER_FANGS) || 
-					ent.getType().equals(EntityType.GHAST) || ent.getType().equals(EntityType.GUARDIAN) || 
-					ent.getType().equals(EntityType.HUSK) || ent.getType().equals(EntityType.MAGMA_CUBE) || 
-					ent.getType().equals(EntityType.SHULKER) || ent.getType().equals(EntityType.SILVERFISH) || 
-					ent.getType().equals(EntityType.SKELETON) || ent.getType().equals(EntityType.STRAY) || 
-					ent.getType().equals(EntityType.VEX) || ent.getType().equals(EntityType.VINDICATOR) || 
-					ent.getType().equals(EntityType.WITCH) || ent.getType().equals(EntityType.WITHER_SKELETON) || 
-					ent.getType().equals(EntityType.ZOMBIE) || ent.getType().equals(EntityType.ZOMBIE_VILLAGER)) {
-				CivLog.debug("Removing "+ent.getType().toString()+" on ChunkLoadEvent");
-				ent.remove();
-			}
-		}
-	
 		class AsyncTask extends CivAsyncTask {
 			FarmChunk fc;
 			public AsyncTask(FarmChunk fc) {
@@ -1496,82 +1471,7 @@ public class BlockListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDeath(EntityDeathEvent event) { // TODO Finish
-		
-		if (event.getEntity().getKiller() != null) {
-			Player p = event.getEntity().getKiller();
-			ConfigMobs mDs = CivSettings.custMobs.get(event.getEntityType().toString().toUpperCase());
-			if (mDs != null) {
-				ResidentExperience resE = CivGlobal.getResidentE(p);
-				double mod = ((resE.getWeapondryLevel() + 1) * mDs.exp_mod) / 2;
-				try {
-					DecimalFormat df = new DecimalFormat("0.00");
-					double genrf = mDs.res_exp*mod;
-					double rfEXP = Double.valueOf(df.format(genrf));
-					resE.addWeapondryEXP(rfEXP);
-				} catch (CivException e1) {
-				}
-				
-				Random rand = new Random();
-				int coins = (rand.nextInt(mDs.exp_max - mDs.exp_min) + mDs.exp_min);
-				coins = (int) ((coins * mod) / 2);
-				event.setDroppedExp(coins);
-				
-				event.getDrops().clear();
-				ArrayList<String> dropped = new ArrayList<String>();
-				for (String values : mDs.drops.split(";")) { // Specific Mob's Drops
-					String[] drops = values.split(",");
-					double dc = Double.valueOf(drops[4]);
-					int chance = rand.nextInt(10000);
-					if (chance < (dc*10000)) {
-						dropped.add(values);
-					}
-				}
-				
-				try {
-					for (String values : CivSettings.getString(CivSettings.mobConfig, "common_drops").split(";")) { // Common Mob's Drops
-						String[] drops = values.split(",");
-						double dc = Double.valueOf(drops[4]);
-						int chance = rand.nextInt(10000);
-						if (chance < (dc*10000)) {
-							dropped.add(values);
-						}
-					}
-				} catch (NumberFormatException | InvalidConfiguration e) {
-					CivLog.error("Could not get common_drops from mob.yml!");
-					CivLog.error(e.getMessage());
-//					e.printStackTrace();
-				}
-				
-				if (dropped.size() != 0) {
-					for (String items : dropped) {
-						if (items == null) continue;
-						String[] drops = items.split(",");
-						String mat = drops[0]; mat = mat.replace("[", "").replace("]", "");
-						int dropAmt;
-						
-						if ((Integer.valueOf(drops[3]) - Integer.valueOf(drops[2])) == 0) {
-							dropAmt = Integer.valueOf(drops[2]);
-						} else {
-							dropAmt = (rand.nextInt(Integer.valueOf(drops[3]) - Integer.valueOf(drops[2])) + Integer.valueOf(drops[2])); // + (Integer.valueOf(drops[7])
-						}
-						
-						if (dropAmt > 0) {
-							LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(mat);
-							if (craftMat != null) {
-								ItemStack item = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), dropAmt);
-								event.getDrops().add(item);
-							} else {
-								ItemStack item = ItemManager.createItemStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
-							//	CivMessage.global(item.getType().toString());
-								event.getDrops().add(item);
-							}
-						}
-					}
-				}
-			}
-		}
-		
+	public void onEntityDeath(EntityDeathEvent event) {
 		Pasture pasture = Pasture.pastureEntities.get(event.getEntity().getUniqueId());
 		if (pasture != null) {
 			pasture.onEntityDeath(event.getEntity());
@@ -1606,6 +1506,11 @@ public class BlockListener implements Listener {
 			}
 		}
 		
+		if (event.getSpawnReason().equals(SpawnReason.JOCKEY)) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (event.getEntity().getType().equals(EntityType.CHICKEN)) {
 			if (event.getSpawnReason().equals(SpawnReason.EGG) || event.getSpawnReason().equals(SpawnReason.DISPENSE_EGG)) {
 				Random rand = new Random();
@@ -1618,33 +1523,12 @@ public class BlockListener implements Listener {
 					return;
 				}
 			}
+			
 			NBTTagCompound compound = new NBTTagCompound();
 			if (compound.getBoolean("IsChickenJockey")) {
 				event.setCancelled(true);
 				return;			
 			}
-		}
-		
-		if (event.getSpawnReason().equals(SpawnReason.JOCKEY)) {
-			event.setCancelled(true);
-			return;
-		}
-		
-		LivingEntity ent = event.getEntity();
-		ConfigMobs mob = CivSettings.custMobs.get(ent.getType().toString().toUpperCase());
-		if (mob != null) {
-			mob.setMaxHealth(ent, mob.max_health);
-			mob.modifySpeed(ent, mob.move_speed);
-			mob.setAttack(ent, mob.attack_dmg);
-			mob.setFollowRange(ent, mob.follow_range);
-			mob.setKnockbackResistance(ent, mob.kb_resistance);
-			ent.setCustomName(CivColor.colorize(mob.name));
-			ent.setCustomNameVisible(mob.name_visible);
-			if (ent instanceof Zombie) {
-				Zombie z = (Zombie) ent;
-				if (z.isBaby()) z.setBaby(false);
-			}
-			return;
 		}
 		
 		if (event.getEntity().getType().equals(EntityType.IRON_GOLEM) && event.getSpawnReason().equals(SpawnReason.BUILD_IRONGOLEM)) {
@@ -1688,13 +1572,19 @@ public class BlockListener implements Listener {
 //			return;
 //		}
 		
+		if (event.getSpawnReason() == SpawnReason.CUSTOM) {
+			event.setCancelled(false);
+			return;
+		}
+		
+		LivingEntity ent = event.getEntity();
 		if (event.getEntity().getType().equals(EntityType.BAT) ||
 				ent.getType().equals(EntityType.WITCH) ||
 				ent.getType().equals(EntityType.GUARDIAN) ||
 //				ent.getType().equals(EntityType.ZOMBIE) ||
 				ent.getType().equals(EntityType.SKELETON) ||
-//				ent.getType().equals(EntityType.CREEPER) ||
-//				ent.getType().equals(EntityType.SPIDER) ||
+				ent.getType().equals(EntityType.CREEPER) ||
+				ent.getType().equals(EntityType.SPIDER) ||
 				ent.getType().equals(EntityType.CAVE_SPIDER) ||
 //				ent.getType().equals(EntityType.SILVERFISH) ||
 				ent.getType().equals(EntityType.ENDERMITE) ||
@@ -1713,9 +1603,6 @@ public class BlockListener implements Listener {
 				ent.getType().equals(EntityType.BLAZE)) {
 			event.setCancelled(true);
 			return;
-//		} else {
-//			CivLog.warning("Non-custom mob nor disabled mob "+ent.getType()+" tried to spawn, was let go.");
-//			event.setCancelled(false);
 		}
 	}
 	

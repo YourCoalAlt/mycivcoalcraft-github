@@ -5,7 +5,7 @@
 #type_id - Vanilla item_id
 #drop_chance - Probability to drop.
 #
-default_res_exp: 0.1
+default_res_exp: 0.15
 
 fishing_drops:
   - type: ShulkerBox
@@ -15,7 +15,7 @@ fishing_drops:
     catch_tier: 1
     exp_min: 125
     exp_max: 750
-    res_exp: 20.0
+    res_exp: 50.0
 #
   - type: Salmon
     type_id: 349
@@ -25,7 +25,7 @@ fishing_drops:
     catch_tier: 1
     exp_min: 1
     exp_max: 3
-    res_exp: 0.2
+    res_exp: 0.3
 #
   - type: Clownfish
     type_id: 349
@@ -35,7 +35,7 @@ fishing_drops:
     catch_tier: 1
     exp_min: 1
     exp_max: 4
-    res_exp: 0.35
+    res_exp: 0.45
 #
   - type: Pufferfish
     type_id: 349
@@ -45,7 +45,7 @@ fishing_drops:
     catch_tier: 1
     exp_min: 2
     exp_max: 5
-    res_exp: 0.5
+    res_exp: 0.6
 #
   - type: Leather
     type_id: 334
@@ -126,7 +126,7 @@ fishing_drops:
     catch_tier: 3
     exp_min: 3
     exp_max: 7
-    res_exp: 0.25
+    res_exp: 0.3
 #
   - type: Gunpowder
     type_id: 289
@@ -135,7 +135,7 @@ fishing_drops:
     catch_tier: 3
     exp_min: 3
     exp_max: 7
-    res_exp: 0.25
+    res_exp: 0.3
 #
   - type: UnitShard
     custom_id: 'civ_unit_shard'
@@ -144,7 +144,7 @@ fishing_drops:
     catch_tier: 4
     exp_min: 4
     exp_max: 8
-    res_exp: 1.0
+    res_exp: 1.5
 #
   - type: UnitXP
     custom_id: 'civ_unit_xp'
@@ -153,6 +153,6 @@ fishing_drops:
     catch_tier: 6
     exp_min: 40
     exp_max: 80
-    res_exp: 10.0
+    res_exp: 15.0
 #
 

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
+import org.bukkit.entity.Damageable;
 
 import com.avrgaming.civcraft.main.CivLog;
 
@@ -19,6 +21,7 @@ public class ConfigCustomMobs {
 	public Double max_health;
 	public Double move_speed;
 	public Double attack_dmg;
+	public Double defense_dmg;
 	public Double follow_range;
 	public Double kb_resistance;
 	public Integer exp_min;
@@ -29,6 +32,7 @@ public class ConfigCustomMobs {
 	public ArrayList<String> biomes = new ArrayList<String>();
 	public ArrayList<String> drops = new ArrayList<String>();
 	
+	public boolean isBaby = false;
 	
 	// TOBO Make this check for valid biomes of mobs when spawning
 /*	public boolean isAvailable(Town town) {
@@ -59,6 +63,7 @@ public class ConfigCustomMobs {
 			minfo.max_health = (Double)cl.get("max_health");
 			minfo.move_speed = (Double)cl.get("move_speed");
 			minfo.attack_dmg = (Double)cl.get("attack_dmg");
+			minfo.defense_dmg = (Double)cl.get("defense_dmg");
 			minfo.follow_range = (Double)cl.get("follow_range");
 			minfo.kb_resistance = (Double)cl.get("kb_resistance");
 			minfo.exp_min = (Integer)cl.get("exp_min");
@@ -89,26 +94,26 @@ public class ConfigCustomMobs {
 		CivLog.info("Loaded "+mobMap.size()+" Custom Mobs.");
 	}
 	
-	public void setMaxHealth(LivingEntity ent, double health) {
-		ent.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
-		ent.setHealth(health);
+	public void setMaxHealth(CraftEntity ent, double health) {
+		((Attributable) ent).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+		((Damageable) ent).setHealth(health);
 	}
 	
-	public void modifySpeed(LivingEntity ent, double percent) {
-		double speed = (ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue()) * percent;
-		ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
+	public void modifySpeed(CraftEntity ent, double percent) {
+		double speed = (((Attributable) ent).getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue()) * percent;
+		((Attributable) ent).getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
 	}
 	
-	public void setAttack(LivingEntity ent, double attack) {
-		ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(attack);
+	public void setAttack(CraftEntity ent, double attack) {
+		((Attributable) ent).getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(attack);
 	}
 	
-	public void setFollowRange(LivingEntity ent, double range) {
-		ent.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(range);
+	public void setFollowRange(CraftEntity ent, double range) {
+		((Attributable) ent).getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(range);
 	}
 	
-	public void setKnockbackResistance(LivingEntity ent, double resist) {
-		ent.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(resist);
+	public void setKnockbackResistance(CraftEntity ent, double resist) {
+		((Attributable) ent).getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(resist);
 	}
 	
 }

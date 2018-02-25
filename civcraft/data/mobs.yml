@@ -6,9 +6,10 @@ custom_mobs:
    name: '<lightgreen>Lesser Yobo'
    visible: true
    entity: Zombie
-   max_health: 15.5
+   max_health: 17.5
    move_speed: 1.05
-   attack_dmg: 4.0
+   attack_dmg: 6.0
+   defense_dmg: 4.5
    follow_range: 24.0
    kb_resistance: 0.3
    exp_min: 5
@@ -19,22 +20,95 @@ custom_mobs:
    biomes:
      - 'PLAINS'
      - 'FOREST'
+     - 'BIRCH_FOREST'
+     - 'BIRCH_FOREST_HILLS'
    drops:
      - '367,0,1,2,0.75,0.0,1,0'
-     - 'civ_crafted_stick,0,1,1,0.1,0.0,1,0'
+     - '264,0,1,1,1.0,0.0,1,0'
+#     - 'civ_crafted_stick,0,1,1,0.1,0.0,1,0'
 #
  - id: GREATER_YOBO
    name: '<yellow>Greater Yobo'
    visible: true
    entity: Zombie
-   max_health: 19.5
+   max_health: 23.5
    move_speed: 1.05
-   attack_dmg: 6.0
+   attack_dmg: 10.0
+   defense_dmg: 6.5
    follow_range: 24.0
    kb_resistance: 0.3
-   exp_min: 5
-   exp_max: 20
-   res_exp: 0.3
+   exp_min: 15
+   exp_max: 40
+   res_exp: 0.5
+   rxp_mod: 1.1
+   mod_type: 'Weapondry'
+   biomes:
+     - 'MUTATED_PLAINS'
+     - 'FOREST_HILLS'
+     - 'MUTATED_FOREST'
+     - 'MUTATED_BIRCH_FOREST'
+     - 'MUTATED_BIRCH_FOREST_HILLS'
+   drops:
+     - '367,0,1,2,0.75,0.0,1,0'
+#
+ - id: ELITE_YOBO
+   name: '<lightpurple>Elite Yobo'
+   visible: true
+   entity: Zombie
+   max_health: 29.5
+   move_speed: 1.05
+   attack_dmg: 12.0
+   defense_dmg: 8.5
+   follow_range: 24.0
+   kb_resistance: 0.3
+   exp_min: 30
+   exp_max: 75
+   res_exp: 0.7
+   rxp_mod: 1.1
+   mod_type: 'Weapondry'
+   biomes:
+     - 'EXTREME_HILLS'
+     - 'EXTREME_HILLS_WITH_TREES'
+     - 'ROOFED_FOREST'
+     - 'MUTATED_ROOFED_FOREST'
+   drops:
+     - '367,0,1,2,0.75,0.0,1,0'
+#
+ - id: BRUTAL_YOBO
+   name: '<rose>Brutal Yobo'
+   visible: true
+   entity: Zombie
+   max_health: 35.5
+   move_speed: 1.05
+   attack_dmg: 14.0
+   defense_dmg: 10.5
+   follow_range: 24.0
+   kb_resistance: 0.3
+   exp_min: 50
+   exp_max: 115
+   res_exp: 0.9
+   rxp_mod: 1.1
+   mod_type: 'Weapondry'
+   biomes:
+     - 'MUTATED_REDWOOD_TAIGA_HILLS'
+     - 'MUTATED_EXTREME_HILLS'
+     - 'MUTATED_EXTREME_HILLS_WITH_TREES'
+   drops:
+     - '367,0,1,2,0.75,0.0,1,0'
+#
+ - id: LEGENDARY_YOBO
+   name: '<lightblue>Legendary Yobo'
+   visible: true
+   entity: Zombie
+   max_health: 41.5
+   move_speed: 1.05
+   attack_dmg: 16.0
+   defense_dmg: 12.5
+   follow_range: 24.0
+   kb_resistance: 0.3
+   exp_min: 85
+   exp_max: 200
+   res_exp: 1.2
    rxp_mod: 1.1
    mod_type: 'Weapondry'
    biomes:
@@ -42,7 +116,8 @@ custom_mobs:
      - 'FOREST'
    drops:
      - '367,0,1,2,0.75,0.0,1,0'
-     - 'civ_crafted_stick,0,1,1,0.1,0.0,1,0'
+#
+
 
 
 
@@ -78,23 +153,6 @@ common_drops: '287,0,1,1,0.1,0.02,1,-0.01;289,0,1,1,0.1,0.015,1,-0.005;334,0,1,1
 
 # Custom Mobs
 mobs:
- - id: ZOMBIE
-   name: '<lightgreen>Lesser Yobo'
-   name_visible: true
-#   chance: 1.0
-#   biomes: 'PLAINS'
-   max_health: 20.0
-   move_speed: 1.05
-   attack_dmg: 3.0
-   follow_range: 24.0
-   kb_resistance: 0.3
-   exp_min: 5
-   exp_max: 20
-   res_exp: 0.3
-   exp_mod: 1.1
-   mod_type: 'Weapondry'
-   drops: '367,0,0,2,1.0,0,1,0'
-#
  - id: ZOMBIE_VILLAGER
    name: '<lightgreen>Lesser Human-Yobo'
    name_visible: true

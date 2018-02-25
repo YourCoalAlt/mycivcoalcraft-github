@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.mobs.timers;
+package com.avrgaming.civcraft.mobs;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,8 +14,6 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
-import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.mobs.MobSpawner;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.EntityProximity;
@@ -40,7 +38,6 @@ public class MobSpawnerTimer implements Runnable {
 	@Override
 	public void run() {
 		String name = null;
-		CivMessage.global("run mob spawner timer");
 //		for (int i = 0; i < UPDATE_LIMIT; i++) {
 		for (int i = 0; i < Bukkit.getOnlinePlayers().size(); i++) {
 			// Find a player who is out in the wilderness.
@@ -72,9 +69,7 @@ public class MobSpawnerTimer implements Runnable {
 					if (entities.size() > MOB_AREA_LIMIT) continue;
 					
 					TownChunk tc = CivGlobal.getTownChunk(new ChunkCoord(loc));
-					if (tc != null) {
-						continue;
-					}
+					if (tc != null && !tc.perms.isMobs()) continue;
 					
 					// Dont spawn mobs at invalid blocks
 					Location blockLoc = loc; blockLoc.setY(loc.getY()-Y_SHIFT);
@@ -85,7 +80,7 @@ public class MobSpawnerTimer implements Runnable {
 						continue;
 					}
 					
-					MobSpawner.spawnRandomCustomMobNew(loc);
+					MobSpawner.spawnRandomCustomMob(loc);
 				}
 				break;
 			} catch (CivException e) {

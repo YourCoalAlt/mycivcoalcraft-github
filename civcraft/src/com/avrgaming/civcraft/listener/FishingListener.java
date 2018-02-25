@@ -39,12 +39,14 @@ public class FishingListener implements Listener {
 			if (rod.getType() == Material.FISHING_ROD && rod.containsEnchantment(Enchantment.LUCK)) {
 				if (d.loot_type.contains("treasure")) {
 					dc *= 1.1;
+				} else if (d.loot_type.contains("legendary")) {
+					dc *= 1.02;
 				} else if (d.loot_type.contains("junk")) {
-					dc *= 0.9;
+					dc *= 0.925;
 				} else if (d.loot_type.contains("fish")) {
-					dc *= 0.8;
+					dc *= 0.85;
 				} else {
-					CivLog.warning("Fishing Event had unknown loot type, "+d.loot_type);
+					CivLog.warning("Fishing Event had unknown loot type: "+d.loot_type);
 				}
 			}
 			

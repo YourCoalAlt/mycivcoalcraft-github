@@ -133,8 +133,9 @@ public class CivColor {
 	}
 	
 	public static String strip(String line) {
-		for (ChatColor cc : ChatColor.values())
+		for (ChatColor cc : ChatColor.values()) {
 			line.replaceAll(cc.toString(), "");
+		}
 		return line;
 	}
 

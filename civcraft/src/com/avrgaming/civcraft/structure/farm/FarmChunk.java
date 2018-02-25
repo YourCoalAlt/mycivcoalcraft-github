@@ -364,7 +364,7 @@ public class FarmChunk {
 			
 			for (int x = 0; x < 16; x++) {
 				for (int z = 0; z < 16; z++) {
-					for (int y = 0; y < 256; y++) {					
+					for (int y = 10; y < 192; y++) {					
 						
 						//Block nextBlock = this.struct.getCorner().getBlock().getChunk().getBlock(x, y, z);
 						//BlockCoord bcoord = new BlockCoord(nextBlock);

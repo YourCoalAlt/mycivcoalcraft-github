@@ -101,7 +101,6 @@ public class CivSettings {
 	public static Map<String, ConfigEXPMining> resxpMiningBlocks = new HashMap<String, ConfigEXPMining>();
 	
 	public static FileConfiguration mobConfig; /* mobs.yml */
-	public static Map<String, ConfigMobs> custMobs = new HashMap<String, ConfigMobs>();
 	public static Map<String, ConfigCustomMobs> customMobs = new HashMap<String, ConfigCustomMobs>();
 	
 	public static FileConfiguration structureConfig; /* structures.yml */
@@ -501,7 +500,6 @@ public class CivSettings {
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
-		ConfigMobs.loadConfig(mobConfig, custMobs);
 		ConfigCustomMobs.loadConfig(mobConfig, customMobs);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
@@ -555,24 +553,25 @@ public class CivSettings {
 
 	private static void initRestrictedSpawns() {
 		restrictedSpawns.put(EntityType.BAT, 0);
-		restrictedSpawns.put(EntityType.CAVE_SPIDER, 0);
-		restrictedSpawns.put(EntityType.ENDERMAN, 0);
-		restrictedSpawns.put(EntityType.POLAR_BEAR, 0);
-		restrictedSpawns.put(EntityType.SPIDER, 0);
-		restrictedSpawns.put(EntityType.PIG_ZOMBIE, 0);
 		restrictedSpawns.put(EntityType.BLAZE, 0);
+		restrictedSpawns.put(EntityType.CAVE_SPIDER, 0);
 		restrictedSpawns.put(EntityType.CREEPER, 0);
 		restrictedSpawns.put(EntityType.ELDER_GUARDIAN, 0);
+		restrictedSpawns.put(EntityType.ENDERMAN, 0);
 		restrictedSpawns.put(EntityType.ENDERMITE, 0);
 		restrictedSpawns.put(EntityType.EVOKER, 0);
 		restrictedSpawns.put(EntityType.EVOKER_FANGS, 0);
 		restrictedSpawns.put(EntityType.GHAST, 0);
 		restrictedSpawns.put(EntityType.GUARDIAN, 0);
 		restrictedSpawns.put(EntityType.HUSK, 0);
+		restrictedSpawns.put(EntityType.ILLUSIONER, 0);
 		restrictedSpawns.put(EntityType.MAGMA_CUBE, 0);
+		restrictedSpawns.put(EntityType.PIG_ZOMBIE, 0);
+		restrictedSpawns.put(EntityType.POLAR_BEAR, 0);
 		restrictedSpawns.put(EntityType.SHULKER, 0);
 		restrictedSpawns.put(EntityType.SILVERFISH, 0);
 		restrictedSpawns.put(EntityType.SKELETON, 0);
+		restrictedSpawns.put(EntityType.SPIDER, 0);
 		restrictedSpawns.put(EntityType.STRAY, 0);
 		restrictedSpawns.put(EntityType.VEX, 0);
 		restrictedSpawns.put(EntityType.VINDICATOR, 0);
@@ -580,7 +579,6 @@ public class CivSettings {
 		restrictedSpawns.put(EntityType.WITHER_SKELETON, 0);
 		restrictedSpawns.put(EntityType.ZOMBIE, 0);
 		restrictedSpawns.put(EntityType.ZOMBIE_VILLAGER, 0);
-		restrictedSpawns.put(EntityType.ILLUSIONER, 0);
 	}
 	
 	private static void initRestrictedItems() {

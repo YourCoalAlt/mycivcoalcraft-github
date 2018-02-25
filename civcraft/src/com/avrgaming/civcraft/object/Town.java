@@ -3459,12 +3459,10 @@ public class Town extends SQLObject {
 		sources.put("Structures", structures);
 		total += structures;
 		
-		if (baseHappy != 0) {
-			sources.put("Base Happiness", baseHappy);
-			total += baseHappy;
-		}
+		sources.put("Base Happiness", baseHappy);
+		total += baseHappy;
 		
-		if (total < baseHappy) { total = baseHappy; }
+//		if (total < baseHappy) { total = baseHappy; }
 
 		AttrSource as = new AttrSource(sources, total, null);
 		cache.sources = as;
@@ -3563,7 +3561,7 @@ public class Town extends SQLObject {
 			total += baseUnhappy;
 		}
 		
-		if (total < 0) { total = 0; }
+//		if (total < 0) { total = 0; }
 
 		AttrSource as = new AttrSource(sources, total, null);
 		cache.sources = as;

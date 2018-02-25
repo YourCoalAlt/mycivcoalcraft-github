@@ -3,6 +3,9 @@ package com.avrgaming.civcraft.command.admin;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -10,11 +13,11 @@ import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCustomMobs;
 import com.avrgaming.civcraft.exception.CivException;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.mobs.CommonCustomMob;
+import com.avrgaming.civcraft.mobs.CustomMobListener;
 import com.avrgaming.civcraft.mobs.MobSpawner;
-import com.avrgaming.civcraft.mobs.MobSpawner.CustomMobType;
-import com.avrgaming.civcraft.mobs.timers.MobSpawnerTimer;
+import com.avrgaming.civcraft.mobs.MobSpawnerTimer;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.EntityProximity;
 
@@ -27,41 +30,57 @@ public class AdminMobCommand extends CommandBase {
 		command = "/ad mob";
 		displayName = "Admin Mob";		
 		
-		commands.put("count", "Shows mob totals globally");
-		commands.put("disable", "[name] Disables this mob from spawning");
-		commands.put("enable", "[name] Enables this mob to spawn.");
 		commands.put("killall", "[name] Removes all of these mobs from the game instantly.");
+		commands.put("purgehostile", "Removes every hostile mob inside the server.");
+		commands.put("count", "Shows mob totals globally");
 		commands.put("spawn", "remote entities test");
 	}
 	
+	public void purgehostile_cmd() throws CivException {
+		Player p = getPlayer();
+		MobSpawner.despawnAllHostile(p);
+	}
+	
 	public void spawn_cmd() throws CivException {
-		Player player = getPlayer();		
-		String smob = getNamedString(1, "id");
+		Player player = getPlayer();
+		String smob = getNamedString(1, "id").toUpperCase();
 		
 		if (smob == null) {
 			throw new CivException("No custom mob with id: "+smob);
 		}
 		
 		ConfigCustomMobs cmob = CivSettings.customMobs.get(smob);
+		if (cmob == null) {
+			throw new CivException(smob+" is not a valid ID.");
+		}
+		
 		MobSpawner.spawnCustomMob(cmob, player.getLocation());
+		CivMessage.sendSuccess(player, "Spawned a "+CivColor.colorize(cmob.name));
 	}
 	
 	public void killall_cmd() throws CivException {
 		Player player = getPlayer();
-		String name = getNamedString(1, "Enter a mob name");
-		
-		LinkedList<CommonCustomMob> removeUs = new LinkedList<CommonCustomMob>();
-		for (CommonCustomMob mob :CommonCustomMob.customMobs.values()) {
-			if (mob.getType().toString().equalsIgnoreCase(name)) {
-				removeUs.add(mob);
-			}
+		String name = getNamedString(1, "Enter a mob ID.").toUpperCase();
+		ConfigCustomMobs cmob = CivSettings.customMobs.get(name);
+		if (cmob == null) {
+			throw new CivException(name+" is not a valid ID.");
 		}
 		
 		int count = 0;
-		for (CommonCustomMob mob : removeUs) {
-			CommonCustomMob.customMobs.remove(mob.entity.getUniqueID());
-			mob.entity.getBukkitEntity().remove();
-			count++;
+		for (Chunk c : Bukkit.getWorld(CivCraft.worldName).getLoadedChunks()) {
+			for (Entity e : c.getEntities()) {
+				if (CustomMobListener.customMobs.get(e.getUniqueId()) != null) {
+					if (ChatColor.stripColor(e.getCustomName()).toString().replaceAll(" ", "_").equalsIgnoreCase(cmob.id)) {
+						CustomMobListener.customMobs.remove(e.getUniqueId());
+						e.remove();
+						count++;
+					}
+				}
+				
+				if (CustomMobListener.mobList.get(e.getUniqueId()) != null) {
+					CustomMobListener.mobList.remove(e.getUniqueId());
+				}
+			}
 		}
 		
 		CivMessage.sendSuccess(player, "Removed "+count+ " mobs of type "+name);
@@ -71,14 +90,11 @@ public class AdminMobCommand extends CommandBase {
 		Player player = getPlayer();
 		
 		HashMap<String, Integer> amounts = new HashMap<String, Integer>();
-		int total = CommonCustomMob.customMobs.size();
-		for (CommonCustomMob mob : CommonCustomMob.customMobs.values()) {
-			Integer count = amounts.get(mob.getClass().getSimpleName());
-			if (count == null) {
-				count = 0;
-			}
-			
-			amounts.put(mob.getClass().getSimpleName(), count+1);
+		int total = CustomMobListener.customMobs.size();
+		for (net.minecraft.server.v1_12_R1.Entity mob : CustomMobListener.customMobs.values()) {
+			Integer count = amounts.get(ChatColor.stripColor(mob.getCustomName()));
+			if (count == null) count = 0;
+			amounts.put(ChatColor.stripColor(mob.getCustomName()), count+1);
 		}
 		
 		CivMessage.sendHeading(player, "Custom Mob Counts");
@@ -97,67 +113,18 @@ public class AdminMobCommand extends CommandBase {
 		CivMessage.send(player, CivColor.Green+"Total Mobs:"+CivColor.LightGreen+total);
 	}
 	
-	public void disable_cmd() throws CivException {
-		Player player = getPlayer();
-		String name = getNamedString(1, "Enter a mob name");
-		
-		switch (name.toLowerCase()) {
-		case "behemoth":
-			CommonCustomMob.disabledMobs.add(CustomMobType.BEHEMOTH.toString());
-			break;
-		case "yobo":
-			CommonCustomMob.disabledMobs.add(CustomMobType.YOBO.toString());
-			break;
-		case "savagae":
-			CommonCustomMob.disabledMobs.add(CustomMobType.SAVAGE.toString());
-
-			break;
-		case "ruffian":
-			CommonCustomMob.disabledMobs.add(CustomMobType.RUFFIAN.toString());
-			break;
-		default:
-			throw new CivException("Must be behemoth, yobo, savage, or ruffian");
-		}
-		
-		CivMessage.sendSuccess(player, "Disabled "+name);
-	}
-	
-	public void enable_cmd() throws CivException {
-		Player player = getPlayer();
-		String name = getNamedString(1, "Enter a mob name");
-		
-		switch (name.toLowerCase()) {
-		case "behemoth":
-			CommonCustomMob.disabledMobs.remove(CustomMobType.BEHEMOTH.toString());
-			break;
-		case "yobo":
-			CommonCustomMob.disabledMobs.remove(CustomMobType.YOBO.toString());
-			break;
-		case "savagae":
-			CommonCustomMob.disabledMobs.remove(CustomMobType.SAVAGE.toString());
-
-			break;
-		case "ruffian":
-			CommonCustomMob.disabledMobs.remove(CustomMobType.RUFFIAN.toString());
-			break;
-		default:
-			throw new CivException("Must be behemoth, yobo, savage, or ruffian");
-		}
-		
-		CivMessage.sendSuccess(player, "Enabled "+name);
-	}
 	@Override
 	public void doDefaultAction() throws CivException {
 		showHelp();
 	}
-
+	
 	@Override
 	public void showHelp() {
 		showBasicHelp();
 	}
-
+	
 	@Override
 	public void permissionCheck() throws CivException {
 	}
-
+	
 }

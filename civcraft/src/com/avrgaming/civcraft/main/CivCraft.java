@@ -80,7 +80,9 @@ import com.avrgaming.civcraft.listener.civcraft.InventoryDisplaysListener;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
-import com.avrgaming.civcraft.mobs.timers.MobSpawnerTimer;
+import com.avrgaming.civcraft.mobs.MobListener;
+import com.avrgaming.civcraft.mobs.MobSpawner;
+import com.avrgaming.civcraft.mobs.MobSpawnerTimer;
 import com.avrgaming.civcraft.nocheat.NoCheatPlusSurvialFlyHandler;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.CultureChunk;
@@ -235,6 +237,7 @@ public final class CivCraft extends JavaPlugin {
 		pluginManager.registerEvents(new FishingListener(), this);	
 		pluginManager.registerEvents(new PvPListener(), this);
 		
+		pluginManager.registerEvents(new MobListener(), this);
 		pluginManager.registerEvents(new MinecraftListener(), this);
 		
 		//Registered GUIs
@@ -332,6 +335,7 @@ public final class CivCraft extends JavaPlugin {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
 				BuildUndoTask.resumeUndoTasks();
+				MobSpawner.despawnAllHostile(null);
 			}
 		});
 	}
@@ -346,6 +350,7 @@ public final class CivCraft extends JavaPlugin {
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
 		CivGlobal.resetGlobalVillagers();
+		MobSpawner.despawnAllHostile(null);
 		
 		isDisable = true;
 		SQLUpdate.save();
