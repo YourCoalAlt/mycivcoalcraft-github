@@ -520,6 +520,10 @@ public class LoreCraftableMaterial extends LoreMaterial {
 		return this.configMaterial.id;
 	}
 	
+	public String getConfigName() {
+		return this.configMaterial.name;
+	}
+	
 	@Override
 	public int hashCode() {
 		return this.configMaterial.id.hashCode();
@@ -611,11 +615,6 @@ public class LoreCraftableMaterial extends LoreMaterial {
 
 
 	public ItemChangeResult onDurabilityDeath(PlayerDeathEvent event, ItemStack stack) {
-		
-//		ItemChangeResult result = new ItemChangeResult();
-//		result.stack = stack;
-//		result.destroyItem = false;
-		
 		ItemChangeResult result = null;
 		for (ItemComponent comp : this.components.values()) {
 			result = comp.onDurabilityDeath(event, result, stack);

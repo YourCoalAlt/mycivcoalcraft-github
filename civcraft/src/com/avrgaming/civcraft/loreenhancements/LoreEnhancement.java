@@ -172,41 +172,39 @@ public abstract class LoreEnhancement {
 	}
 	
 	
-	
-	
-	
-	
 	public static ItemStack deductLivesAndDurability(Player p, ItemStack stack, double percent, boolean msg) {
-		String saved = "";
 		AttributeUtil attrs = new AttributeUtil(stack);
 		// if person died within last 4 seconds, do not take damage to prevent bug.
 		if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
+			CivMessage.send(p, CivColor.LightGrayBold+" » "+CivColor.LightGrayItalic+"You died too fast, not deducting durability life.");
 			return stack;
 		}
 		
-		int reduction = (int)(stack.getType().getMaxDurability()*percent);
-		int durabilityLeft = stack.getType().getMaxDurability() - stack.getDurability();
-		
-		if (durabilityLeft > reduction) {
-			stack.setDurability((short)(stack.getDurability() + reduction));
-			
-			int dmgpert = (durabilityLeft*100) / stack.getType().getMaxDurability();
-			int livesLeft = (int) (dmgpert / (percent*100)) - 1;
-			
-			for (String l : attrs.getLore()) {
-				if (!l.contains(" Lives Left")) saved += l+";";
-			}
-			
-			saved += CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left";
-			if (msg) CivMessage.sendNoRepeat(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-					CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
-		} else {
-			stack = new ItemStack(Material.AIR);
-			if (msg) CivMessage.sendNoRepeat(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-					CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
+		int lives_left = (int) (1 / percent) - 1;
+		if (attrs.getCivCraftProperty("lives_left") != null) {
+			lives_left = Integer.valueOf(attrs.getCivCraftProperty("lives_left")) - 1;
+			attrs.setCivCraftProperty("lives_left", String.valueOf(lives_left));
 		}
 		
-		attrs.setLore(saved.split(";"));
+		if (lives_left < 0) {
+			attrs.getStack().setType(Material.BEDROCK);
+			if (msg) CivMessage.send(p, CivColor.LightGrayBold+" » "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+"ran out of lives"+CivColor.LightGrayBold+" and broke!");
+		} else {
+			String saved = "";
+			for (String l : attrs.getLore()) {
+				if (!l.contains(" Lives Left")) {
+					saved += l+";";
+				} else {
+					saved += CivColor.YellowBold+lives_left+CivColor.LightGreen+" Lives Left;";
+				}
+			}
+			attrs.setLore(saved.split(";"));
+			
+			if (msg) CivMessage.send(p, CivColor.LightGrayBold+" » "+attrs.getName()+CivColor.LightGrayBold+" has "+
+					CivColor.YellowBold+lives_left+CivColor.LightGrayBold+" Lives until it breaks!");
+		}
+		
 		return attrs.getStack();
 	}
 	
@@ -234,87 +232,6 @@ public abstract class LoreEnhancement {
 		attrs.setLore(saved.split(";"));
 		return attrs.getStack();
 	}
-	
-	
-	
-	
-	
-/*	public static ItemStack getItemLivesLeftViaDurability(Player p, ItemStack stack, boolean doDamage) {
-		AttributeUtil attrs = new AttributeUtil(stack);
-		double percent;
-		if (attrs.getCivCraftProperty("death_percent_value") != null) {
-			percent = Double.valueOf(attrs.getCivCraftProperty("death_percent_value"));
-		} else {
-			percent = 0.1;
-		}
-		
-		if (doDamage) {
-			// if person died within last 4 seconds, do not take damage to prevent bug.
-			if (attrs.getCivCraftProperty("last_death") != null) {
-				if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
-					return stack;
-				}
-			} else {
-				attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
-			}
-			
-			int maxDura = stack.getType().getMaxDurability();
-			int reduction = (int)(maxDura*percent);
-			int durabilityLeft = maxDura - stack.getDurability();
-			attrs.setCivCraftProperty("last_death", String.valueOf(System.currentTimeMillis()));
-			if (durabilityLeft > reduction) {
-				int newDurability = (stack.getDurability() + reduction);
-				attrs.getStack().setDurability((short)newDurability);
-				
-				int dmgpert = (durabilityLeft*100) / maxDura;
-				int livesLeft = (int) (dmgpert / (percent*100)) - 1;
-				
-				String saved = "";
-				for (String l : attrs.getLore()) {
-					if (!l.contains(" Lives Left")) saved += l+";";
-				}
-				
-				String newSave = "";
-				for (String s : saved.split(";")) {
-					if (s.contains(" Lives Left")) continue;
-					else newSave += s+";";
-				}
-				
-				attrs.setLore(newSave.split(";"));
-				attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
-				stack = attrs.getStack();
-				
-				CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-								CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives until it breaks!");
-			} else {
-				CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has "+
-						CivColor.YellowBold+"run out of lives"+CivColor.LightGrayBold+" and broke!");
-				stack = new ItemStack(Material.AIR);
-			}
-		} else {
-			int livesLeft = (int) (1 / percent);
-			
-			String saved = "";
-			for (String l : attrs.getLore()) {
-				if (!l.contains(" Lives Left")) saved += l+";";
-			}
-			
-			String newSave = "";
-			for (String s : saved.split(";")) {
-				if (s.contains(" Lives Left")) continue;
-				else newSave += s+";";
-			}
-			
-			attrs.setLore(newSave.split(";"));
-			attrs.addLore(CivColor.YellowBold+livesLeft+CivColor.LightGreen+" Lives Left");
-			stack = attrs.getStack();
-			
-			CivMessage.send(p, CivColor.LightGrayBold+"Your "+attrs.getName()+CivColor.LightGrayBold+" has been healed to "+
-							CivColor.YellowBold+livesLeft+CivColor.LightGrayBold+" Lives.");
-		}
-		
-		return stack;
-	}*/
 	
 	public double getLevelDouble(AttributeUtil attrs) { return 0; }
 	public Integer getLevel(AttributeUtil attrs) { return 0; }

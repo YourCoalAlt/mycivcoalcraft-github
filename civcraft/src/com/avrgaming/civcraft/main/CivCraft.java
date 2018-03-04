@@ -68,7 +68,6 @@ import com.avrgaming.civcraft.listener.BlockListener;
 import com.avrgaming.civcraft.listener.BonusGoodieManager;
 import com.avrgaming.civcraft.listener.ChatListener;
 import com.avrgaming.civcraft.listener.CustomItemManager;
-import com.avrgaming.civcraft.listener.DebugListener;
 import com.avrgaming.civcraft.listener.DisableXPListener;
 import com.avrgaming.civcraft.listener.FishingListener;
 import com.avrgaming.civcraft.listener.HeroChatListener;
@@ -228,7 +227,6 @@ public final class CivCraft extends JavaPlugin {
 		pluginManager.registerEvents(new MarkerPlacementManager(), this);
 		pluginManager.registerEvents(new CustomItemManager(), this);
 		pluginManager.registerEvents(new PlayerListener(), this);		
-		pluginManager.registerEvents(new DebugListener(), this);
 		pluginManager.registerEvents(new LoreCraftableMaterialListener(), this);
 		pluginManager.registerEvents(new LoreGuiItemListener(), this);
 		pluginManager.registerEvents(new DisableXPListener(), this);

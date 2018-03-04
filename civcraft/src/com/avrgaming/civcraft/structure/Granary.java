@@ -24,6 +24,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.mobs.CivVillager;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -178,18 +179,14 @@ public class Granary extends Structure {
 	
 	public void spawnTaskVillager(Location loc, int direction) {
 		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
-		Villager v = loc.getWorld().spawn(vLoc, Villager.class);
-		v.teleport(vLoc);
-		v.setAdult();
-		v.setAI(false);
-		v.setCustomName("Granary Tasks");
-		v.setProfession(Profession.NITWIT);
+		CivVillager cv = loc.getWorld().spawn(vLoc, CivVillager.class);
+		cv.onSpawn(vLoc, "Granary Tasks", false, Profession.NITWIT);
 		
-		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+		String vilKey = this.getTown().getName()+":"+cv.getCustomName()+":"+vLoc.toString();
 		if (CivGlobal.getStructureVillager(vilKey) != null) {
-			v.setHealth(0); v.remove();
+			cv.setHealth(0); cv.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addStructureVillager(vilKey, cv);
 		}
 	}
 	

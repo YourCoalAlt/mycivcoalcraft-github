@@ -1,8 +1,8 @@
 package com.avrgaming.civcraft.mobs;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,11 +25,11 @@ import net.minecraft.server.v1_12_R1.GenericAttributes;
 
 public abstract class CustomMobListener {
 
-	public static HashMap<UUID, Entity> customMobs = new HashMap<UUID, Entity>();
-	public static HashMap<UUID, ConfigCustomMobs> mobList = new HashMap<UUID, ConfigCustomMobs>();
+	public static ConcurrentHashMap<UUID, Entity> customMobs = new ConcurrentHashMap<UUID, Entity>();
+	public static ConcurrentHashMap<UUID, ConfigCustomMobs> mobList = new ConcurrentHashMap<UUID, ConfigCustomMobs>();
 	public EntityLiving entity;
 	
-	public static HashMap<String, MobComponent> components = new HashMap<String, MobComponent>();
+	public static ConcurrentHashMap<String, MobComponent> components = new ConcurrentHashMap<String, MobComponent>();
 	
 	// Anti-trap stuff
 	private String targetName;

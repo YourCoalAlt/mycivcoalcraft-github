@@ -402,30 +402,28 @@ public class BlockListener implements Listener {
 			}
 		}
 
-		class SyncTask implements Runnable {
-			LivingEntity entity;
+		if (event.getEntityType() == EntityType.HORSE) {
+			class SyncTask implements Runnable {
+				LivingEntity entity;
 
-			public SyncTask(LivingEntity entity) {
-				this.entity = entity;
-			}
+				public SyncTask(LivingEntity entity) {
+					this.entity = entity;
+				}
 
-			@Override
-			public void run() {
-				if (entity != null) {
-					if (!HorseModifier.isCivCraftHorse(entity)) {
-						CivLog.warning("Removing a normally spawned horse.");
-						entity.remove();
+				@Override
+				public void run() {
+					if (entity != null) {
+						if (!HorseModifier.isCivCraftHorse(entity)) {
+							CivLog.warning("Removing a normally spawned horse.");
+							entity.remove();
+						}
 					}
 				}
 			}
-		}
-
-		if (event.getEntityType() == EntityType.HORSE) {
+			
 			ChunkCoord coord = new ChunkCoord(event.getEntity().getLocation());
 			Stable stable = Stable.stableChunks.get(coord);
-			if (stable != null) {
-				return;
-			}
+			if (stable != null) return;
 			
 			if (event.getSpawnReason().equals(SpawnReason.DEFAULT)) {
 				TaskMaster.syncTask(new SyncTask(event.getEntity()));
@@ -547,29 +545,6 @@ public class BlockListener implements Listener {
 		
 		return null;
 	}
-
-//	private static void destroyLiquidRecursive(Block source) {
-//		//source.setTypeIdAndData(CivData.AIR, (byte)0, false);
-//		NMSHandler nms = new NMSHandler();
-//		nms.setBlockFast(source.getWorld(), source.getX(), source.getY(), source.getZ(), 0, (byte)0);
-//		
-//		for (BlockFace face : BlockFace.values()) {
-//			Block relative = source.getRelative(face);
-//			if (relative == null) {
-//				continue;
-//			}
-//			
-//			if (!isLiquid(relative.getTypeId())) {
-//				continue;
-//			}
-//			
-//			destroyLiquidRecursive(relative);
-//		}
-//	}
-	
-//	private static boolean isLiquid(int id) {
-//		return (id >= CivData.WATER && id <= CivData.LAVA);
-//	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnBlockFromToEvent(BlockFromToEvent event) {
@@ -603,17 +578,15 @@ public class BlockListener implements Listener {
 		coord.setWorldname(spreadChunk.getWorld().getName());
 
 		TownChunk tc = CivGlobal.getTownChunk(coord);
-		if (tc == null) {
-			return;
-		}
-
+		if (tc == null) return;
+		
 		if (tc.perms.isFire() == false) {
 			if(event.getNewState().getType() == Material.FIRE) {
 				event.setCancelled(true);
 			}
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public void OnBlockPlaceEvent(BlockPlaceEvent event) {
 		Resident resident = CivGlobal.getResident(event.getPlayer());

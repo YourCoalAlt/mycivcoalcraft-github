@@ -14,14 +14,10 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Biome;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -366,7 +362,7 @@ public class MinecraftListener implements Listener {
 	public void onSwapHandItems(PlayerSwapHandItemsEvent e) {
 		boolean enabled = false;
 		try {
-			if (CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand") != "false") {
+			if (Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand")) == true) {
 				enabled = true;
 			}
 		} catch (InvalidConfiguration e1) {
@@ -379,7 +375,7 @@ public class MinecraftListener implements Listener {
 		}
 	}
 	
-	@EventHandler (priority = EventPriority.HIGHEST)
+/*	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onInventoryClick(InventoryClickEvent e){
 		if (!e.getInventory().getType().equals(InventoryType.CRAFTING)) {
 			return; //Making sure it's a survival player's inventory
@@ -409,7 +405,7 @@ public class MinecraftListener implements Listener {
 			e.setResult(Event.Result.DENY);
 			e.setCancelled(true);
 		}
-	}
+	}*/
 	
 	private static ArrayList<Material> mats = new ArrayList<Material>();
 	public boolean shouldWeCancel(ItemStack item) {		

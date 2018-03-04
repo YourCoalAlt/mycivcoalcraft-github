@@ -37,8 +37,12 @@ public class AdminMobCommand extends CommandBase {
 	}
 	
 	public void purgehostile_cmd() throws CivException {
-		Player p = getPlayer();
-		MobSpawner.despawnAllHostile(p);
+		if (sender instanceof Player) {
+			Player p = getPlayer();
+			MobSpawner.despawnAllHostile(p);
+		} else {
+			MobSpawner.despawnAllHostile(null);
+		}
 	}
 	
 	public void spawn_cmd() throws CivException {

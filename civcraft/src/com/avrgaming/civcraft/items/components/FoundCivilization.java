@@ -45,7 +45,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
 		attrs.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
-		attrs.addLore(ChatColor.RESET+CivColor.Rose+"<Right Click To Use>");
+		attrs.addLore(CivColor.LightGray+" « Right Click to Use » ");
 		attrs.addEnhancement("LoreEnhancementSoulBound", null, null);
 //		attrs.addLore(CivColor.Gold+"Soulbound");
 	}
@@ -77,7 +77,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 		
 		class SyncTask implements Runnable {
 			String name;
-				
+			
 			public SyncTask(String name) {
 				this.name = name;
 			}

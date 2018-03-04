@@ -69,7 +69,6 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
-import com.avrgaming.civcraft.loreenhancements.LoreEnhancementSoulBound;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreStoreage;
 import com.avrgaming.civcraft.main.CivData;
@@ -161,7 +160,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("clearresidents", "[town] - clears this town of it's random residents.");
 		commands.put("biomehere", "- shows you biome info where you're standing.");
 		commands.put("showinv", "shows you an inventory");
-		commands.put("setspecial", "sets special stuff");
 		commands.put("getspecial", "gets the special stuff");
 		commands.put("setcivnbt", "[key] [value] - adds this key.");
 		commands.put("getcivnbt", "[key] - gets this key");
@@ -644,20 +642,6 @@ public class DebugCommand extends CommandBase {
 		CivMessage.send(player, "MID:"+LoreMaterial.getMID(inHand));
 	}
 	
-	public void setspecial_cmd() throws CivException {
-		Player player = getPlayer();
-		ItemStack inHand = player.getInventory().getItemInMainHand();
-		if (inHand == null) {
-			throw new CivException("You need an item in your hand.");
-		}
-		
-	//	AttributeUtil attrs = new AttributeUtil(inHand);
-	//	attrs.setCivCraftProperty("customId", "testMyCustomId");
-		ItemStack stack = LoreMaterial.addEnhancement(inHand, new LoreEnhancementSoulBound(), 1);
-		player.getInventory().setItemInMainHand(stack);
-		CivMessage.send(player, "Set it.");
-	}
-	
 	public void getspecial_cmd() throws CivException {
 		Player player = getPlayer();
 		ItemStack inHand = player.getInventory().getItemInMainHand();
@@ -666,8 +650,6 @@ public class DebugCommand extends CommandBase {
 		}
 		
 		AttributeUtil attrs = new AttributeUtil(inHand);
-		String value = attrs.getCivCraftProperty("soulbound");
-		CivMessage.send(player, "Soulbound: "+value);
 		
 		for (LoreEnhancement l : attrs.getEnhancements()) {
 			CivMessage.send(player, l.getDisplayName()+" level "+l.getLevel(attrs));

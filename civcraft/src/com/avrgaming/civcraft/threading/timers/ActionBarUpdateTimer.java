@@ -1,4 +1,3 @@
-
 package com.avrgaming.civcraft.threading.timers;
 
 import org.bukkit.Bukkit;
@@ -28,11 +27,16 @@ public class ActionBarUpdateTimer implements Runnable {
 			
 			String borders = "";
 			if (cc != null && tc != null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", claim of "+CivColor.LightBlue+cc.getTown().getName();
-			} else if (cc != null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+CivColor.Gold+"nearby "+CivColor.LightBlue+cc.getTown().getName();
+				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+
+						CivColor.Gold+"claim"+CivColor.LightGreen+" of "+CivColor.LightBlue+tc.getTown().getName();
+			} else if (tc == null && cc != null) {
+				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+
+						CivColor.Rose+"unclaimed"+CivColor.LightGreen+" near "+CivColor.LightBlue+cc.getTown().getName();
+			} else if (tc != null && cc == null) {
+				borders = CivColor.LightGreen+"Borders of "+CivColor.Rose+"Wilderness"+CivColor.LightGreen+", "+CivColor.LightGreen+", "+
+						CivColor.Gold+"claim"+CivColor.LightGreen+" of "+CivColor.LightBlue+tc.getTown().getName();
 			} else {
-				borders = CivColor.Rose+"Wilderness, Unclaimed Land";
+				borders = CivColor.Rose+"Wilderness";
 			}
 			
 			if (res != null) {
