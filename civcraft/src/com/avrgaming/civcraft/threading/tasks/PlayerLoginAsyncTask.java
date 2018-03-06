@@ -109,7 +109,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 				resident.begin(resident, getPlayer());
 			}*/
 			
-			if (!resident.isGivenKit()) {
+			if (resident == null || !resident.isGivenKit()) {
 				resident.begin(resident, getPlayer());
 		}
 			

@@ -650,10 +650,9 @@ public class Town extends SQLObject {
 		this.extraBeakerRate = rate;
 	}
 	
-	public static Town newTown(Resident resident, String name, Civilization civ, boolean free, boolean capitol, 
-			Location loc) throws CivException {
+	public static Town newTown(Resident resident, String name, Civilization civ, boolean free, boolean capitol, Location loc) throws CivException {
+		resident.undoPreview();
 		try {
-			
 			if (War.isWarTime() && !free && civ.getDiplomacyManager().isAtWar()) {
 				throw new CivException("Cannot start towns during WarTime if you're at war.");
 			}
@@ -720,25 +719,47 @@ public class Town extends SQLObject {
 				}
 			}
 			
-			//Test that we are not too close to another civ
+			int min_culture = CivSettings.getMaxCultureLevel();
+			int max_culture = min_culture/4;
 			try {
-				int min_distance = CivSettings.getInteger(CivSettings.civConfig, "civ.min_distance");
-				ChunkCoord foundLocation = new ChunkCoord(loc);
-				
-				for (TownChunk cc : CivGlobal.getTownChunks()) {
+				min_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.min_culture");
+				max_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.max_culture");
+			} catch (InvalidConfiguration e1) {
+				CivLog.warning("[TOWN] Missing either min_culture or max_culture from civ.yml; Using defaults MaxLevel and MaxLevel/4.");
+			}
+			
+			ChunkCoord foundLocation = new ChunkCoord(loc);
+			int min_distance = Math.round((CivSettings.cultureLevels.get(max_culture).chunks - CivSettings.cultureLevels.get(min_culture).chunks) / 4);
+			
+			TownChunk returnChunk = null;
+			for (TownChunk cc : CivGlobal.getTownChunks()) {
+				if (cc.getChunkCoord().equals(foundLocation)) {
 					if (cc.getTown().getCiv() == newTown.getCiv()) {
 						continue;
+					} else {
+						throw new CivException("Cannot be standing in another civilization's culture borders.");
 					}
-					
-					if (foundLocation.distance(cc.getChunkCoord()) <= min_distance) {
-						throw new CivException("The town borders of "+cc.getTown().getName()+" are too close, cannot found town here.");
+				}
+				
+				if (foundLocation.distance(cc.getChunkCoord()) <= min_distance) {
+					if (returnChunk != null) {
+						double foundDistance = Math.round(foundLocation.distance(cc.getChunkCoord())) - min_distance;
+						if (foundDistance < 0) foundDistance *= -1;
+						double returnDistance = Math.round(foundLocation.distance(returnChunk.getChunkCoord()))- min_distance;
+						if (returnDistance < 0) returnDistance *= -1;
+						if (returnDistance < foundDistance) {
+							returnChunk = cc;
+						}
+					} else {
+						returnChunk = cc;
 					}
-				}	
-			} catch (InvalidConfiguration e1) {
-				e1.printStackTrace();
-				throw new CivException("Internal configuration exception.");
-			}		
+				}
+			}
 			
+			if (returnChunk != null) {
+				throw new CivException("Too close to the town borders of "+returnChunk.getTown().getName()+" ("+Math.round(foundLocation.distance(returnChunk.getChunkCoord()))+" chunks). "+
+										" Must be at least "+min_distance+" chunks away from another town.");
+			}	
 			
 			if (!free) {
 				ConfigUnit unit = Unit.getPlayerUnit(player);
@@ -746,8 +767,8 @@ public class Town extends SQLObject {
 					throw new CivException("You must be a settler in order to found a town.");
 				}
 			}
+			
 			newTown.saveNow();
-		
 			CivGlobal.addTown(newTown);
 			
 			// Create permission groups for town.
@@ -757,7 +778,6 @@ public class Town extends SQLObject {
 				residentsGroup.addMember(resident);
 				residentsGroup.saveNow();
 				newTown.setDefaultGroup(residentsGroup);
-	
 				
 				PermissionGroup mayorGroup = new PermissionGroup(newTown, "mayors");
 				mayorGroup.addMember(resident);
@@ -780,13 +800,12 @@ public class Town extends SQLObject {
 			} catch (AlreadyRegisteredException e1) {
 				throw new CivException("Town already has this town chunk?");
 			}
-
+			
 			tc.save();
 			CivGlobal.addTownChunk(tc);			
 			civ.addTown(newTown);
 			
 			try {
-				
 				Location centerLoc = loc;
 				if (capitol) {
 					ConfigBuildableInfo buildableInfo = CivSettings.structures.get("s_capitol");

@@ -21,7 +21,7 @@ global:
         - 'civ_backpack:1'
 
    # Amount of mins PvP timer remains active after first login.
-   pvp_timer: 240
+   pvp_timer: 180
 
    # Regen spawn at midnight every day.
    regen_spawn_hour: 0
@@ -29,7 +29,7 @@ global:
    # Exchange rate you get using /resident exchange instead of using a bank.
    exchange_rate: 0.4
 
-   starting_coins: 750.0
+   starting_coins: 1000.0
 
    # Number of hours that must pass before a resident can join a different civ
    join_civ_cooldown: 1
@@ -88,7 +88,10 @@ civ:
     coins_per_beaker: 10
 
     # must be this many chunks away from the nearest culture block to start a new civilization.
-    min_distance: 16
+    # Formula used to calculate distance: max_culture - min_culture (It takes chunks for the culture levels in culture.yml)
+    # Ex. max_culture = 16 w/ 40 chunks, min_culture = 5 w/ 16 chunks, 40 - 16 = 24 chunks away.
+    max_culture: 16
+    min_culture: 5
 
     # Number of days after a civilization is conquered that it must wait before declaring revolution
     revolution_cooldown: 2

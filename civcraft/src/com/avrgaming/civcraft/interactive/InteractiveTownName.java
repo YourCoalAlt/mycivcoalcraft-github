@@ -79,7 +79,7 @@ public class InteractiveTownName implements InteractiveResponse {
 				}
 				
 				CivMessage.sendHeading(player, "Survey Results");
-				CivMessage.send(player, TownCommand.survey(player.getLocation()));
+				CivMessage.send(player, TownCommand.survey(player.getLocation(), 1));
 				
 				Location capLoc = resident.getCiv().getCapitolTownHallLocation();
 				if (capLoc == null) {

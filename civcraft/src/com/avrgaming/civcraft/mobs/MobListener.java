@@ -147,7 +147,8 @@ public class MobListener implements Listener {
 			}
 			
 			Random rand = new Random();
-			int coins = (rand.nextInt(cmob.exp_max - cmob.exp_min) + cmob.exp_min);
+			int coins = rand.nextInt(cmob.exp_max);
+			if (coins < cmob.exp_min) coins = cmob.exp_min;
 			coins = (int) ((coins * mod) / 2);
 			event.setDroppedExp(coins);
 			
@@ -193,8 +194,6 @@ public class MobListener implements Listener {
 							dropAmt = dropMax;
 						}
 					}
-					
-					CivMessage.global("min "+dropMin+" max "+dropMax+" amt"+dropAmt);
 					
 					if (dropAmt > 0) {
 						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(mat);

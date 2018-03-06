@@ -1663,6 +1663,7 @@ public class Resident extends SQLObject {
 	}
 	
 	public void begin(final Resident res, final Player p2) {
+		if (!p2.isOnline()) return;
 		res.setChatEnabled(false);
 		p2.setInvulnerable(true);
 		
@@ -1681,28 +1682,29 @@ public class Resident extends SQLObject {
 					
 					String resetS = CivColor.LightGrayItalic;
 					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Are you ready to begin?");
-					Thread.sleep(1000*4);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Are you ready to begin?");
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you build a "+CivColor.LightPurpleItalic+"civilization"+resetS+"?");
-					Thread.sleep(1000*4);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you build a "+CivColor.LightPurpleItalic+"civilization"+resetS+"?");
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.WEATHER_RAIN_ABOVE, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you "+CivColor.LightGreenItalic+"grow"+resetS+
+					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you "+CivColor.LightGreenItalic+"expand"+resetS+
 								" and "+CivColor.GoldItalic+"colonize"+resetS+" the world?");
-					Thread.sleep(1000*4);
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75f, 0.75f);
 					p.playSound(p.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 0.8f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you survive the "+CivColor.RedItalic+"bloodlust of war"+resetS+"?");
-					Thread.sleep(1000*4);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you survive the "+CivColor.RedItalic+"bloodlust of war"+resetS+"?");
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivilizationCraft", CivColor.LightGrayItalic+"Can you become "+CivColor.LightBlueItalic+"a world power"+resetS+"?");
-					Thread.sleep(1000*4);
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you become a "+CivColor.LightBlueItalic+"world power"+resetS+"?");
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					
 					
 					res.setRegistered(System.currentTimeMillis());
@@ -1727,11 +1729,7 @@ public class Resident extends SQLObject {
 					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
 					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);
-					
-					if (!res.isGivenKit()) {
-						TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
-					}
-					
+					TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
 				} catch (InterruptedException | InvalidConfiguration | CivException e) {
 					res.setChatEnabled(true);
 					p2.setInvulnerable(false);
@@ -1740,7 +1738,6 @@ public class Resident extends SQLObject {
 				res.setChatEnabled(true);
 				p2.setInvulnerable(false);
 			}
-			
 		}).start();
 	}
 }

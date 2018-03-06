@@ -537,6 +537,7 @@ public class Civilization extends SQLObject {
 	}
 
 	public static void newCiv(String name, String capitolName, Resident resident, Player player, Location loc) throws CivException {
+		resident.undoPreview();
 		ItemStack stack = player.getInventory().getItemInMainHand();
 		// Verify we have the correct item somewhere in our inventory.
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -554,18 +555,42 @@ public class Civilization extends SQLObject {
 			throw new CivException("A town named "+capitolName+" already exists!");
 		}
 		
-		// Test that we are not too close to another civ
+		int min_culture = CivSettings.getMaxCultureLevel();
+		int max_culture = min_culture/4;
 		try {
-			int min_distance = CivSettings.getInteger(CivSettings.civConfig, "civ.min_distance");
-			ChunkCoord foundLocation = new ChunkCoord(loc);
-			for (CultureChunk cc : CivGlobal.getCultureChunks()) {
-				if (foundLocation.distance(cc.getChunkCoord()) <= min_distance) {
-					throw new CivException("Too close to the culture of "+cc.getCiv().getName()+", cannot found civilization here.");
-				}
-			}	
+			min_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.min_culture");
+			max_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.max_culture");
 		} catch (InvalidConfiguration e1) {
-			e1.printStackTrace();
-			throw new CivException("Internal configuration exception.");
+			CivLog.warning("[CIV] Missing either min_culture or max_culture from civ.yml; Using defaults MaxLevel and MaxLevel/4.");
+		}
+		
+		ChunkCoord foundLocation = new ChunkCoord(loc);
+		int min_distance = CivSettings.cultureLevels.get(max_culture).chunks - CivSettings.cultureLevels.get(min_culture).chunks;
+		
+		CultureChunk returnChunk = null;
+		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+			if (cc.getChunkCoord().equals(foundLocation)) {
+				throw new CivException("Cannot be standing in another civilization's culture borders.");
+			}
+			
+			if (foundLocation.distance(cc.getChunkCoord()) <= min_distance) {
+				if (returnChunk != null) {
+					double foundDistance = Math.round(foundLocation.distance(cc.getChunkCoord())) - min_distance;
+					if (foundDistance < 0) foundDistance *= -1;
+					double returnDistance = Math.round(foundLocation.distance(returnChunk.getChunkCoord()))- min_distance;
+					if (returnDistance < 0) returnDistance *= -1;
+					if (returnDistance < foundDistance) {
+						returnChunk = cc;
+					}
+				} else {
+					returnChunk = cc;
+				}
+			}
+		}
+		
+		if (returnChunk != null) {
+			throw new CivException("Too close to the culture of "+returnChunk.getCiv().getName()+" ("+Math.round(foundLocation.distance(returnChunk.getChunkCoord()))+" chunks). "+
+									" Must be at least "+min_distance+" chunks away from another civilization.");
 		}
 		
 		try {
@@ -576,8 +601,7 @@ public class Civilization extends SQLObject {
 				CivLog.error("Caught exception:"+e.getMessage()+" error code:"+e.getErrorCode());
 				if (e.getMessage().contains("Duplicate entry")) {
 					SQL.deleteByName(name, TABLE_NAME);
-					throw new CivException("We detected and internal inconsistency with the database. Try founding your civ again,"+
-				"if the problem persists, contact an admin.");
+					throw new CivException("We detected and internal inconsistency with the database. Try founding your civ again. If the problem persists, contact an admin.");
 				}
 			}
 			
@@ -586,7 +610,7 @@ public class Civilization extends SQLObject {
 			leadersGroup.addMember(resident);
 			leadersGroup.saveNow();
 			civ.setLeaderGroup(leadersGroup);
-		
+			
 			PermissionGroup adviserGroup = new PermissionGroup(civ, "advisers");
 			adviserGroup.saveNow();
 			civ.setAdviserGroup(adviserGroup);
@@ -606,7 +630,6 @@ public class Civilization extends SQLObject {
 			ItemStack newStack = new ItemStack(Material.AIR);
 			player.getInventory().setItemInMainHand(newStack);
 			CivMessage.global("The Civilization of "+civ.getName()+" has been founded! "+civ.getCapitolName()+" is it's capitol!");
-			resident.undoPreview();
 		} catch (InvalidNameException e) {
 			throw new CivException("The name of "+name+" is invalid, please choose another.");
 		} catch (SQLException e) {

@@ -10,7 +10,7 @@ custom_mobs:
    move_speed: 1.05
    attack_dmg: 6.0
    defense_dmg: 4.5
-   follow_range: 24.0
+   follow_range: 32.0
    kb_resistance: 0.3
    exp_min: 5
    exp_max: 20
@@ -34,8 +34,8 @@ custom_mobs:
    max_health: 23.5
    move_speed: 1.05
    attack_dmg: 10.0
-   defense_dmg: 6.5
-   follow_range: 24.0
+   defense_dmg: 5.5
+   follow_range: 32.0
    kb_resistance: 0.3
    exp_min: 15
    exp_max: 40
@@ -58,8 +58,8 @@ custom_mobs:
    max_health: 29.5
    move_speed: 1.05
    attack_dmg: 12.0
-   defense_dmg: 8.5
-   follow_range: 24.0
+   defense_dmg: 7.5
+   follow_range: 32.0
    kb_resistance: 0.3
    exp_min: 30
    exp_max: 75
@@ -81,8 +81,8 @@ custom_mobs:
    max_health: 35.5
    move_speed: 1.05
    attack_dmg: 14.0
-   defense_dmg: 10.5
-   follow_range: 24.0
+   defense_dmg: 9.5
+   follow_range: 32.0
    kb_resistance: 0.3
    exp_min: 50
    exp_max: 115
@@ -103,8 +103,8 @@ custom_mobs:
    max_health: 41.5
    move_speed: 1.05
    attack_dmg: 16.0
-   defense_dmg: 12.5
-   follow_range: 24.0
+   defense_dmg: 11.5
+   follow_range: 32.0
    kb_resistance: 0.3
    exp_min: 85
    exp_max: 200
@@ -112,8 +112,7 @@ custom_mobs:
    rxp_mod: 1.1
    mod_type: 'Weapondry'
    biomes:
-     - 'PLAINS'
-     - 'FOREST'
+     - 'HELL'
    drops:
      - '367,0,1,2,0.75,0.0,1,0'
 #

@@ -80,7 +80,7 @@ public class InteractiveCapitolName implements InteractiveResponse {
 				Resident resident = CivGlobal.getResident(playerName);
 				if (resident == null) { return; }
 				
-				CivMessage.send(player, TownCommand.survey(player.getLocation()));
+				CivMessage.send(player, TownCommand.survey(player.getLocation(), 1));
 				CivMessage.send(player, "");
 				CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"Are you sure? Type 'yes' and I will create this Civilization. Type anything else, and I will forget the whole thing.");
 				resident.setInteractiveMode(new InteractiveConfirmCivCreation());				

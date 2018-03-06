@@ -15,6 +15,9 @@ potions:
 # ------------------------------------------
 # the amount to multiply cottage coins once taxation is researched
 taxation_cottage_buff: 2.0
+
+# How much to multiply cost of techs without a civilization
+civ_multiplyer: 2.0
 #
 techs: #Note: Pts = Beakers/10
 #============================#
@@ -65,16 +68,6 @@ techs: #Note: Pts = Beakers/10
       - "wonder"
     require_techs:
 #
-  - id: 'tech_artillery'
-    name: 'tech_artillery'
-    beaker_cost: 0
-    cost: 0.0
-    points: 0
-    tier: 0
-    unlocks:
-      - "arrow tower"
-    require_techs:
-#
   - id: 'tech_gunpowder'
     name: 'tech_gunpowder'
     beaker_cost: 0
@@ -90,9 +83,10 @@ techs: #Note: Pts = Beakers/10
 #============================#
   - id: 'tech_armory'
     name: 'Armory'
-    beaker_cost: 500
+    beaker_cost: 400
     cost: 4000.0
-    points: 50
+    points: 40
+    civ: false
     tier: 1
     unlocks:
       - "Structure Barracks"
@@ -102,22 +96,25 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_mining'
     name: 'Mining'
-    beaker_cost: 500
+    beaker_cost: 400
     cost: 4000.0
-    points: 50
+    points: 40
+    civ: false
     tier: 1
     unlocks:
       - "Structure Trommel"
       - "T2 Tech Masonry"
-      - "T3 Tech Productivity"
       - "T2 Tech Writing"
+      - "T2 Tech Excavation"
+      - "T3 Tech Productivity"
     require_techs: 'tech_doesnotexist'
 #
   - id: 'tech_irrigation'
     name: 'Irrigation'
-    beaker_cost: 500
+    beaker_cost: 400
     cost: 4000.0
-    points: 50
+    points: 40
+    civ: false
     tier: 1
     unlocks:
       - "Structure Farm"
@@ -127,9 +124,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_deforestation'
     name: 'Deforestation'
-    beaker_cost: 500
+    beaker_cost: 400
     cost: 4000.0
-    points: 50
+    points: 40
+    civ: false
     tier: 1
     unlocks:
       - "Structure Lumber Mill"
@@ -138,9 +136,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_mysticism'
     name: 'Mysticism'
-    beaker_cost: 500
+    beaker_cost: 400
     cost: 4000.0
-    points: 50
+    points: 40
+    civ: false
     tier: 1
     unlocks:
       - "Structure Bank Level 1"
@@ -157,6 +156,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Structure Blacksmith"
@@ -171,6 +171,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Structure Wall"
@@ -182,10 +183,23 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Structure Library"
       - "T3 Tech Experimentation"
+      - "T4 Tech Linguistics"
+    require_techs: 'tech_mining'
+#
+  - id: 'tech_excavation'
+    name: 'Excavation'
+    beaker_cost: 1000
+    cost: 7500.0
+    points: 100
+    civ: false
+    tier: 2
+    unlocks:
+      - "Structure Sifter"
     require_techs: 'tech_mining'
 #
   - id: 'tech_animal_husbandry'
@@ -193,6 +207,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Structure Grocer"
@@ -205,10 +220,12 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Struture Granary"
       - "T3 Tech Housing"
+      - "T5 Tech Baking"
     require_techs: 'tech_irrigation'
 #
   - id: 'tech_code_of_laws'
@@ -216,6 +233,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Bank Upgrade Level 2"
@@ -228,6 +246,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 1000
     cost: 7500.0
     points: 100
+    civ: false
     tier: 2
     unlocks:
       - "Structure Altar"
@@ -242,6 +261,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Unit Settler"
@@ -255,9 +275,10 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
-      - "Weapon T2 Aluminium Sword"
+      - "T2 Aluminium Sword"
       - "T7 Tech Swordsmithing"
     require_techs: 'tech_blacksmithing'
 #
@@ -266,9 +287,10 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
-      - "Armor T2 Aluminium Metal"
+      - "T2 Aluminium Metal Armor"
       - "T7 Tech Metallurgy"
     require_techs: 'tech_blacksmithing'
 #
@@ -277,9 +299,10 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
-      - "Armor T2 Aluminium Leather"
+      - "T2 Aluminium Leather Armor"
       - "T7 Tech Leather Refinement"
     require_techs: 'tech_blacksmithing'
 #
@@ -288,9 +311,10 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
-      - "Weapon Traditional Bow"
+      - "T2 Traditional Bow"
       - "T7 Tech Fletching"
     require_techs: 'tech_blacksmithing'
 #
@@ -299,6 +323,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Structure Scout Tower"
@@ -311,6 +336,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Structure Mine"
@@ -323,6 +349,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Structure Lab"
@@ -335,6 +362,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Structure Cottage"
@@ -347,6 +375,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Bank Upgrade Level 3"
@@ -360,6 +389,7 @@ techs: #Note: Pts = Beakers/10
     beaker_cost: 2000
     cost: 15000.0
     points: 200
+    civ: false
     tier: 3
     unlocks:
       - "Structure Monument"
@@ -372,22 +402,24 @@ techs: #Note: Pts = Beakers/10
 #============================#
   - id: 'tech_trading'
     name: 'Trading'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: false
     tier: 4
     unlocks:
       - "Structure Trade Outpost"
       - "Structure Trade Boat"
-      - "T7 Tech Efficiency"
       - "T5 Tech Commerce*"
+      - "T7 Tech Efficiency"
     require_techs: 'tech_productivity'
 #
   - id: 'tech_shipbuilding'
     name: 'Shipbuilding'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: false
     tier: 4
     unlocks:
       - "Structure Shipyard"
@@ -395,11 +427,23 @@ techs: #Note: Pts = Beakers/10
       - "T5 Tech Commerce*"
     require_techs: 'tech_productivity:tech_experimentation'
 #
+  - id: 'tech_linguistics'
+    name: 'Linguistics'
+    beaker_cost: 3500
+    cost: 30000.0
+    points: 350
+    civ: true
+    tier: 4
+    unlocks:
+      - "TBD"
+    require_techs: 'tech_writing'
+#
   - id: 'tech_horseback_riding'
     name: 'Horseback Riding'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: false
     tier: 4
     unlocks:
       - "Structure Stable"
@@ -407,9 +451,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_objectification'
     name: 'Objectification*'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: false
     tier: 4
     unlocks:
       - "Structure Mob Grinder"
@@ -418,9 +463,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_currency'
     name: 'Currency'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: true
     tier: 4
     unlocks:
       - "Bank Upgrade Level 4"
@@ -430,9 +476,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_priesthood'
     name: 'Priesthood'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: true
     tier: 4
     unlocks:
       - "Structure Temple"
@@ -441,9 +488,10 @@ techs: #Note: Pts = Beakers/10
 #
   - id: 'tech_brewing'
     name: 'Brewing'
-    beaker_cost: 3750
+    beaker_cost: 3500
     cost: 30000.0
-    points: 375
+    points: 350
+    civ: true
     tier: 4
     unlocks:
       - "Potion Speed I"
@@ -454,20 +502,110 @@ techs: #Note: Pts = Beakers/10
 #============================#
 #======== > Tier 5 < ========#
 #============================#
+  - id: 'tech_strategy'
+    name: 'Strategy'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: true
+    tier: 5
+    unlocks:
+      - "Unit Spearman"
+      - "Unit Siege"
+      - "T7 Tech Stealth"
+    require_techs: 'tech_exploration_and_strength'
+#
+  - id: 'tech_artillery'
+    name: 'Artillery'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: true
+    tier: 5
+    unlocks:
+      - "Structure Arrow Tower"
+      - "T6 Tech Advanced Artillery"
+    require_techs: 'tech_advanced_masonry'
+#
+  - id: 'tech_sailing'
+    name: 'Sailing'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: false
+    tier: 5
+    unlocks:
+      - "Structure Fishing Boat"
+      - "T8 Tech Cartography*"
+    require_techs: 'tech_shipbuilding'
+#
+  - id: 'tech_commerce'
+    name: 'Commerce'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: false
+    tier: 5
+    unlocks:
+      - "Structure Market"
+      - "Structure Store"
+      - "T8 Tech Cartography*"
+      - "T8 Tech Interdimensional"
+    require_techs: 'tech_trading:tech_shipbuilding'
+#
+  - id: 'tech_baking'
+    name: 'Baking'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: false
+    tier: 5
+    unlocks:
+      - "Structure Bakery"
+      - "T7 Tech Machinery*"
+    require_techs: 'tech_pottery'
+#
+  - id: 'tech_automation'
+    name: 'Automation'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: false
+    tier: 5
+    unlocks:
+      - "Structure Windmill"
+      - "T7 Tech Machinery*"
+      - "T10 Tech Architecture*"
+    require_techs: 'tech_housing'
+#
+  - id: 'tech_accounting'
+    name: 'Accounting'
+    beaker_cost: 8000
+    cost: 65000.0
+    points: 800
+    civ: true
+    tier: 5
+    unlocks:
+      - "Bank Upgrade Level 5"
+      - "Bank Interest Upgrade Level 2"
+      - "Town Upgrade Town"
+      - "T6 Economics"
+    require_techs: 'tech_'
+#
+#============================#
+#======== > Tier 6 < ========#
+#============================#
 #  - id: 'tech_'
 #    name: ''
 #    beaker_cost: 
 #    cost: .0
 #    points: 
-#    tier: 5
+#    civ: true
+#    tier: 6
 #    unlocks:
 #      - ""
 #      - ""
 #      - "T Tech "
 #    require_techs: 'tech_'
 #
-#============================#
-#======== > Tier 6 < ========#
-#============================#
-
 #

@@ -22,6 +22,7 @@ package com.avrgaming.civcraft.threading.tasks;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -59,6 +60,29 @@ public class PostBuildSyncTask implements Runnable {
 	}
 	
 	public static void start(Template tpl, Buildable buildable) {
+		for (int x = 0; x < tpl.size_x; x++) {
+			for (int y = 0; y < tpl.size_y; y++) {
+				for (int z = 0; z < tpl.size_z; z++) {
+					Block b = buildable.getCorner().getBlock().getRelative(x, y, z);
+					SimpleBlock sb = tpl.blocks[x][y][z];
+					
+					if (sb.getMaterial() == Material.AIR) continue;
+					if (b.getType() != sb.getMaterial()) {
+						ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+					}
+					
+					if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+						Sign s2 = (Sign)b.getState();
+						s2.setLine(0, tpl.blocks[x][y][z].message[0]);
+						s2.setLine(1, tpl.blocks[x][y][z].message[1]);
+						s2.setLine(2, tpl.blocks[x][y][z].message[2]);
+						s2.setLine(3, tpl.blocks[x][y][z].message[3]);
+						s2.update();
+					}
+				}
+			}
+		}
+		
 		for (BlockCoord relativeCoord : tpl.doorRelativeLocations) {
 			SimpleBlock sb = tpl.blocks[relativeCoord.getX()][relativeCoord.getY()][relativeCoord.getZ()];
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
@@ -76,7 +100,6 @@ public class PostBuildSyncTask implements Runnable {
 		for (BlockCoord relativeCoord : tpl.attachableLocations) {
 			SimpleBlock sb = tpl.blocks[relativeCoord.getX()][relativeCoord.getY()][relativeCoord.getZ()];
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
-			
 			Block block = absCoord.getBlock();
 			if (absCoord.getBlock().getType() == Material.WEB) {
 				ItemManager.setTypeIdAndData(block, CivData.AIR, (byte)0, false);
@@ -101,6 +124,10 @@ public class PostBuildSyncTask implements Runnable {
 			StructureSign structSign;
 			Block block;
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
+			
+			if (absCoord.getBlock().getType() == Material.WEB) {
+				ItemManager.setTypeIdAndData(absCoord.getBlock(), CivData.AIR, (byte)0, false);
+			}
 			
 			/* Signs and chests should already be handled, look for more exotic things. */
 			switch (sb.command) {

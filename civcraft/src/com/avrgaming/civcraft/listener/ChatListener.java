@@ -38,7 +38,8 @@ public class ChatListener implements Listener {
 		Player p = event.getPlayer();
 		Resident resident = CivGlobal.getResident(p);
 		if (resident == null) {
-			// resident not found, I guess just let the chat through.
+			CivMessage.sendError(p, "Resident is null, cannot chat globally!");
+			event.setCancelled(true);
 			return;
 		}
 		
@@ -79,8 +80,5 @@ public class ChatListener implements Listener {
 			resident.getInteractiveResponse().respond(event.getMessage(), resident);
 			event.setCancelled(true);
 		}
-		
-	//	CivLog.debug("Got message:"+event.getMessage());
-		//event.setFormat("[[[%s %s]]]");
 	}
 }

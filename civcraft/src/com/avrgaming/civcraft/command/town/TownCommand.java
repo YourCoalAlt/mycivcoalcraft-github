@@ -214,10 +214,9 @@ public class TownCommand extends CommandBase {
 		player.openInventory(inv);
 	}
 	
-	public static ArrayList<String> survey(Location loc) {
+	public static ArrayList<String> survey(Location loc, int culture_level) {
 		ChunkCoord start = new ChunkCoord(loc);
-		ConfigCultureLevel lvl = CivSettings.cultureLevels.get(1);
-
+		ConfigCultureLevel lvl = CivSettings.cultureLevels.get(culture_level);
 		ArrayList<String> outList = new ArrayList<String>();
 		
 		Queue<ChunkCoord> closedSet = new LinkedList<ChunkCoord>();	
@@ -227,36 +226,22 @@ public class TownCommand extends CommandBase {
 		//Enqueue all neighbors.
 		while (!openSet.isEmpty()) {
 			ChunkCoord node = openSet.poll();
-			
-			if (closedSet.contains(node)) {
-				continue;
-			}
-			
-			if (node.manhattanDistance(start) > lvl.chunks) {
-				continue;
-			//	break;
-			}
-			
+			if (closedSet.contains(node)) continue;
+			if (node.manhattanDistance(start) > lvl.chunks) continue;
 			closedSet.add(node);
 			
 			//Enqueue all neighbors.
 			int[][] offset = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
 			for (int i = 0; i < 4; i++) {
 				ChunkCoord nextCoord = new ChunkCoord(node.getWorldname(), 
-						node.getX() + offset[i][0], 
-						node.getZ() + offset[i][1]);
+						node.getX() + offset[i][0], node.getZ() + offset[i][1]);
 				
-				if (closedSet.contains(nextCoord)) {
-					continue;
-				}
-				
+				if (closedSet.contains(nextCoord)) continue;
 				openSet.add(nextCoord);
 			}
 		}
 		
 		HashMap<String, Integer> biomes = new HashMap<String, Integer>();
-		
-	//	double coins = 0.0;
 		double hammers = 0.0;
 		double growth = 0.0;
 		double happiness = 0.0;
@@ -275,15 +260,13 @@ public class TownCommand extends CommandBase {
 			}
 			
 			ConfigCultureBiomeInfo info = CivSettings.getCultureBiome(biome.name());
-			
-		//	coins += info.coins;
 			hammers += info.hammers;
 			growth += info.growth;
 			happiness += info.happiness;
 			beakers += info.beakers;
 		}
 		
-		outList.add(CivColor.LightBlue+"Biome Counts");
+		outList.add(CivColor.LightBlue+"Biome Counts - Culture Level "+lvl.level);
 		int totalBiomes = 0;
 		String out = "";
 		for (String biome : biomes.keySet()) {
@@ -304,7 +287,7 @@ public class TownCommand extends CommandBase {
 	
 	public void survey_cmd() throws CivException {
 		Player player = getPlayer();
-		CivMessage.send(player, survey(player.getLocation()));
+		CivMessage.send(player, survey(player.getLocation(), 1));
 	}
 	
 	public void capitulate_cmd() throws CivException {

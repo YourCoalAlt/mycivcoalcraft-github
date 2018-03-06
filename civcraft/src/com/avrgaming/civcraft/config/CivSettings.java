@@ -915,7 +915,6 @@ public class CivSettings {
 			}
 		}
 		return returnLevel;
-		
 	}
 	
 	public static ConfigCultureBiomeInfo getCultureBiome(String name) {

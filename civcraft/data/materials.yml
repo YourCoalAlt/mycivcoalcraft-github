@@ -766,9 +766,9 @@ materials:
 #======================================================#
 # Checked 01/21/2017
   - id: 'civ_found_civ'
-    item_id: 369
+    item_id: 422
     item_data: 0
-    name: 'Founding Civilization Flag'
+    name: 'Founding City-State Flag'
     craftable: true
     shaped: true
     category: '<lightgray>Special'
@@ -943,7 +943,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Damage'
-         value: '5.5'
+         value: '6.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'

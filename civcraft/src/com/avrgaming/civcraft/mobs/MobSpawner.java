@@ -36,23 +36,16 @@ public class MobSpawner {
 		for (Entity e : CustomMobListener.customMobs.values()) {
 			CustomMobListener.customMobs.remove(e.getUniqueID());
 			CustomMobListener.mobList.remove(e.getUniqueID());
-			countCustom++;
-			countTotal++;
 			e.getBukkitEntity().remove();
+			countCustom++;
+//			countTotal++;
 		}
 		
 		for (Chunk c : Bukkit.getWorld(CivCraft.worldName).getLoadedChunks()) {
 			for (org.bukkit.entity.Entity e : c.getEntities()) {
-				if (CustomMobListener.customMobs.get(e.getUniqueId()) != null) {
-					CustomMobListener.customMobs.remove(e.getUniqueId());
-					CustomMobListener.mobList.remove(e.getUniqueId());
-					countCustom++;
-					countTotal++;
+				if (CivSettings.restrictedSpawns.containsKey(e.getType())) {
 					e.remove();
-				} else if (e.getType() == EntityType.ZOMBIE || e.getType() == EntityType.ZOMBIE_VILLAGER || e.getType() == EntityType.PIG_ZOMBIE ||
-						e.getType() == EntityType.SKELETON || e.getType() == EntityType.CREEPER || e.getType() == EntityType.SPIDER) {
 					countTotal++;
-					e.remove();
 				}
 			}
 		}
@@ -103,6 +96,8 @@ public class MobSpawner {
 				}
 			}
 		}
+		
+		if (validMobs.size() < 1) return;
 		
 		Random random = new Random();
 		int idx = random.nextInt(validMobs.size());

@@ -29,9 +29,9 @@ public class MobSpawnerTimer implements Runnable {
 	
 	public static int MIN_SPAWN_DISTANCE = 12;
 	public static int MAX_SPAWN_DISTANCE = 40;
-	public static int MIN_SPAWN_AMOUNT = 4;
+	public static int MIN_SPAWN_AMOUNT = 5;
 	
-	public static int Y_SHIFT = 3;
+	public static int Y_SHIFT = 4;
 	
 	public static Queue<String> playerQueue = new LinkedList<String>();
 	
@@ -39,7 +39,7 @@ public class MobSpawnerTimer implements Runnable {
 	public void run() {
 		String name = null;
 //		for (int i = 0; i < UPDATE_LIMIT; i++) {
-		for (int i = 0; i < Bukkit.getOnlinePlayers().size(); i++) {
+		for (int i = 0; i < (Bukkit.getOnlinePlayers().size()*2); i++) {
 			// Find a player who is out in the wilderness.
 			try {
 				name = playerQueue.poll();
@@ -89,6 +89,7 @@ public class MobSpawnerTimer implements Runnable {
 			} finally {
 				if (name != null) {
 					// Re-add to end of queue to keep respawning
+					playerQueue.remove(name);
 					playerQueue.add(name);
 				}
 			}

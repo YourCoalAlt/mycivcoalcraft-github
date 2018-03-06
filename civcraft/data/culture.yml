@@ -1,7 +1,7 @@
 # culture to beaker conversion ratio.
 beakers_per_culture: 0.1
 
-#    - level: Unique level
+#    - level: Unique level (accumulative order)
 #      amount: Amount of culture to get to this level
 #      chunks: Radius of chunks to expand culture borders
 #      granary_storage_max: maximum amount of food, per item, that fits into the granary
@@ -12,344 +12,349 @@ culture_levels:
       chunks: 6
 #
     - level: 1
-      amount: 75
+      amount: 100
       chunks: 8
 #
     - level: 2
-      amount: 200
+      amount: 1000
       chunks: 10
 #
     - level: 3
-      amount: 500
+      amount: 2000
       chunks: 12
 #
     - level: 4
-      amount: 1000
+      amount: 5000
       chunks: 14
 #
     - level: 5
-      amount: 3000
+      amount: 10000
       chunks: 16
 #
     - level: 6
-      amount: 7000
+      amount: 25000
       chunks: 18
 #
     - level: 7
-      amount: 12500
+      amount: 50000
       chunks: 20
 #
     - level: 8
-      amount: 30000
+      amount: 100000
       chunks: 22
 #
     - level: 9
-      amount: 67500
+      amount: 150000
       chunks: 24
 #
     - level: 10
-      amount: 100000
+      amount: 200000
       chunks: 26
 #
     - level: 11
-      amount: 150000
+      amount: 300000
       chunks: 28
 #
     - level: 12
-      amount: 225000
+      amount: 400000
       chunks: 30
 #
     - level: 13
-      amount: 350000
+      amount: 525000
       chunks: 32
 #
     - level: 14
-      amount: 500000
-      chunks: 32
+      amount: 650000
+      chunks: 35
+#
+    - level: 15
+      amount: 775000
+      chunks: 38
+#
+    - level: 16
+      amount: 850000
+      chunks: 40
 #
 culture_biomes:
 #======================#
 #= Water/Isld. Biomes =#
 #======================#
     - name: MUSHROOM_ISLAND
-      happiness: 0.05
-      production: 1.5
-      science: 4.0
-      growth: 1.25
-#
-    - name: MUSHROOM_ISLAND
-      happiness: 0.03
-      production: 1.0
+      happiness: 0.06
+      production: 1.25
       science: 2.5
-      growth: 0.75
+      growth: 1.0
+#
+    - name: MUSHROOM_ISLAND_SHORE
+      happiness: 0.035
+      production: 0.75
+      science: 1.25
+      growth: 0.5
 #
     - name: BEACHES
       happiness: 0.05
-      production: 1.0
-      science: 2.5
-      growth: 1.0
+      production: 0.75
+      science: 1.5
+      growth: 0.5
 #
     - name: COLD_BEACH
-      happiness: 0.02
-      production: 1.0
-      science: 3.0
-      growth: 1.0
+      happiness: 0.015
+      production: 1.75
+      science: 1.0
+      growth: 0.5
 #
     - name: STONE_BEACH
-      happiness: 0.02
-      production: 4.0
-      science: 2.0
+      happiness: 0.01
+      production: 3.5
+      science: 0.5
       growth: 0.0
 #
     - name: OCEAN
       happiness: 0.015
       production: 0.5
-      science: 3.0
+      science: 1.25
       growth: 0.75
 #
     - name: DEEP_OCEAN
       happiness: 0.005
-      production: 0.0
-      science: 4.0
-      growth: 0.0
+      production: 0.25
+      science: 2.0
+      growth: 0.25
 #
     - name: RIVER
-      happiness: 0.04
-      production: 1.0
-      science: 2.0
-      growth: 3.5
+      happiness: 0.03
+      production: 1.25
+      science: 1.75
+      growth: 2.5
 #
     - name: FROZEN_OCEAN
       happiness: 0.01
-      production: 1.0
-      science: 2.5
-      growth: 1.0
+      production: 0.5
+      science: 3.0
+      growth: 0.25
 #
     - name: FROZEN_RIVER
       happiness: 0.02
-      production: 1.0
-      science: 2.5
+      production: 1.5
+      science: 2.0
       growth: 2.0
 #======================#
 #===== Hot Biomes =====#
 #======================#
     - name: DESERT
       happiness: 0.03
-      production: 0.75
+      production: 0.5
       science: 1.0
-      growth: 1.25
+      growth: 0.75
 #
     - name: DESERT_HILLS
-      happiness: 0.025
+      happiness: 0.02
       production: 2.0
       science: 1.0
       growth: 0.5
 #
     - name: MUTATED_DESERT
-      coins: 0.0
       happiness: 0.01
-      production: 3.0
-      science: 1.25
-      growth: 0.0
+      production: 2.75
+      science: 1.0
+      growth: 0.25
 #
     - name: MESA
       happiness: 0.03
-      production: 1.5
-      science: 2.5
-      growth: 1.0
+      production: 2.0
+      science: 1.25
+      growth: 0.25
 #
     - name: MESA_CLEAR_ROCK
-      happiness: 0.015
-      production: 2.5
-      science: 2.0
-      growth: 0.0
+      happiness: 0.01
+      production: 2.0
+      science: 1.0
+      growth: 0.5
 #
     - name: MESA_ROCK
       happiness: 0.005
-      production: 2.0
+      production: 2.25
       science: 1.5
-      growth: 1.0
+      growth: 0.25
 #
     - name: MUTATED_MESA
-      happiness: 0.01
-      production: 1.0
-      science: 2.0
-      growth: 1.0
+      happiness: 0.005
+      production: 2.5
+      science: 1.0
+      growth: 0.5
 #
     - name: MUTATED_MESA_CLEAR_ROCK
-      happiness: 0.0
-      production: 4.0
+      happiness: 0.01
+      production: 1.5
       science: 1.5
-      growth: 0.0
+      growth: 0.5
 #
     - name: MUTATED_MESA_ROCK
-      happiness: 0.015
-      production: 1.0
-      science: 1.0
-      growth: 1.0
+      happiness: 0.01
+      production: 2.0
+      science: 2.0
+      growth: 0.25
 #
     - name: SAVANNA
-      happiness: 0.03
+      happiness: 0.025
       production: 1.0
       science: 1.0
-      growth: 1.5
+      growth: 1.25
 #
     - name: SAVANNA_ROCK
-      happiness: 0.04
-      production: 1.5
+      happiness: 0.035
+      production: 1.75
       science: 0.75
-      growth: 1.5
+      growth: 0.75
 #
     - name: MUTATED_SAVANNA
-      happiness: 0.01
+      happiness: 0.02
       production: 3.0
-      science: 0.5
-      growth: 0.25
+      science: 0.25
+      growth: 0.75
 #
     - name: MUTATED_SAVANNA_ROCK
       happiness: 0.01
-      production: 2.5
+      production: 2.75
       science: 0.5
-      growth: 0.75
+      growth: 0.25
 #
 #=======================#
 #===== Lush Biomes =====#
 #=======================#
     - name: PLAINS
       happiness: 0.025
-      production: 1.5
+      production: 1.0
       science: 0.75
-      growth: 1.5
+      growth: 1.0
 #
     - name: MUTATED_PLAINS
       happiness: 0.04
-      production: 1.5
-      science: 1.0
+      production: 1.25
+      science: 0.5
       growth: 2.0
 #
     - name: FOREST
       happiness: 0.02
-      production: 1.5
-      science: 1.0
-      growth: 2.0
+      production: 1.0
+      science: 0.5
+      growth: 1.5
 #
     - name: FOREST_HILLS
-      happiness: 0.015
-      production: 2.5
+      happiness: 0.01
+      production: 2.0
       science: 1.0
-      growth: 1.5
+      growth: 1.0
 #
     - name: MUTATED_FOREST
       happiness: 0.05
-      production: 4.0
-      science: 1.0
-      growth: 1.0
+      production: 2.5
+      science: 1.5
+      growth: 1.25
 #
     - name: BIRCH_FOREST
-      coins: 0.0
       happiness: 0.02
       production: 1.0
-      science: 1.5
-      growth: 2.0
+      science: 1.0
+      growth: 0.75
 #
     - name: BIRCH_FOREST_HILLS
-      coins: 0.0
-      happiness: 0.025
-      production: 2.5
-      science: 2.0
-      growth: 1.0
+      happiness: 0.02
+      production: 2.25
+      science: 1.0
+      growth: 0.5
 #
     - name: MUTATED_BIRCH_FOREST
       happiness: 0.01
-      production: 4.0
+      production: 3.5
       science: 1.5
-      growth: 1.0
+      growth: 0.25
 #
     - name: MUTATED_BIRCH_FOREST_HILLS
-      happiness: 0.02
-      production: 2.5
-      science: 1.0
-      growth: 1.0
+      happiness: 0.015
+      production: 2.75
+      science: 1.25
+      growth: 0.5
 #
     - name: ROOFED_FOREST
       happiness: 0.025
       production: 1.0
-      science: 1.5
-      growth: 2.5
+      science: 0.75
+      growth: 1.5
 #
     - name: MUTATED_ROOFED_FOREST
       happiness: 0.01
-      production: 3.0
+      production: 2.25
       science: 1.0
-      growth: 2.0
+      growth: 0.75
 #
     - name: SWAMPLAND
       happiness: 0.02
-      production: 2.0
-      science: 2.5
+      production: 0.75
+      science: 2.0
       growth: 1.0
 #
     - name: MUTATED_SWAMPLAND
       happiness: 0.015
-      production: 2.5
-      science: 2.0
-      growth: 1.5
+      production: 2.25
+      science: 1.25
+      growth: 0.5
 #
     - name: JUNGLE
-      happiness: 0.015
-      production: 1.0
-      science: 2.0
-      growth: 2.5
+      happiness: 0.025
+      production: 0.75
+      science: 1.25
+      growth: 1.25
+#
+    - name: JUNGLE_HILLS
+      happiness: 0.02
+      production: 3.0
+      science: 1.25
+      growth: 1.75
 #
     - name: JUNGLE_EDGE
       happiness: 0.02
       production: 1.0
       science: 1.0
-      growth: 1.0
-#
-    - name: JUNGLE_HILLS
-      happiness: 0.025
-      production: 4.0
-      science: 1.0
-      growth: 2.0
+      growth: 0.75
 #
     - name: MUTATED_JUNGLE
       happiness: 0.0
-      production: 2.5
-      science: 2.0
-      growth: 2.0
+      production: 3.5
+      science: 1.25
+      growth: 0.25
 #
     - name: MUTATED_JUNGLE_EDGE
       happiness: 0.01
-      production: 2.0
+      production: 2.25
       science: 1.0
-      growth: 1.5
+      growth: 0.75
 #=======================#
 #===== Cold Biomes =====#
 #=======================#
     - name: EXTREME_HILLS
-      happiness: 0.015
+      happiness: 0.01
       production: 3.25
       science: 0.25
       growth: 0.25
 #
     - name: EXTREME_HILLS_WITH_TREES
-      happiness: 0.005
+      happiness: 0.0
       production: 3.5
       science: 0.0
       growth: 0.5
 #
     - name: MUTATED_EXTREME_HILLS
       happiness: 0.005
-      production: 3.75
+      production: 4.0
       science: 0.5
       growth: 0.0
 #
     - name: MUTATED_EXTREME_HILLS_WITH_TREES
       happiness: 0.0
-      production: 3.25
-      science: 0.5
-      growth: 0.5
+      production: 3.75
+      science: 0.25
+      growth: 0.25
 #
     - name: SMALLER_EXTREME_HILLS
       happiness: 0.015
@@ -365,39 +370,39 @@ culture_biomes:
 #
     - name: TAIGA_HILLS
       happiness: 0.01
-      production: 2.0
+      production: 2.5
       science: 0.5
       growth: 0.25
 #
     - name: MUTATED_TAIGA
-      happiness: 0.01
-      production: 2.5
-      science: 0.5
-      growth: 0.5
-#
-    - name: REDWOOD_TAIGA
       happiness: 0.02
-      production: 1.5
-      science: 1.0
-      growth: 0.75
-#
-    - name: REDWOOD_TAIGA_HILLS
-      happiness: 0.01
-      production: 2.25
-      science: 0.5
+      production: 2.5
+      science: 0.75
       growth: 0.25
 #
-    - name: MUTATED_REDWOOD_TAIGA
-      happiness: 0.0
-      production: 2.0
+    - name: REDWOOD_TAIGA
+      happiness: 0.01
+      production: 1.5
       science: 0.75
       growth: 0.5
 #
+    - name: REDWOOD_TAIGA_HILLS
+      happiness: 0.025
+      production: 2.5
+      science: 0.5
+      growth: 0.0
+#
+    - name: MUTATED_REDWOOD_TAIGA
+      happiness: 0.015
+      production: 1.75
+      science: 1.5
+      growth: 0.25
+#
     - name: MUTATED_REDWOOD_TAIGA_HILLS
       happiness: 0.0
-      production: 2.75
+      production: 3.0
       science: 0.5
-      growth: 0.25
+      growth: 0.0
 #
 #=======================#
 #===== Snow Biomes =====#
@@ -405,37 +410,37 @@ culture_biomes:
     - name: ICE_FLATS
       happiness: 0.02
       production: 1.0
-      science: 0.75
-      growth: 0.5
+      science: 0.5
+      growth: 0.75
 #
     - name: ICE_MOUNTAINS
       happiness: 0.01
-      production: 1.75
+      production: 2.0
       science: 1.0
       growth: 0.25
 #
     - name: MUTATED_ICE_FLATS
-      happiness: 0.02
+      happiness: 0.035
       production: 0.75
-      science: 3.0
-      growth: 0.25
+      science: 2.75
+      growth: 0.0
 #
     - name: TAIGA_COLD
       happiness: 0.015
-      production: 1.25
+      production: 1.0
       science: 1.5
-      growth: 0.25
+      growth: 0.5
 #
     - name: TAIGA_COLD_HILLS
-      happiness: 0.01
-      production: 1.75
+      happiness: 0.005
+      production: 2.5
       science: 1.0
-      growth: 0.25
+      growth: 0.0
 #
     - name: MUTATED_TAIGA_COLD
       happiness: 0.005
-      production: 3.0
-      science: 0.25
+      production: 1.75
+      science: 0.5
       growth: 0.25
 #
 #=======================#
