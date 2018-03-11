@@ -68,16 +68,22 @@ public class PostBuildSyncTask implements Runnable {
 					
 					if (sb.getMaterial() == Material.AIR) continue;
 					if (b.getType() != sb.getMaterial()) {
+						if (sb.getMaterial() == Material.CHEST || b.getType() == Material.CHEST) continue;
 						ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
 					}
 					
 					if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
 						Sign s2 = (Sign)b.getState();
-						s2.setLine(0, tpl.blocks[x][y][z].message[0]);
-						s2.setLine(1, tpl.blocks[x][y][z].message[1]);
-						s2.setLine(2, tpl.blocks[x][y][z].message[2]);
-						s2.setLine(3, tpl.blocks[x][y][z].message[3]);
-						s2.update();
+						
+						if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
+							ItemManager.setTypeIdAndData(b, 0, 0, false);
+						} else {
+							s2.setLine(0, tpl.blocks[x][y][z].message[0]);
+							s2.setLine(1, tpl.blocks[x][y][z].message[1]);
+							s2.setLine(2, tpl.blocks[x][y][z].message[2]);
+							s2.setLine(3, tpl.blocks[x][y][z].message[3]);
+							s2.update();
+						}
 					}
 				}
 			}
@@ -101,10 +107,6 @@ public class PostBuildSyncTask implements Runnable {
 			SimpleBlock sb = tpl.blocks[relativeCoord.getX()][relativeCoord.getY()][relativeCoord.getZ()];
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
 			Block block = absCoord.getBlock();
-			if (absCoord.getBlock().getType() == Material.WEB) {
-				ItemManager.setTypeIdAndData(block, CivData.AIR, (byte)0, false);
-			}
-			
 			if (sb.getType() == CivData.WALL_SIGN || sb.getType() == CivData.SIGN) {
 				if (sb.specialType == Type.COMMAND) continue;
 			}
@@ -125,7 +127,7 @@ public class PostBuildSyncTask implements Runnable {
 			Block block;
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
 			
-			if (absCoord.getBlock().getType() == Material.WEB) {
+			if (absCoord.getBlock().getType() == Material.WEB || absCoord.getBlock().getType() == Material.SIGN_POST || absCoord.getBlock().getType() == Material.WALL_SIGN) {
 				ItemManager.setTypeIdAndData(absCoord.getBlock(), CivData.AIR, (byte)0, false);
 			}
 			

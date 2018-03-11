@@ -154,14 +154,18 @@ public class ConfigBuildableInfo {
 				sinfo.has_template = has_template;
 			}
 			
-			
 			if (isWonder) {
 				sinfo.strategic = true;
 			}
-	
+			
 			structureMap.put(sinfo.id, sinfo);
 		}
-		CivLog.info("Loaded "+structureMap.size()+" structures.");
+		
+		if (isWonder) {
+			CivLog.info("Loaded "+structureMap.size()+" Wonders.");
+		} else {
+			CivLog.info("Loaded "+structureMap.size()+" Structures.");
+		}
 	}
 	
 }

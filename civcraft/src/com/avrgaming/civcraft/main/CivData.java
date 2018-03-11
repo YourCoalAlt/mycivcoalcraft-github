@@ -66,7 +66,6 @@ public class CivData {
 	public static final int LAVA_RUNNING = 10;
 	public static final int LAVA_STILL = 11;
 	public static final int SAND = 12;
-		public static final int RED_SAND = 1;
 	public static final int GRAVEL = 13;
 	public static final int GOLD_ORE = 14;
 	public static final int IRON_ORE = 15;
@@ -88,15 +87,17 @@ public class CivData {
 	public static final int TALL_GRASS = 31;
 	public static final int DEAD_BUSH = 32;
 	public static final int PISTON = 33;
+	
 	public static final int WOOL = 35;
+	
 	public static final int DANDELION = 37;
 	public static final int OTHER_FLOWERS = 38;
 	public static final int BROWN_MUSHROOM = 39;
 	public static final int RED_MUSHROOM = 40;
 	public static final int GOLD_BLOCK = 41;
 	public static final int IRON_BLOCK = 42;
-	
-	public static final int SLABS = 44;
+	public static final int DOUBLE_SLAB = 43;
+	public static final int SLAB = 44;
 	public static final int BRICK = 45;
 	public static final int TNT = 46;
 	public static final int BOOKSHELF = 47;
@@ -114,7 +115,7 @@ public class CivData {
 	public static final int WHEAT_CROP = 59;
 	public static final int FARMLAND = 60;
 	public static final int FURNACE = 61;
-	
+	public static final int FURNACE_LIT = 62;
 	public static final int SIGN = 63;
 	public static final int WOOD_DOOR = 64;
 	public static final int LADDER = 65;
@@ -130,22 +131,26 @@ public class CivData {
 	public static final int REDSTONE_TORCH_OFF = 75;
 	public static final int REDSTONE_TORCH_ON = 76;
 	public static final int STONE_BUTTON = 77;
-	
+	public static final int SNOW_LAYER = 78;
 	public static final int ICE = 79;
 	public static final int SNOW_BLOCK = 80;
 	public static final int CACTUS = 81;
 	public static final int CLAY_BLOCK = 82;
 	public static final int SUGARCANE_BLOCK = 83;
+	public static final int JUKEBOX = 84;
 	public static final int FENCE = 85;
 	public static final int PUMPKIN = 86;
 	public static final int NETHERRACK = 87;
 	public static final int SOULSAND = 88;
 	public static final int GLOWSTONE = 89;
 	
-	public static final int REDSTONE_REPEATER_OFF = 93;
-	public static final int REDSTONE_REPEATER_ON = 94;
+	public static final int JACK_O_LANTERN = 91;
+	public static final int CAKE_BLOCK = 92;
+	public static final int REPEATER_OFF = 93;
+	public static final int REPEATER_ON = 94;
 	public static final int STAINED_GLASS = 95;
 	public static final int TRAPDOOR = 96;
+	public static final int MOBEGG_BRICK = 97;
 	public static final int STONE_BRICK = 98;
 	
 	public static final int GLASS_PANE = 102;
@@ -153,12 +158,15 @@ public class CivData {
 	public static final int PUMPKIN_STEM = 104;
 	public static final int MELON_STEM = 105;
 	public static final int VINE = 106;
+	public static final int OAK_GATE = 107;
 	
 	public static final int LILY_PAD = 111;
 	public static final int NETHER_BRICK = 112;
 	public static final int NETHER_FENCE = 113;
 	public static final int NETHERWART_CROP = 115;
 	public static final int ENCHANTMENT_TABLE = 116;
+	public static final int BREWING_STAND_BLOCK = 117;
+	public static final int CAULDRON = 118;
 	
 	public static final int END_PORTAL_FRAME = 120;
 	
@@ -233,6 +241,7 @@ public class CivData {
 	public static final int MAGMA_BLOCK = 213;
 	public static final int NETHERWART_BLOCK = 214;
 	public static final int RED_NETHER_BRICK = 215;
+	public static final int BONE_BLOCK = 216;
 	
 	//Global Items
 	public static final int IRON_SHOVEL = 256;
@@ -313,15 +322,25 @@ public class CivData {
 	public static final int RAW_FISH = 349;
 	public static final int COOKED_FISH = 350;
 	public static final int DYE = 351;
+	public static final int BONE = 352;
+	public static final int SUGAR = 353;
 	
 	public static final int FILLED_MAP = 358;
 	
+	public static final int MELON_SLICE = 360;
+	public static final int PUMPKIN_SEEDS = 361;
+	public static final int MELON_SEEDS = 361;
+	public static final int RAW_BEEF = 363;
+	public static final int COOKED_BEEF = 364;
+	public static final int RAW_CHICKEN = 365;
+	public static final int COOKED_CHICKEN = 366;
 	public static final int ROTTEN_FLESH = 367;
 	public static final int ENDER_PEARL = 368;
-	
+	public static final int BLAZE_ROD = 369;
+	public static final int GHAST_TEAR = 370;
 	public static final int GOLD_NUGGET = 371;
 	public static final int NETHERWART_ITEM = 372;
-	
+	public static final int WATER_BOTTLE = 373;
 	public static final int EMPTY_BOTTLE = 374;
 	
 	public static final int SPAWN_EGG = 383;
@@ -413,7 +432,7 @@ public class CivData {
 		if (id == LAVA_RUNNING) return "Flowing Lava";
 		if (id == LAVA_STILL) return "Lava";
 		if (id == SAND && data == DATA_0) return "Sand";
-		if (id == SAND && data == RED_SAND) return "Red Sand";
+		if (id == SAND && data == DATA_1) return "Red Sand";
 		if (id == GRAVEL) return "Gravel";
 		if (id == GOLD_ORE) return "Gold Ore";
 		if (id == IRON_ORE) return "Iron Ore";
@@ -465,27 +484,33 @@ public class CivData {
 		if (id == WOOL && data == DATA_15) return "Black Wool";
 		
 		if (id == DANDELION) return "Dandelion";
-		if (id == OTHER_FLOWERS && data == DATA_0) return "Poppy";
-		if (id == OTHER_FLOWERS && data == DATA_1) return "Blue Orchid";
-		if (id == OTHER_FLOWERS && data == DATA_2) return "Allium";
-		if (id == OTHER_FLOWERS && data == DATA_3) return "Azure Bluet";
-		if (id == OTHER_FLOWERS && data == DATA_4) return "Red Tulip";
-		if (id == OTHER_FLOWERS && data == DATA_5) return "Orange Tulip";
-		if (id == OTHER_FLOWERS && data == DATA_6) return "White Tulip";
-		if (id == OTHER_FLOWERS && data == DATA_7) return "Pink Tulip";
-		if (id == OTHER_FLOWERS && data == DATA_8) return "Oxeye Daisy";
+		if (id == OTHER_FLOWERS) {
+			if (data == DATA_0) return "Poppy";
+			else if (data == DATA_1) return "Blue Orchid";
+			else if (data == DATA_2) return "Allium";
+			else if (data == DATA_3) return "Azure Bluet";
+			else if (data == DATA_4) return "Red Tulip";
+			else if (data == DATA_5) return "Orange Tulip";
+			else if (data == DATA_6) return "White Tulip";
+			else if (data == DATA_7) return "Pink Tulip";
+			else if (data == DATA_8) return "Oxeye Daisy";
+			else return "UNKNOWN OTHER FLOWERS";
+		}
 		if (id == BROWN_MUSHROOM) return "Brown Mushroom";
 		if (id == RED_MUSHROOM) return "Red Mushroom";
 		if (id == GOLD_BLOCK) return "Gold Block";
 		if (id == IRON_BLOCK) return "Iron Block";
-		
-		if (id == SLABS && data == DATA_0) return "Stone Slab";
-		if (id == SLABS && data == DATA_1) return "Sandstone Slab";
-		if (id == SLABS && data == DATA_3) return "Cobblestone Slab";
-		if (id == SLABS && data == DATA_4) return "Brick Slab";
-		if (id == SLABS && data == DATA_5) return "Stone Brick Slab";
-		if (id == SLABS && data == DATA_6) return "Nether Brick Slab";
-		if (id == SLABS && data == DATA_7) return "Quartz Slab";
+		if (id == SLAB) {
+			if (data == DATA_0) return "Stone Slab";
+			else if (data == DATA_1) return "Sandstone Slab";
+			else if (data == DATA_2) return "Wooden Slab";
+			else if (data == DATA_3) return "Cobblestone Slab";
+			else if (data == DATA_4) return "Brick Slab";
+			else if (data == DATA_5) return "Stone Brick Slab";
+			else if (data == DATA_6) return "Nether Brick Slab";
+			else if (data == DATA_7) return "Quartz Slab";
+			else return "UNKNOWN Slab";
+		}
 		if (id == BOOKSHELF) return "Bookshelf";
 		if (id == MOSS_STONE) return "Moss Stone";
 		if (id == OBSIDIAN) return "Obsidian";
@@ -573,14 +598,13 @@ public class CivData {
 		if (id == WHEAT_ITEM) return "Wheat";
 		if (id == BREAD) return "Bread";
 		
-		
-		if (id == DYE && data == DATA_4) return "Lapis Lazuli";
-		
 		if (id == REDSTONE_DUST) return "Redstone Dust";
 		
 		if (id == LEATHER) return "Leather";
-		if (id == SUGARCANE) return "Sugar Cane";
+		
 		if (id == CLAY) return "Clay";
+		if (id == SUGARCANE) return "Sugar Cane";
+		if (id == PAPER) return "Paper";
 		
 		if (id == RAW_FISH && data == DATA_0) return "Raw Fish";
 		if (id == RAW_FISH && data == DATA_1) return "Raw Salmon";
@@ -590,10 +614,56 @@ public class CivData {
 		if (id == COOKED_FISH && data == DATA_0) return "Cooked Fish";
 		if (id == COOKED_FISH && data == DATA_1) return "Cooked Salmon";
 		
+		if (id == DYE) {
+			if (data == DATA_0) return "Ink Sack";
+			else if (data == DATA_1) return "Red Dye";
+			else if (data == DATA_2) return "Green Dye";
+			else if (data == DATA_3) return "Cocoa Bean";
+			else if (data == DATA_4) return "Lapis Lazuli";
+			else if (data == DATA_5) return "Purple Dye";
+			else if (data == DATA_6) return "Cyan Dye";
+			else if (data == DATA_7) return "Light Gray Dye";
+			else if (data == DATA_8) return "Gray Dye";
+			else if (data == DATA_9) return "Pink Dye";
+			else if (data == DATA_10) return "Lime Dye";
+			else if (data == DATA_11) return "Yellow Dye";
+			else if (data == DATA_12) return "Light Blue Dye";
+			else if (data == DATA_13) return "Magenta Dye";
+			else if (data == DATA_14) return "Orange Dye";
+			else if (data == DATA_15) return "Bone Meal";
+			else return "UNKNOWN Dye";
+		}
+		if (id == BONE) return "Bone";
+		if (id == SUGAR) return "Sugar";
+		
+		if (id == MELON_SLICE) return "Melon Slice";
+		if (id == PUMPKIN_SEEDS) return "Pumpkin Seeds";
+		if (id == MELON_SEEDS) return "Melon Seeds";
+		if (id == RAW_BEEF) return "Raw Beef";
+		if (id == COOKED_BEEF) return "Cooked Beef";
+		if (id == RAW_CHICKEN) return "Raw Chicken";
+		if (id == COOKED_CHICKEN) return "Cooked Chicken";
+		if (id == ROTTEN_FLESH) return "Rotten Flesh";
+		if (id == ENDER_PEARL) return "Ender Pearl";
+		if (id == BLAZE_ROD) return "Blaze Rod";
+		if (id == GHAST_TEAR) return "Ghast Tear";
+		if (id == GOLD_NUGGET) return "Gold Nugget";
+		if (id == NETHERWART_ITEM) return "Netherwart";
+		
+		if (id == EMPTY_BOTTLE) return "Empty Bottle";
+		
 		if (id == EMERALD) return "Emerald";
 		
+		if (id == CARROT_ITEM) return "Carrot";
+		if (id == POTATO_ITEM) return "Potato";
+		
+		if (id == BEETROOT_ITEM) return "Beetroot";
+		if (id == BEETROOT_SEED) return "Beetroot Seed";
+		
+		//		if (id == ) return "";
+		
 		Material m = ItemManager.getMaterial(id);
-		return "["+id+","+data+", Mat: "+m.name()+"]";
+		return "["+id+","+data+" - "+m.name()+"]";
 	}
 	
 	public static String getNumeral(int i) {
@@ -607,7 +677,7 @@ public class CivData {
 		if (i == 8) return "VIII";
 		if (i == 9) return "IX";
 		if (i == 10) return "X";
-		return null;
+		return "num."+i;
 	}
 	
 	public static boolean canGrowFromStem(BlockSnapshot bs) {

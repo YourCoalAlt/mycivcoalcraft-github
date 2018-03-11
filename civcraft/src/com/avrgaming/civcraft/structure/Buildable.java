@@ -136,7 +136,7 @@ public abstract class Buildable extends SQLObject {
 	public ArrayList<Component> attachedComponents = new ArrayList<Component>();
 	
 	private boolean valid = true;
-	public static double validPercentRequirement = 0.75;
+	public static double validPercentRequirement = 0.8;
 	public static HashSet<Buildable> invalidBuildables = new HashSet<Buildable>();
 	public HashMap<Integer, BuildableLayer> layerValidPercentages = new HashMap<Integer, BuildableLayer>();
 	public boolean validated = false;
@@ -1509,50 +1509,31 @@ public abstract class Buildable extends SQLObject {
 	}
 	
 	public static int getReinforcementValue(int typeId) {
+		if (CivSettings.switchItems.contains(typeId)) {
+			return 0;
+		}
+		
 		switch (typeId) {
 		case CivData.AIR:
-		case CivData.SAPLING:
-		case CivData.WATER_RUNNING:
-		case CivData.WATER_STILL:
-		case CivData.LAVA_RUNNING:
-		case CivData.LAVA_STILL:
-		case CivData.LEAF:
-		case CivData.SPONGE:
-		case CivData.COBWEB:
-		case CivData.TALL_GRASS:
-		case CivData.DEAD_BUSH:
-		case CivData.DANDELION:
-		case CivData.OTHER_FLOWERS:
-		case CivData.BROWN_MUSHROOM:
-		case CivData.RED_MUSHROOM:
-		case CivData.TORCH:
 		case CivData.FIRE:
-		case CivData.WHEAT_CROP:
-		case CivData.REDSTONE_WIRE:
-		case CivData.SUGARCANE_BLOCK:
-		case CivData.LILY_PAD:
-		case CivData.TRIPWIRE_HOOK:
-		case CivData.TRIPWIRE:
-		case CivData.CARROT_CROP:
-		case CivData.POTATO_CROP:
-		case CivData.ANVIL:
-		case CivData.LEAF2:
-		case CivData.SLIME_BLOCK:
-		case CivData.CARPET:
-		case CivData.DOUBLE_FLOWER:
-		case CivData.BEETROOT_CROP:
 			return 0;
+		case CivData.OBSIDIAN:
 		case CivData.DIAMOND_BLOCK:
 		case CivData.EMERALD_BLOCK:
 			return 5;
+		case CivData.LAPIS_BLOCK:
 		case CivData.GOLD_BLOCK:
-		case CivData.OBSIDIAN:
+		case CivData.REDSTONE_BLOCK:
 			return 4;
 		case CivData.STONE_BRICK:
 		case CivData.IRON_BLOCK:
+		case CivData.SLIME_BLOCK:
+		case CivData.BONE_BLOCK:
 			return 3;
 		case CivData.STONE:
 		case CivData.COBBLESTONE:
+		case CivData.MOSS_STONE:
+		case CivData.QUARTZ_BLOCK:
 		case CivData.STAINED_CLAY:
 		case CivData.HARDENED_CLAY:
 		case CivData.COAL_BLOCK:

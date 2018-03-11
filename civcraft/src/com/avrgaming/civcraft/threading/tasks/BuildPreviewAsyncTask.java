@@ -75,7 +75,7 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 				for (int x = 0; x < tpl.size_x; x++) {
 					for (int z = 0; z < tpl.size_z; z++) {
 						Block b = centerBlock.getRelative(x, y, z);
-//						if (tpl.blocks[x][y][z].isAir()) continue;
+						if (tpl.blocks[x][y][z].isAir()) continue;
 						
 						lock.lock();
 						try {

@@ -292,7 +292,6 @@ public class Civilization extends SQLObject {
 		for (String tech : techs) {
 			ConfigTech t = CivSettings.techs.get(tech);
 			if (t != null) {
-				CivGlobal.researchedTechs.add(t.id.toLowerCase());
 				this.techs.put(tech, t);
 			}
 		}
@@ -315,7 +314,6 @@ public class Civilization extends SQLObject {
 		for (String tech : techs) {
 			ConfigTech t = CivSettings.techs.get(tech);
 			if (t != null) {
-				CivGlobal.techsInP.add(t.id.toLowerCase());
 				this.techsIP.put(tech, t);
 			}
 		}
@@ -376,7 +374,6 @@ public class Civilization extends SQLObject {
 	}
 	
 	public void addTech(ConfigTech t) {
-		CivGlobal.researchedTechs.add(t.id.toLowerCase());
 		techs.put(t.id, t);
 		for (Town town : this.getTowns()) {
 			town.onTechUpdate();
@@ -414,7 +411,6 @@ public class Civilization extends SQLObject {
 	}
 	
 	public void addTechInProgress(ConfigTech t) {
-		CivGlobal.techsInP.add(t.id.toLowerCase());
 		techsIP.put(t.id, t);
 		for (Town town : this.getTowns()) {
 			town.onTechUpdate();

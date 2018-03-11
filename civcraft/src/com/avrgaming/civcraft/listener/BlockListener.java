@@ -828,7 +828,7 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnEntityInteractEvent(EntityInteractEvent event) {
 		if (event.getBlock() != null) {			
-			if (CivSettings.switchItems.contains(event.getBlock().getType())) {
+			if (CivSettings.switchItems.contains(ItemManager.getId(event.getBlock()))) {
 				coord.setFromLocation(event.getBlock().getLocation());
 				TownChunk tc = CivGlobal.getTownChunk(coord);
 
@@ -993,7 +993,7 @@ public class BlockListener implements Listener {
 				return;
 			}
 			
-			if (CivSettings.switchItems.contains(event.getClickedBlock().getType())) {
+			if (CivSettings.switchItems.contains(ItemManager.getId(event.getClickedBlock()))) {
 				OnPlayerSwitchEvent(event);
 				if (event.isCancelled()) {
 					return;

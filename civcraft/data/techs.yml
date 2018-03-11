@@ -1,16 +1,19 @@
 # ---- Tech Restricted Potions
 potions:
-  - name: 'Fire Resist'
-    data: 8195
-    require_tech: 'tech_alchemy'
-  - name: 'Swiftness'
+  - name: 'Swiftness I'
     data: 8194
-    require_tech: 'tech_malting' 
+    require_tech: 'tech_brewing'
+  - name: 'Swiftness I (Extended)'
+    data: 8258
+    require_tech: 'tech_brewing'
   - name: 'Healing I'
     data: 8197
     require_tech: 'tech_brewing'
-  - name: 'Healing II'
-    data: 8229
+  - name: 'Fire Resistance'
+    data: 8195
+    require_tech: 'tech_fermentation'
+  - name: 'Fire Resistance (Extended)'
+    data: 8259
     require_tech: 'tech_fermentation'
 # ------------------------------------------
 # the amount to multiply cottage coins once taxation is researched
@@ -589,19 +592,98 @@ techs: #Note: Pts = Beakers/10
       - "Bank Upgrade Level 5"
       - "Bank Interest Upgrade Level 2"
       - "Town Upgrade Town"
-      - "T6 Economics"
+      - "T6 Tech Taxation"
+      - "T6 Tech Economics"
     require_techs: 'tech_'
 #
 #============================#
 #======== > Tier 6 < ========#
 #============================#
+  - id: 'tech_advanced_artillery'
+    name: 'Advanced Artillery'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "War Structure War Camp"
+      - "T8 Tech Gunpowder"
+    require_techs: 'tech_artillery'
+#
+  - id: 'tech_education'
+    name: 'Education'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "Structure School"
+      - "T8 Tech Internal Improvements"
+      - "T9 Tech Campus"
+    require_techs: 'tech_experimentation'
+#
+  - id: 'tech_taxation'
+    name: 'Taxation'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "x2 Cottage Rate"
+      - "x2 Lumber Mill Rate"
+      - "T8 Tech Resource Efficiency*"
+    require_techs: 'tech_accounting'
+#
+  - id: 'tech_economics'
+    name: 'Economics'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "Bank Level 6"
+      - "Town Upgrade Large Town"
+      - "T7 Tech Nationalism"
+    require_techs: 'tech_accounting'
+#
+  - id: 'tech_holy_book'
+    name: 'Holy Book'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "N/A"
+      - "T9 Tech First Great Awakening"
+    require_techs: 'tech_priesthood'
+#
+  - id: 'tech_fermentation'
+    name: 'Fermentation'
+    beaker_cost: 15000
+    cost: 135000.0
+    points: 1500
+    civ: true
+    tier: 6
+    unlocks:
+      - "Potion Fire Resistance"
+      - "T8 Tech Alchemy"
+    require_techs: 'tech_brewing'
+#
+#============================#
+#======== > Tier 7 < ========#
+#============================#
 #  - id: 'tech_'
 #    name: ''
-#    beaker_cost: 
-#    cost: .0
-#    points: 
+#    beaker_cost: 40000
+#    cost: 300000.0
+#    points: 4000
 #    civ: true
-#    tier: 6
+#    tier: 7
 #    unlocks:
 #      - ""
 #      - ""

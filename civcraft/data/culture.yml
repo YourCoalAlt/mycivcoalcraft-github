@@ -224,9 +224,9 @@ culture_biomes:
 #=======================#
     - name: PLAINS
       happiness: 0.025
-      production: 1.0
-      science: 0.75
-      growth: 1.0
+      production: 0.75
+      science: 0.5
+      growth: 0.75
 #
     - name: MUTATED_PLAINS
       happiness: 0.04

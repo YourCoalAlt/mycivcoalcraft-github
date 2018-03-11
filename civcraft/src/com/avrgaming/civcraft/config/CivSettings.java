@@ -155,7 +155,7 @@ public class CivSettings {
 	public static FileConfiguration governmentConfig; /* governments.yml */
 	public static Map<String, ConfigGovernment> governments = new HashMap<String, ConfigGovernment>();
 	
-	public static HashSet<Material> switchItems = new HashSet<Material>();
+	public static HashSet<Integer> switchItems = new HashSet<Integer>();
 	public static Map<Material, Integer> restrictedItems = new HashMap<Material, Integer>();
 	public static Map<Material, Integer> blockPlaceExceptions =  new HashMap<Material, Integer>();
 	public static Map<EntityType, Integer> restrictedSpawns = new HashMap<EntityType, Integer>();
@@ -449,21 +449,79 @@ public class CivSettings {
 		ConfigGovernment.loadConfig(governmentConfig, governments);
 	}
 	
+	public static void reloadMobConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.customMobs.clear();
+		mobConfig = loadCivConfig("mobs.yml");
+		ConfigCustomMobs.loadConfig(mobConfig, customMobs);
+	}
+	
 	public static void reloadNewspaperConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.newspapers.clear();
 		gameConfig = loadCivConfig("game.yml");
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 	}
 	
+	public static void reloadMaterialConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.materials.clear();
+		CivSettings.removedRecipies.clear();
+		materialsConfig = loadCivConfig("materials.yml");
+		ConfigMaterial.loadConfig(materialsConfig, materials);
+		ConfigRemovedRecipes.removeRecipes(materialsConfig, removedRecipies);
+	}
+	
+	public static void reloadTechConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.techs.clear();
+		CivSettings.techPotions.clear();
+		techsConfig = loadCivConfig("techs.yml");
+		ConfigTech.loadConfig(techsConfig, techs);
+		ConfigTechPotion.loadConfig(techsConfig, techPotions);
+	}
+	
 	public static void reloadStructureConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.structures.clear();
-		structureConfig = loadCivConfig("structuredata.yml");
-		ConfigBankLevel.loadConfig(structuredataConfig, bankLevels);
-		ConfigCottageLevel.loadConfig(structuredataConfig, cottageLevels);
-		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
-		ConfigGranaryTask.loadConfig(structuredataConfig, granaryTasks);
+		CivSettings.wonders.clear();
+		CivSettings.grocerLevels.clear();
+		CivSettings.templeSacrifices.clear();
+		CivSettings.stableItems.clear();
+		CivSettings.horses.clear();
+		structureConfig = loadCivConfig("structures.yml");
+		wonderConfig = loadCivConfig("wonders.yml");
+		ConfigBuildableInfo.loadConfig(structureConfig, "structures", structures, false);
+		ConfigBuildableInfo.loadConfig(wonderConfig, "wonders", wonders, true);
+		ConfigGrocerLevel.loadConfig(structureConfig, grocerLevels);
+		ConfigTempleSacrifice.loadConfig(structureConfig, templeSacrifices);
+		ConfigStableItem.loadConfig(structureConfig, stableItems);
+		ConfigStableHorse.loadConfig(structureConfig, horses);
+		
+		CivSettings.mineTasks.clear();
+		CivSettings.mineLevels.clear();
+		CivSettings.labTasks.clear();
+		CivSettings.labLevels.clear();
+		CivSettings.bankLevels.clear();
+		CivSettings.lumbermillItems.clear();
+		CivSettings.lumbermillDrops.clear();
+		CivSettings.quarryItems.clear();
+		CivSettings.quarryDrops.clear();
+		CivSettings.trommelItems.clear();
+		CivSettings.trommelDrops.clear();
+		CivSettings.granaryFood.clear();
+		CivSettings.granaryTasks.clear();
+		CivSettings.granaryLevels.clear();
+		structuredataConfig = loadCivConfig("structuredata.yml");
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
+		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
 		ConfigLabTask.loadConfig(structuredataConfig, labTasks);
+		ConfigLabLevel.loadConfig(structuredataConfig, labLevels);
+		ConfigBankLevel.loadConfig(structuredataConfig, bankLevels);
+		ConfigLumberMillItem.loadConfig(structuredataConfig, lumbermillItems);
+		ConfigLumberMill.loadConfig(structuredataConfig, lumbermillDrops);
+		ConfigQuarryItem.loadConfig(structuredataConfig, quarryItems);
+		ConfigQuarry.loadConfig(structuredataConfig, quarryDrops);
+		ConfigTrommelItem.loadConfig(structuredataConfig, trommelItems);
+		ConfigTrommel.loadConfig(structuredataConfig, trommelDrops);
+		ConfigGranaryFood.loadConfig(structuredataConfig, granaryFood);
+		ConfigGranaryTask.loadConfig(structuredataConfig, granaryTasks);
+		ConfigGranaryLevel.loadConfig(structuredataConfig, granaryLevels);
 	}
 	
 	private static void loadConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException {
@@ -546,7 +604,7 @@ public class CivSettings {
 		ConfigRandomEvent.loadConfig(randomEventsConfig, randomEvents, randomEventIDs);
 		ConfigEndCondition.loadConfig(civConfig, endConditions);
 		ConfigFishing.loadConfig(fishingConfig, fishingDrops);
-		ConfigRemovedRecipes.removeRecipes(materialsConfig, removedRecipies );
+		ConfigRemovedRecipes.removeRecipes(materialsConfig, removedRecipies);
 		CivGlobal.preGenerator.preGenerate();
 		Wall.init_settings();
 	}
@@ -600,60 +658,87 @@ public class CivSettings {
 	}
 
 	private static void initSwitchItems() {
-		//TODO make this configurable?
-		switchItems.add(Material.ANVIL);
-		switchItems.add(Material.BEACON);
-		switchItems.add(Material.BREWING_STAND);
-		switchItems.add(Material.BURNING_FURNACE);
-		switchItems.add(Material.CAKE_BLOCK);
-		switchItems.add(Material.CAULDRON);
-		switchItems.add(Material.CHEST);
-		switchItems.add(Material.TRAPPED_CHEST);
-		switchItems.add(Material.COMMAND);
-		switchItems.add(Material.DIODE);
-		switchItems.add(Material.DIODE_BLOCK_OFF);
-		switchItems.add(Material.DIODE_BLOCK_ON);
-		switchItems.add(Material.DISPENSER);
-		switchItems.add(Material.FENCE_GATE);
-		switchItems.add(Material.FURNACE);
-		switchItems.add(Material.JUKEBOX);
-		switchItems.add(Material.LEVER);
-	//	switchItems.add(Material.LOCKED_CHEST);
-		switchItems.add(Material.STONE_BUTTON);
-		switchItems.add(Material.STONE_PLATE);
-		switchItems.add(Material.IRON_DOOR);
-		switchItems.add(Material.TNT);
-		switchItems.add(Material.TRAP_DOOR);
-		switchItems.add(Material.WOOD_DOOR);
-		switchItems.add(Material.WOODEN_DOOR);
-		switchItems.add(Material.WOOD_PLATE);
-		//switchItems.put(Material.WOOD_BUTTON, 0); //intentionally left out
-		
-		// 1.5 additions.
-		switchItems.add(Material.HOPPER);
-		switchItems.add(Material.HOPPER_MINECART);
-		switchItems.add(Material.DROPPER);
-		switchItems.add(Material.REDSTONE_COMPARATOR);
-		switchItems.add(Material.REDSTONE_COMPARATOR_ON);
-		switchItems.add(Material.REDSTONE_COMPARATOR_OFF);
-		switchItems.add(Material.TRAPPED_CHEST);
-		switchItems.add(Material.GOLD_PLATE);
-		switchItems.add(Material.IRON_PLATE);
-		switchItems.add(Material.IRON_TRAPDOOR);
-		
-		// 1.6 additions.
-		switchItems.add(Material.SPRUCE_DOOR);
-		switchItems.add(Material.BIRCH_DOOR);
-		switchItems.add(Material.JUNGLE_DOOR);
-		switchItems.add(Material.ACACIA_DOOR);
-		switchItems.add(Material.DARK_OAK_DOOR);
-		
-		// 1.7 additions
-		switchItems.add(Material.ACACIA_FENCE_GATE);
-		switchItems.add(Material.BIRCH_FENCE_GATE);
-		switchItems.add(Material.DARK_OAK_FENCE_GATE);
-		switchItems.add(Material.SPRUCE_FENCE_GATE);
-		switchItems.add(Material.JUNGLE_FENCE_GATE);
+		switchItems.add(CivData.SAPLING);
+		switchItems.add(CivData.LEAF);
+		switchItems.add(CivData.GLASS);
+		switchItems.add(CivData.DISPENSER);
+		switchItems.add(CivData.BED_BLOCK);
+		switchItems.add(CivData.RAIL_POWERED);
+		switchItems.add(CivData.RAIL_DETECTOR);
+		switchItems.add(CivData.COBWEB);
+		switchItems.add(CivData.TALL_GRASS);
+		switchItems.add(CivData.DEAD_BUSH);
+		switchItems.add(CivData.DANDELION);
+		switchItems.add(CivData.OTHER_FLOWERS);
+		switchItems.add(CivData.BROWN_MUSHROOM);
+		switchItems.add(CivData.RED_MUSHROOM);
+		switchItems.add(CivData.TNT);
+		switchItems.add(CivData.TORCH);
+		switchItems.add(CivData.CHEST);
+		switchItems.add(CivData.REDSTONE_WIRE);
+		switchItems.add(CivData.WORKBENCH);
+		switchItems.add(CivData.WHEAT_CROP);
+		switchItems.add(CivData.FURNACE);
+		switchItems.add(CivData.FURNACE_LIT);
+		switchItems.add(CivData.SIGN);
+		switchItems.add(CivData.WOOD_DOOR);
+		switchItems.add(CivData.LADDER);
+		switchItems.add(CivData.RAIL);
+		switchItems.add(CivData.WALL_SIGN);
+		switchItems.add(CivData.LEVER);
+		switchItems.add(CivData.STONE_PLATE);
+		switchItems.add(CivData.IRON_DOOR);
+		switchItems.add(CivData.WOOD_PLATE);
+		switchItems.add(CivData.REDSTONE_TORCH_OFF);
+		switchItems.add(CivData.REDSTONE_TORCH_ON);
+		switchItems.add(CivData.STONE_BUTTON);
+		switchItems.add(CivData.CACTUS);
+		switchItems.add(CivData.SUGARCANE_BLOCK);
+		switchItems.add(CivData.CAKE_BLOCK);
+		switchItems.add(CivData.REPEATER_OFF);
+		switchItems.add(CivData.REPEATER_ON);
+		switchItems.add(CivData.TRAPDOOR);
+		switchItems.add(CivData.PUMPKIN_STEM);
+		switchItems.add(CivData.MELON_STEM);
+		switchItems.add(CivData.VINE);
+		switchItems.add(CivData.OAK_GATE);
+		switchItems.add(CivData.LILY_PAD);
+		switchItems.add(CivData.NETHERWART_CROP);
+		switchItems.add(CivData.ENCHANTMENT_TABLE);
+		switchItems.add(CivData.BREWING_STAND_BLOCK);
+		switchItems.add(CivData.CAULDRON);
+		switchItems.add(CivData.COCOA_CROP);
+		switchItems.add(CivData.ENDER_CHEST);
+		switchItems.add(CivData.TRIPWIRE_HOOK);
+		switchItems.add(CivData.BEACON);
+		switchItems.add(CivData.FLOWER_POT);
+		switchItems.add(CivData.CARROT_CROP);
+		switchItems.add(CivData.POTATO_CROP);
+		switchItems.add(CivData.WOOD_BUTTON);
+		switchItems.add(CivData.ANVIL);
+		switchItems.add(CivData.TRAPPED_CHEST);
+		switchItems.add(CivData.GOLD_PLATE);
+		switchItems.add(CivData.IRON_PLATE);
+		switchItems.add(CivData.COMPARATOR_OFF);
+		switchItems.add(CivData.COMPARATOR_ON);
+		switchItems.add(CivData.HOPPER);
+		switchItems.add(CivData.RAIL_ACTIVATOR);
+		switchItems.add(CivData.DROPPER);
+		switchItems.add(CivData.LEAF2);
+		switchItems.add(CivData.IRON_TRAPDOOR);
+		switchItems.add(CivData.CARPET);
+		switchItems.add(CivData.DOUBLE_FLOWER);
+		switchItems.add(CivData.SPRUCE_GATE);
+		switchItems.add(CivData.BIRCH_GATE);
+		switchItems.add(CivData.JUNGLE_GATE);
+		switchItems.add(CivData.DARK_OAK_GATE);
+		switchItems.add(CivData.ACACIA_GATE);
+		switchItems.add(CivData.SPRUCE_DOOR);
+		switchItems.add(CivData.BIRCH_DOOR);
+		switchItems.add(CivData.JUNGLE_DOOR);
+		switchItems.add(CivData.ACACIA_DOOR);
+		switchItems.add(CivData.DARK_OAK_DOOR);
+		switchItems.add(CivData.BEETROOT_CROP);
 	}
 	
 	private static void initBlockPlaceExceptions() {

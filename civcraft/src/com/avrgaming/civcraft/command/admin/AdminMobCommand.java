@@ -47,7 +47,8 @@ public class AdminMobCommand extends CommandBase {
 	
 	public void spawn_cmd() throws CivException {
 		Player player = getPlayer();
-		String smob = getNamedString(1, "id").toUpperCase();
+		String smob = getNamedString(1, "Please enter an id").toUpperCase();
+		int amt = getNamedInteger(2);
 		
 		if (smob == null) {
 			throw new CivException("No custom mob with id: "+smob);
@@ -58,8 +59,11 @@ public class AdminMobCommand extends CommandBase {
 			throw new CivException(smob+" is not a valid ID.");
 		}
 		
-		MobSpawner.spawnCustomMob(cmob, player.getLocation());
-		CivMessage.sendSuccess(player, "Spawned a "+CivColor.colorize(cmob.name));
+		for (int i = 0; i < amt; i++) {
+			MobSpawner.spawnCustomMob(cmob, player.getLocation());
+		}
+		
+		CivMessage.sendSuccess(player, "Spawned "+amt+" "+CivColor.colorize(cmob.name));
 	}
 	
 	public void killall_cmd() throws CivException {

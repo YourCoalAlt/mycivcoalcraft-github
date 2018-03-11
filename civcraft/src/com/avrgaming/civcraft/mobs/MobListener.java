@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -135,36 +136,27 @@ public class MobListener implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (CustomMobListener.mobList.get(event.getEntity().getUniqueId()) != null) {
 			ConfigCustomMobs cmob = CustomMobListener.mobList.get(event.getEntity().getUniqueId());
-			Player p = event.getEntity().getKiller();
-			ResidentExperience resE = CivGlobal.getResidentE(p);
-			double mod = ((resE.getWeapondryLevel() + 1) * cmob.rxp_mod) / 2;
-			try {
-				DecimalFormat df = new DecimalFormat("0.00");
-				double genrf = cmob.res_exp*mod;
-				double rfEXP = Double.valueOf(df.format(genrf));
-				resE.addWeapondryEXP(rfEXP);
-			} catch (CivException e1) {
-			}
-			
-			Random rand = new Random();
-			int coins = rand.nextInt(cmob.exp_max);
-			if (coins < cmob.exp_min) coins = cmob.exp_min;
-			coins = (int) ((coins * mod) / 2);
-			event.setDroppedExp(coins);
-			
-			event.getDrops().clear();
-			ArrayList<String> dropped = new ArrayList<String>();
-			for (String values : cmob.drops) { // Specific Mob's Drops
-				String[] drops = values.split(",");
-				double dc = Double.valueOf(drops[4]);
-				int chance = rand.nextInt(10000);
-				if (chance < (dc*10000)) {
-					dropped.add(values);
+			if (event.getEntity().getKiller() != null) {
+				Player p = event.getEntity().getKiller();
+				ResidentExperience resE = CivGlobal.getResidentE(p);
+				double mod = ((resE.getWeapondryLevel() + 1) * cmob.rxp_mod) / 2;
+				try {
+					DecimalFormat df = new DecimalFormat("0.00");
+					double genrf = cmob.res_exp*mod;
+					double rfEXP = Double.valueOf(df.format(genrf));
+					resE.addWeapondryEXP(rfEXP);
+				} catch (CivException e1) {
 				}
-			}
-			
-/*			try {
-				for (String values : CivSettings.getString(CivSettings.mobConfig, "common_drops").split(";")) { // Common Mob's Drops
+				
+				Random rand = new Random();
+				int coins = rand.nextInt(cmob.exp_max);
+				if (coins < cmob.exp_min) coins = cmob.exp_min;
+				coins = (int) ((coins * mod) / 2);
+				event.setDroppedExp(coins);
+				
+				event.getDrops().clear();
+				ArrayList<String> dropped = new ArrayList<String>();
+				for (String values : cmob.drops) { // Specific Mob's Drops
 					String[] drops = values.split(",");
 					double dc = Double.valueOf(drops[4]);
 					int chance = rand.nextInt(10000);
@@ -172,43 +164,61 @@ public class MobListener implements Listener {
 						dropped.add(values);
 					}
 				}
-			} catch (NumberFormatException | InvalidConfiguration e) {
-				CivLog.error("Could not get common_drops from mob.yml!");
-				CivLog.error(e.getMessage());
-			}*/
-			
-			if (dropped.size() != 0) {
-				for (String items : dropped) {
-					if (items == null) continue;
-					String[] drops = items.split(",");
-					String mat = drops[0]; mat = mat.replace("[", "").replace("]", "");
-					int dropAmt;
-					int dropMin = Integer.valueOf(drops[2]);
-					int dropMax = Integer.valueOf(drops[3]);
-					int amtToRand = dropMax - dropMin;
-					if (amtToRand < dropMin) {
-						dropAmt = dropMin;
-					} else {
-						dropAmt = rand.nextInt(amtToRand+1) + dropMin; // + (Integer.valueOf(drops[7])
-						if (dropAmt > dropMax) {
-							dropAmt = dropMax;
+				
+	/*			try {
+					for (String values : CivSettings.getString(CivSettings.mobConfig, "common_drops").split(";")) { // Common Mob's Drops
+						String[] drops = values.split(",");
+						double dc = Double.valueOf(drops[4]);
+						int chance = rand.nextInt(10000);
+						if (chance < (dc*10000)) {
+							dropped.add(values);
 						}
 					}
-					
-					if (dropAmt > 0) {
-						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(mat);
-						if (craftMat != null) {
-							ItemStack item = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), dropAmt);
-							event.getDrops().add(item);
+				} catch (NumberFormatException | InvalidConfiguration e) {
+					CivLog.error("Could not get common_drops from mob.yml!");
+					CivLog.error(e.getMessage());
+				}*/
+				
+				if (dropped.size() != 0) {
+					for (String items : dropped) {
+						if (items == null) continue;
+						String[] drops = items.split(",");
+						String mat = drops[0]; mat = mat.replace("[", "").replace("]", "");
+						int dropAmt;
+						int dropMin = Integer.valueOf(drops[2]);
+						int dropMax = Integer.valueOf(drops[3]);
+						
+						if (p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+							dropMax += p.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
+						}
+						
+						int amtToRand = dropMax - dropMin;
+						if (amtToRand < dropMin) {
+							dropAmt = dropMin;
 						} else {
-							ItemStack item = ItemManager.createItemStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
-						//	CivMessage.global(item.getType().toString());
-							event.getDrops().add(item);
+							dropAmt = rand.nextInt(amtToRand+1) + dropMin; // + (Integer.valueOf(drops[7])
+							if (dropAmt > dropMax) {
+								dropAmt = dropMax;
+							}
+						}
+						
+						if (dropAmt > 0) {
+							LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(mat);
+							if (craftMat != null) {
+								ItemStack item = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), dropAmt);
+								event.getDrops().add(item);
+							} else {
+								ItemStack item = ItemManager.createItemStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
+							//	CivMessage.global(item.getType().toString());
+								event.getDrops().add(item);
+							}
 						}
 					}
 				}
+				
+				CustomMobListener.customMobs.remove(event.getEntity().getUniqueId());
+				CustomMobListener.mobList.remove(event.getEntity().getUniqueId());
 			}
-			
 		}
 	}
 	

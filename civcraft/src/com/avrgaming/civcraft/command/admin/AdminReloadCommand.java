@@ -26,7 +26,10 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		
 		commands.put("decformat", "Fixes decimal formats in some SQL saving features. WARNING: Can cause server lag.");
 		commands.put("govs", "Reloads the governments.yml file");
-		commands.put("structuredata", "Reloads the structuredata.yml file");
+		commands.put("techs", "Reloads the techs.yml file");
+		commands.put("mobs", "Reloads the mobs.yml file");
+		commands.put("mats", "Reloads the materials.yml file");
+		commands.put("structuredata", "Reloads the structures.yml, wonders.yml, and structuredata.yml file");
 		commands.put("newspaper", "Reloads the game.yml file (newspapers only)");
 	}
 	
@@ -41,8 +44,13 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 	
 	public void newspaper_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.reloadNewspaperConfigFiles();
-		CivMessage.send(sender, CivColor.Gold+"Reloaded the Newspaper");
+		CivMessage.send(sender, CivColor.Gold+"Reloaded Newspapers");
 		CivMessage.global("Extra Extra! The CivCraft Daily News has updated with a new issue!");
+	}
+	
+	public void mobs_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.reloadMobConfigFiles();
+		CivMessage.send(sender, CivColor.Gold+"Reloaded Custom Mobs");
 	}
 	
 	public void govs_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
@@ -54,9 +62,19 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		CivMessage.send(sender, CivColor.Gold+"Reloaded Governments");
 	}
 	
+	public void techs_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.reloadTechConfigFiles();
+		CivMessage.send(sender, CivColor.Gold+"Reloaded Techs");
+	}
+	
+	public void mats_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
+		CivSettings.reloadMaterialConfigFiles();
+		CivMessage.send(sender, CivColor.Gold+"Reloaded Materials");
+	}
+	
 	public void structuredata_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.reloadStructureConfigFiles();
-		CivMessage.send(sender, CivColor.Gold+"Reloaded Structure Data");
+		CivMessage.send(sender, CivColor.Gold+"Reloaded Structures & Data");
 	}
 	
 	@Override

@@ -244,7 +244,7 @@ structures:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '3.0'
+          value: '10.0'
 #
   - id: s_townhall
     itemId: 330
@@ -267,12 +267,32 @@ structures:
         - name: 'AttributeStatic'
           type: 'direct'
           attribute: 'CULTURE'
-          value: '2.0'
+          value: '2.5'
 #
-  - id: s_shipyard
-    itemId: 333
+  - id: s_stable
+    itemId: 417
     itemData: 0
     position: 3
+    template: stable
+    template_y_shift: -2
+    displayName: Stable
+    require_tech: 'tech_horseback_riding' 
+    limit: 1
+    cost: 7500.0
+    upkeep: 500.0
+    hammer_cost: 875
+    points: 60
+    max_hitpoints: 300
+    components:
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'HAMMERS'
+          value: '25.0'
+#
+  - id: s_shipyard
+    itemId: 138
+    itemData: 0
+    position: 4
     template: shipyard
     template_y_shift: -3
     displayName: Shipyard
@@ -295,10 +315,29 @@ structures:
           attribute: 'GROWTH'
           value: '0.05'
 #
+# RESERVED FOR TRADE SHIP
+#    itemId: 168
+#    itemData: 0
+#    position: 5
+#  - id: s_trade_ship
+#    itemId: 168
+#    itemData: 0
+#    position: 5
+#    template: trade_trip
+#    template_y_shift: 0
+#    displayName: Mob Grinder
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 75000.0
+#    upkeep: 1500.0
+#    hammer_cost: 3500
+#    points: 200
+#    max_hitpoints: 250
+#
   - id: ti_trade_outpost
     itemId: 389
     itemData: 0
-    position: 4
+    position: 7
     template: trade_outpost
     template_y_shift: 0
     displayName: Trade Outpost
@@ -316,7 +355,7 @@ structures:
   - id: ti_trade_boat
     itemId: 346
     itemData: 0
-    position: 5
+    position: 8
     template: fishingboats
     template_y_shift: -3
     displayName: Trade Boat
@@ -331,41 +370,6 @@ structures:
     hammer_cost: 1500
     points: 100
     max_hitpoints: 400
-#
-  - id: s_store
-    itemId: 120
-    itemData: 0
-    position: 7
-    template: store
-    template_y_shift: 0
-    displayName: Store
-    require_tech: 'tech_commerce'
-    limit: 1
-    cost: 2500.0
-    upkeep: 200.0
-    hammer_cost: 500
-    points: 75
-    max_hitpoints: 200
-#
-  - id: s_stable
-    itemId: 417
-    itemData: 0
-    position: 8
-    template: stable
-    template_y_shift: -2
-    displayName: Stable
-    require_tech: 'tech_horseback_riding' 
-    limit: 1
-    cost: 7500.0
-    upkeep: 500.0
-    hammer_cost: 875
-    points: 60
-    max_hitpoints: 300
-    components:
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'HAMMERS'
-          value: '25.0'
 # Row 2
   - id: s_bank
     itemId: 266
@@ -385,7 +389,7 @@ structures:
   - id: s_market
     itemId: 388
     itemData: 0
-    position: 11
+    position: 10
     template: market
     template_y_shift: 0
     displayName: Market
@@ -405,10 +409,50 @@ structures:
           attribute: 'TRADE'
           value: '0.1'
 #
+  - id: s_lumbermill
+    itemId: 390
+    itemData: 0
+    position: 12
+    template: lumbermill
+    template_y_shift: 0
+    displayName: Lumber Mill
+    require_tech: 'tech_deforestation'
+    update_event: lumbermill_process
+    limit: 1
+    cost: 10000.0
+    upkeep: 375.0
+    hammer_cost: 500
+    points: 35
+    max_hitpoints: 250
+    components:
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'CULTURE'
+          value: '1.5'
+#
+# RESERVED FOR SIFTER
+#    itemId: 3
+#    itemData: 2
+#    position: 13
+#  - id: s_sifter
+#    itemId: 333
+#    itemData: 0
+#    position: 16
+#    template: sifter
+#    template_y_shift: 0
+#    displayName: Sifter
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 5000.0
+#    upkeep: 500.0
+#    hammer_cost: 350
+#    points: 5
+#    max_hitpoints: 200
+#
   - id: s_trommel
     itemId: 154
     itemData: 0
-    position: 13
+    position: 14
     template: trommel
     template_y_shift: 0
     displayName: Trommel
@@ -424,7 +468,7 @@ structures:
   - id: s_quarry
     itemId: 139
     itemData: 0
-    position: 14
+    position: 15
     template: quarry
     template_y_shift: -11
     displayName: Quarry
@@ -437,33 +481,44 @@ structures:
     points: 250
     max_hitpoints: 300
 #
-  - id: s_blacksmith
-    itemId: 145
-    itemData: 0
-    position: 15
-    template: blacksmith
-    template_y_shift: -2
-    displayName: Blacksmith
-    require_tech: 'tech_blacksmithing'
-    limit: 1
-    cost: 30000.0
-    upkeep: 1000.0
-    hammer_cost: 850
-    points: 30
-    max_hitpoints: 350
-    components:
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'HAPPINESS'
-          value: '-1.5'
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'GROWTHRATE'
-          value: '-0.1'
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'HAMMERS'
-          value: '15.0'
+# RESERVED FOR FISHING BOAT
+#    itemId: 333
+#    itemData: 0
+#    position: 16
+#  - id: s_fishing_boat
+#    itemId: 333
+#    itemData: 0
+#    position: 16
+#    template: fishing_boat
+#    template_y_shift: 0
+#    displayName: Fishing Boat
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 35000.0
+#    upkeep: 2500.0
+#    hammer_cost: 3500
+#    points: 100
+#    max_hitpoints: 300
+#
+# RESERVED FOR MOB GRINDER
+#    itemId: 267
+#    itemData: 0
+#    position: 17
+#  - id: s_mob_grinder
+#    itemId: 267
+#    itemData: 0
+#    position: 17
+#    template: mob_grinder
+#    template_y_shift: 0
+#    displayName: Mob Grinder
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 20000.0
+#    upkeep: 2000.0
+#    hammer_cost: 2500
+#    points: 75
+#    max_hitpoints: 300
+#
 # Row 3
   - id: ti_mine
     itemId: 274
@@ -502,6 +557,29 @@ structures:
     points: 50
     max_hitpoints: 300
     components:
+        - name: 'ConsumeLevelComponent'
+#
+  - id: ti_cottage
+    itemId: 123
+    itemData: 0
+    position: 20
+    template: cottage
+    template_y_shift: 0
+    displayName: Cottage
+    require_tech: 'tech_housing'
+    effect_event: generate_coins
+    tile_improvement: true
+    limit: 0
+    cost: 5000.0
+    upkeep: 1000.0
+    hammer_cost: 750
+    points: 100
+    max_hitpoints: 150
+    components:
+        - name: 'AttributeBiomeRadiusPerLevel'
+          attribute: 'COINS'
+          biomes: 'DESERT:4,BEACHES:4,RIVER:4,JUNGLE:4'
+          base_value: '5.0'
         - name: 'ConsumeLevelComponent'
 #
   - id: ti_monument
@@ -554,26 +632,21 @@ structures:
           attribute: 'BEAKERS'
           value: '0.05'
 #
-  - id: s_lumbermill
-    itemId: 390
+  - id: s_warehouse
+    itemId: 54
     itemData: 0
-    position: 25
-    template: lumbermill
+    position: 26
+    template: warehouse
     template_y_shift: 0
-    displayName: Lumber Mill
-    require_tech: 'tech_deforestation'
-    update_event: lumbermill_process
+    displayName: Warehouse
+    require_tech: 'tech_material_placement'
+    update_event: warehouse_transfer
     limit: 1
-    cost: 10000.0
-    upkeep: 375.0
-    hammer_cost: 500
-    points: 35
-    max_hitpoints: 250
-    components:
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'CULTURE'
-          value: '2.5'
+    cost: 50000.0
+    upkeep: 2500.0
+    hammer_cost: 1500
+    points: 350
+    max_hitpoints: 350
 # Row 4
   - id: ti_farm
     itemId: 290
@@ -630,28 +703,24 @@ structures:
     points: 25
     max_hitpoints: 75
 #
-  - id: ti_cottage
-    itemId: 123
-    itemData: 0
-    position: 30
-    template: cottage
-    template_y_shift: 0
-    displayName: Cottage
-    require_tech: 'tech_housing'
-    effect_event: generate_coins
-    tile_improvement: true
-    limit: 0
-    cost: 5000.0
-    upkeep: 1000.0
-    hammer_cost: 750
-    points: 100
-    max_hitpoints: 150
-    components:
-        - name: 'AttributeBiomeRadiusPerLevel'
-          attribute: 'COINS'
-          biomes: 'DESERT:4,BEACHES:4,RIVER:4,JUNGLE:4'
-          base_value: '5.0'
-        - name: 'ConsumeLevelComponent'
+# RESERVED FOR BAKERY
+#    itemId: 297
+#    itemData: 0
+#    position: 30
+#  - id: s_bakery
+#    itemId: 297
+#    itemData: 0
+#    position: 30
+#    template: bakery
+#    template_y_shift: 0
+#    displayName: Bakery
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 10000.0
+#    upkeep: 1000.0
+#    hammer_cost: 1500
+#    points: 50
+#    max_hitpoints: 325
 #
   - id: ti_pasture
     itemId: 383
@@ -669,36 +738,25 @@ structures:
     points: 75
     max_hitpoints: 400
 #
-  - id: s_temple
-    itemId: 423
+  - id: s_store
+    itemId: 120
     itemData: 0
-    position: 33
-    template: temple
+    position: 34
+    template: store
     template_y_shift: 0
-    displayName: Temple
-    require_tech: 'tech_priesthood'
-    effect_event: generate_culture:40
-    update_event: check_sacrifice 
+    displayName: Store
+    require_tech: 'tech_commerce'
     limit: 1
-    cost: 30000.0
-    upkeep: 2000.0
-    hammer_cost: 1250
-    points: 100
-    max_hitpoints: 250
-    components:
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'CULTURE'
-          value: '7.5'
-        - name: 'AttributeStatic'
-          type: 'direct'
-          attribute: 'HAPPINESS'
-          value: '4.0'
+    cost: 2500.0
+    upkeep: 200.0
+    hammer_cost: 500
+    points: 50
+    max_hitpoints: 200
 #
   - id: s_grocer
     itemId: 260
     itemData: 0
-    position: 34
+    position: 35
     template: grocer
     template_y_shift: 0
     displayName: Grocer
@@ -710,21 +768,33 @@ structures:
     points: 25
     max_hitpoints: 150
 # Row 5
-  - id: s_warehouse
-    itemId: 54
+  - id: s_blacksmith
+    itemId: 145
     itemData: 0
     position: 36
-    template: warehouse
-    template_y_shift: 0
-    displayName: Warehouse
-    require_tech: 'tech_material_placement'
-    update_event: warehouse_transfer
+    template: blacksmith
+    template_y_shift: -2
+    displayName: Blacksmith
+    require_tech: 'tech_blacksmithing'
     limit: 1
-    cost: 50000.0
-    upkeep: 2500.0
-    hammer_cost: 1500
-    points: 350
+    cost: 30000.0
+    upkeep: 1000.0
+    hammer_cost: 850
+    points: 30
     max_hitpoints: 350
+    components:
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'HAPPINESS'
+          value: '-1.5'
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'GROWTHRATE'
+          value: '-0.1'
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'HAMMERS'
+          value: '15.0'
 #
   - id: s_barracks
     itemId: 276
@@ -744,10 +814,94 @@ structures:
         - name: 'AttributeWarUnhappiness'
           value: '-2.5'
 #
+# RESERVED FOR ALTAR
+#    itemId: 403
+#    itemData: 0
+#    position: 40
+#  - id: s_altar
+#    itemId: 403
+#    itemData: 0
+#    position: 40
+#    template: altar
+#    template_y_shift: 0
+#    displayName: Altar
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 10000.0
+#    upkeep: 300.0
+#    hammer_cost: 750
+#    points: 20
+#    max_hitpoints: 175
+#
+  - id: s_temple
+    itemId: 423
+    itemData: 0
+    position: 41
+    template: temple
+    template_y_shift: 0
+    displayName: Temple
+    require_tech: 'tech_priesthood'
+    effect_event: generate_culture:40
+    update_event: check_sacrifice 
+    limit: 1
+    cost: 30000.0
+    upkeep: 2000.0
+    hammer_cost: 1250
+    points: 100
+    max_hitpoints: 250
+    components:
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'CULTURE'
+          value: '5.0'
+        - name: 'AttributeStatic'
+          type: 'direct'
+          attribute: 'HAPPINESS'
+          value: '3.5'
+#
+# RESERVED FOR SCHOOL
+#    itemId: 339
+#    itemData: 0
+#    position: 43
+#  - id: s_school
+#    itemId: 339
+#    itemData: 0
+#    position: 43
+#    template: school
+#    template_y_shift: 0
+#    displayName: School
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 999.0
+#    upkeep: 999.0
+#    hammer_cost: 999
+#    points: 999
+#    max_hitpoints: 999
+#
+# RESERVED FOR UNIVERSITY
+#    itemId: 395
+#    itemData: 0
+#    position: 43
+#  - id: s_university
+#    itemId: 395
+#    itemData: 0
+#    position: 44
+#    template: university
+#    template_y_shift: 0
+#    displayName: University
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 999.0
+#    upkeep: 999.0
+#    hammer_cost: 999
+#    points: 999
+#    max_hitpoints: 999
+#
+# Row 6
   - id: s_scouttower
     itemId: 381
     itemData: 0
-    position: 39
+    position: 45
     template: scout_tower
     template_y_shift: 0
     displayName: Scout Tower
@@ -764,7 +918,7 @@ structures:
   - id: s_arrowtower
     itemId: 262
     itemData: 0
-    position: 40
+    position: 46
     template: arrow_tower
     template_y_shift: 0
     displayName: Arrow Tower
@@ -782,7 +936,7 @@ structures:
   - id: s_cannontower
     itemId: 385
     itemData: 0
-    position: 41
+    position: 47
     template: cannon_tower
     template_y_shift: 0
     displayName: Cannon Tower
@@ -796,11 +950,49 @@ structures:
     hammer_cost: 3500
     max_hitpoints: 1000
     points: 300
-# Row 6
+#
+# RESERVED FOR ARCANE TOWER
+#    itemId: 437
+#    itemData: 0
+#    position: 48
+#  - id: s_arcane_tower
+#    itemId: 441
+#    itemData: 0
+#    position: 48
+#    template: arcane_tower
+#    template_y_shift: 0
+#    displayName: Arcane Tower
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 400000.0
+#    upkeep: 7000.0
+#    hammer_cost: 7500
+#    points: 1000
+#    max_hitpoints: 1250
+#
+# RESERVED FOR LEVITATION TOWER
+#    itemId: 229
+#    itemData: 0
+#    position: 49
+#  - id: s_levitation_tower
+#    itemId: 229
+#    itemData: 0
+#    position: 49
+#    template: levitation_tower
+#    template_y_shift: 0
+#    displayName: Levitation Tower
+#    require_tech: 'tech_donotbuild'
+#    limit: 1
+#    cost: 750000.0
+#    upkeep: 10000.0
+#    hammer_cost: 30000
+#    points: 1500
+#    max_hitpoints: 1500
+#
   - id: ti_wall
     itemId: 98
     itemData: 0
-    position: 50
+    position: 51
     template: notused
     template_y_shift: 0
     displayName: Wall
@@ -808,8 +1000,8 @@ structures:
     ignore_floating: true
     has_template: false
     limit: 0
-    cost: 50.0
-    upkeep: 100.0
+    cost: 100.0
+    upkeep: 50.0
     hammer_cost: 400
     points: 5
     max_hitpoints: 1000
@@ -817,7 +1009,7 @@ structures:
   - id: ti_road
     itemId: 98
     itemData: 0
-    position: 51
+    position: 52
     template: notused
     template_y_shift: 0 
     displayName: Road
@@ -825,8 +1017,8 @@ structures:
     ignore_floating: true
     has_template: false
     limit: 0
-    cost: 250.0
-    upkeep: 20.0
+    cost: 200.0
+    upkeep: 10.0
     hammer_cost: 400
     points: 5
     max_hitpoints: 1000

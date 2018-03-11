@@ -118,6 +118,7 @@ public class Template {
 		attachableTypes.add(CivData.OTHER_FLOWERS);
 		attachableTypes.add(CivData.BROWN_MUSHROOM);
 		attachableTypes.add(CivData.RED_MUSHROOM);
+		attachableTypes.add(CivData.TNT);
 		attachableTypes.add(CivData.TORCH);
 		attachableTypes.add(CivData.REDSTONE_WIRE);
 		attachableTypes.add(CivData.WHEAT_CROP);
@@ -135,8 +136,9 @@ public class Template {
 		attachableTypes.add(CivData.STONE_BUTTON);
 		attachableTypes.add(CivData.CACTUS);
 		attachableTypes.add(CivData.SUGARCANE_BLOCK);
-		attachableTypes.add(CivData.REDSTONE_REPEATER_OFF);
-		attachableTypes.add(CivData.REDSTONE_REPEATER_ON);
+		attachableTypes.add(CivData.REPEATER_OFF);
+		attachableTypes.add(CivData.REPEATER_ON);
+		attachableTypes.add(CivData.TRAPDOOR);
 		attachableTypes.add(CivData.PUMPKIN_STEM);
 		attachableTypes.add(CivData.MELON_STEM);
 		attachableTypes.add(CivData.VINE);
@@ -161,6 +163,7 @@ public class Template {
 		attachableTypes.add(CivData.JUNGLE_DOOR);
 		attachableTypes.add(CivData.ACACIA_DOOR);
 		attachableTypes.add(CivData.DARK_OAK_DOOR);
+		attachableTypes.add(CivData.BEETROOT_CROP);
 	}
 	
 	public static boolean isAttachable(int blockID) {
