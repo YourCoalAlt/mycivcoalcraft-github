@@ -210,8 +210,8 @@ public class CivSettings {
 	public static boolean hasVanishNoPacket = false;
 	public static boolean hasWorldBorder = false;
 	
-	public static final String ADMIN = "civ.admin";
-	public static final String MINI_ADMIN = "civ.mini_admin";
+//	public static final String ADMIN = "civ.admin";
+//	public static final String MINI_ADMIN = "civ.mini_admin";
 	public static final String MODERATOR = "civ.moderator";
 	public static final String HELPER = "civ.helper";
 	public static final String FREE_PERKS = "civ.freeperks";

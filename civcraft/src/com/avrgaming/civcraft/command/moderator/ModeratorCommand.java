@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -379,10 +380,9 @@ public class ModeratorCommand extends CommandBase {
 	public void permissionCheck() throws CivException {
 		if (sender instanceof ConsoleCommandSender) {
 		} else if (sender instanceof Player) {
-			if (!getPlayer().hasPermission(CivSettings.HELPER) && !getPlayer().hasPermission(CivSettings.MODERATOR) &&
-				!getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {
-				throw new CivException("Only helpers, moderators, admins, and staff can use this command.");
-			}
+			CivPerms.validHelper((Player)sender);
+		} else if (!sender.isOp()) {
+			throw new CivException("Only OP can use this command.");			
 		}
 	}
 	

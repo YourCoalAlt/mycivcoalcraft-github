@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.exception.CivException;
@@ -159,7 +160,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 			// if (War.isWarTime() && War.isOnlyWarriors()) { // Now saved in PlayerListener
 			
 			/* turn on allchat by default for admins. */
-			if (getPlayer().hasPermission(CivSettings.MINI_ADMIN)) {
+			if (CivPerms.isAdmin(getPlayer())) {
 				resident.allchat = true;
 				Resident.allchatters.add(resident.getName());
 			}
@@ -206,7 +207,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 				if (CivSettings.getString(CivSettings.perkConfig, "system.free_perks").equalsIgnoreCase("true")) {
 					resident.giveAllFreePerks();
 				} else if (CivSettings.getString(CivSettings.perkConfig, "system.free_admin_perks").equalsIgnoreCase("true")) {
-					if (getPlayer().hasPermission(CivSettings.MINI_ADMIN) || getPlayer().hasPermission(CivSettings.FREE_PERKS)) {
+					if (CivPerms.isAdmin(getPlayer()) || getPlayer().hasPermission(CivSettings.FREE_PERKS)) {
 						resident.giveAllFreePerks();
 					}
 				}

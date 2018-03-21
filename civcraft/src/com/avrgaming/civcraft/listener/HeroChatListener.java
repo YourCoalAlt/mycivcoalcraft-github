@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 
 import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.moderator.ModeratorCommand;
-import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -21,7 +21,7 @@ import com.dthielke.herochat.Herochat;
 public class HeroChatListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onChannelChatEvent(ChannelChatEvent event) {
+	public void onChannelChatEvent(ChannelChatEvent event) throws CivException {
 		Player p = event.getSender().getPlayer();
 		Resident resident = CivGlobal.getResident(event.getSender().getName());
 		if (resident == null) {
@@ -36,8 +36,7 @@ public class HeroChatListener implements Listener {
 				event.setResult(Result.MUTED);
 			}
 			
-			if (!ModeratorCommand.global && !p.hasPermission(CivSettings.ADMIN) && !p.hasPermission(CivSettings.MINI_ADMIN)
-					 && !p.hasPermission(CivSettings.MODERATOR) && !p.hasPermission(CivSettings.HELPER) && !p.isOp()) {
+			if (!ModeratorCommand.global && !CivPerms.isHelper(p)) {
 				CivMessage.sendError(resident, "Global Chat is currently disabled.");
 				event.setResult(Result.FAIL);
 			}

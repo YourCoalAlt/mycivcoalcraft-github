@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndConditionDiplomacy;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
@@ -341,12 +342,9 @@ public class CivCommand extends CommandBase {
 		}
 		
 		Player player = null;
-		try {
-			player = getPlayer();
-		} catch (CivException e) {
-		}
-
-		if (player == null || player.hasPermission(CivSettings.MINI_ADMIN) || player.isOp()) {
+		if (resident != null) player = CivGlobal.getPlayer(resident);
+		
+		if (CivPerms.isAdmin(player)) {
 			cal.setTime(CivGlobal.getTodaysSpawnRegenDate());
 			out.add(CivColor.LightPurple+"Next Spawn Regen: "+CivColor.LightGreen+sdf.format(cal.getTime()));
 			

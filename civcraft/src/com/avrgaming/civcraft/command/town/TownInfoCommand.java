@@ -33,6 +33,7 @@ import com.avrgaming.civcraft.config.ConfigCottageLevel;
 import com.avrgaming.civcraft.config.ConfigCultureLevel;
 import com.avrgaming.civcraft.config.ConfigHappinessState;
 import com.avrgaming.civcraft.config.ConfigTownLevel;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.items.BonusGoodie;
@@ -506,7 +507,7 @@ public class TownInfoCommand extends CommandBase {
 		
 		if (resident != null) {
 			Player player = CivGlobal.getPlayer(resident);
-			isAdmin = player.hasPermission(CivSettings.MINI_ADMIN);
+			isAdmin = CivPerms.isAdmin(player);
 		} else {
 			// We're the console!
 			isAdmin = true;

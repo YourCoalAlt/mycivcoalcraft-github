@@ -22,7 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
-import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -46,13 +46,13 @@ public class AdminWarCommand extends CommandBase {
 		commands.put("onlywarriors", "Kicks everyone who is not at war from servers and only lets at war players in.");
 	}
 	
-	public void onlywarriors_cmd() {
+	public void onlywarriors_cmd() throws CivException {
 		War.setOnlyWarriors(!War.isOnlyWarriors());
 		if (War.isOnlyWarriors()) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				Resident res = CivGlobal.getResident(player);
-				if (player.isOp() || player.hasPermission(CivSettings.MINI_ADMIN) || player.hasPermission(CivSettings.ADMIN)) {
-					CivMessage.send(sender, "Skipping "+player.getName()+" since he is OP or mini admin.");
+				if (CivPerms.isMiniAdmin(player)) {
+					CivMessage.send(sender, "Skipping "+player.getName()+" - Staff Rank Allowed Online.");
 					continue;
 				}
 				
@@ -112,8 +112,8 @@ public class AdminWarCommand extends CommandBase {
 	
 	@Override
 	public void permissionCheck() throws CivException {
-		if (sender.isOp() == false) {
-			throw new CivException("Only admins can use this command.");			
-		}	
+		if (sender instanceof Player) {
+			CivPerms.validAdWar(getPlayer());
+		}
 	}
 }

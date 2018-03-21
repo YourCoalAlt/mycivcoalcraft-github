@@ -2,9 +2,12 @@ package com.avrgaming.civcraft.command.admin;
 
 import java.sql.SQLException;
 
+import org.bukkit.entity.Player;
+
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigPerk;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -97,6 +100,10 @@ public class AdminPerkCommand extends CommandBase {
 		
 		if (PlatinumManager.isLegacyEnabled()) {
 			throw new CivException("Perk command does not work with legacy perks system enabled. See perks.yml");
+		}
+		
+		if (sender instanceof Player) {
+			CivPerms.validAdMob(getPlayer());
 		}
 	}
 

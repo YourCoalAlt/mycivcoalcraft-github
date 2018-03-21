@@ -70,6 +70,7 @@ import com.avrgaming.civcraft.accounts.AccountLogger;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTechPotion;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.items.units.UnitItemMaterial;
@@ -298,7 +299,7 @@ public class PlayerListener implements Listener {
 			CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
 		}
 		
-		if (AdminCommand.isLockdown() && !p.isOp() && !p.hasPermission(CivSettings.MINI_ADMIN)) {
+		if (AdminCommand.isLockdown() && !p.isOp() && !CivPerms.isMiniAdmin(p)) {
 			String msg = (" §b§l« CivilizationCraft »"+"\n"+
 					" "+"\n"+
 					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
@@ -308,7 +309,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (War.isWarTime() && War.isOnlyWarriors()) {
-			if (p.isOp() || p.hasPermission(CivSettings.MINI_ADMIN)) {
+			if (p.isOp() || CivPerms.isMod(p)) {
 				//Allowed to connect since player is OP or mini admin.
 			} else if (!res.hasTown() || !res.getTown().getCiv().getDiplomacyManager().isAtWar()) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yy h:mm:ss a z");

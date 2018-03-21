@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCustomMobs;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -133,6 +134,9 @@ public class AdminMobCommand extends CommandBase {
 	
 	@Override
 	public void permissionCheck() throws CivException {
+		if (sender instanceof Player) {
+			CivPerms.validAdMob(getPlayer());
+		}
 	}
 	
 }

@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
@@ -27,16 +28,24 @@ public class PlayerTagUpdateTimer implements Runnable {
 				NametagEdit.getApi().setSuffix(p, suffix);
 				
 				String prefix = "";
-				if (p.hasPermission(CivSettings.MINI_ADMIN)) {
-					prefix += CivColor.RedBold+"Admin ";
-				} else if (p.hasPermission(CivSettings.MODERATOR)) {
-					prefix += CivColor.LightBlueBold+"Mod ";
-				} else if (p.hasPermission(CivSettings.HELPER)) {
-					prefix += CivColor.LightGreenBold+"Helper ";
+				if (p.hasPermission(CivPerms.CONTROL)) {
+					prefix = CivColor.GoldBold+"Owner ";
+				} else if (p.hasPermission(CivPerms.ADMIN_OP)) {
+					prefix = CivColor.RedBold+"Admin OP ";
+				} else if (p.hasPermission(CivPerms.ADMIN)) {
+					prefix = CivColor.RedItalic+"Admin ";
+				} else if (p.hasPermission(CivPerms.MINI_ADMIN)) {
+					prefix = CivColor.RoseBold+"Jr Admin ";
+				} else if (p.hasPermission(CivPerms.MODERATOR)) {
+					prefix = CivColor.LightBlueBold+"Mod ";
+				} else if (p.hasPermission(CivPerms.DEVELOPER)) {
+					prefix = CivColor.NavyBold+"Dev ";
+				} else if (p.hasPermission(CivPerms.HELPER)) {
+					prefix = CivColor.LightGreenBold+"Helper ";
 				}
 				
 				if (p.isOp()) {
-					prefix += CivColor.LightGrayItalic;
+					prefix += CivColor.YellowBold+"^ ";
 				}
 				
 				NametagEdit.getApi().setPrefix(p, prefix+CivColor.RESET);

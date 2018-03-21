@@ -44,6 +44,7 @@ import com.avrgaming.civcraft.config.ConfigMaterial;
 import com.avrgaming.civcraft.config.ConfigMaterialCategory;
 import com.avrgaming.civcraft.config.ConfigTradeGood;
 import com.avrgaming.civcraft.config.ConfigUnit;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
 import com.avrgaming.civcraft.exception.CivException;
@@ -236,8 +237,8 @@ public class AdminCommand extends CommandBase {
 						Thread.sleep(1000);
 						CivMessage.global("All non-staff have been kicked.");
 						for (Player player : Bukkit.getOnlinePlayers()) {
-							if (player.isOp() || player.hasPermission(CivSettings.MINI_ADMIN)) {
-								CivMessage.send(sender, "Skipping "+player.getName()+" since they are OP or admin.");
+							if (player.isOp() || CivPerms.isMiniAdmin(player)) {
+								CivMessage.send(sender, "Skipping "+player.getName()+" since they are OP, or ranked Mini Admin or higher.");
 								continue;
 							}
 							TaskMaster.syncTask(new PlayerModerationKick(player.getName(), sender.getName(), "The server is currently on lockdown... Try again in a few minutes."));
@@ -518,13 +519,9 @@ public class AdminCommand extends CommandBase {
 	@Override
 	public void permissionCheck() throws CivException {
 		if (sender instanceof Player) {
-			if (((Player)sender).hasPermission(CivSettings.MINI_ADMIN)) {
-				return;
-			}
-		}
-		
-		if (sender.isOp() == false) {
-			throw new CivException("Only admins can use this command.");			
+			CivPerms.validAdmin((Player)sender);
+		} else if (!sender.isOp()) {
+			throw new CivException("Only OP can use this command.");			
 		}
 	}
 
