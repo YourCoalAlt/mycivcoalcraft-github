@@ -42,47 +42,58 @@ public class HourlyEvent implements EventInterface {
 	
 	@Override
 	public void process() {
-		CivLog.info("TimerEvent: Hourly -------------------------------------");
-		for (Structure struc : CivGlobal.getStructures()) {
-			if (struc instanceof Granary) {
-				Granary granary = (Granary) struc;
-				granary.resetTasks();
+		class SyncTask implements Runnable {
+			
+			public SyncTask() {
 			}
-			if (struc instanceof Mine) {
-				Mine mine = (Mine) struc;
-				mine.resetTasks();
+			
+			@Override
+			public void run() {
+				CivLog.info("TimerEvent: Hourly -------------------------------------");
+				for (Structure struc : CivGlobal.getStructures()) {
+					if (struc instanceof Granary) {
+						Granary granary = (Granary) struc;
+						granary.resetTasks();
+					}
+					if (struc instanceof Mine) {
+						Mine mine = (Mine) struc;
+						mine.resetTasks();
+					}
+					if (struc instanceof Lab) {
+						Lab lab = (Lab) struc;
+						lab.resetTasks();
+					}
+				}
+				
+				this.processTownsTradePayments();
+				TaskMaster.asyncTask("EffectEventTimer", new EffectEventTimer(), 0);
+				TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
+				CivLog.info("TimerEvent: Hourly Finished -----------------------------");
 			}
-			if (struc instanceof Lab) {
-				Lab lab = (Lab) struc;
-				lab.resetTasks();
+
+			private void processTownsTradePayments() {
+				if (!CivGlobal.tradeEnabled) return;
+				CivGlobal.checkForDuplicateGoodies();
+				for (Town town : CivGlobal.getTowns()) {
+					double payment = TradeGood.getTownTradePayment(town);
+					if (payment <= 0) continue;
+					
+					DecimalFormat df = new DecimalFormat();
+					double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
+					if (taxesPaid > 0) {
+						town.getTreasury().deposit(payment - taxesPaid);
+						town.getDepositCiv().taxPayment(town, taxesPaid);
+						CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade."+
+							CivColor.Yellow+" (Paid "+df.format(taxesPaid)+" in taxes to "+town.getDepositCiv().getName()+")");
+					} else {
+						town.getTreasury().deposit(payment);
+						CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade.");
+					}
+				}
 			}
 		}
 		
-		this.processTownsTradePayments();
-		TaskMaster.asyncTask("EffectEventTimer", new EffectEventTimer(), 0);
-		TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
-		CivLog.info("TimerEvent: Hourly Finished -----------------------------");
-	}
-	
-	public void processTownsTradePayments() {
-		if (!CivGlobal.tradeEnabled) return;
-		CivGlobal.checkForDuplicateGoodies();
-		for (Town town : CivGlobal.getTowns()) {
-			double payment = TradeGood.getTownTradePayment(town);
-			if (payment <= 0) continue;
-			
-			DecimalFormat df = new DecimalFormat();
-			double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
-			if (taxesPaid > 0) {
-				town.getTreasury().deposit(payment - taxesPaid);
-				town.getDepositCiv().taxPayment(town, taxesPaid);
-				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade."+
-					CivColor.Yellow+" (Paid "+df.format(taxesPaid)+" in taxes to "+town.getDepositCiv().getName()+")");
-			} else {
-				town.getTreasury().deposit(payment);
-				CivMessage.sendTown(town, CivColor.LightGreen+"Generated "+CivColor.Yellow+df.format(payment)+CivColor.LightGreen+" coins from trade.");
-			}
-		}
+		TaskMaster.syncTask(new SyncTask());
 	}
 	
 	@Override

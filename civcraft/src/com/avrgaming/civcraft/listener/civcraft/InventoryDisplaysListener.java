@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigGranaryLevel;
 import com.avrgaming.civcraft.config.ConfigGranaryTask;
+import com.avrgaming.civcraft.config.ConfigGrocerLevel;
 import com.avrgaming.civcraft.config.ConfigLabTask;
 import com.avrgaming.civcraft.config.ConfigMarketItem;
 import com.avrgaming.civcraft.config.ConfigMineTask;
@@ -80,6 +82,8 @@ public class InventoryDisplaysListener implements Listener {
 		
 		if (event.getInventory().getName().contains("Global Market Menu")) this.clickMarketMenu(p, event);
 		if (event.getInventory().getName().contains("Market Trade ")) this.clickMarketItem(p, event);
+		
+		if (event.getInventory().getName().contains("Grocer Menu")) this.clickGrocerItem(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
 		
@@ -352,16 +356,83 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		}
 		
+		if (m == null) return;
+		
 		String c = event.getCurrentItem().getItemMeta().getDisplayName();
 		if (c != null) {
-			if (c.contains("Sell "+Market.BULK_AMOUNT)) s.processSell(p, res, Market.BULK_AMOUNT, m);
-			else if (c.contains("Sell 1")) s.processSell(p, res, 1, m);
-			else if (c.contains("Buy 1")) s.processBuy(p, res, 1, m);
-			else if (c.contains("Buy "+Market.BULK_AMOUNT)) s.processBuy(p, res, Market.BULK_AMOUNT, m);
+			ClickType ct = event.getClick();
+			int buyFull = 0;
+			int sellFull = 0;
+			for (int i = 0; i < 36; i++) {
+				ItemStack is = p.getInventory().getItem(i);
+				if (is == null || is.getType() == Material.AIR) {
+					buyFull += 64;
+					continue;
+				}
+				if (ItemManager.getId(is) == m.type_id && ItemManager.getData(is) == m.data) {
+					sellFull += is.getAmount();
+					continue;
+				}
+			}
+			
+			if (c.contains("Sell")) {
+				if (ct == ClickType.LEFT) s.processSell(p, res, 1, m);
+				else if (ct == ClickType.SHIFT_LEFT) s.processSell(p, res, Market.BULK_AMOUNT, m);
+				else if (ct == ClickType.MIDDLE) s.processSell(p, res, sellFull, m);
+			} else if (c.contains("Buy")) {
+				if (ct == ClickType.LEFT) s.processBuy(p, res, 1, m);
+				else if (ct == ClickType.SHIFT_LEFT) s.processBuy(p, res, Market.BULK_AMOUNT, m);
+				else if (ct == ClickType.MIDDLE) s.processBuy(p, res, buyFull, m);
+			} else if (c.contains("Back")) {
+				s.openMainMarketMenu(p);
+			}
 		}
 		
-		Inventory opened = s.getMarketItemOpened(event.getInventory(), m);
+		Inventory opened = s.getMarketItemOpened(p, event.getInventory(), m);
 		event.getInventory().setContents(opened.getContents());
+	}
+	
+	public void clickGrocerItem(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
+		
+		Resident res = CivGlobal.getResident(p);
+		Market s = (Market) res.getTown().getStructureByType("s_market");
+		if (s == null) { CivMessage.sendError(p, "Your town does not have a Market... cannot use one until then!"); event.setCancelled(true); }
+		
+		ConfigGrocerLevel g = null;
+		ItemStack mi = event.getInventory().getItem(1);
+		int id = ItemManager.getId(mi);
+		int data = ItemManager.getData(mi);
+		for (ConfigGrocerLevel gl : CivSettings.grocerLevels.values()) {
+			if (id == gl.itemId && data == gl.itemData) {
+				g = gl;
+			}
+		}
+		
+		if (g == null) return;
+		
+		String c = event.getCurrentItem().getItemMeta().getDisplayName();
+		if (c != null) {
+			ClickType ct = event.getClick();
+			int buyFull = 0;
+			for (int i = 0; i < 36; i++) {
+				ItemStack is = p.getInventory().getItem(i);
+				if (is == null || is.getType() == Material.AIR) {
+					buyFull += 64;
+					continue;
+				}
+			}
+			
+			if (c.contains(g.itemName)) {
+				if (ct == ClickType.LEFT) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, 1, g.price);
+				else if (ct == ClickType.SHIFT_LEFT) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, 64, 64*g.price);
+				else if (ct == ClickType.MIDDLE) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, buyFull, buyFull*g.price);
+			}
+		}
+		
+		s.openMainGrocerMenu(p);
 	}
 	
 	public void clickSpyMissionMenu(Player p, InventoryClickEvent event) {

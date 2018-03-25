@@ -36,8 +36,8 @@ import com.avrgaming.civcraft.object.StoreMaterial;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Bank;
 import com.avrgaming.civcraft.structure.Granary;
-import com.avrgaming.civcraft.structure.Grocer;
 import com.avrgaming.civcraft.structure.Library;
+import com.avrgaming.civcraft.structure.Market;
 import com.avrgaming.civcraft.structure.Quarry;
 import com.avrgaming.civcraft.structure.Store;
 import com.avrgaming.civcraft.structure.Structure;
@@ -203,13 +203,13 @@ public class ConfigTownUpgrade {
 			town.save();
 			break;
 		case "set_grocer_level":
-			struct = town.getStructureByType("s_grocer");
-			if (struct != null && (struct instanceof Grocer)) {
-				Grocer grocer = (Grocer)struct;
-				if (grocer.getLevel() < Integer.valueOf(args[1].trim())) {
-					grocer.setLevel(Integer.valueOf(args[1].trim()));
-					grocer.updateSignText();
-					CivMessage.sendTown(town, "The Grocer is now level "+grocer.getLevel()+"!");
+			struct = town.getStructureByType("s_market");
+			if (struct != null && (struct instanceof Market)) {
+				Market market = (Market)struct;
+				if (market.getGrocerLevel() < Integer.valueOf(args[1].trim())) {
+					market.setGrocerLevel(Integer.valueOf(args[1].trim()));
+					market.updateSignText();
+					CivMessage.sendTown(town, "The Grocer Salesman at the Market is now level "+market.getGrocerLevel()+"!");
 				}
 			}
 			break;

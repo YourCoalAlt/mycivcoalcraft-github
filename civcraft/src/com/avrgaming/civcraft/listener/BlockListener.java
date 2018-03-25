@@ -1211,7 +1211,10 @@ public class BlockListener implements Listener {
 			} else if (buildable instanceof Market) {
 				Market m = (Market) buildable;
 				if (vn.contains("Market Tradesman")) {
-					m.openMainMenu(p);
+					m.openMainMarketMenu(p);
+				}
+				if (vn.contains("Grocer Salesman")) {
+					m.openMainGrocerMenu(p);
 				}
 			} else if (buildable instanceof Warehouse) {
 				Warehouse wh = (Warehouse) buildable;

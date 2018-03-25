@@ -1,20 +1,17 @@
 # Number of hours to remain in anarchy after switching governments.
 anarchy_duration: 24
 
-##################################################
-### ========== CivCraft Governments ========== ###
-##################################################
 governments:
   - id: gov_admin
     displayName: Adminism
     require_tech:
-    hammer_rate: 3.0
-    beaker_rate: 3.0
-    growth_rate: 6.0
-    culture_rate: 3.0
-    trade_rate: 4.5
-    housing_rate: 3.0
-    upkeep_rate: 0.2
+    hammer_rate: 4.0
+    beaker_rate: 4.0
+    growth_rate: 8.0
+    culture_rate: 4.0
+    trade_rate: 4.0
+    housing_rate: 4.0
+    upkeep_rate: 0.25
     maximum_tax_rate: 1.0
     trommel_process_rate: 5.0
     quarry_process_rate: 5.0
@@ -25,13 +22,13 @@ governments:
     require_tech:
     hammer_rate: 0.5
     beaker_rate: 0.5
-    growth_rate: 1.0
-    culture_rate: 0.5
+    growth_rate: 1.25
+    culture_rate: 0.25
     trade_rate: 0.1
     housing_rate: 0.1
-    upkeep_rate: 3.5
+    upkeep_rate: 4.0
     maximum_tax_rate: 0.0
-    trommel_process_rate: 0.85
+    trommel_process_rate: 0.5
     quarry_process_rate: 0.5
     power_type: mayor_all_power
 #
@@ -40,11 +37,11 @@ governments:
     require_tech:
     hammer_rate: 1.0
     beaker_rate: 1.0
-    growth_rate: 1.2
+    growth_rate: 1.15
     culture_rate: 1.0
-    trade_rate: 0.75
-    housing_rate: 0.75
-    upkeep_rate: 0.8
+    trade_rate: 1.0
+    housing_rate: 1.0
+    upkeep_rate: 0.9
     maximum_tax_rate: 0.05
     trommel_process_rate: 1.0
     quarry_process_rate: 1.0
@@ -54,27 +51,27 @@ governments:
     displayName: Monarchy
     require_tech:
     hammer_rate: 1.0
-    beaker_rate: 1.15
-    growth_rate: 1.35
-    culture_rate: 0.8
-    trade_rate: 0.9
+    beaker_rate: 0.85
+    growth_rate: 1.4
+    culture_rate: 1.05
+    trade_rate: 1.0
     housing_rate: 1.4
     upkeep_rate: 1.25
     maximum_tax_rate: 0.3
-    trommel_process_rate: 1.0
-    quarry_process_rate: 1.0
+    trommel_process_rate: 0.9
+    quarry_process_rate: 0.9
     power_type: mayor_all_power
 #
   - id: gov_despotism
     displayName: Despotism
     require_tech:
-    hammer_rate: 1.25
+    hammer_rate: 1.15
     beaker_rate: 1.0
-    growth_rate: 0.75
-    culture_rate: 1.0
-    trade_rate: 0.75
-    housing_rate: 0.75
-    upkeep_rate: 1.25
+    growth_rate: 0.7
+    culture_rate: 0.85
+    trade_rate: 1.0
+    housing_rate: 1.0
+    upkeep_rate: 1.2
     maximum_tax_rate: 0.5
     trommel_process_rate: 2.0
     quarry_process_rate: 1.0
@@ -83,13 +80,13 @@ governments:
   - id: gov_communism
     displayName: Communism
     require_tech:
-    hammer_rate: 1.75
+    hammer_rate: 1.4
     beaker_rate: 1.0
-    growth_rate: 1.0
+    growth_rate: 1.5
     culture_rate: 1.0
-    trade_rate: 1.0
-    housing_rate: 0.9
-    upkeep_rate: 0.75
+    trade_rate: 1.2
+    housing_rate: 1.1
+    upkeep_rate: 0.8
     maximum_tax_rate: 0.4
     trommel_process_rate: 1.0
     quarry_process_rate: 2.0
@@ -98,23 +95,23 @@ governments:
   - id: gov_mercantillism
     displayName: Mercantillism
     require_tech:
-    hammer_rate: 0.8
+    hammer_rate: 0.85
     beaker_rate: 0.9
-    growth_rate: 0.9
+    growth_rate: 0.85
     culture_rate: 1.15
-    trade_rate: 2.0
-    housing_rate: 0.75
-    upkeep_rate: 1.0
+    trade_rate: 1.75
+    housing_rate: 0.85
+    upkeep_rate: 0.95
     maximum_tax_rate: 0.25
     trommel_process_rate: 1.0
-    quarry_process_rate: 0.8
+    quarry_process_rate: 0.85
     power_type: mayor_all_power
 #
   - id: gov_technocracy
     displayName: Technocracy
     require_tech:
     hammer_rate: 0.9
-    beaker_rate: 1.75
+    beaker_rate: 1.4
     growth_rate: 1.0
     culture_rate: 0.9
     trade_rate: 1.0
@@ -122,7 +119,7 @@ governments:
     upkeep_rate: 1.1
     maximum_tax_rate: 0.2
     trommel_process_rate: 1.0
-    quarry_process_rate: 0.8
+    quarry_process_rate: 1.0
     power_type: mayor_all_power
 #
   - id: gov_theocracy
@@ -131,25 +128,25 @@ governments:
     hammer_rate: 0.75
     beaker_rate: 1.0
     growth_rate: 1.0
-    culture_rate: 1.4
-    trade_rate: 1.15
+    culture_rate: 1.3
+    trade_rate: 1.2
     housing_rate: 1.15
-    upkeep_rate: 1.2
+    upkeep_rate: 1.15
     maximum_tax_rate: 0.35
     trommel_process_rate: 1.0
-    quarry_process_rate: 0.8
+    quarry_process_rate: 0.85
     power_type: mayor_all_power
 #
   - id: gov_federalism
     displayName: Federalism
     require_tech:
-    hammer_rate: 1.3
-    beaker_rate: 1.3
-    growth_rate: 0.75
+    hammer_rate: 1.15
+    beaker_rate: 1.15
+    growth_rate: 0.7
     culture_rate: 1.0
-    trade_rate: 0.75
-    housing_rate: 0.75
-    upkeep_rate: 1.3
+    trade_rate: 0.85
+    housing_rate: 0.85
+    upkeep_rate: 1.25
     maximum_tax_rate: 0.3
     trommel_process_rate: 1.25
     quarry_process_rate: 1.25
@@ -158,16 +155,16 @@ governments:
   - id: gov_capitalism
     displayName: Capitalism
     require_tech:
-    hammer_rate: 1.25
+    hammer_rate: 1.05
     beaker_rate: 0.75
-    growth_rate: 1.0
+    growth_rate: 0.75
     culture_rate: 0.9
-    trade_rate: 1.4
+    trade_rate: 1.5
     housing_rate: 1.15
     upkeep_rate: 1.4
     maximum_tax_rate: 0.35
     trommel_process_rate: 0.85
-    quarry_process_rate: 0.85
+    quarry_process_rate: 1.0
     power_type: mayor_all_power
 #
   - id: gov_socialism
@@ -176,13 +173,27 @@ governments:
     hammer_rate: 0.9
     beaker_rate: 0.9
     growth_rate: 1.75
-    culture_rate: 1.25
-    trade_rate: 1.0
+    culture_rate: 1.2
+    trade_rate: 0.9
     housing_rate: 1.0
-    upkeep_rate: 0.9
+    upkeep_rate: 1.0
     maximum_tax_rate: 0.1
     trommel_process_rate: 1.0
     quarry_process_rate: 1.0
     power_type: mayor_all_power
 #
-
+  - id: gov_republic
+    displayName: Republic
+    require_tech:
+    hammer_rate: 1.0
+    beaker_rate: 1.05
+    growth_rate: 0.9
+    culture_rate: 1.05
+    trade_rate: 1.4
+    housing_rate: 1.1
+    upkeep_rate: 1.3
+    maximum_tax_rate: 0.15
+    trommel_process_rate: 0.85
+    quarry_process_rate: 1.0
+    power_type: mayor_all_power
+#

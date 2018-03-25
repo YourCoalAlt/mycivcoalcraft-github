@@ -16,157 +16,244 @@ rate: 0.05
 
 items:
     - id: 0
+      name: 'Dirt'
+      type_id: 3
+      data: 0
+      value: 1
+#
+    - id: 1
       name: 'Cobblestone'
       type_id: 4
       data: 0
       value: 1
-    
-    - id: 1
-      name: 'Clay'
-      type_id: 337
+#
+    - id: 2
+      name: 'Sand'
+      type_id: 12
       data: 0
       value: 1
-    
-    - id: 2
+#
+    - id: 3
+      name: 'Gravel'
+      type_id: 13
+      data: 0
+      value: 1
+#
+    - id: 10
+      name: 'Oak Wood'
+      type_id: 17
+      data: 0
+      value: 3
+#
+    - id: 11
+      name: 'Spruce Wood'
+      type_id: 17
+      data: 1
+      value: 3
+#
+    - id: 12
+      name: 'Birch Wood'
+      type_id: 17
+      data: 2
+      value: 3
+#
+    - id: 13
+      name: 'Jungle Wood'
+      type_id: 17
+      data: 3
+      value: 3
+#
+    - id: 14
+      name: 'Acacia Wood'
+      type_id: 162
+      data: 0
+      value: 3
+#
+    - id: 15
+      name: 'Dark Oak Wood'
+      type_id: 162
+      data: 1
+      value: 3
+#
+    - id: 20
+      name: 'Rabbit Hide'
+      type_id: 415
+      data: 0
+      value: 1
+#
+    - id: 21
+      name: 'Leather'
+      type_id: 334
+      data: 0
+      value: 4
+#
+    - id: 22
+      name: 'String'
+      type_id: 287
+      data: 0
+      value: 4
+#
+    - id: 23
+      name: 'Bone'
+      type_id: 352
+      data: 0
+      value: 2
+#
+    - id: 24
+      name: 'Feather'
+      type_id: 288
+      data: 0
+      value: 2
+#
+    - id: 25
+      name: 'Nether Wart'
+      type_id: 372
+      data: 0
+      value: 5
+#
+    - id: 26
+      name: 'Rotten Flesh'
+      type_id: 367
+      data: 0
+      value: 1
+#
+    - id: 27
       name: 'Coal'
       type_id: 263
       data: 0
       value: 1
-    
-    - id: 3
+#
+    - id: 28
       name: 'Flint'
       type_id: 318
       data: 0
       value: 1
-    
-    - id: 4
-      name: 'CraftedReed'
-      custom_id: 'mat_crafted_reeds'
-      type_id: 0
+#
+    - id: 29
+      name: 'Clay'
+      type_id: 337
       data: 0
       value: 1
-    
-    - id: 5
-      name: 'String'
-      type_id: 287
+#
+    - id: 40
+      name: 'Sugarcane'
+      type_id: 338
       data: 0
       value: 1
-    
-    - id: 7
-      name: 'Feather'
-      type_id: 288
+#
+    - id: 41
+      name: 'Wheat Seeds'
+      type_id: 295
       data: 0
       value: 1
-    
-    - id: 8
-      name: 'Nether Wart'
-      type_id: 372
+#
+    - id: 42
+      name: 'Beetroot Seeds'
+      type_id: 435
       data: 0
       value: 1
-    
-    - id: 9
-      name: 'Wood Oak'
-      type_id: 17
+#
+    - id: 42
+      name: 'Slimeball'
+      type_id: 341
       data: 0
-      value: 1
-
-    - id: 10
-      name: 'Wood Spruce'
-      type_id: 17
-      data: 1
-      value: 1
-    
-    - id: 11
-      name: 'Wood Birch'
-      type_id: 17 
-      data: 2
-      value: 1
-
-    - id: 12
-      name: 'Wood Jungle'
-      type_id: 17 
-      data: 3
-      value: 1
-
-    - id: 13
-      name: 'Bones'
-      type_id: 352
+      value: 10
+#
+    - id: 42
+      name: 'Gunpowder'
+      type_id: 289
       data: 0
-      value: 20
-
-    - id: 14
-      name: 'Leather'
-      type_id: 334
-      data: 0
-      value: 1
-
-    - id: 15
+      value: 5
+#
+    - id: 99
       name: 'Tungsten Ore'
       type_id: 0
       data: 0
       custom_id: 'mat_tungsten_ore'
       value: 1
     
-    - id: 16
+    - id: 98
       name: 'Chromium Ore'
       type_id: 0
       data: 0
       custom_id: 'mat_chromium_ore'
       value: 1
-
 # Floor 2 Left side Front Corner
-    - id: 122
+    - id: 120
       name: 'Bread'
       type_id: 297
       data: 0
-      value: 12
-
-    - id: 123
+      value: 10
+#
+    - id: 121
       name: 'Carrots'
       type_id: 391
       data: 0
-      value: 8
- 
-    - id: 124
-      name: 'Potato'
+      value: 7
+#
+    - id: 122
+      name: 'Potatoes'
       type_id: 392
       data: 0
-      value: 8
- 
-    - id: 125
+      value: 7
+#
+    - id: 123
+      name: 'Beetroots'
+      type_id: 434
+      data: 0
+      value: 5
+#
+    - id: 124
       name: 'Pumpkin'
       type_id: 86
       data: 0
       value: 4
- 
-    - id: 126
+#
+    - id: 125
       name: 'Melon'
       type_id: 103
       data: 0
       value: 3
- 
- # Food Stuff 
-   
-    - id: 128
-      name: 'Fish'
+#
+    - id: 130
+      name: 'Raw Fish'
       type_id: 349
       data: 0
       value: 5
- 
-    - id: 129
+#
+    - id: 131
+      name: 'Raw Salmon'
+      type_id: 349
+      data: 1
+      value: 5
+#
+    - id: 140
       name: 'Raw Beef'
       type_id: 363
       data: 0
       value: 5
- 
-    - id: 130
+#
+    - id: 141
       name: 'Raw Porkchop'
       type_id: 319
       data: 0
       value: 5
- 
-    - id: 131
+#
+    - id: 142
       name: 'Raw Chicken'
       type_id: 365
       data: 0
       value: 5
+#
+    - id: 143
+      name: 'Raw Rabbit'
+      type_id: 411
+      data: 0
+      value: 5
+#
+    - id: 144
+      name: 'Raw Mutton'
+      type_id: 423
+      data: 0
+      value: 5
+#

@@ -217,7 +217,7 @@ road:
 #row 1: townhall, capitol, _, shipyard, trade outpost, trade boat, _, store, stable
 #row 2: bank, stock exchange, market, _, trommel, quarry, blacksmith
 #row 3: mine, lab, water mill, monument, _, library, _, lumber mill, grinder
-#row 4: farm, windmill, granary, cottage, _, pasture, temple, grocer
+#row 4: farm, windmill, granary, cottage, _, pasture, temple
 #row 5: warehouse, barracks, _, scout tower, arrow tower, cannon tower
 #row 6: wall, wall gate, wall corner, _, wall tower, wall gate tower, wall corner tower
 
@@ -752,21 +752,6 @@ structures:
     hammer_cost: 500
     points: 50
     max_hitpoints: 200
-#
-  - id: s_grocer
-    itemId: 260
-    itemData: 0
-    position: 35
-    template: grocer
-    template_y_shift: 0
-    displayName: Grocer
-    require_tech: 'tech_animal_husbandry'
-    limit: 1
-    cost: 1500.0
-    upkeep: 100.0
-    hammer_cost: 450
-    points: 25
-    max_hitpoints: 150
 # Row 5
   - id: s_blacksmith
     itemId: 145

@@ -18,7 +18,6 @@
  */
 package com.avrgaming.civcraft.command.town;
 
-
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
@@ -27,8 +26,8 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Bank;
 import com.avrgaming.civcraft.structure.Blacksmith;
-import com.avrgaming.civcraft.structure.Grocer;
 import com.avrgaming.civcraft.structure.Library;
+import com.avrgaming.civcraft.structure.Market;
 import com.avrgaming.civcraft.structure.ScoutTower;
 import com.avrgaming.civcraft.structure.Stable;
 import com.avrgaming.civcraft.structure.Store;
@@ -45,7 +44,7 @@ public class TownSetCommand extends CommandBase {
 		commands.put("flattax", "Change the town's flat tax on membership.");
 		commands.put("bankfee", "Change the town Bank's non member fee");
 		commands.put("storefee", "Change the town Store's non member fee");
-		commands.put("grocerfee", "Change the town Grocer's non member fee");
+		commands.put("marketfees", "Change the town Market's non member fees");
 		commands.put("libraryfee", "Change the town Library's non member fee");
 		commands.put("blacksmithfee", "Change the town Blacksmith's non member fee");
 		commands.put("stablefee", "Change the town Stable's non member fee");
@@ -122,7 +121,7 @@ public class TownSetCommand extends CommandBase {
 		
 		Structure struct = town.findStructureByConfigId("s_library");
 		if (struct == null) {
-			throw new CivException("Your town does not own a library.");
+			throw new CivException("Your town does not own a Library.");
 		}
 
 		((Library)struct).setNonResidentFee(((double)feeInt/100));
@@ -131,7 +130,7 @@ public class TownSetCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Set library fee rate to "+feeInt+"%");
 	}
 	
-	public void grocerfee_cmd() throws CivException {
+	public void marketfees_cmd() throws CivException {
 		Town town = getSelectedTown();
 		Integer feeInt = getNamedInteger(1);
 		
@@ -139,15 +138,15 @@ public class TownSetCommand extends CommandBase {
 			throw new CivException("Must be a number between 5% and 15%");
 		}
 		
-		Structure struct = town.findStructureByConfigId("s_grocer");
+		Structure struct = town.findStructureByConfigId("s_market");
 		if (struct == null) {
-			throw new CivException("Your town does not own a grocer.");
+			throw new CivException("Your town does not own a Market.");
 		}
 
-		((Grocer)struct).setNonResidentFee(((double)feeInt/100));
-		((Grocer)struct).updateSignText();
+		((Market)struct).setNonResidentFee(((double)feeInt/100));
+		((Market)struct).updateSignText();
 		
-		CivMessage.sendSuccess(sender, "Set grocer fee rate to "+feeInt+"%");
+		CivMessage.sendSuccess(sender, "Set Market fees rate to "+feeInt+"%");
 		
 	}
 	
@@ -161,7 +160,7 @@ public class TownSetCommand extends CommandBase {
 		
 		Structure struct = town.findStructureByConfigId("s_store");
 		if (struct == null) {
-			throw new CivException("Your town does not own a store.");
+			throw new CivException("Your town does not own a Store.");
 		}
 		
 		((Store)struct).setNonResidentFee(((double)feeInt/100));
@@ -181,7 +180,7 @@ public class TownSetCommand extends CommandBase {
 		
 		Structure struct = town.findStructureByConfigId("s_bank");
 		if (struct == null) {
-			throw new CivException("Your town does not own a bank.");
+			throw new CivException("Your town does not own a Bank.");
 		}
 		
 		((Bank)struct).setNonResidentFee(((double)feeInt/100));

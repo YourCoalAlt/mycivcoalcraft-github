@@ -24,7 +24,6 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.mobs.CivVillager;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -71,8 +70,8 @@ public class Granary extends Structure {
 		}
 		
 		switch (sb.command) {
-		case "/task":
-			spawnTaskVillager(absCoord.getLocation(), (byte)sb.getData());
+//		case "/task":
+//			spawnTaskVillager(absCoord.getLocation(), (byte)sb.getData());
 		case "/storage":
 			spawnStorageVillager(absCoord.getLocation(), (byte)sb.getData());
 		}
@@ -177,7 +176,7 @@ public class Granary extends Structure {
 		return struct.getConfigId()+"_"+struct.getCorner().toString()+"_"+tag;
 	}
 	
-	public void spawnTaskVillager(Location loc, int direction) {
+/*	public void spawnTaskVillager(Location loc, int direction) {
 		Location vLoc = new Location(loc.getWorld(), loc.getX()+0.5, loc.getY(), loc.getZ()+0.5, Template.faceVillager(direction), 0f);
 		CivVillager cv = loc.getWorld().spawn(vLoc, CivVillager.class);
 		cv.onSpawn(vLoc, "Granary Tasks", false, Profession.NITWIT);
@@ -188,7 +187,7 @@ public class Granary extends Structure {
 		} else {
 			CivGlobal.addStructureVillager(vilKey, cv);
 		}
-	}
+	}*/
 	
 	public void openTaskGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Granary Tasks");

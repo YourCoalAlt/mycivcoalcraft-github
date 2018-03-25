@@ -45,10 +45,10 @@ public class PlayerTagUpdateTimer implements Runnable {
 				}
 				
 				if (p.isOp()) {
-					prefix += CivColor.YellowBold+"^ ";
+					prefix += CivColor.PurpleBold+"^ ";
 				}
 				
-				NametagEdit.getApi().setPrefix(p, prefix+CivColor.RESET);
+				NametagEdit.getApi().setPrefix(p, prefix+CivColor.White+" ");
 			}
 		}
 	}
