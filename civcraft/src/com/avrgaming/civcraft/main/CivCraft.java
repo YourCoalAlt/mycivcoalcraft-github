@@ -74,6 +74,7 @@ import com.avrgaming.civcraft.listener.HeroChatListener;
 import com.avrgaming.civcraft.listener.MarkerPlacementManager;
 import com.avrgaming.civcraft.listener.PlayerListener;
 import com.avrgaming.civcraft.listener.TagAPIListener;
+import com.avrgaming.civcraft.listener.civcraft.BrewingListener;
 import com.avrgaming.civcraft.listener.civcraft.HolographicDisplaysListener;
 import com.avrgaming.civcraft.listener.civcraft.InventoryDisplaysListener;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
@@ -237,6 +238,7 @@ public final class CivCraft extends JavaPlugin {
 		
 		pluginManager.registerEvents(new MobListener(), this);
 		pluginManager.registerEvents(new MinecraftListener(), this);
+		pluginManager.registerEvents(new BrewingListener(), this);
 		
 		//Registered GUIs
 		pluginManager.registerEvents(new InventoryDisplaysListener(), this);

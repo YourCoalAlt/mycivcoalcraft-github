@@ -57,6 +57,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.randomevents.ConfigRandomEvent;
 import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.Perk;
 
 public class CivSettings {
@@ -302,6 +303,9 @@ public class CivSettings {
 		LoreCraftableMaterial.buildStaticMaterials();
 		LoreCraftableMaterial.buildRecipes();
 		Template.initAttachableTypes();
+		
+		WarListener.addPlaceables();
+		WarListener.AddFllowingBlocks();
 		
 		if (CivSettings.plugin.hasPlugin("HolographicDisplays")) {
 			hasHolographicDisplays = true;

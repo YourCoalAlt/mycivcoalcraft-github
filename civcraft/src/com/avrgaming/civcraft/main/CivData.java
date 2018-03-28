@@ -399,6 +399,7 @@ public class CivData {
 	public static final short MUNDANE_POTION_DATA = 8192;
 	public static final short MUNDANE_POTION_EXT_DATA = 64;
 	public static final short THICK_POTION_DATA = 32;
+	public static final short AKWARD_POTION_DATA = 16;
 	
 	public static String getDisplayName(int id, int data) {
 		if (id == AIR) return "Air";

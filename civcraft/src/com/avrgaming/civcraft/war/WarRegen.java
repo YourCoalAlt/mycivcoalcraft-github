@@ -28,11 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Hopper;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.Inventory;
 
@@ -44,13 +46,9 @@ import com.avrgaming.civcraft.util.ItemManager;
 import gpl.ItemSerializer;
 
 public class WarRegen {
-
-	/* 
-	 * Saves an regenerates blocks during a war. 
-	 */
+	
+	//  Saves an regenerates blocks during a war.
 	private static Map<Block, Boolean> blockCache = new HashMap<Block, Boolean>(); 
-	
-	
 	
 	private static String blockAsAir(Block blk) {
 		return CivData.AIR+":0:"+blk.getX()+":"+blk.getY()+":"+blk.getZ()+":"+blk.getWorld().getName(); 
@@ -62,38 +60,46 @@ public class WarRegen {
 	
 	public static String blockInventoryString(Inventory inv) {
 		String out = ":";
-
 		out += ItemSerializer.InventoryToString(inv);
-		
 		return out;
 	}
 	
 	public static String blockSignString(Sign sign) {
 		String out = ":";
-		
 		for (String str : sign.getLines()) {
 			out += str+",";
 		}
-		
 		return out;
 	}
 	
 	private static String blockToString(Block blk, boolean save_as_air) {
-		if (save_as_air) { 
-			return blockAsAir(blk);
-		}
+		if (save_as_air) return blockAsAir(blk);
 		else {
 			String str = blockBasicString(blk);
-			
 			Inventory inv = null;
 			switch (blk.getType()) {
 			case TRAPPED_CHEST:
 			case CHEST:
-				inv = ((Chest)blk.getState()).getBlockInventory();
+				inv = ((Chest)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
-			case DISPENSER:
-				inv = ((Dispenser)blk.getState()).getInventory();
+			case WHITE_SHULKER_BOX:
+			case ORANGE_SHULKER_BOX:
+			case MAGENTA_SHULKER_BOX:
+			case LIGHT_BLUE_SHULKER_BOX:
+			case YELLOW_SHULKER_BOX:
+			case LIME_SHULKER_BOX:
+			case PINK_SHULKER_BOX:
+			case GRAY_SHULKER_BOX:
+			case SILVER_SHULKER_BOX:
+			case CYAN_SHULKER_BOX:
+			case PURPLE_SHULKER_BOX:
+			case BLUE_SHULKER_BOX:
+			case BROWN_SHULKER_BOX:
+			case GREEN_SHULKER_BOX:
+			case RED_SHULKER_BOX:
+			case BLACK_SHULKER_BOX:
+				inv = ((ShulkerBox)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
 			case BURNING_FURNACE:
@@ -101,15 +107,22 @@ public class WarRegen {
 				inv = ((Furnace)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
+			case DISPENSER:
+				inv = ((Dispenser)blk.getState()).getInventory();
+				str += blockInventoryString(inv);
+				break;
 			case DROPPER:
 				inv = ((Dropper)blk.getState()).getInventory();
+				str += blockInventoryString(inv);
+				break;
+			case BREWING_STAND:
+				inv = ((BrewingStand)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
 			case HOPPER:
 				inv = ((Hopper)blk.getState()).getInventory();
 				str += blockInventoryString(inv);
 				break;
-			case SIGN:
 			case SIGN_POST:
 			case WALL_SIGN:
 				Sign sign = (Sign)blk.getState();
@@ -118,14 +131,12 @@ public class WarRegen {
 			default:
 				break;
 			}
-			
 			return str;
 		}
 	}
-
+	
 	private static void restoreBlockFromString(String line) {
 		String[] split = line.split(":");
-		
 		int type = Integer.valueOf(split[0]);
 		byte data = Byte.valueOf(split[1]);
 		int x = Integer.valueOf(split[2]);
@@ -133,43 +144,61 @@ public class WarRegen {
 		int z = Integer.valueOf(split[4]);
 		String world = split[5];
 		
-		Block block = BukkitObjects.getWorld(world).getBlockAt(x,y,z);
-		
-		ItemManager.setTypeId(block, type);
-		ItemManager.setData(block, data, false);
+		Block blk = BukkitObjects.getWorld(world).getBlockAt(x,y,z);
+		ItemManager.setTypeId(blk, type);
+		ItemManager.setData(blk, data, false);
 
 		// End of basic block info, try to get more now.
 		Inventory inv = null;
-		switch (block.getType()) {
+		switch (blk.getType()) {
 		case TRAPPED_CHEST:
-			inv = ((Chest)block.getState()).getBlockInventory();
-			ItemSerializer.StringToInventory(inv, split[6]);
-			break;
 		case CHEST:
-			inv = ((Chest)block.getState()).getBlockInventory();
+			inv = ((Chest)blk.getState()).getInventory();
 			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
-		case DISPENSER:			
-			inv = ((Dispenser)block.getState()).getInventory();
+		case WHITE_SHULKER_BOX:
+		case ORANGE_SHULKER_BOX:
+		case MAGENTA_SHULKER_BOX:
+		case LIGHT_BLUE_SHULKER_BOX:
+		case YELLOW_SHULKER_BOX:
+		case LIME_SHULKER_BOX:
+		case PINK_SHULKER_BOX:
+		case GRAY_SHULKER_BOX:
+		case SILVER_SHULKER_BOX:
+		case CYAN_SHULKER_BOX:
+		case PURPLE_SHULKER_BOX:
+		case BLUE_SHULKER_BOX:
+		case BROWN_SHULKER_BOX:
+		case GREEN_SHULKER_BOX:
+		case RED_SHULKER_BOX:
+		case BLACK_SHULKER_BOX:
+			inv = ((ShulkerBox)blk.getState()).getInventory();
 			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case BURNING_FURNACE:
 		case FURNACE:
-			inv = ((Furnace)block.getState()).getInventory();
+			inv = ((Furnace)blk.getState()).getInventory();
+			ItemSerializer.StringToInventory(inv, split[6]);
+			break;
+		case DISPENSER:
+			inv = ((Dispenser)blk.getState()).getInventory();
 			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case DROPPER:
-			inv = ((Dropper)block.getState()).getInventory();
+			inv = ((Dropper)blk.getState()).getInventory();
+			ItemSerializer.StringToInventory(inv, split[6]);
+			break;
+		case BREWING_STAND:
+			inv = ((BrewingStand)blk.getState()).getInventory();
 			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
 		case HOPPER:
-			inv = ((Hopper)block.getState()).getInventory();
+			inv = ((Hopper)blk.getState()).getInventory();
 			ItemSerializer.StringToInventory(inv, split[6]);
 			break;
-		case SIGN:
 		case SIGN_POST:
 		case WALL_SIGN:
-			Sign sign = (Sign)block.getState();
+			Sign sign = (Sign)blk.getState();
 			String[] messages = split[6].split(",");
 			for (int i = 0; i < 4; i++) {
 				if (messages[i] != null) {
@@ -181,31 +210,55 @@ public class WarRegen {
 		default:
 			break;
 		}
-		
-		
 	}
 	
-	
-	public static void destroyThisBlock(Block blk, Town town) {
+	public static void explodeThisBlock(Block blk, String file) {
+		switch (blk.getType()) {
+		case SIGN_POST:
+		case WALL_SIGN:
+		case TNT:
+			return;
+		default:
+			break;
+		}
 		
-		WarRegen.saveBlock(blk, town.getName(), false);
-				
+		WarRegen.saveBlock(blk, file, false);
+		
 		switch (blk.getType()) {
 		case TRAPPED_CHEST:
-			((Chest)blk.getState()).getBlockInventory().clear();
-			break;
 		case CHEST:
-			((Chest)blk.getState()).getBlockInventory().clear();
+			((Chest)blk.getState()).getInventory().clear();
 			break;
-		case DISPENSER:
-			((Dispenser)blk.getState()).getInventory().clear();
+		case WHITE_SHULKER_BOX:
+		case ORANGE_SHULKER_BOX:
+		case MAGENTA_SHULKER_BOX:
+		case LIGHT_BLUE_SHULKER_BOX:
+		case YELLOW_SHULKER_BOX:
+		case LIME_SHULKER_BOX:
+		case PINK_SHULKER_BOX:
+		case GRAY_SHULKER_BOX:
+		case SILVER_SHULKER_BOX:
+		case CYAN_SHULKER_BOX:
+		case PURPLE_SHULKER_BOX:
+		case BLUE_SHULKER_BOX:
+		case BROWN_SHULKER_BOX:
+		case GREEN_SHULKER_BOX:
+		case RED_SHULKER_BOX:
+		case BLACK_SHULKER_BOX:
+			((ShulkerBox)blk.getState()).getInventory().clear();
 			break;
 		case BURNING_FURNACE:
 		case FURNACE:
 			((Furnace)blk.getState()).getInventory().clear();
 			break;
+		case DISPENSER:
+			((Dispenser)blk.getState()).getInventory().clear();
+			break;
 		case DROPPER:
 			((Dropper)blk.getState()).getInventory().clear();
+			break;
+		case BREWING_STAND:
+			((BrewingStand)blk.getState()).getInventory().clear();
 			break;
 		case HOPPER:
 			((Hopper)blk.getState()).getInventory().clear();
@@ -216,7 +269,56 @@ public class WarRegen {
 		
 		ItemManager.setTypeId(blk, CivData.AIR);
 		ItemManager.setData(blk, 0x0, true);
+	}
+	
+	public static void destroyThisBlock(Block blk, Town town) {
+		WarRegen.saveBlock(blk, town.getName(), false);
 		
+		switch (blk.getType()) {
+		case TRAPPED_CHEST:
+		case CHEST:
+			((Chest)blk.getState()).getInventory().clear();
+			break;
+		case WHITE_SHULKER_BOX:
+		case ORANGE_SHULKER_BOX:
+		case MAGENTA_SHULKER_BOX:
+		case LIGHT_BLUE_SHULKER_BOX:
+		case YELLOW_SHULKER_BOX:
+		case LIME_SHULKER_BOX:
+		case PINK_SHULKER_BOX:
+		case GRAY_SHULKER_BOX:
+		case SILVER_SHULKER_BOX:
+		case CYAN_SHULKER_BOX:
+		case PURPLE_SHULKER_BOX:
+		case BLUE_SHULKER_BOX:
+		case BROWN_SHULKER_BOX:
+		case GREEN_SHULKER_BOX:
+		case RED_SHULKER_BOX:
+		case BLACK_SHULKER_BOX:
+			((ShulkerBox)blk.getState()).getInventory().clear();
+			break;
+		case BURNING_FURNACE:
+		case FURNACE:
+			((Furnace)blk.getState()).getInventory().clear();
+			break;
+		case DISPENSER:
+			((Dispenser)blk.getState()).getInventory().clear();
+			break;
+		case DROPPER:
+			((Dropper)blk.getState()).getInventory().clear();
+			break;
+		case BREWING_STAND:
+			((BrewingStand)blk.getState()).getInventory().clear();
+			break;
+		case HOPPER:
+			((Hopper)blk.getState()).getInventory().clear();
+			break;
+		default:
+			break;
+		}
+		
+		ItemManager.setTypeId(blk, CivData.AIR);
+		ItemManager.setData(blk, 0x0, true);
 	}
 	
 	public static boolean canPlaceThisBlock(Block blk) {
@@ -286,6 +388,4 @@ public class WarRegen {
 			e.printStackTrace();
 		}
 	}
-	
-	
 }
