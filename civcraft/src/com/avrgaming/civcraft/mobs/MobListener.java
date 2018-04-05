@@ -58,18 +58,39 @@ public class MobListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onDefense(EntityDamageByEntityEvent event) {
+	public void onAttackAndDefense(EntityDamageByEntityEvent event) {
 		if (event.isCancelled()) return;
-		Entity mob = CustomMobListener.customMobs.get(event.getEntity().getUniqueId());
-		if (mob == null) {
-			return;
+		
+		Entity mob_attack = CustomMobListener.customMobs.get(event.getDamager().getUniqueId());
+		if (mob_attack != null) {
+			if (CivGlobal.getTownChunk(event.getDamager().getLocation()) != null) {
+				CustomMobListener.customMobs.remove(event.getDamager().getUniqueId());
+				CustomMobListener.mobList.remove(event.getDamager().getUniqueId());
+				event.getDamager().remove();
+				event.setCancelled(true);
+				return;
+			}
 		}
+		
+		Entity mob = CustomMobListener.customMobs.get(event.getEntity().getUniqueId());
+		if (mob == null) return;
 		
 		ConfigCustomMobs cmob = CivSettings.customMobs.get(ChatColor.stripColor(mob.getCustomName()).toString().toUpperCase().replaceAll(" ", "_"));
 		// Entity invalid? Remove.
 		if (cmob == null) {
 			CivLog.warning("Invalid mob found? "+mob.getCustomName()+"; removed.");
+			CustomMobListener.customMobs.remove(event.getEntity().getUniqueId());
+			CustomMobListener.mobList.remove(event.getEntity().getUniqueId());
 			event.getEntity().remove();
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (CivGlobal.getTownChunk(event.getEntity().getLocation()) != null) {
+			CustomMobListener.customMobs.remove(event.getEntity().getUniqueId());
+			CustomMobListener.mobList.remove(event.getEntity().getUniqueId());
+			event.getEntity().remove();
+			event.setCancelled(true);
 			return;
 		}
 		

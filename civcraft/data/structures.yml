@@ -6,29 +6,29 @@
 ################ Grocer Settings ###############
 grocer_levels:
     - level: 1
-      itemName: 'Fish'
+      itemName: 'Cooked Fish'
       itemId: 350
       itemData: 0
       amount: 1
       price: 8.0
-
+#
     - level: 2
-      itemName: 'Roast Chicken'
+      itemName: 'Cooked Chicken'
       itemId: 366
       itemData: 0
       amount: 1
       price: 15.0
-
+#
     - level: 3
-      itemName: 'Cooked Pork'
+      itemName: 'Cooked Steak'
       itemId: 320
       itemData: 0
       amount: 1
-      price: 20.0
- 
+      price: 25.0
+#
     - level: 4
-      itemName: 'Pumpkin Pie'
-      itemId: 400
+      itemName: 'Golden Carrot'
+      itemId: 396
       itemData: 0
       amount: 1
       price: 50.0

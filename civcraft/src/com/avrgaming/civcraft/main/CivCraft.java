@@ -216,7 +216,7 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.asyncTimer("SessionDBAsyncTimer", new SessionDBAsyncTimer(), 5);
 		TaskMaster.asyncTimer("pvptimer", new PvPTimer(), TimeTools.toTicks(30));
 		
-		TaskMaster.syncTimer("MobSpawner", new MobSpawnerTimer(), TimeTools.toTicks(15));
+		TaskMaster.syncTimer("MobSpawner", new MobSpawnerTimer(), TimeTools.toTicks(20));
 
 	}
 	
@@ -318,6 +318,7 @@ public final class CivCraft extends JavaPlugin {
 		
 		startTimers();
 		CivCraft.addFurnaceRecipes();
+		MinecraftListener.setupFoodValues();
 		
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
@@ -335,14 +336,13 @@ public final class CivCraft extends JavaPlugin {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
 				BuildUndoTask.resumeUndoTasks();
-				MobSpawner.despawnAllHostile(null);
+				MobSpawner.despawnAllHostile(null, false);
 			}
 		});
 	}
 	
 	public boolean hasPlugin(String name) {
-		Plugin p;
-		p = getServer().getPluginManager().getPlugin(name);
+		Plugin p = getServer().getPluginManager().getPlugin(name);
 		return (p != null);
 	}
 	
@@ -350,7 +350,7 @@ public final class CivCraft extends JavaPlugin {
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
 		CivGlobal.resetGlobalVillagers();
-		MobSpawner.despawnAllHostile(null);
+		MobSpawner.despawnAllHostile(null, true);
 		
 		isDisable = true;
 		SQLUpdate.save();

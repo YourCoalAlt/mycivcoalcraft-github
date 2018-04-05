@@ -2,6 +2,7 @@ package com.avrgaming.civcraft.listener.civcraft;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -19,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -46,6 +48,68 @@ import com.wimbli.WorldBorder.Config;
 public class MinecraftListener implements Listener {
 	
 	//XXX Player-Bound Aspect
+	
+	private static HashMap<Material, ArrayList<Integer>> food_values = new HashMap<Material, ArrayList<Integer>>();
+	
+	public static void setupFoodValues() {
+		ArrayList<Integer> raw_fish = new ArrayList<Integer>();
+		raw_fish.add(2); raw_fish.add(7); raw_fish.add(0);
+		food_values.put(Material.RAW_FISH, raw_fish);
+		
+		ArrayList<Integer> raw_salmon = new ArrayList<Integer>();
+		raw_salmon.add(2); raw_salmon.add(7); raw_salmon.add(1);
+		food_values.put(Material.RAW_FISH, raw_salmon);
+		
+		ArrayList<Integer> cooked_fish = new ArrayList<Integer>();
+		cooked_fish.add(5); cooked_fish.add(65);cooked_fish.add(0);
+		food_values.put(Material.COOKED_FISH, cooked_fish);
+		
+		ArrayList<Integer> cooked_salmon = new ArrayList<Integer>();
+		cooked_salmon.add(6); cooked_salmon.add(106); cooked_salmon.add(1);
+		food_values.put(Material.COOKED_FISH, cooked_salmon);
+		
+		ArrayList<Integer> melon = new ArrayList<Integer>();
+		melon.add(2); melon.add(15); melon.add(0);
+		food_values.put(Material.MELON, melon);
+		
+		ArrayList<Integer> steak = new ArrayList<Integer>();
+		steak.add(8); steak.add(128); steak.add(0);
+		food_values.put(Material.COOKED_BEEF, steak);
+		
+		ArrayList<Integer> gold_carrot = new ArrayList<Integer>();
+		gold_carrot.add(7); gold_carrot.add(164); gold_carrot.add(0);
+		food_values.put(Material.GOLDEN_CARROT, gold_carrot);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerConsumeItem(PlayerItemConsumeEvent event) throws CivException {
+		ItemStack stack = event.getItem();
+		if (food_values.containsKey(stack.getType())) {
+			ArrayList<Integer> food = food_values.get(stack.getType());
+			if (stack.getDurability() != food.get(2)) return;
+			
+			Player p = event.getPlayer();
+			event.setCancelled(true);
+			
+			if (p.getInventory().getItemInMainHand().getType() == stack.getType()) {
+				p.getInventory().getItemInMainHand().setAmount(stack.getAmount()-1);
+			} else if (p.getInventory().getItemInOffHand().getType() == stack.getType()) {
+				p.getInventory().getItemInOffHand().setAmount(stack.getAmount()-1);
+			} else {
+				CivMessage.send(p, "How do you eat? Like, you broke the game here lad!");
+			}
+			
+			Integer foodAmt = p.getFoodLevel()+food.get(0);
+			float SaturateAmt = (float) (p.getSaturation()+((double)food.get(1)/10));
+			if (foodAmt >= 20) {
+				int toSaturate = foodAmt - 20;
+				SaturateAmt += toSaturate;
+				foodAmt = 20;
+			}
+			p.setFoodLevel((int) foodAmt);
+			p.setSaturation(SaturateAmt);
+		}
+	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockBreakSpawnItems(BlockBreakEvent event) throws CivException {

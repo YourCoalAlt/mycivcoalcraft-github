@@ -249,20 +249,38 @@ public class TownChunk extends SQLObject {
 		}
 		
 		//Test that we are not too close to another civ
+		int min_culture = CivSettings.getMaxCultureLevel();
+		int max_culture = min_culture/4;
 		try {
-			int min_distance = CivSettings.getInteger(CivSettings.civConfig, "civ.min_distance");
-			
-			for (TownChunk cc : CivGlobal.getTownChunks()) {
-				if (cc.getCiv() != town.getCiv()) {
-					double dist = coord.distance(cc.getChunkCoord());
-					if (dist <= min_distance) {
-						throw new CivException("Too close to the culture of "+cc.getCiv().getName()+", cannot claim here.");
-					}
-				}
-			}	
+			min_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.min_culture");
+			max_culture = CivSettings.getInteger(CivSettings.civConfig, "civ.max_culture");
 		} catch (InvalidConfiguration e1) {
-			e1.printStackTrace();
-			throw new CivException("Internal configuration exception.");
+			CivLog.warning("[CIV] Missing either min_culture or max_culture from civ.yml; Using defaults MaxLevel and MaxLevel/4.");
+		}
+		
+		int min_distance = CivSettings.cultureLevels.get(max_culture).chunks - CivSettings.cultureLevels.get(min_culture).chunks;
+		
+		CultureChunk returnChunk = null;
+		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+			if (cc.getCiv() == town.getCiv()) continue;
+			if (coord.distance(cc.getChunkCoord()) <= min_distance) {
+				if (returnChunk != null) {
+					double foundDistance = Math.round(coord.distance(cc.getChunkCoord())) - min_distance;
+					if (foundDistance < 0) foundDistance *= -1;
+					double returnDistance = Math.round(coord.distance(returnChunk.getChunkCoord()))- min_distance;
+					if (returnDistance < 0) returnDistance *= -1;
+					if (returnDistance < foundDistance) {
+						returnChunk = cc;
+					}
+				} else {
+					returnChunk = cc;
+				}
+			}
+		}
+		
+		if (returnChunk != null) {
+			throw new CivException("Too close to the culture of "+returnChunk.getCiv().getName()+" ("+Math.round(coord.distance(returnChunk.getChunkCoord()))+" chunks). "+
+									" Must be at least "+min_distance+" chunks away from another civilization.");
 		}
 		
 		//Test that we are not too far protruding from our own town chunks
@@ -354,10 +372,6 @@ public class TownChunk extends SQLObject {
 //		
 //		return isTownChunkProtruding(nextChunk, protrude_count + 1, max_protrude, closedList);
 //	}
-	
-	private Civilization getCiv() {
-		return this.getTown().getCiv();
-	}
 
 	/*
 	 * XXX This claim is only called when a town hall is building and needs to be claimed.

@@ -38,6 +38,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
+import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BlockSnapshot;
 import com.avrgaming.civcraft.util.ChunkCoord;
@@ -164,11 +165,29 @@ public class FarmChunk {
 		this.growBlocks.add(new GrowBlock(world, x, y, z, typeid, data, spawn));
 	}
 	
-	private boolean checkLight(BlockCoord growMe) {
-		if (growMe.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
-			return false;
+	boolean canGrow = false;
+	private boolean checkLight(final BlockCoord growMe) {
+		class SyncTask implements Runnable {
+			BlockCoord bc = growMe;
+
+			public SyncTask(BlockCoord bc) {
+				this.bc = bc;
+			}
+
+			@Override
+			public void run() {
+				if (bc.getBlock().getLightLevel() < Farm.CROP_GROW_LIGHT_LEVEL) {
+					canGrow = false;
+				} else {
+					canGrow = true;
+				}
+			}
 		}
-		return true;
+		
+		if (growMe != null) {
+			TaskMaster.syncTask(new SyncTask(growMe));
+		}
+		return canGrow;
 	}
 	
 	public void growBlock(BlockSnapshot bs, BlockCoord growMe, CivAsyncTask task) throws InterruptedException {

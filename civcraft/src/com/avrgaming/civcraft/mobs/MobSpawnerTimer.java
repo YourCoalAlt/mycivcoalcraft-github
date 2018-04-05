@@ -27,7 +27,7 @@ public class MobSpawnerTimer implements Runnable {
 	public static int MOB_AREA_LIMIT = 10;
 	public static int MOB_AREA = 48;
 	
-	public static int MIN_SPAWN_DISTANCE = 12;
+	public static int MIN_SPAWN_DISTANCE = 10;
 	public static int MAX_SPAWN_DISTANCE = 40;
 	public static int MIN_SPAWN_AMOUNT = 5;
 	

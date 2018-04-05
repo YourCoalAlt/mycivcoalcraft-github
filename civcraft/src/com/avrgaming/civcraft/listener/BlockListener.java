@@ -88,7 +88,7 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.mobs.CustomMobListener;
+import com.avrgaming.civcraft.mobs.MobSpawner;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureBlock;
@@ -1393,38 +1393,12 @@ public class BlockListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
-			if (CustomMobListener.customMobs.get(ent.getUniqueId()) != null) {
-				CustomMobListener.customMobs.remove(ent.getUniqueId());
-				CustomMobListener.mobList.remove(ent.getUniqueId());
-				ent.remove();
-				continue;
-			}
-			
-			
-			if (CivSettings.restrictedSpawns.containsKey(ent.getType())) {
-				CivLog.debug("Removing Restricted Entity "+ent.getType().toString()+" on ChunkUnloadEvent");
-				ent.remove();
-			}
-		}
+		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onChunkLoadEvent(ChunkLoadEvent event) {
-		for (org.bukkit.entity.Entity ent : event.getChunk().getEntities()) {
-			if (CustomMobListener.customMobs.get(ent.getUniqueId()) != null) {
-				CustomMobListener.customMobs.remove(ent.getUniqueId());
-				CustomMobListener.mobList.remove(ent.getUniqueId());
-				ent.remove();
-				continue;
-			}
-			
-			if (CivSettings.restrictedSpawns.containsKey(ent.getType())) {
-				CivLog.debug("Removing Restricted Entity "+ent.getType().toString()+" on ChunkLoadEvent");
-				ent.remove();
-			}
-		}
-		
+		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
 		ChunkCoord coord = new ChunkCoord(event.getChunk());
 		FarmChunk fc = CivGlobal.getFarmChunk(coord);
 		if (fc == null) return;
@@ -1452,8 +1426,7 @@ public class BlockListener implements Listener {
 		if (pasture != null) {
 			pasture.onEntityDeath(event.getEntity());
 		}
-
-
+		
 		if (!ConfigTempleSacrifice.isValidEntity(event.getEntityType())) {
 			return;
 		}

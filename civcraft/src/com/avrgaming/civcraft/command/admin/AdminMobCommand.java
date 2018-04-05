@@ -32,17 +32,27 @@ public class AdminMobCommand extends CommandBase {
 		displayName = "Admin Mob";		
 		
 		commands.put("killall", "[name] Removes all of these mobs from the game instantly.");
+		commands.put("purgeworld", "Removes all mobs in all chunks of the world. CAUTION: WILL CAUSE EXTREME LAG IN BIGGER SERVERS!!!");
 		commands.put("purgehostile", "Removes every hostile mob inside the server.");
 		commands.put("count", "Shows mob totals globally");
 		commands.put("spawn", "remote entities test");
 	}
 	
+	public void purgeworld_cmd() throws CivException {
+		if (sender instanceof Player) {
+			Player p = getPlayer();
+			MobSpawner.despawnAllHostileAllChunks(p, true);
+		} else {
+			MobSpawner.despawnAllHostileAllChunks(null, true);
+		}
+	}
+	
 	public void purgehostile_cmd() throws CivException {
 		if (sender instanceof Player) {
 			Player p = getPlayer();
-			MobSpawner.despawnAllHostile(p);
+			MobSpawner.despawnAllHostile(p, true);
 		} else {
-			MobSpawner.despawnAllHostile(null);
+			MobSpawner.despawnAllHostile(null, true);
 		}
 	}
 	

@@ -47,6 +47,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.Team.Option;
+import org.bukkit.scoreboard.Team.OptionStatus;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -1740,4 +1744,38 @@ public class Resident extends SQLObject {
 			}
 		}).start();
 	}
+	
+	
+	private Scoreboard scoreboard;
+	@SuppressWarnings("deprecation")
+	public void changePlayerName(Player p, String suffix) {
+		scoreboard = p.getScoreboard();
+		if (p.getScoreboard() == null && suffix == null) return;
+		
+		if (scoreboard.getTeam(p.getName()) == null) {
+			scoreboard.registerNewTeam(p.getName());
+		}
+		
+		Team team = scoreboard.getTeam(p.getName());
+		team.setSuffix(Color(suffix));
+		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
+		team.setOption(Option.COLLISION_RULE, OptionStatus.FOR_OTHER_TEAMS);
+		team.setAllowFriendlyFire(false);
+		team.setCanSeeFriendlyInvisibles(true);
+		
+		try {
+			CivGlobal.getOfflinePlayer(p);
+			if (team.hasPlayer(p)) {
+				team.addPlayer(p);
+			}
+		} catch (CivException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static String Color(String input) {
+		return ChatColor.translateAlternateColorCodes('&', input);
+	}
+	
 }

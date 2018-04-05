@@ -429,7 +429,7 @@ public class PlayerListener implements Listener {
 //			event.getFrom().getBlockY() == event.getTo().getBlockY()) {
 //			return;
 //		}
-				
+		
 		ChunkCoord fromChunk = new ChunkCoord(event.getFrom());
 		ChunkCoord toChunk = new ChunkCoord(event.getTo());
 		if (fromChunk.equals(toChunk)) return; // Haven't moved chunks.

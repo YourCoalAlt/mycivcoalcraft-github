@@ -184,6 +184,13 @@ public class DebugCommand extends CommandBase {
 		commands.put("cannon", "builds a war cannon.");
 		commands.put("saveinv", "save an inventory");
 		commands.put("restoreinv", "restore your inventory.");
+		commands.put("player", "Show player info.");
+	}
+	
+	public void player_cmd() throws CivException {
+		Player p = getPlayer();
+		CivMessage.send(p, "Food: "+p.getFoodLevel()+", Saturation: "+p.getSaturation());
+		CivMessage.send(p, "Exhaustion: "+p.getExhaustion()+", Health: "+p.getHealth());
 	}
 	
 	public void saveinv_cmd() throws CivException {
@@ -251,7 +258,8 @@ public class DebugCommand extends CommandBase {
 		Double maxHP = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 		player.setHealth(maxHP);
 		player.setFoodLevel(50);
-		player.setSaturation(50f);
+		player.setSaturation(500f);
+		player.setExhaustion(-96);
 		CivMessage.send(player, "Healed.");
 	}
 	
@@ -262,7 +270,7 @@ public class DebugCommand extends CommandBase {
 	
 	// TODO Test, code from https://www.spigotmc.org/threads/getting-a-players-ping.276272/
 	public void ping_cmd() throws CivException, IllegalArgumentException, IllegalAccessException,
-	NoSuchFieldException, SecurityException, InvocationTargetException, NoSuchMethodException {
+			NoSuchFieldException, SecurityException, InvocationTargetException, NoSuchMethodException {
 		Player player = getPlayer();
 		Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
 		int ping = (int) entityPlayer.getClass().getField("ping").get(entityPlayer);

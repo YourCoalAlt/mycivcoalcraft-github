@@ -33,6 +33,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Buildable;
+import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.threading.tasks.BuildAsyncTask;
@@ -102,7 +103,7 @@ public class BuildCommand extends CommandBase {
 			throw new CivException("Cannot support structures during WarTime.");
 		}
 		
-		if (buildable.isIgnoreFloating()) {
+		if (buildable.isIgnoreFloating() || buildable instanceof Farm) {
 			throw new CivException(buildable.getDisplayName()+" is exempt from floating structure checks.");
 		}
 		

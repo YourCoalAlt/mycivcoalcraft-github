@@ -735,7 +735,6 @@ public class TownCommand extends CommandBase {
 //	}
 	
 	public void claim_cmd() throws CivException {
-		
 		Player player = getPlayer();
 		Town town = this.getSelectedTown();
 		

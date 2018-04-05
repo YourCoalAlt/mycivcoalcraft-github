@@ -734,6 +734,13 @@ public class CivGlobal {
 		return player;
 	}
 	
+	public static OfflinePlayer getOfflinePlayer(Player p) throws CivException {
+		OfflinePlayer player = Bukkit.getOfflinePlayer(p.getUniqueId());
+		if (player == null)
+			throw new CivException("No offline player named "+p.getName());
+		return player;
+	}
+	
 	public static OfflinePlayer getOfflinePlayer(Resident resident) throws CivException {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(resident.getUUID());
 		if (player == null)
