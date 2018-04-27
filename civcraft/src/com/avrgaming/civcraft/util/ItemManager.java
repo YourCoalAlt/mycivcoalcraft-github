@@ -189,22 +189,19 @@ public class ItemManager {
 	// TODO arraylist?
 	public static boolean givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
 		if (name == null) name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
-		if (p.getInventory().firstEmpty() == -1) {
-			if (msg && amt > 0) {
-				CivMessage.send(p, CivColor.LightGreen+"You've dropped "+CivColor.LightPurple+amt+" "+name);
+		String full = "recieved";
+		stack.setAmount(1);
+		for (int i = 0; i < amt; i++) {
+			if (p.getInventory().firstEmpty() == -1) {
+				full = "dropped";
+				p.getWorld().dropItem(dropLoc, stack);
+			} else {
+				p.getInventory().addItem(stack);
 			}
-			for (int i = 0; i < amt; i++) {
-				p.getWorld().dropItemNaturally(dropLoc, stack);
-			}
-			return false;
 		}
 		
 		if (msg && amt > 0) {
-			CivMessage.send(p, CivColor.LightGreen+"You've recieved "+CivColor.LightPurple+amt+" "+name);
-		}
-		
-		for (int i = 0; i < amt; i++) {
-			p.getInventory().addItem(stack);
+			CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
 		}
 		return true;
 	}

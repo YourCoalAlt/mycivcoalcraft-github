@@ -18,8 +18,7 @@
  */
 package com.avrgaming.civcraft.threading.sync;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.Bukkit;
@@ -32,12 +31,10 @@ import com.avrgaming.civcraft.util.ItemManager;
 
 public class SyncGetChestInventory implements Runnable {
 	
-	public static final int TIMEOUT_SECONDS = 2;
-	public static final int UPDATE_LIMIT = 20;
-	
 	public static ReentrantLock lock;
+	public static ConcurrentLinkedQueue<GetChestRequest> requestQueue = new ConcurrentLinkedQueue<GetChestRequest>();
 	
-	public static Queue<GetChestRequest> requestQueue = new LinkedList<GetChestRequest>();
+	public static final int UPDATE_LIMIT = 128;
 	
 	public SyncGetChestInventory() {
 		lock = new ReentrantLock();
@@ -46,7 +43,7 @@ public class SyncGetChestInventory implements Runnable {
 	@Override
 	public void run() {
 		if (lock.tryLock()) {
-			try {	
+			try {
 				for (int i = 0; i < UPDATE_LIMIT; i++) {
 					GetChestRequest request = requestQueue.poll();
 					if (request == null) return;
@@ -69,7 +66,6 @@ public class SyncGetChestInventory implements Runnable {
 					request.result = chest.getBlockInventory();
 					request.finished = true;
 					request.condition.signalAll();
-					
 				}
 			} finally {
 				lock.unlock();

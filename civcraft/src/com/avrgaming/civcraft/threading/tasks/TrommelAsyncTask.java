@@ -2,7 +2,7 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.bukkit.inventory.Inventory;
@@ -22,7 +22,6 @@ import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.Trommel;
-import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -46,13 +45,8 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		this.trommel = (Trommel)trommel;
 	}
 	
-	public void processTrommelUpdate() {
+	public void processTrommelUpdate(int ticks) {
 		debug(trommel, "Processing Trommel...");
-		if (sources.size() < 1 || destinations.size() < 1) {
-			CivLog.error("Bad dest chests for quarry in town: "+trommel.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size());
-			return;
-		}
-		
 		// Make sure the chunk is loaded before continuing. Also, add get chest and add it to inventory.
 		MultiInventory source_inv = new MultiInventory();
 		MultiInventory dest_inv = new MultiInventory();
@@ -63,17 +57,18 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				try {
 					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
+					trommel.skippedCounter += ticks;
 					CivLog.warning("Trommel: "+e.getMessage());
 					return;
 				}
 				if (tmp == null) {
-					trommel.skippedCounter++;
+					trommel.skippedCounter += ticks;
 					return;
 				}
 				
 				// If inventory as what we want, add it and forget any others.
 				boolean brk = false;
-				for (ListIterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
+				for (Iterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
@@ -85,22 +80,21 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						break;
 					}
 				}
-				
 				if (brk) break;
 			}
 			
 			boolean full = true;
-			
 			for (StructureChest dst : destinations) {
 				Inventory tmp;
 				try {
 					tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
+					trommel.skippedCounter += ticks;
 					CivLog.warning("Trommel: "+e.getMessage());
 					return;
 				}
 				if (tmp == null) {
-					trommel.skippedCounter++;
+					trommel.skippedCounter += ticks;
 					return;
 				}
 				
@@ -120,11 +114,12 @@ public class TrommelAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		debug(trommel, "Processing trommel: "+trommel.skippedCounter+1);
+		ticks += trommel.skippedCounter;
+		debug(trommel, "Processing trommel (Prev. Skipped, & Govt. Process): "+ticks);
 		
-		for (int i = 0; i < trommel.skippedCounter+1; i++) {
+		for (int i = 0; i < ticks; i++) {
 			for (Inventory inv : source_inv.getInventories()) {
-				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
+				for (Iterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
@@ -138,23 +133,13 @@ public class TrommelAsyncTask extends CivAsyncTask {
 							return;
 						}
 						
-						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
-						ArrayList<ConfigTrommel> dropped = getRandomDrops(trommel.getTown(), cti.item, cti.item_data);
-						if (dropped.size() == 0) {
-							newItem.add(getReturnDrop());
-						} else {
-							for (ConfigTrommel d : dropped) {
-								if (d.custom_id != null) {
-									LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
-									newItem.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
-								} else {
-									newItem.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
-								}
-							}
+						ArrayList<ItemStack> dropped = getRandomDrops(trommel.getTown(), cti.item, cti.item_data);
+						if (dropped.size() < 1) {
+							dropped.add(getReturnDrop());
 						}
 						
 						try { //Try to add the new item to the dest chest, if we cant, oh well.
-							for (ItemStack ni : newItem) {
+							for (ItemStack ni : dropped) {
 								debug(trommel, "Updating inventory: "+ni);
 								this.updateInventory(Action.ADD, dest_inv, ni);
 							}
@@ -187,67 +172,90 @@ public class TrommelAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		sources.clear();
-		destinations.clear();
-		
-		if (trommel != null) {
-			sources.addAll(trommel.getAllChestsById(1));
-			destinations.addAll(trommel.getAllChestsById(2));
-		}
-		
-		Warehouse whs = (Warehouse) trommel.getTown().getStructureByType("s_warehouse");
-		if (whs != null) {
-			
-		}
-		
+		int ticks = 0;
 		if (this.trommel.lock.tryLock()) {
 			try {
+				sources.clear();
+				destinations.clear();
+				
+				if (trommel != null) {
+					sources.addAll(trommel.getAllChestsById(1));
+					destinations.addAll(trommel.getAllChestsById(2));
+				}
+				
+				if (sources.size() < 1 || destinations.size() < 1) {
+					CivLog.error("Bad dest chests for trommel in town: "+trommel.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size());
+					return;
+				}
+				
+/*				boolean quarry = false;
+				Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
+				if (whs != null) {
+					if (whs.isComplete() && whs.isEnabled()) {
+						if (whs.getQuarryCollector() == 2) {
+							debug(quarry, "Input directed from Quarry");
+							Quarry qrs = (Quarry) quarry.getTown().getStructureByType("s_quarry");
+							for (StructureChest sc : qrs.getAllChestsById(1)) {
+								quarry = true;
+								sources_other.add(sc);
+							}
+						}
+					}
+				}*/
+				
 				Random rand = new Random();
 				ConfigGovernment gov = trommel.getCiv().getGovernment();
-				int processRate = (int) (gov.trommel_process_rate*100);
-				int processing = processRate / 100;
-				int chance = processRate - (processing*100);
+				double processRate = (int) (gov.trommel_process_rate*100);
+				double processing = processRate / 100;
+				double chance = processRate - (processing*100);
 				
+				int processes = 0;
+				int bonuses = 0; int skips = 0;
+				int bonusesskips = 0;
 				for (int t = 0; t < CivCraft.structure_process; t++) {
 					if (processing <= 0) {
 						if (chance > 0) {
 							int types = rand.nextInt(100);
 							if (types >= chance) {
-								debug(trommel, "Skipped; Govt. "+gov.displayName+"; Greater Penalty at "+types+" > "+processRate);
+								skips++;
 							} else {
-								processTrommelUpdate();
-								debug(trommel, "Processed; Govt. "+gov.displayName+"; Lesser Success at "+processRate);
+								processes++; ticks++;
 							}
 						} else {
-							debug(trommel, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0");
+							skips++;
+							debug(trommel, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0, was sent "+processing);
 						}
 					} else {
-						for (int i = 0; i < processing; i++) {
-							processTrommelUpdate();
-							debug(trommel, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
-							if (chance > 0) {
+						int toTick = (int) processing;
+						processes += toTick;
+						ticks += toTick;
+						if (chance > 0) {
+							for (int i = 0; i < processing; i++) {
 								int types = rand.nextInt(100);
 								if (types >= chance) {
-									debug(trommel, "Skipped; Govt. "+gov.displayName+"; Lesser Penalty at "+types+" > "+processRate);
+									bonusesskips++;
 								} else {
-									processTrommelUpdate();
-									debug(trommel, "Bonus Process; Govt. "+gov.displayName+"; Bonus at "+types+" <= "+processRate);
+									toTick++; bonuses++; ticks++;
 								}
 							}
 						}
 					}
 				}
+				
+				// Added this dbg msg to cut down on spam in console... keeping other dbg msgs in case we need them.
+				processTrommelUpdate(ticks);
+				debug(trommel, "Govt. "+gov.displayName+" at "+processRate+"%; Processes:"+processes+", Bonuses:"+bonuses+", Skips:"+skips+", Bonuses Skips:"+bonusesskips);
 			} finally {
 				this.trommel.lock.unlock();
 			}
 		} else {
-			debug(this.trommel, "Failed to get lock while trying to start task, aborting.");
+			debug(this.trommel, "Failed to get lock on trommel while trying to start task, aborting.");
 		}
 	}
 	
-	public ArrayList<ConfigTrommel> getRandomDrops(Town t, int input, int input_data) {
+	public ArrayList<ItemStack> getRandomDrops(Town t, int input, int input_data) {
 		Random rand = new Random();		
-		ArrayList<ConfigTrommel> dropped = new ArrayList<ConfigTrommel>();
+		ArrayList<ItemStack> dropped = new ArrayList<ItemStack>();
 		for (ConfigTrommel d : CivSettings.trommelDrops) {
 			if (d.input == input && d.input_data == input_data) {
 				double dc = ((trommel.getLevel()-1)*0.002) + d.drop_chance;
@@ -281,7 +289,12 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				if (dc <= 0) dc = d.drop_chance;
 				int chance = rand.nextInt(10000);
 				if (chance < (dc*10000)) {
-					dropped.add(d);
+					if (d.custom_id != null) {
+						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
+						dropped.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
+					} else {
+						dropped.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+					}
 				}
 			}
 		}

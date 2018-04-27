@@ -19,8 +19,6 @@
 package com.avrgaming.civcraft.threading.timers;
 
 import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -28,13 +26,10 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
-import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
-import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class EffectEventTimer extends CivAsyncTask {
@@ -50,45 +45,47 @@ public class EffectEventTimer extends CivAsyncTask {
 			civ.lastTaxesPaidMap.clear();
 		}
 		
-		//HashMap<Town, Integer> cultureGenerated = new HashMap<Town, Integer>();
-		// Loop through each structure, if it has an update function call it in another async process
-		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
-		while (iter.hasNext()) {
-			Structure struct = iter.next().getValue();
-			TownHall townhall = struct.getTown().getTownHall();
-			if (struct.getEffectEvent() == null || struct.getEffectEvent().equals("")) continue;
-			if (!struct.isActive()) continue;
-			if (townhall == null) continue;
-			struct.onEffectEvent();
-			
-			String[] split = struct.getEffectEvent().toLowerCase().split(":"); 
-			switch (split[0]) {
-			case "generate_coins":
-				if (struct instanceof Cottage) {
-					Cottage cottage = (Cottage)struct;
-					cottage.generateCoins(this);
-				}
-				break;
-			case "process_mine":
-				if (struct instanceof Mine) {
-					Mine mine = (Mine)struct;
-					try {
-						mine.process_consume(this);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				break;
-			case "process_lab":
-				if (struct instanceof Lab) {
-					Lab lab = (Lab)struct;
-					try {
-						lab.process_consume(this);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				break;
+		CivLog.info("TimerEvent: Mine Tick --------------------");
+		for (Mine m : CivGlobal.mines) {
+			m.resetTasks();
+			if (!m.isActive() || !m.isEnabled()) {
+				CivMessage.sendTown(m.getTown(), CivColor.LightGreen+"Level "+m.getLevel()+" Mine "+CivColor.Rose+"is not active."+CivColor.Yellow+" +0 Hammers");
+				continue;
+			}
+			if (!m.isComplete() || m.isDeleted()) {
+				CivMessage.sendTown(m.getTown(), CivColor.LightGreen+"Level "+m.getLevel()+" Mine "+CivColor.Rose+"is not completed."+CivColor.Yellow+" +0 Hammers");
+				continue;
+			}
+			if (m.isDestroyed()) {
+				CivMessage.sendTown(m.getTown(), CivColor.LightGreen+"Level "+m.getLevel()+" Mine "+CivColor.Rose+"is destroyed."+CivColor.Yellow+" +0 Hammers");
+				continue;
+			}
+			try {
+				m.process_consume(this);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		CivLog.info("TimerEvent: Lab Tick --------------------");
+		for (Lab l : CivGlobal.labs) {
+			l.resetTasks();
+			if (!l.isActive() || !l.isEnabled()) {
+				CivMessage.sendTown(l.getTown(), CivColor.LightGreen+"Level "+l.getLevel()+" Lab "+CivColor.Rose+"is not active."+CivColor.Yellow+" +0 Beakers");
+				continue;
+			}
+			if (!l.isComplete() || l.isDeleted()) {
+				CivMessage.sendTown(l.getTown(), CivColor.LightGreen+"Level "+l.getLevel()+" Lab "+CivColor.Rose+"is not completed."+CivColor.Yellow+" +0 Beakers");
+				continue;
+			}
+			if (l.isDestroyed()) {
+				CivMessage.sendTown(l.getTown(), CivColor.LightGreen+"Level "+l.getLevel()+" Lab "+CivColor.Rose+"is destroyed."+CivColor.Yellow+" +0 Beakers");
+				continue;
+			}
+			try {
+				l.process_consume(this);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		

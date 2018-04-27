@@ -132,7 +132,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("frame", "gets player's town and shows the goodie frames in this town.");
 		commands.put("makeframe", "[loc] [direction]");
 		commands.put("dupe", "duplicates the item in your hand.");
-		commands.put("test", "Run test suite commands.");
 		commands.put("printgoodie", "[id] - prints the goodie in memory with this id.");
 		commands.put("repogoodie", "[id] - repos the goodie with id.");
 		commands.put("firework", "fires off a firework here.");
@@ -1101,16 +1100,8 @@ public class DebugCommand extends CommandBase {
 		CivMessage.send(sender, "No goodie found.");
 	}
 	
-	
-	public void test_cmd() throws CivException {
-		DebugTestCommand cmd = new DebugTestCommand();	
-		cmd.onCommand(sender, null, "test", this.stripArgs(args, 1));
-	}
-	
-	
 	public void dupe_cmd() throws CivException {
 		Player player = getPlayer();
-		
 		if (player.getInventory().getItemInMainHand() == null || ItemManager.getId(player.getInventory().getItemInMainHand()) == 0) {
 			throw new CivException("No item in hand.");
 		}

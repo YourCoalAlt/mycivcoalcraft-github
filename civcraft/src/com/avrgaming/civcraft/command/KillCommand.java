@@ -20,11 +20,10 @@ public class KillCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		player.setHealth(0);
-		
+		player.setLastDamageCause(null);
 		Resident res = CivGlobal.getResident(player);
 		res.isSuicidal = true;
-		
+		player.setHealth(0);
 		CivMessage.send(sender, CivColor.Yellow+CivColor.BOLD+"You couldn't take it anymore.");
 		return true;
 	}

@@ -1,6 +1,10 @@
 # Number of hours to remain in anarchy after switching governments.
 anarchy_duration: 24
 
+# NOTES:
+# trommel_process_rate: Any value greater than 8 will cause it to fail part of the time.
+# Either of these values above 5 may fail if the server is lagging/tps is less than 16.
+
 governments:
   - id: gov_admin
     displayName: Adminism

@@ -24,14 +24,14 @@ import java.util.Calendar;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TradeGood;
+import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Granary;
-import com.avrgaming.civcraft.structure.Lab;
-import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.CultureProcessAsyncTask;
@@ -42,42 +42,33 @@ public class HourlyEvent implements EventInterface {
 	
 	@Override
 	public void process() {
-		class SyncTask implements Runnable {
-			
-			public SyncTask() {
+		CivLog.info("TimerEvent: Hourly -------------------------------------");
+		CivMessage.global("The Hourly Tick... The Savior of us all!!");
+		CivCraft.updateStructureArrays();
+		for (Structure struc : CivGlobal.getStructures()) {
+			if (struc instanceof Granary) {
+				Granary granary = (Granary) struc;
+				granary.resetTasks();
 			}
-			
+		}
+		
+		this.processTradeGoodPayments();
+		this.processCottagePayments();
+		TaskMaster.asyncTask("EffectEventTimer", new EffectEventTimer(), 0);
+		TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
+		CivLog.info("TimerEvent: Hourly Finished -----------------------------");
+	}
+	
+	public void processTradeGoodPayments() {
+		CivLog.info("TimerEvent: Trade Good Tick --------------------");
+		class SyncHourlyTradeTask implements Runnable {
 			@Override
 			public void run() {
-				CivLog.info("TimerEvent: Hourly -------------------------------------");
-				for (Structure struc : CivGlobal.getStructures()) {
-					if (struc instanceof Granary) {
-						Granary granary = (Granary) struc;
-						granary.resetTasks();
-					}
-					if (struc instanceof Mine) {
-						Mine mine = (Mine) struc;
-						mine.resetTasks();
-					}
-					if (struc instanceof Lab) {
-						Lab lab = (Lab) struc;
-						lab.resetTasks();
-					}
-				}
-				
-				this.processTownsTradePayments();
-				TaskMaster.asyncTask("EffectEventTimer", new EffectEventTimer(), 0);
-				TaskMaster.asyncTask("cultureProcess", new CultureProcessAsyncTask(), 0);
-				CivLog.info("TimerEvent: Hourly Finished -----------------------------");
-			}
-
-			private void processTownsTradePayments() {
 				if (!CivGlobal.tradeEnabled) return;
 				CivGlobal.checkForDuplicateGoodies();
 				for (Town town : CivGlobal.getTowns()) {
 					double payment = TradeGood.getTownTradePayment(town);
-					if (payment <= 0) continue;
-					
+					if (payment < 1) continue;
 					DecimalFormat df = new DecimalFormat();
 					double taxesPaid = payment*town.getDepositCiv().getIncomeTaxRate();
 					if (taxesPaid > 0) {
@@ -92,8 +83,32 @@ public class HourlyEvent implements EventInterface {
 				}
 			}
 		}
-		
-		TaskMaster.syncTask(new SyncTask());
+		TaskMaster.syncTask(new SyncHourlyTradeTask());
+	}
+	
+	public void processCottagePayments() {
+		CivLog.info("TimerEvent: Cottage Tick --------------------");
+		class SyncHourlyCottageTask implements Runnable {
+			@Override
+			public void run() {
+				for (Cottage c : CivGlobal.cottages) {
+					if (!c.isActive() || !c.isEnabled()) {
+						CivMessage.sendTown(c.getTown(), CivColor.LightGreen+"Level "+c.getLevel()+" Cottage "+CivColor.Rose+"is not active."+CivColor.Yellow+" +0 Coins");
+						continue;
+					}
+					if (!c.isComplete() || c.isDeleted()) {
+						CivMessage.sendTown(c.getTown(), CivColor.LightGreen+"Level "+c.getLevel()+" Cottage "+CivColor.Rose+"is not completed."+CivColor.Yellow+" +0 Coins");
+						continue;
+					}
+					if (c.isDestroyed()) {
+						CivMessage.sendTown(c.getTown(), CivColor.LightGreen+"Level "+c.getLevel()+" Cottage "+CivColor.Rose+"is destroyed."+CivColor.Yellow+" +0 Coins");
+						continue;
+					}
+					c.generateCoins();
+				}
+			}
+		}
+		TaskMaster.syncTask(new SyncHourlyCottageTask());
 	}
 	
 	@Override

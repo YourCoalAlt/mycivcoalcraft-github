@@ -39,8 +39,6 @@ public class ConfigBuildableInfo {
 	public String require_tech = "";
 	public String require_upgrade = "";
 	public String require_structure = "";
-	public String check_event = "";
-	public String effect_event= "";
 	public String update_event = "";
 	public String onBuild_event = "";
 	public int limit = 0;
@@ -92,8 +90,6 @@ public class ConfigBuildableInfo {
 			sinfo.require_tech = (String)obj.get("require_tech");
 			sinfo.require_upgrade = (String)obj.get("require_upgrade");
 			sinfo.require_structure = (String)obj.get("require_structure");
-			sinfo.check_event = (String)obj.get("check_event");
-			sinfo.effect_event = (String)obj.get("effect_event");
 			sinfo.update_event = (String)obj.get("update_event");
 			sinfo.onBuild_event = (String)obj.get("onBuild_event");
 			sinfo.limit = (Integer)obj.get("limit");

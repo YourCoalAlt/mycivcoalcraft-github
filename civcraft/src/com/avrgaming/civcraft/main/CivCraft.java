@@ -20,6 +20,8 @@ package com.avrgaming.civcraft.main;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -94,7 +96,9 @@ import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.populators.TradeGoodPopulator;
 import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
 import com.avrgaming.civcraft.siege.CannonListener;
+import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Farm;
+import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.farm.FarmGrowthSyncTask;
 import com.avrgaming.civcraft.structure.farm.FarmPreCachePopulateTimer;
@@ -126,12 +130,12 @@ import com.avrgaming.civcraft.threading.timers.StructureProcessTimer;
 import com.avrgaming.civcraft.threading.timers.UnitTrainTimer;
 import com.avrgaming.civcraft.threading.timers.UpdateEventTimer;
 import com.avrgaming.civcraft.threading.timers.WindmillTimer;
+import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
-import com.avrgaming.sls.SLSManager;
 
 import pvptimer.PvPListener;
 import pvptimer.PvPTimer;
@@ -208,9 +212,9 @@ public final class CivCraft extends JavaPlugin {
 			TaskMaster.asyncTimer(PlatinumManager.class.getName(), new PlatinumManager(), TimeTools.toTicks(5));
 		}
 		
-		TaskMaster.syncTimer("WindmillTimer", new WindmillTimer(), TimeTools.toTicks(45));
+		TaskMaster.syncTimer("WindmillTimer", new WindmillTimer(), TimeTools.toTicks(30));
 		TaskMaster.asyncTimer("EndGameNotification", new EndConditionNotificationTask(), TimeTools.toTicks(3600));
-				
+		
 		TaskMaster.asyncTask(new StructureValidationChecker(), TimeTools.toTicks(120));
 		TaskMaster.asyncTimer("StructureValidationPunisher", new StructureValidationPunisher(), TimeTools.toTicks(3600));
 		TaskMaster.asyncTimer("SessionDBAsyncTimer", new SessionDBAsyncTimer(), 5);
@@ -277,7 +281,6 @@ public final class CivCraft extends JavaPlugin {
 			SQL.initCivObjectTables();
 			ChunkCoord.buildWorldList();
 			CivGlobal.loadGlobals();
-			SLSManager.init();
 		} catch (InvalidConfiguration | SQLException | IOException | InvalidConfigurationException | CivException | ClassNotFoundException e) {
 			e.printStackTrace();
 			setError(true);
@@ -335,8 +338,10 @@ public final class CivCraft extends JavaPlugin {
 				} else {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
+				
+				CivCraft.updateStructureArrays();
 				BuildUndoTask.resumeUndoTasks();
-				MobSpawner.despawnAllHostile(null, false);
+				MobSpawner.despawnMobs(null, true, true, true, true, true, true, true);
 			}
 		});
 	}
@@ -349,8 +354,9 @@ public final class CivCraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		CivMessage.global("The server is being stopped, saving data...");
+		TaskMaster.stopAll();
 		CivGlobal.resetGlobalVillagers();
-		MobSpawner.despawnAllHostile(null, true);
+		MobSpawner.despawnMobs(null, true, true, true, false, false, true, true);
 		
 		isDisable = true;
 		SQLUpdate.save();
@@ -383,6 +389,25 @@ public final class CivCraft extends JavaPlugin {
 		FurnaceRecipe recipe2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), Material.REDSTONE_ORE);
 		recipe2.setExperience(1.0F);
 		Bukkit.addRecipe(recipe2);
+	}
+	
+	public static void updateStructureArrays() {
+		CivGlobal.cottages.clear();
+		CivGlobal.mines.clear();
+		CivGlobal.labs.clear();
+		
+		Iterator<Entry<BlockCoord, Structure>> iter = CivGlobal.getStructureIterator();
+		while (iter.hasNext()) {
+			Structure s = iter.next().getValue();
+			if (s instanceof Cottage) {
+				CivGlobal.cottages.add((Cottage) s);
+				continue;
+			}
+			if (s instanceof Mine) {
+				CivGlobal.mines.add((Mine) s);
+				continue;
+			}
+		}
 	}
 	
 	public void disableCivGlobal() {

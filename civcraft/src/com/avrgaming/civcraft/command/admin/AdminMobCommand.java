@@ -32,27 +32,17 @@ public class AdminMobCommand extends CommandBase {
 		displayName = "Admin Mob";		
 		
 		commands.put("killall", "[name] Removes all of these mobs from the game instantly.");
-		commands.put("purgeworld", "Removes all mobs in all chunks of the world. CAUTION: WILL CAUSE EXTREME LAG IN BIGGER SERVERS!!!");
-		commands.put("purgehostile", "Removes every hostile mob inside the server.");
+		commands.put("purge", "Removes every hostile mob inside the server.");
 		commands.put("count", "Shows mob totals globally");
 		commands.put("spawn", "remote entities test");
 	}
 	
-	public void purgeworld_cmd() throws CivException {
+	public void purge_cmd() throws CivException {
 		if (sender instanceof Player) {
 			Player p = getPlayer();
-			MobSpawner.despawnAllHostileAllChunks(p, true);
+			MobSpawner.despawnMobs(p, true, true, true, true, true, true, true);
 		} else {
-			MobSpawner.despawnAllHostileAllChunks(null, true);
-		}
-	}
-	
-	public void purgehostile_cmd() throws CivException {
-		if (sender instanceof Player) {
-			Player p = getPlayer();
-			MobSpawner.despawnAllHostile(p, true);
-		} else {
-			MobSpawner.despawnAllHostile(null, true);
+			MobSpawner.despawnMobs(null, true, true, true, true, true, true, true);
 		}
 	}
 	
@@ -106,30 +96,47 @@ public class AdminMobCommand extends CommandBase {
 	}
 
 	public void count_cmd() throws CivException {
-		Player player = getPlayer();
-		
-		HashMap<String, Integer> amounts = new HashMap<String, Integer>();
-		int total = CustomMobListener.customMobs.size();
-		for (net.minecraft.server.v1_12_R1.Entity mob : CustomMobListener.customMobs.values()) {
-			Integer count = amounts.get(ChatColor.stripColor(mob.getCustomName()));
-			if (count == null) count = 0;
-			amounts.put(ChatColor.stripColor(mob.getCustomName()), count+1);
-		}
-		
-		CivMessage.sendHeading(player, "Custom Mob Counts");
-		CivMessage.send(player, CivColor.LightGray+"Red mobs are over their count limit for this area and should no longer spawn.");
-		for (String mob : amounts.keySet()) {
-			int count = amounts.get(mob);
-			
-			LinkedList<Entity> entities = EntityProximity.getNearbyEntities(null, player.getLocation(), MobSpawnerTimer.MOB_AREA, EntityCreature.class);
-			if (entities.size() > MobSpawnerTimer.MOB_AREA_LIMIT) {
-				CivMessage.send(player, CivColor.Red+mob+": "+CivColor.Rose+count);
-			} else {
-				CivMessage.send(player, CivColor.Green+mob+": "+CivColor.LightGreen+count);
+		if (sender instanceof Player) {
+			Player player = getPlayer();
+			HashMap<String, Integer> amounts = new HashMap<String, Integer>();
+			int total = CustomMobListener.customMobs.size();
+			for (net.minecraft.server.v1_12_R1.Entity mob : CustomMobListener.customMobs.values()) {
+				Integer count = amounts.get(ChatColor.stripColor(mob.getCustomName()));
+				if (count == null) count = 0;
+				amounts.put(ChatColor.stripColor(mob.getCustomName()), count+1);
 			}
 			
+			CivMessage.sendHeading(player, "Custom Mob Counts");
+			CivMessage.send(player, CivColor.LightGray+"Red mobs are over their count limit for this area and should no longer spawn.");
+			for (String mob : amounts.keySet()) {
+				int count = amounts.get(mob);
+				
+				LinkedList<Entity> entities = EntityProximity.getNearbyEntities(null, player.getLocation(), MobSpawnerTimer.MOB_AREA, EntityCreature.class);
+				if (entities.size() > MobSpawnerTimer.MOB_AREA_LIMIT) {
+					CivMessage.send(player, CivColor.Red+mob+": "+CivColor.Rose+count);
+				} else {
+					CivMessage.send(player, CivColor.Green+mob+": "+CivColor.LightGreen+count);
+				}
+				
+			}
+			CivMessage.send(player, CivColor.Green+"Total Mobs: "+CivColor.LightGreen+total);
+		} else {
+			HashMap<String, Integer> amounts = new HashMap<String, Integer>();
+			int total = CustomMobListener.customMobs.size();
+			for (net.minecraft.server.v1_12_R1.Entity mob : CustomMobListener.customMobs.values()) {
+				Integer count = amounts.get(ChatColor.stripColor(mob.getCustomName()));
+				if (count == null) count = 0;
+				amounts.put(ChatColor.stripColor(mob.getCustomName()), count+1);
+			}
+			
+			CivMessage.sendHeading(sender, "Custom Mob Counts");
+			CivMessage.send(sender, CivColor.LightGray+"Cannot tell you if entities are over limit due to you are not a player.");
+			for (String mob : amounts.keySet()) {
+				int count = amounts.get(mob);
+				CivMessage.send(sender, CivColor.Yellow+mob+": "+CivColor.LightGreen+count);
+			}
+			CivMessage.send(sender, CivColor.Green+"Total Mobs: "+CivColor.LightGreen+total);
 		}
-		CivMessage.send(player, CivColor.Green+"Total Mobs: "+CivColor.LightGreen+total);
 	}
 	
 	@Override

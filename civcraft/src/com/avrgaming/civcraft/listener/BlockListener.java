@@ -49,7 +49,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -89,6 +88,8 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.mobs.MobSpawner;
+import com.avrgaming.civcraft.object.DiplomaticRelation;
+import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.ProtectedBlock;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureBlock;
@@ -114,6 +115,7 @@ import com.avrgaming.civcraft.structure.Temple;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.structure.Warehouse;
+import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.structure.farm.FarmChunk;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -369,13 +371,17 @@ public class BlockListener implements Listener {
 					allowPVP = false;
 					denyMessage = "You cannot PvP with "+defender.getName()+" as you are not at war.";
 					break;
-				case NEUTRAL_IN_WARZONE:
+				case NO_DIPLOMACY:
 					allowPVP = false;
-					denyMessage = "You cannot PvP here with "+defender.getName()+" since you are a neutral in a war-zone.";
+					denyMessage = "You cannot PvP with "+defender.getName()+" since you have no relation to them.";
 					break;
-				case NON_PVP_ZONE:
+				case NOT_WAR_IN_WARZONE:
 					allowPVP = false;
-					denyMessage = "You cannot PvP with "+defender.getName()+" since you are in a non-pvp zone.";
+					denyMessage = "You cannot PvP here with "+defender.getName()+" since you are not at war and inside a war-zone.";
+					break;
+				case NOT_DIRECT_WAR_IN_WARZONE:
+					allowPVP = false;
+					denyMessage = "You cannot PvP with "+defender.getName()+" in these borders since you do not have direct war with them and are not in a war-zone.";
 					break;
 				}
 			}
@@ -445,7 +451,7 @@ public class BlockListener implements Listener {
 				return;
 			}
 
-			if (CivSettings.restrictedSpawns.containsKey(event.getEntityType())) {
+			if (CivSettings.restrictedSpawns.contains(event.getEntityType())) {
 				event.setCancelled(true);
 				return;
 			}
@@ -520,58 +526,8 @@ public class BlockListener implements Listener {
 
 	}
 
-	 private final BlockFace[] faces = new BlockFace[] {
-			 BlockFace.UP,
-			 BlockFace.DOWN,
-			 BlockFace.NORTH,
-			 BlockFace.EAST,
-			 BlockFace.SOUTH,
-			 BlockFace.WEST,					
-			 BlockFace.SELF
-	  };
-
-	public BlockCoord generatesCobble(int id, Block b) {
-		int mirrorID1 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_RUNNING : CivData.WATER_RUNNING);
-		int mirrorID2 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_STILL : CivData.WATER_STILL);
-		int mirrorID3 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_RUNNING : CivData.WATER_STILL);
-		int mirrorID4 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_STILL : CivData.WATER_RUNNING);
-		for(BlockFace face : faces) {
-			Block r = b.getRelative(face, 1);
-			if(ItemManager.getId(r) == mirrorID1 || ItemManager.getId(r) == mirrorID2 ||
-					ItemManager.getId(r) == mirrorID3 || ItemManager.getId(r) == mirrorID4) {
-				return new BlockCoord(r);
-			}
-		}
-		
-		return null;
-	}
-	
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void OnBlockFromToEvent(BlockFromToEvent event) {
-		/* Disable cobblestone generators. */
-		int id = ItemManager.getId(event.getBlock());
-		if(id >= CivData.WATER_STILL && id <= CivData.LAVA_STILL) {
-			Block b = event.getToBlock();
-			bcoord.setFromLocation(b.getLocation());
-
-			int toid = ItemManager.getId(b);
-			if (toid == CivData.COBBLESTONE || toid == CivData.OBSIDIAN) {
-				BlockCoord other = generatesCobble(id, b);
-				if(other != null && other.getBlock().getType() != Material.AIR) {
-					other.getBlock().setType(Material.NETHERRACK);
-				}
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void OnBlockFormEvent (BlockFormEvent event) {
-		// Disable cobblestone generators.
-		if (ItemManager.getId(event.getNewState()) == CivData.COBBLESTONE || ItemManager.getId(event.getNewState()) == CivData.OBSIDIAN) {
-			ItemManager.setTypeId(event.getNewState(), CivData.NETHERRACK);
-			return;
-		}
-
+	public void OnBlockFormEvent(BlockFormEvent event) {
 		Chunk spreadChunk = event.getNewState().getChunk();
 		coord.setX(spreadChunk.getX());
 		coord.setZ(spreadChunk.getZ());
@@ -837,8 +793,8 @@ public class BlockListener implements Listener {
 				}
 
 				/* A non-player entity is trying to trigger something, if interact permission is
-				 * off for others then disallow it.
-				 */
+				* off for others then disallow it.
+				*/
 				if (tc.perms.interact.isPermitOthers()) {
 					return;
 				}
@@ -953,7 +909,7 @@ public class BlockListener implements Listener {
 		}
 
 		/* Right clicking causes some dupe bugs for some reason with items that have "actions" such as swords.
-		 * It also causes block place events on top of signs. So we'll just only allow signs to work with left click. */
+		* It also causes block place events on top of signs. So we'll just only allow signs to work with left click. */
 		boolean leftClick = event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK);
 		if (event.getClickedBlock() != null) {		
 			if (MarkerPlacementManager.isPlayerInPlacementMode(p)) {
@@ -1131,8 +1087,8 @@ public class BlockListener implements Listener {
 	}
 
 	/*
-	 * Handles rotating of itemframes
-	 */
+	* Handles rotating of itemframes
+	*/
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void OnPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
 		Player p = event.getPlayer();
@@ -1174,17 +1130,22 @@ public class BlockListener implements Listener {
 					th.openTownQuestGUI(p, th.getTown());
 				}
 			} else if (buildable instanceof Bank) {
-				Bank bank = (Bank) buildable;
+				Bank b = (Bank) buildable;
 				if (vn.contains("Bank Teller")) {
-					bank.openToolGUI(p, bank.getTown());
+					b.openToolGUI(p, b.getTown());
 				}
 			} else if (buildable instanceof Granary) {
-				Granary granary = (Granary) buildable;
+				Granary g = (Granary) buildable;
 				if (vn.contains("Granary Tasks")) {
-					granary.openTaskGUI(p, granary.getTown());
+					g.openTaskGUI(p, g.getTown());
 				}
 				if (vn.contains("Granary Food Storage")) {
-					granary.openStorageGUI(p, granary.getTown());
+					g.openStorageGUI(p, g.getTown());
+				}
+			} else if (buildable instanceof Windmill) {
+				Windmill w = (Windmill) buildable;
+				if (vn.contains("Windmill Manager")) {
+					w.openPlantSettingsGUI(p, w.getTown());
 				}
 			} else if (buildable instanceof Barracks) {
 				Barracks b = (Barracks) buildable;
@@ -1324,8 +1285,8 @@ public class BlockListener implements Listener {
 
 
 	/*
-	 * Handles breaking of paintings and itemframes.
-	 */
+	* Handles breaking of paintings and itemframes.
+	*/
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnHangingBreakByEntityEvent(HangingBreakByEntityEvent event) {	
 	//	CivLog.debug("hanging painting break event");
@@ -1448,13 +1409,12 @@ public class BlockListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
-		if (CivSettings.restrictedSpawns.containsKey(event.getEntity().getType())) {
+		if (CivSettings.restrictedSpawns.contains(event.getEntity().getType())) {
 			if (event.getSpawnReason() == SpawnReason.NATURAL) {
 				event.setCancelled(true);
 				return;
 			}
 		}
-		
 		
 		if (War.isWarTime() && !event.getEntity().getType().equals(EntityType.HORSE)) {
 			if (!event.getSpawnReason().equals(SpawnReason.BREEDING)) {
@@ -1585,11 +1545,11 @@ public class BlockListener implements Listener {
 		}
 
 		/* 
-		 * If we're next to an attached protected item frame. Disallow 
-		 * we cannot break protected item frames.
-		 * 
-		 * Only need to check blocks directly next to us.
-		 */
+		* If we're next to an attached protected item frame. Disallow 
+		* we cannot break protected item frames.
+		* 
+		* Only need to check blocks directly next to us.
+		*/
 		BlockCoord bcoord2 = new BlockCoord(bcoord);
 		bcoord2.setX(bcoord.getX() - 1);
 		if (ItemFrameStorage.attachedBlockMap.containsKey(bcoord2)) {
@@ -1629,8 +1589,8 @@ public class BlockListener implements Listener {
 	public void onBlockPistonExtendEvent(BlockPistonExtendEvent event) {
 
 		/* UGH. If we extend into 'air' it doesnt count them as blocks...
-		 * we need to check air to prevent breaking of item frames...
-		 */
+		* we need to check air to prevent breaking of item frames...
+		*/
 		final int PISTON_EXTEND_LENGTH = 13;
 		Block currentBlock = event.getBlock().getRelative(event.getDirection());
 		for (int i = 0; i < PISTON_EXTEND_LENGTH; i++) {
@@ -1734,15 +1694,19 @@ public class BlockListener implements Listener {
 				case ALLOWED:
 					continue;
 				case NOT_AT_WAR:
-					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+". You are not at war.");
+					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+" as you are not at war.");
 					event.setCancelled(true);
 					return;
-				case NEUTRAL_IN_WARZONE:
-					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+". You a neutral in a war-zone.");
+				case NO_DIPLOMACY:
+					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+" since you have no relation to them.");
 					event.setCancelled(true);
 					return;
-				case NON_PVP_ZONE:
-					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+". You are in a non-pvp zone.");
+				case NOT_WAR_IN_WARZONE:
+					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+" since you are not at war and inside a war-zone.");
+					event.setCancelled(true);
+					return;
+				case NOT_DIRECT_WAR_IN_WARZONE:
+					CivMessage.send(attacker, CivColor.Rose+"You cannot use potions against "+defender.getName()+" in these borders since you do not have direct war with them and are not in a war-zone.");
 					event.setCancelled(true);
 					return;
 				}
@@ -1757,65 +1721,72 @@ public class BlockListener implements Listener {
 			event.setNewCurrent(0);
 			return;
 		}
-
 	}
 
-	private enum PVPDenyReason {
-		ALLOWED,
-		NON_PVP_ZONE,
-		NOT_AT_WAR,
-		NEUTRAL_IN_WARZONE
+	private enum PvPReason {
+		ALLOWED, // Allow PvP
+		NOT_AT_WAR, // Not at war
+		NO_DIPLOMACY, // Neutral or no town
+		NOT_WAR_IN_WARZONE, // Not at war within the town plot
+		NOT_DIRECT_WAR_IN_WARZONE // Could fight, but this plot isn't in warzone
 	}
-
-	private PVPDenyReason playersCanPVPHere(Player attacker, Player defender, TownChunk tc) {
-		Resident defenderResident = CivGlobal.getResident(defender);
-		Resident attackerResident = CivGlobal.getResident(attacker);
-		PVPDenyReason reason = PVPDenyReason.NON_PVP_ZONE;
-
-		/* Outlaws can only pvp each other if they are declared at this location. */
-		if (CivGlobal.isOutlawHere(defenderResident, tc) || 
-			CivGlobal.isOutlawHere(attackerResident, tc)) {
-			return PVPDenyReason.ALLOWED;
+	
+	private PvPReason playersCanPVPHere(Player patk, Player pdef, TownChunk tc) {
+		Resident def = CivGlobal.getResident(pdef);
+		Resident atk = CivGlobal.getResident(patk);
+		PvPReason reason = PvPReason.NOT_AT_WAR;
+		
+		// If in the wilderness (Has to be checked first!)
+		if (tc == null) {
+			return PvPReason.ALLOWED;
 		}
-
-		/* 
-		 * If it is WarTime and the town we're in is at war, allow neutral players to be 
-		 * targeted by anybody.
-		 */
+		
+		// Outlaws can only pvp each other if they are declared at this location
+		if (CivGlobal.isOutlawHere(atk, tc) || CivGlobal.isOutlawHere(def, tc)) {
+			return PvPReason.ALLOWED;
+		}
+		
+		// Neither attacker or defender do not have a town
+		if (!def.hasTown() || !atk.hasTown() || atk.getCiv().getDiplomacyManager().getRelation(def.getCiv()).getStatus() == DiplomaticRelation.Status.NEUTRAL) {
+			if (War.isWarTime()) {
+				return PvPReason.NOT_WAR_IN_WARZONE;
+			} else {
+				return PvPReason.NO_DIPLOMACY;
+			}
+		}
+		
 		if (War.isWarTime()) {
-			if (tc.getTown().getCiv().getDiplomacyManager().isAtWar()) {
-				/* 
-				 * The defender is neutral if he is not in a town/civ, or not in his own civ AND not 'at war'
-				 * with the attacker.
-				 */
-				if (!defenderResident.hasTown() || (!defenderResident.getTown().getCiv().getDiplomacyManager().atWarWith(tc.getTown().getCiv()) && 
-						defenderResident.getTown().getCiv() != tc.getTown().getCiv())) {
-					/* Allow neutral players to be hurt, but not hurt them back. */
-					return PVPDenyReason.ALLOWED;
-				} else if (!attackerResident.hasTown() || (!attackerResident.getTown().getCiv().getDiplomacyManager().atWarWith(tc.getTown().getCiv()) &&
-						attackerResident.getTown().getCiv() != tc.getTown().getCiv())) {
-					reason = PVPDenyReason.NEUTRAL_IN_WARZONE;
+			if (!atk.getCiv().getDiplomacyManager().atWarWith(def.getCiv())) {
+				for (DiplomaticRelation dipAtk : atk.getCiv().getDiplomacyManager().getRelations()) {
+					// Attacker's allies can fight against defender's wars
+					if (dipAtk.getStatus() == Status.ALLY && def.getCiv().getDiplomacyManager().getRelation(dipAtk.getCiv()).getStatus() == Status.WAR) {
+						if (tc.getCiv() == atk.getCiv() || tc.getCiv() == def.getCiv()) {
+							return PvPReason.ALLOWED;
+						} else {
+							return PvPReason.NOT_DIRECT_WAR_IN_WARZONE;
+						}
+					}
 				}
+				for (DiplomaticRelation dipDef : def.getCiv().getDiplomacyManager().getRelations()) {
+					// Defender's allies can fight against attacker's wars
+					if (dipDef.getStatus() == Status.ALLY && atk.getCiv().getDiplomacyManager().getRelation(dipDef.getCiv()).getStatus() == Status.WAR) {
+						if (tc.getCiv() == atk.getCiv() || tc.getCiv() == def.getCiv()) {
+							return PvPReason.ALLOWED;
+						} else {
+							return PvPReason.NOT_DIRECT_WAR_IN_WARZONE;
+						}
+					}
+				}
+				return PvPReason.NOT_WAR_IN_WARZONE;
+			}
+		} else {
+			// Allow all PvP between civs at war regardless of borders
+			if (atk.getCiv().getDiplomacyManager().atWarWith(def.getCiv())) {
+				return PvPReason.ALLOWED;
+			} else {
+				return PvPReason.NOT_AT_WAR;
 			}
 		}
-
-		boolean defenderAtWarWithAttacker = false;
-		if (defenderResident != null && defenderResident.hasTown()) {
-			defenderAtWarWithAttacker = defenderResident.getTown().getCiv().getDiplomacyManager().atWarWith(attacker);
-			/* 
-			 * If defenders are at war with attackers allow PVP. Location doesnt matter. Allies should be able to help
-			 * defend each other regardless of where they are currently located.
-			 */
-			if (defenderAtWarWithAttacker) {
-				//if (defenderResident.getTown().getCiv() == tc.getTown().getCiv() ||
-				//	attackerResident.getTown().getCiv() == tc.getTown().getCiv()) {
-					return PVPDenyReason.ALLOWED;
-				//}
-			} else if (reason.equals(PVPDenyReason.NON_PVP_ZONE)) {
-				reason = PVPDenyReason.NOT_AT_WAR;
-			}
-		}
-
 		return reason;
 	}
 

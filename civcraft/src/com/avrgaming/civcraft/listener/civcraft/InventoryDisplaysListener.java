@@ -51,6 +51,7 @@ import com.avrgaming.civcraft.structure.Market;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Warehouse;
+import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -82,13 +83,13 @@ public class InventoryDisplaysListener implements Listener {
 		
 		if (event.getInventory().getName().contains("Global Market Menu")) this.clickMarketMenu(p, event);
 		if (event.getInventory().getName().contains("Market Trade ")) this.clickMarketItem(p, event);
-		
 		if (event.getInventory().getName().contains("Grocer Menu")) this.clickGrocerItem(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Smelter Operator"))	this.clickBlacksmithSmelter(p, event);
 		
+		if (event.getInventory().getName().contains("Windmill Menu")) this.clickWindmillPlant(p, event);
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Food Storage")) {
 			event.setCancelled(true);
 			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
@@ -431,8 +432,90 @@ public class InventoryDisplaysListener implements Listener {
 				else if (ct == ClickType.MIDDLE) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, buyFull, buyFull*g.price);
 			}
 		}
-		
 		s.openMainGrocerMenu(p);
+	}
+	
+	public void clickWindmillPlant(Player p, InventoryClickEvent event) {
+		event.setCancelled(true);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
+		
+		Resident res = CivGlobal.getResident(p);
+		Windmill w;
+		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+		if (buildable instanceof Windmill) {
+			w = (Windmill) buildable;
+			if (w.getTown() != res.getTown()) {
+				CivMessage.sendError(p, "Cannot use a Windmill not in your town.");
+				event.setCancelled(true);
+				return;
+			}
+		} else {
+			CivMessage.sendError(p, "No Windmill found? If this error persists, contact an admin.");
+			event.setCancelled(true);
+			return;
+		}
+		
+		boolean meax = false;
+		boolean melt = false;
+		boolean fakeclick = false;
+		String n = event.getCurrentItem().getItemMeta().getDisplayName();
+		if (n.contains("Wheat")) {
+			if (event.getClick() == ClickType.LEFT) {
+				if (w.getSumPlantSettings() < w.getMaxPlantAmount()) w.wheat_sel++; else meax = true;
+			} else if (event.getClick() == ClickType.RIGHT) {
+				if (w.wheat_sel > 0) w.wheat_sel--; else melt = true;
+			} else {
+				fakeclick = true;
+			}
+		} else if (n.contains("Carrot")) {
+			if (event.getClick() == ClickType.LEFT) {
+				if (w.getSumPlantSettings() < w.getMaxPlantAmount()) w.carrot_sel++; else meax = true;
+			} else if (event.getClick() == ClickType.RIGHT) {
+				if (w.carrot_sel > 0) w.carrot_sel--; else melt = true;
+			} else {
+				fakeclick = true;
+			}
+		} else if (n.contains("Potato")) {
+			if (event.getClick() == ClickType.LEFT) {
+				if (w.getSumPlantSettings() < w.getMaxPlantAmount()) w.potato_sel++; else meax = true;
+			} else if (event.getClick() == ClickType.RIGHT) {
+				if (w.potato_sel > 0) w.potato_sel--; else melt = true;
+			} else {
+				fakeclick = true;
+			}
+		} else if (n.contains("Beetroot")) {
+			if (event.getClick() == ClickType.LEFT) {
+				if (w.getSumPlantSettings() < w.getMaxPlantAmount()) w.beetroot_sel++; else meax = true;
+			} else if (event.getClick() == ClickType.RIGHT) {
+				if (w.beetroot_sel > 0) w.beetroot_sel--; else melt = true;
+			} else {
+				fakeclick = true;
+			}
+		} else {
+			return;
+		}
+		
+		if (meax) {
+			CivMessage.sendError(p, "Please reduce another seed's priority to raise this one."); return;
+		}
+		if (melt) {
+			CivMessage.sendError(p, "You cannot have negative planting set."); return;
+		}
+		if (fakeclick) {
+			CivMessage.sendError(p, "Only Left or Right click is valid on this item."); return;
+		}
+		
+		String key = "WINDPLANT_"+w.getConfigId()+"_"+w.getCorner().toString();
+		ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
+		if (entry != null && !entry.isEmpty()) {
+			SessionEntry se = entry.get(0);
+			String nk = w.getSaveKey(w);
+			CivGlobal.getSessionDB().update(se.request_id, se.key, nk);
+		}
+		
+		CivMessage.sendSuccess(p, "Successfully changed value!");
+		w.openPlantSettingsGUI(p, res.getTown());
 	}
 	
 	public void clickSpyMissionMenu(Player p, InventoryClickEvent event) {

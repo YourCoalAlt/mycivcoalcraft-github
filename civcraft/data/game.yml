@@ -19,7 +19,7 @@ inventory:
 
 # Farm Settings
 farm:
-   grow_tick_rate: 30
+   grow_tick_rate: 45
 
 # Tips Accouncing Settings
 tips:

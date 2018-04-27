@@ -63,6 +63,7 @@ public class SpawnRegenEvent implements EventInterface {
 				}
 			}
 		}
+		return;
 	}
 
 	@Override

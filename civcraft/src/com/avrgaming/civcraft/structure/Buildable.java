@@ -238,13 +238,6 @@ public abstract class Buildable extends SQLObject {
 		return 0;
 	}
 	
-	public String getEffectEvent() {
-		return info.effect_event;
-	}
-	
-	public void onEffectEvent() {
-	}
-	
 	public String getOnBuildEvent() {
 		return info.onBuild_event;
 	}

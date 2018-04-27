@@ -85,7 +85,10 @@ import com.avrgaming.civcraft.randomevents.RandomEvent;
 import com.avrgaming.civcraft.road.RoadBlock;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Capitol;
+import com.avrgaming.civcraft.structure.Cottage;
+import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Market;
+import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.Wall;
@@ -124,6 +127,10 @@ public class CivGlobal {
 	private static Map<UUID, Resident> residentsViaUUID = new ConcurrentHashMap<UUID, Resident>();
 	private static Map<String, ResidentExperience> residentsE = new ConcurrentHashMap<String, ResidentExperience>();
 	private static Map<UUID, ResidentExperience> residentsViaUUIDE = new ConcurrentHashMap<UUID, ResidentExperience>();
+	
+	public static ArrayList<Cottage> cottages = new ArrayList<Cottage>();
+	public static ArrayList<Mine> mines = new ArrayList<Mine>();
+	public static ArrayList<Lab> labs = new ArrayList<Lab>();
 	
 	private static Map<String, Town> towns = new ConcurrentHashMap<String, Town>();
 	private static Map<String, Civilization> civs = new ConcurrentHashMap<String, Civilization>();

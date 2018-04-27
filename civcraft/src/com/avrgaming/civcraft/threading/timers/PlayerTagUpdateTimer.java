@@ -26,6 +26,7 @@ public class PlayerTagUpdateTimer implements Runnable {
 				if (res.getCiv() != null) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
 					else suffix = CivColor.LightGrayBold+" [None]";
 				NametagEdit.getApi().setSuffix(p, suffix);
+				res.changePlayerName(p, suffix);
 				
 				String prefix = "";
 				if (p.hasPermission(CivPerms.CONTROL)) {
@@ -44,12 +45,8 @@ public class PlayerTagUpdateTimer implements Runnable {
 					prefix = CivColor.LightGreenBold+"Helper ";
 				}
 				
-				if (p.isOp()) {
-					prefix += CivColor.WhiteBold+"[OP] "+CivColor.RESET;
-				}
-				
-				res.changePlayerName(p, suffix);
-				NametagEdit.getApi().setPrefix(p, prefix+CivColor.RESET+" ");
+				NametagEdit.getApi().setPrefix(p, prefix+CivColor.RESET);
+				p.setDisplayName(prefix+CivColor.RESET+p.getName()+suffix);
 			}
 		}
 	}

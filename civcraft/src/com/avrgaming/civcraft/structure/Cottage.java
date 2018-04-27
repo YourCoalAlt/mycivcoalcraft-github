@@ -25,7 +25,6 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.Town;
-import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.MultiInventory;
@@ -102,7 +101,7 @@ public class Cottage extends Structure {
 		return false;
 	}
 	
-	public void generateCoins(CivAsyncTask task) {
+	public void generateCoins() {
 		Granary granary = (Granary) this.getTown().getStructureByType("s_granary");
 		if (granary == null) return;
 		if (!this.isActive()) return;
@@ -206,7 +205,7 @@ public class Cottage extends Structure {
 		
 		// XXX leveling down doesnt generate coins, so we don't have to check it here.
 		if (result == Result.LEVELUP) {
-			lvl = CivSettings.cottageLevels.get(getConsumeComponent().getLevel()-1);	
+			lvl = CivSettings.cottageLevels.get(getLevel()-1);	
 		}
 		
 		double total_coins = getTotalCoinsGenerated(lvl.level, lvl.coins);
@@ -253,16 +252,16 @@ public class Cottage extends Structure {
 		}
 		
 		if (bail) {
-			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+resultMsg+CivColor.Yellow+" +0 Coins");
+			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getLevel()+" Cottage "+resultMsg+CivColor.Yellow+" +0 Coins");
 		} else if (pay) {
 			if (taxesPaid > 0) {
-				CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+resultMsg+CivColor.LightGreen+" +"+total_coins+" Coins"+
+				CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getLevel()+" Cottage "+resultMsg+CivColor.LightGreen+" +"+total_coins+" Coins"+
 						CivColor.Yellow+" (Paid "+taxesPaid+" in taxes to "+this.getTown().getDepositCiv().getName()+")");
 			} else {
-				CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+resultMsg+CivColor.LightGreen+" +"+total_coins+" Coins");
+				CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getLevel()+" Cottage "+resultMsg+CivColor.LightGreen+" +"+total_coins+" Coins");
 			}
 		} else {
-			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getConsumeComponent().getLevel()+" Cottage "+CivColor.Purple+"No fail/success?"+CivColor.Rose+" +0 Coins");
+			CivMessage.sendTown(this.getTown(), CivColor.LightGreen+"Level "+getLevel()+" Cottage "+CivColor.Purple+"No fail/success?"+CivColor.Rose+" +0 Coins");
 			CivMessage.sendTown(this.getTown(), CivColor.Rose+"Contact an Admin!");
 		}
 	}

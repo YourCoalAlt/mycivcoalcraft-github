@@ -25,9 +25,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivTaskAbortException;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.structure.Windmill;
@@ -49,16 +47,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 	
 	@Override
 	public void run() {
-		int plant_max;
-		try {
-			plant_max = CivSettings.getInteger(CivSettings.structureConfig, "windmill.plant_max");
-			if (windmill.getCiv().hasTechnology("tech_machinery")) {
-				plant_max *= 2;
-			}
-		} catch (InvalidConfiguration e) {
-			e.printStackTrace();
-			return;
-		}
+		int plant_max = windmill.getMaxPlantAmount();
 		
 		// Read in the source inventory's contents. Make sure we have seeds to plant.
 		ArrayList<StructureChest> sources = windmill.getAllChestsById(0);
@@ -85,9 +74,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		int potatoCount = 0;
 		int beetrootCount = 0;
 		for (ItemStack stack : source_inv.getContents()) {
-			if (stack == null) {
-				continue;
-			}
+			if (stack == null) continue;
 			
 			switch (ItemManager.getId(stack)) {
 			case CivData.WHEAT_SEED:
@@ -126,8 +113,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 								int blockx = (snapshot.getX()*16) + x;
 								int blocky = y+1;
 								int blockz = (snapshot.getZ()*16) + z;
-								blocks.add(new BlockCoord(this.windmill.getCorner().getWorldname(),
-										blockx, blocky, blockz));
+								blocks.add(new BlockCoord(this.windmill.getCorner().getWorldname(), blockx, blocky, blockz));
 							}
 						}
 					}
@@ -148,7 +134,6 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		}
 				
 		// Fire off a sync task to complete the operation.
-		TaskMaster.syncTask(new WindmillPostProcessSyncTask(windmill, plantBlocks,
-				breadCount, carrotCount, potatoCount, beetrootCount, source_inv));
+		TaskMaster.syncTask(new WindmillPostProcessSyncTask(windmill, plantBlocks, breadCount, carrotCount, potatoCount, beetrootCount, source_inv));
 	}
 }

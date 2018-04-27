@@ -195,6 +195,10 @@ public class TownChunk extends SQLObject {
 	public Town getTown() {
 		return town;
 	}
+	
+	public Civilization getCiv() {
+		return town.getCiv();
+	}
 
 	public void setTown(Town town) {
 		this.town = town;

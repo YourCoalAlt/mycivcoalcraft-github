@@ -159,7 +159,7 @@ public class CivSettings {
 	public static HashSet<Integer> switchItems = new HashSet<Integer>();
 	public static Map<Material, Integer> restrictedItems = new HashMap<Material, Integer>();
 	public static Map<Material, Integer> blockPlaceExceptions =  new HashMap<Material, Integer>();
-	public static Map<EntityType, Integer> restrictedSpawns = new HashMap<EntityType, Integer>();
+	public static ArrayList<EntityType> restrictedSpawns = new ArrayList<EntityType>();
 	public static HashSet<EntityType> playerEntityWeapons = new HashSet<EntityType>();
 	public static HashSet<Integer> alwaysCrumble = new HashSet<Integer>();
 	
@@ -614,33 +614,33 @@ public class CivSettings {
 	}
 
 	private static void initRestrictedSpawns() {
-		restrictedSpawns.put(EntityType.BAT, 0);
-		restrictedSpawns.put(EntityType.BLAZE, 0);
-		restrictedSpawns.put(EntityType.CAVE_SPIDER, 0);
-		restrictedSpawns.put(EntityType.CREEPER, 0);
-		restrictedSpawns.put(EntityType.ELDER_GUARDIAN, 0);
-		restrictedSpawns.put(EntityType.ENDERMAN, 0);
-		restrictedSpawns.put(EntityType.ENDERMITE, 0);
-		restrictedSpawns.put(EntityType.EVOKER, 0);
-		restrictedSpawns.put(EntityType.EVOKER_FANGS, 0);
-		restrictedSpawns.put(EntityType.GHAST, 0);
-		restrictedSpawns.put(EntityType.GUARDIAN, 0);
-		restrictedSpawns.put(EntityType.HUSK, 0);
-		restrictedSpawns.put(EntityType.ILLUSIONER, 0);
-		restrictedSpawns.put(EntityType.MAGMA_CUBE, 0);
-		restrictedSpawns.put(EntityType.PIG_ZOMBIE, 0);
-		restrictedSpawns.put(EntityType.POLAR_BEAR, 0);
-		restrictedSpawns.put(EntityType.SHULKER, 0);
-		restrictedSpawns.put(EntityType.SILVERFISH, 0);
-		restrictedSpawns.put(EntityType.SKELETON, 0);
-		restrictedSpawns.put(EntityType.SPIDER, 0);
-		restrictedSpawns.put(EntityType.STRAY, 0);
-		restrictedSpawns.put(EntityType.VEX, 0);
-		restrictedSpawns.put(EntityType.VINDICATOR, 0);
-		restrictedSpawns.put(EntityType.WITCH, 0);
-		restrictedSpawns.put(EntityType.WITHER_SKELETON, 0);
-		restrictedSpawns.put(EntityType.ZOMBIE, 0);
-		restrictedSpawns.put(EntityType.ZOMBIE_VILLAGER, 0);
+		restrictedSpawns.add(EntityType.BAT);
+		restrictedSpawns.add(EntityType.BLAZE);
+		restrictedSpawns.add(EntityType.CAVE_SPIDER);
+		restrictedSpawns.add(EntityType.CREEPER);
+		restrictedSpawns.add(EntityType.ELDER_GUARDIAN);
+		restrictedSpawns.add(EntityType.ENDERMAN);
+		restrictedSpawns.add(EntityType.ENDERMITE);
+		restrictedSpawns.add(EntityType.EVOKER);
+		restrictedSpawns.add(EntityType.EVOKER_FANGS);
+		restrictedSpawns.add(EntityType.GHAST);
+		restrictedSpawns.add(EntityType.GUARDIAN);
+		restrictedSpawns.add(EntityType.HUSK);
+		restrictedSpawns.add(EntityType.ILLUSIONER);
+		restrictedSpawns.add(EntityType.MAGMA_CUBE);
+		restrictedSpawns.add(EntityType.PIG_ZOMBIE);
+		restrictedSpawns.add(EntityType.POLAR_BEAR);
+		restrictedSpawns.add(EntityType.SHULKER);
+		restrictedSpawns.add(EntityType.SILVERFISH);
+		restrictedSpawns.add(EntityType.SKELETON);
+		restrictedSpawns.add(EntityType.SPIDER);
+		restrictedSpawns.add(EntityType.STRAY);
+		restrictedSpawns.add(EntityType.VEX);
+		restrictedSpawns.add(EntityType.VINDICATOR);
+		restrictedSpawns.add(EntityType.WITCH);
+		restrictedSpawns.add(EntityType.WITHER_SKELETON);
+		restrictedSpawns.add(EntityType.ZOMBIE);
+		restrictedSpawns.add(EntityType.ZOMBIE_VILLAGER);
 	}
 	
 	private static void initRestrictedItems() {

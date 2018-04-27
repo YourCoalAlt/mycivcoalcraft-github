@@ -13,12 +13,19 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -38,7 +45,9 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.Config;
@@ -108,6 +117,51 @@ public class MinecraftListener implements Listener {
 			}
 			p.setFoodLevel((int) foodAmt);
 			p.setSaturation(SaturateAmt);
+		}
+	}
+	
+	private final BlockFace[] faces = new BlockFace[] {
+			BlockFace.SELF, BlockFace.UP, BlockFace.DOWN,
+			BlockFace.NORTH, BlockFace.EAST,
+			BlockFace.SOUTH, BlockFace.WEST
+	 };
+
+	public BlockCoord generatesCobble(int id, Block b) {
+		int mirrorID1 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_RUNNING : CivData.WATER_RUNNING);
+		int mirrorID2 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_STILL : CivData.WATER_STILL);
+		int mirrorID3 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_RUNNING : CivData.WATER_STILL);
+		int mirrorID4 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_STILL : CivData.WATER_RUNNING);
+		for (BlockFace face : faces) {
+			Block r = b.getRelative(face, 1);
+			if(ItemManager.getId(r) == mirrorID1 || ItemManager.getId(r) == mirrorID2 || ItemManager.getId(r) == mirrorID3 || ItemManager.getId(r) == mirrorID4) {
+				return new BlockCoord(r);
+			}
+		}
+		return null;
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void OnBlockFromToEvent(BlockFromToEvent event) {
+		// Disable cobblestone generators
+		int id = ItemManager.getId(event.getBlock());
+		if(id >= CivData.WATER_STILL && id <= CivData.LAVA_STILL) {
+			Block b = event.getToBlock();
+			int toid = ItemManager.getId(b);
+			if (toid == CivData.COBBLESTONE || toid == CivData.OBSIDIAN) {
+				BlockCoord other = generatesCobble(id, b);
+				if(other != null && other.getBlock().getType() != Material.AIR) {
+					other.getBlock().setType(Material.NETHERRACK);
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void OnBlockFormEvent(BlockFormEvent event) {
+		// Disable cobblestone generators
+		if (ItemManager.getId(event.getNewState()) == CivData.COBBLESTONE || ItemManager.getId(event.getNewState()) == CivData.OBSIDIAN) {
+			ItemManager.setTypeId(event.getNewState(), CivData.NETHERRACK);
+			return;
 		}
 	}
 	
@@ -295,6 +349,39 @@ public class MinecraftListener implements Listener {
 				return;
 			}
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerDeath(PlayerDeathEvent event) throws CivException {
+		String name = ((CraftLivingEntity) event.getEntity()).getHandle().getScoreboardDisplayName().getText()+CivColor.RESET;
+		Player p = event.getEntity();
+		Resident res = CivGlobal.getResident(p);
+		if (res.isSuicidal) {
+			res.isSuicidal = false;
+			event.setDeathMessage(name+" commited suicide");
+			return;
+		}
+		
+		if (p.getLastDamageCause() == null) {
+			event.setDeathMessage(name+" had a mysterious death");
+			return;
+		}
+		
+		DamageCause dc = p.getLastDamageCause().getCause();
+		if (dc == DamageCause.FALL) {
+			event.setDeathMessage(name+" doesn't know they can't fly");
+		} else if (dc == DamageCause.DROWNING) {
+			event.setDeathMessage(name+" forgot they're not a fish");
+		} else if (dc == DamageCause.FIRE) {
+			event.setDeathMessage(name+" spent too long standing in a fire pit");
+		} else if (dc == DamageCause.FIRE_TICK) {
+			event.setDeathMessage(name+" forgot to stop, drop, and roll");
+		} else if (dc == DamageCause.LIGHTNING) {
+			event.setDeathMessage(name+" was not liked by Zeus");
+		} else if (dc == DamageCause.STARVATION) {
+			event.setDeathMessage(name+" missed too many meals and couldn't find a McDonalds");
+		}
+		return;
 	}
 	
 	public static void randomTeleport(Player p) {

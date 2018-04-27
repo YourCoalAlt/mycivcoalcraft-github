@@ -2,7 +2,7 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.bukkit.inventory.Inventory;
@@ -33,6 +33,10 @@ import com.avrgaming.civcraft.util.MultiInventory;
 public class QuarryAsyncTask extends CivAsyncTask {
 	
 	Quarry quarry;
+	ArrayList<StructureChest> sources = new ArrayList<StructureChest>();
+	ArrayList<StructureChest> destinations = new ArrayList<StructureChest>();
+	ArrayList<StructureChest> destinations_other = new ArrayList<StructureChest>();
+	
 	public static HashSet<String> debugTowns = new HashSet<String>();
 	
 	public static void debug(Quarry quarry, String msg) {
@@ -45,34 +49,8 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		this.quarry = (Quarry)quarry;
 	}
 	
-	public void processQuarryUpdate(int update_ticks) {
-		debug(quarry, "(Skipped Counter: "+quarry.skippedCounter+")");
-		// Grab each CivChest object we'll require.
-		ArrayList<StructureChest> sources = quarry.getAllChestsById(1);
-		ArrayList<StructureChest> destinations = quarry.getAllChestsById(2);
-		ArrayList<StructureChest> destinations_other = new ArrayList<StructureChest>();
-		boolean trommel = false;
-		
-		Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
-		if (whs != null) {
-			if (whs.isComplete() && whs.isEnabled()) {
-				if (whs.getQuarryCollector() == 2) {
-					debug(quarry, "Output directed to Trommel");
-					Trommel trs = (Trommel) quarry.getTown().getStructureByType("s_trommel");
-					for (StructureChest sc : trs.getAllChestsById(1)) {
-						trommel = true;
-						destinations_other.add(sc);
-					}
-				}
-			}
-		}
-		
-		if (sources.size() < 1 || destinations.size() < 1) {
-			quarry.skippedCounter += update_ticks;
-			CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size()+"; trommel: "+trommel);
-			return;
-		}
-		
+	public void processQuarryUpdate(int ticks, boolean trommel) {
+		debug(quarry, "Processing Quarry...");
 		// Make sure the chunk is loaded before continuing. Also, add get chest and add it to inventory.
 		MultiInventory source_inv = new MultiInventory();
 		MultiInventory dest_inv = new MultiInventory();
@@ -84,18 +62,18 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				try {
 					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
 				} catch (CivTaskAbortException e) {
-					quarry.skippedCounter += update_ticks;
+					quarry.skippedCounter += ticks;
 					CivLog.warning("Quarry: "+e.getMessage());
 					return;
 				}
 				if (tmp == null) {
-					quarry.skippedCounter += update_ticks;
+					quarry.skippedCounter += ticks;
 					return;
 				}
 				
 				// If inventory as what we want, add it and forget any others.
 				boolean brk = false;
-				for (ListIterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
+				for (Iterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
@@ -107,7 +85,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						break;
 					}
 				}
-				
 				if (brk) break;
 			}
 			
@@ -120,12 +97,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						try {
 							tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 						} catch (CivTaskAbortException e) {
-							quarry.skippedCounter += update_ticks;
+							quarry.skippedCounter += ticks;
 							CivLog.warning("Quarry: "+e.getMessage());
 							return;
 						}
 						if (tmp == null) {
-							quarry.skippedCounter += update_ticks;
+							quarry.skippedCounter += ticks;
 							return;
 						}
 						
@@ -145,12 +122,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					try {
 						tmp = this.getChestInventory(dst.getCoord().getWorldname(), dst.getCoord().getX(), dst.getCoord().getY(), dst.getCoord().getZ(), false);
 					} catch (CivTaskAbortException e) {
-						quarry.skippedCounter += update_ticks;
+						quarry.skippedCounter += ticks;
 						CivLog.warning("Quarry: "+e.getMessage());
 						return;
 					}
 					if (tmp == null) {
-						quarry.skippedCounter += update_ticks;
+						quarry.skippedCounter += ticks;
 						return;
 					}
 					
@@ -164,7 +141,6 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			
 			// destination chest is full, stop processing.
 			if (full) {
-				quarry.skippedCounter += update_ticks;
 				debug(quarry, "Outputs full, cancelling.");
 				return;
 			}
@@ -172,12 +148,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		int process_ticks = quarry.skippedCounter + update_ticks;
-		debug(quarry, "Processing quarry :"+process_ticks);
-		for (int i = 0; i < process_ticks; i++) {
+		ticks += quarry.skippedCounter;
+		debug(quarry, "Processing Quarry (Prev. Skipped, & Govt. Process): "+ticks);
+		for (int i = 0; i < ticks; i++) {
 			for (Inventory inv : source_inv.getInventories()) {
 				int index = -1;
-				for (ListIterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
+				for (Iterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
 					index++;
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
@@ -198,27 +174,13 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							return;
 						}
 						
-						ArrayList<ItemStack> newItem = new ArrayList<ItemStack>();
-						ArrayList<ConfigQuarry> dropped = getRandomDrops(quarry.getTown(), cqi.item);
-						if (dropped.size() == 0) {
-							newItem.add(getReturnDrop());
-						} else {
-							for (ConfigQuarry d : dropped) {
-								if (d.custom_id != null) {
-									LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
-									newItem.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
-								} else {
-									newItem.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
-								}
-							}
+						ArrayList<ItemStack> dropped = getRandomDrops(quarry.getTown(), cqi.item);
+						if (dropped.size() < 1) {
+							dropped.add(getReturnDrop());
 						}
 						
-						int new_skips = process_ticks;
 						try { //Try to add the new item to the dest chest, if we cant, oh well.
-							for (ItemStack ni : newItem) {
-								if (quarry.skippedCounter > 0) {
-									quarry.skippedCounter--;
-								}
+							for (ItemStack ni : dropped) {
 								debug(quarry, "Updating inventory: "+ni);
 								if (dest_inv_other != null) {
 									if (trommel) {
@@ -226,22 +188,17 @@ public class QuarryAsyncTask extends CivAsyncTask {
 										// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
 										if (cti != null && quarry.getTown().saved_trommel_level >= cti.level) {
 											this.updateInventory(Action.ADD, dest_inv_other, ni);
-											new_skips--;
 										} else {
 											this.updateInventory(Action.ADD, dest_inv, ni);
-											new_skips--;
 										}
 									} else {
 										this.updateInventory(Action.ADD, dest_inv, ni);
-										new_skips--;
 									}
 								} else {
 									this.updateInventory(Action.ADD, dest_inv, ni);
-									new_skips--;
 								}
 							}
 						} catch (InterruptedException e) {
-							quarry.skippedCounter += new_skips;
 							CivLog.warning("Quarry:"+e.getMessage());
 							return;
 						}
@@ -250,7 +207,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				}
 			}
 		}
-//		quarry.skippedCounter = 0;
+		quarry.skippedCounter = 0;
 	}
 	
 	private ItemStack getReturnDrop() {
@@ -289,18 +246,45 @@ public class QuarryAsyncTask extends CivAsyncTask {
 			return;
 		}
 		
-		int update_ticks = 0;
+		int ticks = 0;
 		if (this.quarry.lock.tryLock()) {
 			try {
+				sources.clear();
+				destinations.clear();
+				
+				if (quarry != null) {
+					sources.addAll(quarry.getAllChestsById(1));
+					destinations.addAll(quarry.getAllChestsById(2));
+				}
+				
+				if (sources.size() < 1 || destinations.size() < 1) {
+					CivLog.error("Bad dest chests for quarry in town: "+quarry.getTown().getName()+" sources:"+sources.size()+" dests:"+destinations.size());
+					return;
+				}
+				
+				boolean trommel = false;
+				Warehouse whs = (Warehouse) quarry.getTown().getStructureByType("s_warehouse");
+				if (whs != null) {
+					if (whs.isComplete() && whs.isEnabled()) {
+						if (whs.getQuarryCollector() == 2) {
+							debug(quarry, "Output directed to Trommel");
+							Trommel trs = (Trommel) quarry.getTown().getStructureByType("s_trommel");
+							for (StructureChest sc : trs.getAllChestsById(1)) {
+								trommel = true;
+								destinations_other.add(sc);
+							}
+						}
+					}
+				}
+				
 				Random rand = new Random();
 				ConfigGovernment gov = quarry.getCiv().getGovernment();
-				int processRate = (int) (gov.quarry_process_rate*100);
-				int processing = processRate / 100;
-				int chance = processRate - (processing*100);
+				double processRate = (int) (gov.quarry_process_rate*100);
+				double processing = processRate / 100;
+				double chance = processRate - (processing*100);
 				
 				int processes = 0;
-				int bonuses = 0;
-				int skips = 0;
+				int bonuses = 0; int skips = 0;
 				int bonusesskips = 0;
 				for (int t = 0; t < CivCraft.structure_process; t++) {
 					if (processing <= 0) {
@@ -308,50 +292,44 @@ public class QuarryAsyncTask extends CivAsyncTask {
 							int types = rand.nextInt(100);
 							if (types >= chance) {
 								skips++;
-//								debug(quarry, "Skipped; Govt. "+gov.displayName+"; Greater Penalty at "+types+" > "+processRate);
 							} else {
-								processes++;
-								update_ticks++;
-//								debug(quarry, "Processed; Govt. "+gov.displayName+"; Lesser Success at "+processRate);
+								processes++; ticks++;
 							}
 						} else {
 							skips++;
 							debug(quarry, "Skipped; Govt. "+gov.displayName+"; Maximum Penalty at 0, was sent "+processing);
 						}
 					} else {
-						for (int i = 0; i < processing; i++) {
-							processes++;
-							update_ticks++;
-//							debug(quarry, "Processed; Govt. "+gov.displayName+"; Stable Success at "+processRate);
-							if (chance > 0) {
+						int toTick = (int) processing;
+						processes += toTick;
+						ticks+= toTick;
+						if (chance > 0) {
+							for (int i = 0; i < processing; i++) {
 								int types = rand.nextInt(100);
 								if (types >= chance) {
-									skips++;
-//									debug(quarry, "Skipped; Govt. "+gov.displayName+"; Lesser Penalty at "+types+" > "+processRate);
-								} else {
 									bonusesskips++;
-									update_ticks++;
-//									debug(quarry, "Bonus Process; Govt. "+gov.displayName+"; Bonus at "+types+" <= "+processRate);
+								} else {
+									toTick++; bonuses++; ticks++;
 								}
 							}
 						}
 					}
 				}
+				
 				// Added this dbg msg to cut down on spam in console... keeping other dbg msgs in case we need them.
+				processQuarryUpdate(ticks, trommel);
 				debug(quarry, "Govt. "+gov.displayName+" at "+processRate+"%; Processes:"+processes+", Bonuses:"+bonuses+", Skips:"+skips+", Bonuses Skips:"+bonusesskips);
-				processQuarryUpdate(update_ticks);
 			} finally {
 				this.quarry.lock.unlock();
 			}
 		} else {
-			quarry.skippedCounter += update_ticks;
-			debug(this.quarry, "Failed to get lock while trying to start task, aborting.");
+			debug(this.quarry, "Failed to get lock on quarry while trying to start task, aborting.");
 		}
 	}
 	
-	public ArrayList<ConfigQuarry> getRandomDrops(Town t, int input) {
+	public ArrayList<ItemStack> getRandomDrops(Town t, int input) {
 		Random rand = new Random();		
-		ArrayList<ConfigQuarry> dropped = new ArrayList<ConfigQuarry>();
+		ArrayList<ItemStack> dropped = new ArrayList<ItemStack>();
 		for (ConfigQuarry d : CivSettings.quarryDrops) {
 			if (d.input == input) {
 				double dc = d.drop_chance;
@@ -385,7 +363,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 				if (dc <= 0) dc = d.drop_chance;
 				int chance = rand.nextInt(10000);
 				if (chance < (dc*10000)) {
-					dropped.add(d);
+					if (d.custom_id != null) {
+						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
+						dropped.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
+					} else {
+						dropped.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+					}
 				}
 			}
 		}

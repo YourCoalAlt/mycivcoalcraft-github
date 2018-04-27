@@ -31,8 +31,7 @@ public class HolographicDisplaysListener {
 			BlockCoord coord = good.getCoord();
 			int cX = (coord.getBlock().getChunk().getX()*16)+7;
 			int cZ = (coord.getBlock().getChunk().getZ()*16)+7;
-			
-			Location loc = new Location(coord.getBlock().getWorld(), cX+0.5, coord.getBlock().getY()+6.25, cZ+0.5);
+			Location loc = new Location(coord.getBlock().getWorld(), cX+0.5, coord.getBlock().getY()+6.75, cZ+0.5);
 			for (com.gmail.filoghost.holograms.api.Hologram hologram : HolographicDisplaysAPI.getHolograms(CivCraft.getPlugin())) {
 				if (hologram.getLocation().equals(loc)) {
 					hologram.delete();
@@ -56,9 +55,7 @@ public class HolographicDisplaysListener {
 	}
 	
 	public static void updateBarracksHolo(Location loc, String title, String per) {
-		if (!CivSettings.hasHolographicDisplays) {
-			return;
-		}
+		if (!CivSettings.hasHolographicDisplays) return;
 		
 		Plugin p = CivCraft.getPlugin();
 		for (com.gmail.filoghost.holograms.api.Hologram hologram : HolographicDisplaysAPI.getHolograms(CivCraft.getPlugin())) {
@@ -68,9 +65,7 @@ public class HolographicDisplaysListener {
 		}
 		
 		double pr = Double.valueOf(per.replace("%", ""));
-		if (pr >= 100) {
-			return;
-		}
+		if (pr >= 100) return;
 		
 		Hologram hologram = HologramsAPI.createHologram(p, loc);
 		hologram.appendTextLine(title);

@@ -15,12 +15,14 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCustomMobs;
-import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.CultureChunk;
+import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.CivColor;
 
 import net.minecraft.server.v1_12_R1.Entity;
@@ -34,34 +36,185 @@ public class MobSpawner {
 		}
 	}
 	
-	public static void despawnAllHostile(Player p, boolean msg) {
+	public static void despawnMobs(Player p, boolean custom, boolean hostile, boolean townBorders, boolean civBorders, boolean onlinePlayersOnly, boolean loaded, boolean msg) {
 		int countCustom = 0;
 		int countTotal = 0;
 		World w = Bukkit.getWorld(CivCraft.worldName);
 		Difficulty d = w.getDifficulty();
 		w.setDifficulty(Difficulty.PEACEFUL);
 		
-		for (Entity e : CustomMobListener.customMobs.values()) {
-			CustomMobListener.customMobs.remove(e.getUniqueID());
-			CustomMobListener.mobList.remove(e.getUniqueID());
-			e.getBukkitEntity().remove();
-			countCustom++;
-			countTotal++;
+		if (custom) {
+			for (Entity e : CustomMobListener.customMobs.values()) {
+				CustomMobListener.customMobs.remove(e.getUniqueID());
+				CustomMobListener.mobList.remove(e.getUniqueID());
+				e.getBukkitEntity().remove();
+				countCustom++;
+				countTotal++;
+			}
 		}
 		
-		for (Chunk c : w.getLoadedChunks()) {
-			for (org.bukkit.entity.Entity e : c.getEntities()) {
-				if (CivSettings.restrictedSpawns.containsKey(e.getType())) {
-					e.remove();
-					countTotal++;
+		if (hostile) {
+			if (townBorders) {
+				if (onlinePlayersOnly) {
+					ArrayList<Town> townsToClear = new ArrayList<Town>();
+					for (Player onp : Bukkit.getOnlinePlayers()) {
+						Resident res = CivGlobal.getResident(onp);
+						if (res.hasTown() && !townsToClear.contains(res.getTown())) townsToClear.add(res.getTown());
+					}
+					
+					for (Town t : townsToClear) {
+						for (TownChunk tc : t.getTownChunks()) {
+							Chunk c = tc.getChunkCoord().getChunk();
+							if (c.getEntities().length < 1) continue;
+							for (org.bukkit.entity.Entity e : c.getEntities()) {
+								boolean r = false;
+								if (CivSettings.restrictedSpawns.contains(e.getType())) {
+									e.remove();
+									countTotal++;
+									r = true;
+								}
+								
+								if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+									CustomMobListener.customMobs.remove(e.getUniqueId());
+									CustomMobListener.mobList.remove(e.getUniqueId());
+									countCustom++;
+									if (!r) countTotal++;
+								}
+							}
+						}
+					}
+				} else {
+					for (TownChunk tc : CivGlobal.getTownChunks()) {
+						Chunk c = tc.getChunkCoord().getChunk();
+						if (c.getEntities().length < 1) continue;
+						for (org.bukkit.entity.Entity e : c.getEntities()) {
+							boolean r = false;
+							if (CivSettings.restrictedSpawns.contains(e.getType())) {
+								e.remove();
+								countTotal++;
+								r = true;
+							}
+							
+							if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+								CustomMobListener.customMobs.remove(e.getUniqueId());
+								CustomMobListener.mobList.remove(e.getUniqueId());
+								countCustom++;
+								if (!r) countTotal++;
+							}
+						}
+					}
+				}
+				
+				if (civBorders) {
+					if (onlinePlayersOnly) {
+						ArrayList<Town> civsToClear = new ArrayList<Town>();
+						for (Player onp : Bukkit.getOnlinePlayers()) {
+							Resident res = CivGlobal.getResident(onp);
+							if (res.hasTown() && !civsToClear.contains(res.getTown())) civsToClear.add(res.getTown());
+						}
+						
+						for (Town t : civsToClear) {
+							for (CultureChunk cc : t.getCultureChunks()) {
+								Chunk c = cc.getChunkCoord().getChunk();
+								if (c.getEntities().length < 1) continue;
+								for (org.bukkit.entity.Entity e : c.getEntities()) {
+									boolean r = false;
+									if (CivSettings.restrictedSpawns.contains(e.getType())) {
+										e.remove();
+										countTotal++;
+										r = true;
+									}
+									
+									if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+										CustomMobListener.customMobs.remove(e.getUniqueId());
+										CustomMobListener.mobList.remove(e.getUniqueId());
+										countCustom++;
+										if (!r) countTotal++;
+									}
+								}
+							}
+						}
+					} else {
+						for (CultureChunk cc : CivGlobal.getCultureChunks()) {
+							Chunk c = cc.getChunkCoord().getChunk();
+							if (c.getEntities().length < 1) continue;
+							for (org.bukkit.entity.Entity e : c.getEntities()) {
+								boolean r = false;
+								if (CivSettings.restrictedSpawns.contains(e.getType())) {
+									e.remove();
+									countTotal++;
+									r = true;
+								}
+								
+								if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+									CustomMobListener.customMobs.remove(e.getUniqueId());
+									CustomMobListener.mobList.remove(e.getUniqueId());
+									countCustom++;
+									if (!r) countTotal++;
+								}
+							}
+						}
+					}
 				}
 			}
-		}
-		
-		for (CultureChunk cc : CivGlobal.getCultureChunks()) {
-			if (cc.getChunkCoord().getChunk().isLoaded()) {
-				MobSpawner.despawnAllHostileInChunk(null, cc.getChunkCoord().getChunk(), false);
+			
+			if (loaded) {
+				for (Chunk c : w.getLoadedChunks()) {
+					if (c.getEntities().length < 1) continue;
+					for (org.bukkit.entity.Entity e : c.getEntities()) {
+						if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+							CustomMobListener.customMobs.remove(e.getUniqueId());
+							CustomMobListener.mobList.remove(e.getUniqueId());
+							e.remove();
+							countCustom++;
+							countTotal++;
+							continue;
+						}
+						
+						if (CivSettings.restrictedSpawns.contains(e.getType())) {
+							e.remove();
+							countTotal++;
+						}
+					}
+				}
 			}
+			
+/*			if (world) {
+				int x = (5000/16);
+				int z = (5000/16);
+				try {
+					x = (CivSettings.getInteger(CivSettings.gameConfig, "world.radius_x")/16);
+					z = (CivSettings.getInteger(CivSettings.gameConfig, "world.radius_z")/16);
+				} catch (InvalidConfiguration e) {
+					CivLog.error("-- Error on Reciving Setting --");
+					CivLog.error("Could not load game.yml configs either world.radius_x AND/OR world.radius_z when trying to despawn mobs!");
+					e.printStackTrace();
+				}
+				
+				for (int sx = -x; sx < x; sx++) {
+					for (int sz = -z; sz < z; sz++) {
+						if (Bukkit.getWorld(CivCraft.worldName).getChunkAt(sx, sz) != null) {
+							Chunk c = Bukkit.getWorld(CivCraft.worldName).getChunkAt(sx, sz);
+							if (c.getEntities().length < 1) continue;
+							for (org.bukkit.entity.Entity e : c.getEntities()) {
+								if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
+									CustomMobListener.customMobs.remove(e.getUniqueId());
+									CustomMobListener.mobList.remove(e.getUniqueId());
+									e.remove();
+									countCustom++;
+									countTotal++;
+									continue;
+								}
+								
+								if (CivSettings.restrictedSpawns.containsKey(e.getType())) {
+									e.remove();
+									countTotal++;
+								}
+							}
+						}
+					}
+				}
+			}*/
 		}
 		
 		if (msg) {
@@ -87,7 +240,7 @@ public class MobSpawner {
 				continue;
 			}
 			
-			if (CivSettings.restrictedSpawns.containsKey(e.getType())) {
+			if (CivSettings.restrictedSpawns.contains(e.getType())) {
 				e.remove();
 				countTotal++;
 			}
@@ -98,52 +251,6 @@ public class MobSpawner {
 				CivMessage.sendSuccess(p, "Removed "+countCustom+ " custom mobs, grand total of "+countTotal+" at Chunk x"+c.getX()+" z"+c.getZ()+".");
 			}
 			CivLog.adminlog("CONSOLE", "Removed "+countCustom+ " custom mobs, grand total of "+countTotal+" at Chunk x"+c.getX()+" z"+c.getZ()+".");
-		}
-	}
-	
-	public static void despawnAllHostileAllChunks(Player p, boolean msg) {
-		int countCustom = 0;
-		int countTotal = 0;
-		
-		int x = (5000/16);
-		int z = (5000/16);
-		try {
-			x = (CivSettings.getInteger(CivSettings.gameConfig, "world.radius_x")/16);
-			z = (CivSettings.getInteger(CivSettings.gameConfig, "world.radius_z")/16);
-		} catch (InvalidConfiguration e) {
-			CivLog.error("-- Error on Reciving Setting --");
-			CivLog.error("Could not load game.yml configs either world.radius_x AND/OR world.radius_z when trying to despawn mobs!");
-			e.printStackTrace();
-		}
-		
-		for (int sx = -x; sx < x; sx++) {
-			for (int sz = -z; sz < z; sz++) {
-				if (Bukkit.getWorld(CivCraft.worldName).getChunkAt(sx, sz) != null) {
-					Chunk c = Bukkit.getWorld(CivCraft.worldName).getChunkAt(sx, sz);
-					for (org.bukkit.entity.Entity e : c.getEntities()) {
-						if (CustomMobListener.customMobs.containsKey(e.getUniqueId())) {
-							CustomMobListener.customMobs.remove(e.getUniqueId());
-							CustomMobListener.mobList.remove(e.getUniqueId());
-							e.remove();
-							countCustom++;
-							countTotal++;
-							continue;
-						}
-						
-						if (CivSettings.restrictedSpawns.containsKey(e.getType())) {
-							e.remove();
-							countTotal++;
-						}
-					}
-				}
-			}
-		}
-		
-		if (msg) {
-			if (p != null) {
-				CivMessage.sendSuccess(p, "Removed "+countCustom+ " custom mobs, grand total of "+countTotal+" at World Removal.");
-			}
-			CivLog.adminlog("CONSOLE", "Removed "+countCustom+ " custom mobs, grand total of "+countTotal+" at World Removal.");
 		}
 	}
 	

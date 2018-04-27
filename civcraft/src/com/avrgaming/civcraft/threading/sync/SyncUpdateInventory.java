@@ -18,8 +18,7 @@
  */
 package com.avrgaming.civcraft.threading.sync;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -27,10 +26,10 @@ import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest;
 
 public class SyncUpdateInventory implements Runnable {
 	
-	public static final int UPDATE_LIMIT = 200;
+	public static final int UPDATE_LIMIT = 128;
 	
 	// Performs the desired action on a provided multi-inventory.
-	public static Queue<UpdateInventoryRequest> requestQueue = new LinkedList<UpdateInventoryRequest>();	
+	public static ConcurrentLinkedQueue<UpdateInventoryRequest> requestQueue = new ConcurrentLinkedQueue<UpdateInventoryRequest>();	
 	public static ReentrantLock lock;
 	
 	public SyncUpdateInventory() {
@@ -39,16 +38,12 @@ public class SyncUpdateInventory implements Runnable {
 
 	@Override
 	public void run() {
-		
 		Boolean retBool = false;
 		if (lock.tryLock()) {
 			try {
 				for (int i = 0; i < UPDATE_LIMIT; i++) {
 					UpdateInventoryRequest request = requestQueue.poll();
-					if (request == null) {
-						return;
-					}
-					
+					if (request == null) return;
 					
 					switch(request.action) {
 					case ADD:

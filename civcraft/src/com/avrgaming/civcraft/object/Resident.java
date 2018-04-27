@@ -1758,14 +1758,14 @@ public class Resident extends SQLObject {
 		
 		Team team = scoreboard.getTeam(p.getName());
 		team.setSuffix(Color(suffix));
-		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
+//		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
 		team.setOption(Option.COLLISION_RULE, OptionStatus.FOR_OTHER_TEAMS);
 		team.setAllowFriendlyFire(false);
 		team.setCanSeeFriendlyInvisibles(true);
 		
 		try {
 			CivGlobal.getOfflinePlayer(p);
-			if (team.hasPlayer(p)) {
+			if (!team.hasPlayer(p)) {
 				team.addPlayer(p);
 			}
 		} catch (CivException e) {
