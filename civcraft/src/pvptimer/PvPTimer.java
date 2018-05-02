@@ -15,7 +15,7 @@ public class PvPTimer implements Runnable {
 	@Override
 	public void run() {
 		for (Resident resident : CivGlobal.getResidents()) {
-			if (!resident.isProtected()) { continue; }
+			if (!resident.isProtected()) continue;
 			
 			try {
 				int mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");

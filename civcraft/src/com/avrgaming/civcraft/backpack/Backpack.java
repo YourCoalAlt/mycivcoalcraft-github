@@ -484,4 +484,5 @@ public class Backpack {
 			player.openInventory(guiInventory);
 		}
 	}
+	
 }

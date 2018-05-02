@@ -53,6 +53,9 @@ public class AdminResCommand extends CommandBase {
 		commands.put("begin", "Does whole beginning process on first join (if player was null).");
 		commands.put("givekit", "[resident] - Gives this player a new starting kit.");
 	}
+	public void notes_cmd() throws CivException {
+		
+	}
 	
 	public void givekit_cmd() throws CivException {
 		Resident res = getNamedResident(1);

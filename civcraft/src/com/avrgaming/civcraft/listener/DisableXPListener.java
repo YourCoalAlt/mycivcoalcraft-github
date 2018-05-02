@@ -32,21 +32,25 @@ public class DisableXPListener implements Listener {
 //		}
 	}
 	
+/*	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerPrepareEnchant(PrepareItemEnchantEvent event) {
+		for (EnchantmentOffer eo : event.getOffers()) {
+			if (eo == null) continue;
+			eo.setCost(eo.getCost()*10);
+		}
+	}*/
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteractEvent(PlayerInteractEvent event) {
-		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			return;
-		}
-		
-		if (event.getClickedBlock() == null || ItemManager.getId(event.getClickedBlock()) == CivData.AIR) {
-			return;
-		}
+		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+		if (event.getClickedBlock() == null || ItemManager.getId(event.getClickedBlock()) == CivData.AIR) return;
 		
 		Block block = event.getClickedBlock();
-		
 		if (block.getType().equals(Material.ENCHANTMENT_TABLE)) {
-//			CivMessage.sendError(event.getPlayer(), "Cannot use enchantment tables. XP and Levels disabled in CivCraft.");
-			event.setCancelled(true);
+			if (!event.getPlayer().isOp()) {
+				CivMessage.sendError(event.getPlayer(), "Cannot use enchantment tables. XP and Levels disabled in CivCraft.");
+				event.setCancelled(true);
+			}
 		}
 		
 //		if (block.getType().equals(Material.ANVIL)) {
@@ -55,7 +59,7 @@ public class DisableXPListener implements Listener {
 //		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerExpChange(PlayerExpChangeEvent event) {
 		Resident resident = CivGlobal.getResident(event.getPlayer());
 		CivMessage.send(resident, CivColor.LightGreen+"Picked up "+CivColor.Yellow+event.getAmount()+CivColor.LightGreen+" coins.");

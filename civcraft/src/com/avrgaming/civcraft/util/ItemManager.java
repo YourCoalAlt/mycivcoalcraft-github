@@ -1,5 +1,14 @@
 package com.avrgaming.civcraft.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -209,6 +218,35 @@ public class ItemManager {
 	public static boolean dropPlayerEXP(Player p, Location dropLoc, int amt) {
 		((ExperienceOrb)p.getWorld().spawn(p.getLocation(), ExperienceOrb.class)).setExperience(amt);
 		return true;
+	}
+	
+	public static Map<String, String> getPlayerPreviousNames(Player p) {
+		Map<String, String> prevNames = new HashMap<String, String>();
+		try {
+			String trimmedUUID = p.getUniqueId().toString().replace("-", "");
+			URL url = new URL("https://api.mojang.com/user/profiles/"+trimmedUUID+"/names");
+			
+			String nameJson;
+			URLConnection conn = url.openConnection(); // open the stream and put it into BufferedReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			nameJson = br.readLine();
+			br.close();
+			
+			String newtry = nameJson.substring(14+p.getName().length(), nameJson.length()-2).replaceAll("\"name\":\"", "").replaceAll("\"changedToAt\":", "")
+										.replaceAll("\",", ":").replaceAll("\\},\\{", "~");
+			
+			String[] toDiv = newtry.split("~");
+			for (String s : toDiv) {
+				String name_pre = s;
+				int date_sub = s.indexOf(":")+1;
+				String date = name_pre.substring(date_sub);
+				String name_fnl = name_pre.replace(date, "");
+				prevNames.put(new Date(Long.valueOf(date)).toString(), name_fnl);
+			}
+		} catch (IOException e) {
+			prevNames.put("Mojang's API Server is down!", "Cannot get results!");
+		}
+		return prevNames;
 	}
 	
 }

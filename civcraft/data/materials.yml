@@ -332,6 +332,33 @@ materials:
          custom_id: 'civ_crafted_reeds'
          data: 0
          count: 1
+# Checked 25 August 2017
+  - id: 'civ_crushed_iron_chunk'
+    item_id: 351
+    item_data: 15
+    name: 'T1 Crushed Iron Chunk'
+    craftable: false
+    shaped: false
+    category: '<lightgreen>Tier 1 Materials'
+# Checked 25 August 2017
+  - id: 'civ_vanilla_iron_ingot'
+    item_id: 265
+    item_data: 0
+    name: 'Iron Ingot'
+    vanilla: true
+    craftable: true
+    shaped: false
+    category: '<lightgreen>Tier 1 Materials'
+    ingredients:
+       - type_id: 0
+         custom_id: 'civ_crushed_iron_chunk'
+         data: 0
+         count: 2
+
+
+
+
+
 
 
 

@@ -66,7 +66,7 @@ public class MinecraftListener implements Listener {
 		food_values.put(Material.RAW_FISH, raw_fish);
 		
 		ArrayList<Integer> raw_salmon = new ArrayList<Integer>();
-		raw_salmon.add(2); raw_salmon.add(7); raw_salmon.add(1);
+		raw_salmon.add(2); raw_salmon.add(8); raw_salmon.add(1);
 		food_values.put(Material.RAW_FISH, raw_salmon);
 		
 		ArrayList<Integer> cooked_fish = new ArrayList<Integer>();
@@ -74,7 +74,7 @@ public class MinecraftListener implements Listener {
 		food_values.put(Material.COOKED_FISH, cooked_fish);
 		
 		ArrayList<Integer> cooked_salmon = new ArrayList<Integer>();
-		cooked_salmon.add(6); cooked_salmon.add(106); cooked_salmon.add(1);
+		cooked_salmon.add(6); cooked_salmon.add(90); cooked_salmon.add(1);
 		food_values.put(Material.COOKED_FISH, cooked_salmon);
 		
 		ArrayList<Integer> melon = new ArrayList<Integer>();
@@ -513,9 +513,7 @@ public class MinecraftListener implements Listener {
 	public void onSwapHandItems(PlayerSwapHandItemsEvent e) {
 		boolean enabled = false;
 		try {
-			if (Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand")) == true) {
-				enabled = true;
-			}
+			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand"));
 		} catch (InvalidConfiguration e1) {
 			e1.printStackTrace();
 		}
@@ -574,9 +572,7 @@ public class MinecraftListener implements Listener {
 		int GAS = 4;
 		try {
 			GAS = CivSettings.getInteger(CivSettings.gameConfig, "pvp.attack_speed");
-			if (CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled") != "true") {
-				enabled = false;
-			}
+			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled"));
 		} catch (InvalidConfiguration e1) {
 			e1.printStackTrace();
 		}
@@ -616,9 +612,7 @@ public class MinecraftListener implements Listener {
 		int GAS = 4;
 		try {
 			GAS = CivSettings.getInteger(CivSettings.gameConfig, "pvp.attack_speed");
-			if (CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled") != "true") {
-				enabled = false;
-			}
+			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled"));
 		} catch (InvalidConfiguration e1) {
 			e1.printStackTrace();
 		}

@@ -112,13 +112,6 @@ public class PlayerListener implements Listener {
 			if (resident.getItemMode().equals("none")) return;
 			
 			ItemStack i = event.getItem().getItemStack();
-//			if (LoreEnhancement.isWeaponOrArmor(i)) {
-//				CivMessage.global("Checking");
-//				ItemStack update = LoreEnhancement.resetLivesWithDurability(p, i, true);
-//				i = update;
-//			} else {
-//				CivMessage.global("Fail Check");
-//			}
 			String name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
 			boolean rare = false;
 			if (i.getItemMeta().hasDisplayName()) {

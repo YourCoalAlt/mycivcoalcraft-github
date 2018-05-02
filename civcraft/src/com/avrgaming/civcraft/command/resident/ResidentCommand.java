@@ -20,6 +20,8 @@ package com.avrgaming.civcraft.command.resident;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.bukkit.Location;
@@ -300,7 +302,7 @@ public class ResidentCommand extends CommandBase {
 			CivMessage.send(sender, CivColor.LightGrayBold+" -------------- ");
 		}
 		
-		if (CivGlobal.getPlayer(resident).isOnline()) {
+		if (CivGlobal.getOfflinePlayer(resident).isOnline()) {
 			CivMessage.send(sender, CivColor.LightBlue+"Is Currently Online");
 		} else {
 			Date lastOnline = new Date(resident.getLastOnline());
@@ -349,11 +351,18 @@ public class ResidentCommand extends CommandBase {
 		}
 		
 		if (alts != "") {
-			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alts -- ");
+			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alt Accounts -- ");
 			CivMessage.send(sender, CivColor.Yellow+alts);
 		} else {
-			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alts -- ");
+			CivMessage.send(sender, CivColor.LightBlueBold+" -- Possible Alt Accounts -- ");
 			CivMessage.send(sender, CivColor.Yellow+" None ");
+		}
+		
+		Player p = CivGlobal.getPlayer(resident);
+		Map<String, String> prevNames = ItemManager.getPlayerPreviousNames(p);
+		CivMessage.send(sender, CivColor.LightBlueBold+" -- Previous Usernames -- ");
+		for (Entry<String, String> s : prevNames.entrySet()) {
+			CivMessage.send(sender, s.getValue()+CivColor.Yellow+" (Date: "+CivColor.RESET+s.getKey()+")");
 		}
 		
 /*		try {

@@ -269,7 +269,7 @@ public class PostBuildSyncTask implements Runnable {
 				
 				/* Convert sign data to enchanting table.*/
 				block = absCoord.getBlock();
-				ItemManager.setTypeId(block, CivData.ENCHANTMENT_TABLE);
+				ItemManager.setTypeId(block, CivData.END_PORTAL_FRAME);
 				break;
 			}
 			

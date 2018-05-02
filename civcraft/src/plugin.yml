@@ -8,7 +8,7 @@ commands:
     cmat:
         aliases:
     backpack:
-        aliases:
+        aliases: [bp]
     town:
         aliases: [t]
     plot:

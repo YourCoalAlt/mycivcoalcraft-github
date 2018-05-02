@@ -29,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -82,6 +83,7 @@ import com.avrgaming.civcraft.listener.civcraft.InventoryDisplaysListener;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.mobs.MobListener;
 import com.avrgaming.civcraft.mobs.MobSpawner;
 import com.avrgaming.civcraft.mobs.MobSpawnerTimer;
@@ -98,6 +100,7 @@ import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
 import com.avrgaming.civcraft.siege.CannonListener;
 import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Farm;
+import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.farm.FarmGrowthSyncTask;
@@ -218,7 +221,7 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.asyncTask(new StructureValidationChecker(), TimeTools.toTicks(120));
 		TaskMaster.asyncTimer("StructureValidationPunisher", new StructureValidationPunisher(), TimeTools.toTicks(3600));
 		TaskMaster.asyncTimer("SessionDBAsyncTimer", new SessionDBAsyncTimer(), 5);
-		TaskMaster.asyncTimer("pvptimer", new PvPTimer(), TimeTools.toTicks(30));
+		TaskMaster.asyncTimer("PvPTimer", new PvPTimer(), TimeTools.toTicks(30));
 		
 		TaskMaster.syncTimer("MobSpawner", new MobSpawnerTimer(), TimeTools.toTicks(20));
 
@@ -382,13 +385,26 @@ public final class CivCraft extends JavaPlugin {
 	}
 	
 	public static void addFurnaceRecipes() {
-		FurnaceRecipe recipe1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), Material.LAPIS_ORE);
-		recipe1.setExperience(1.0F);
+		MaterialData lap_ore = new MaterialData(Material.LAPIS_ORE);
+		FurnaceRecipe recipe1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), lap_ore, 0.85f);
 		Bukkit.addRecipe(recipe1);
+		plugin.getServer().addRecipe(recipe1);
 		
-		FurnaceRecipe recipe2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), Material.REDSTONE_ORE);
-		recipe2.setExperience(1.0F);
+		MaterialData red_ore = new MaterialData(Material.REDSTONE_ORE);
+		FurnaceRecipe recipe2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), red_ore, 0.7f);
 		Bukkit.addRecipe(recipe2);
+		plugin.getServer().addRecipe(recipe2);
+		
+		MaterialData rot_stk = new MaterialData(Material.ROTTEN_FLESH);
+		FurnaceRecipe recipe3 = new FurnaceRecipe(new ItemStack(Material.COOKED_BEEF, 1), rot_stk, 0.35f);
+		Bukkit.addRecipe(recipe3);
+		plugin.getServer().addRecipe(recipe3);
+		
+		ItemStack cio = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk"), 1);
+		MaterialData crushed_iron = new MaterialData(Material.IRON_ORE);
+		FurnaceRecipe recipe4 = new FurnaceRecipe(cio, crushed_iron, 0.5f);
+		Bukkit.addRecipe(recipe4);
+		plugin.getServer().addRecipe(recipe4);
 	}
 	
 	public static void updateStructureArrays() {
@@ -405,6 +421,10 @@ public final class CivCraft extends JavaPlugin {
 			}
 			if (s instanceof Mine) {
 				CivGlobal.mines.add((Mine) s);
+				continue;
+			}
+			if (s instanceof Lab) {
+				CivGlobal.labs.add((Lab) s);
 				continue;
 			}
 		}
