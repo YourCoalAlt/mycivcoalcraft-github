@@ -165,7 +165,7 @@ public class CivGlobal {
 	
 	public static HashSet<String> banWords = new HashSet<String>();
 	
-	public static Integer maxPlayers = -1;
+	public static Integer maxPlayers = 64;
 	public static HashSet<String> betaPlayers = new HashSet<String>();
 	public static String fullMessage = "Server is full for now, come back later.";
 	public static Boolean betaOnly = false;

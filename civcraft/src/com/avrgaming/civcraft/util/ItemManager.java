@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -22,6 +24,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -220,10 +225,12 @@ public class ItemManager {
 		return true;
 	}
 	
-	public static Map<String, String> getPlayerPreviousNames(Player p) {
+	private static JSONParser jsonParser = new JSONParser();
+	
+	public static Map<String, String> getPlayerPreviousNames(OfflinePlayer p) {
 		Map<String, String> prevNames = new HashMap<String, String>();
 		try {
-			String trimmedUUID = p.getUniqueId().toString().replace("-", "");
+			String trimmedUUID = p.getUniqueId().toString().replaceAll("-", "").replaceAll("_", "");
 			URL url = new URL("https://api.mojang.com/user/profiles/"+trimmedUUID+"/names");
 			
 			String nameJson;
@@ -232,18 +239,19 @@ public class ItemManager {
 			nameJson = br.readLine();
 			br.close();
 			
-			String newtry = nameJson.substring(14+p.getName().length(), nameJson.length()-2).replaceAll("\"name\":\"", "").replaceAll("\"changedToAt\":", "")
-										.replaceAll("\",", ":").replaceAll("\\},\\{", "~");
-			
-			String[] toDiv = newtry.split("~");
-			for (String s : toDiv) {
-				String name_pre = s;
+			JSONArray parsedData = (JSONArray) jsonParser.parse(nameJson); // Use the JSON parser to parse the information into an Object.
+			for (int i = 0; i < parsedData.size(); i++) {
+				String s = parsedData.get(i).toString().replace("{\"name\":\"", "").replace("\",\"changedToAt\"", "").replace("\"}", "").replace("}", "");
 				int date_sub = s.indexOf(":")+1;
-				String date = name_pre.substring(date_sub);
-				String name_fnl = name_pre.replace(date, "");
-				prevNames.put(new Date(Long.valueOf(date)).toString(), name_fnl);
+				if (date_sub == -1 || !s.contains(":")) {
+					prevNames.put("Original Name", s);
+				} else {
+					String date = s.substring(date_sub);
+					SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd yyyy H:mm z");
+					prevNames.put(sdf.format(new Date(Long.valueOf(date))), s.replace(date, "").replaceAll(":", ""));
+				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | ParseException e) {
 			prevNames.put("Mojang's API Server is down!", "Cannot get results!");
 		}
 		return prevNames;

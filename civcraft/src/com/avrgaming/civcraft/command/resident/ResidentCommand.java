@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -62,7 +63,18 @@ public class ResidentCommand extends CommandBase {
 		commands.put("timezone", "(timezone) Display your current timezone or change it to (timezone)");
 		commands.put("pvptimer", "Remove your PvP Timer. This is a permenant change and can not be undone.");
 		commands.put("outlawed", "Check what towns you are outlawed in.");
+		commands.put("prevnames", "[name] Check to see the previous usernames of a player.");
 		//commands.put("switchtown", "[town] - Allows you to instantly change your town to this town, if this town belongs to your civ.");
+	}
+	
+	public void prevnames_cmd() throws CivException {
+		Resident res = getNamedResident(1);
+		OfflinePlayer p = CivGlobal.getOfflinePlayer(res);
+		Map<String, String> prevNames = ItemManager.getPlayerPreviousNames(p);
+		CivMessage.sendHeading(sender, "Previous Usernames");
+		for (Entry<String, String> s : prevNames.entrySet()) {
+			CivMessage.send(sender, s.getValue()+CivColor.LightGrayItalic+" (Changed: "+s.getKey()+")");
+		}
 	}
 	
 	public void outlawed_cmd() throws CivException {
@@ -73,15 +85,13 @@ public class ResidentCommand extends CommandBase {
 				list += CivColor.LightGreen+t.getName()+", ";
 			}
 		}
-		
 		CivMessage.send(res, list);
 	}
 	
 	public void pvptimer_cmd() throws CivException {
 		Resident resident = getResident();
-		
 		if (!resident.isProtected()) {
-			CivMessage.sendError(sender, "You are not protected at this time.");
+			throw new CivException("You are not protected at this time.");
 		}
 		
 		resident.setisProtected(false);
@@ -358,12 +368,8 @@ public class ResidentCommand extends CommandBase {
 			CivMessage.send(sender, CivColor.Yellow+" None ");
 		}
 		
-		Player p = CivGlobal.getPlayer(resident);
-		Map<String, String> prevNames = ItemManager.getPlayerPreviousNames(p);
 		CivMessage.send(sender, CivColor.LightBlueBold+" -- Previous Usernames -- ");
-		for (Entry<String, String> s : prevNames.entrySet()) {
-			CivMessage.send(sender, s.getValue()+CivColor.Yellow+" (Date: "+CivColor.RESET+s.getKey()+")");
-		}
+		CivMessage.send(sender, CivColor.LightBlueBold+"   Check with "+CivColor.LightGray+"/res prevnames (name)");
 		
 /*		try {
 			OfflinePlayer p = CivGlobal.getOfflinePlayer(resident);

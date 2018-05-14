@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.listener.civcraft;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.CropState;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -31,7 +33,9 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Crops;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigEXPMining;
@@ -165,6 +169,10 @@ public class MinecraftListener implements Listener {
 		}
 	}
 	
+	// Crops:
+	// https://github.com/YourCoal/Project/commit/546c1b127f3097e3555836a9d70b31d1144e176b#diff-b2e10f17867f39d39fd9c7e456535a04
+	// https://github.com/YourCoal/Project/commit/447b4145b4f087fe7c78e2ea39bac957ccab7a9f#diff-b2e10f17867f39d39fd9c7e456535a04
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockBreakSpawnItems(BlockBreakEvent event) throws CivException {
 		Player p = event.getPlayer();
@@ -194,7 +202,7 @@ public class MinecraftListener implements Listener {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
-				int level = 1;
+				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
@@ -234,7 +242,7 @@ public class MinecraftListener implements Listener {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
-				int level = 1;
+				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
@@ -274,7 +282,7 @@ public class MinecraftListener implements Listener {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
-				int level = 1;
+				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
@@ -314,7 +322,7 @@ public class MinecraftListener implements Listener {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
 			try {
-				int level = 1;
+				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
@@ -344,6 +352,48 @@ public class MinecraftListener implements Listener {
 				
 				ItemStack stack_ham = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
 				ItemManager.givePlayerItem(p, stack_ham, dropLoc, stack_ham.getItemMeta().getDisplayName(), rand_ham, true);
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+		// Farming stuff
+		
+		if (event.getBlock().getType().equals(Material.CROPS)) {
+			if (event.isCancelled()) return;
+			event.setDropItems(false);
+			Crops crops = (Crops) event.getBlock().getState().getData();
+			if (crops.getState() != CropState.RIPE) return;
+			try {
+				int level = 0;
+				int fortune_level_difference = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.fortune_level_difference");
+				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
+				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
+				
+				// Wheat Drops
+				int min_wheat = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.min_drop");
+				int max_wheat = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.max_drop_fortune") * (level/fortune_level_difference));
+				
+				if (max_wheat < min_wheat) max_wheat = min_wheat;
+				int rand_wheat = rand.nextInt(max_wheat)+1;
+				if (rand_wheat < min_wheat) rand_wheat = min_wheat;
+				
+				ItemStack stack_wheat = new ItemStack(Material.WHEAT);
+				ItemManager.givePlayerItem(p, stack_wheat, dropLoc, stack_wheat.getItemMeta().getDisplayName(), rand_wheat, true);
+				
+				// Seed Drops
+				int min_seed = CivSettings.getInteger(CivSettings.gameConfig, "wheat_seed_hand.min_drop");
+				int max_seed = CivSettings.getInteger(CivSettings.gameConfig, "wheat_seed_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "wheat_seed_hand.max_drop_fortune") * level);
+				
+				if (max_seed < min_seed) max_seed = min_seed;
+				int rand_seed = rand.nextInt(max_seed)+1;
+				if (rand_seed < min_seed) rand_seed = min_seed;
+				
+				ItemStack stack_seed = new ItemStack(Material.SEEDS);
+				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, true);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -631,4 +681,45 @@ public class MinecraftListener implements Listener {
 			player.saveData();
 		}
 	}
+	
+	// XXX Server Aspect
+	
+	// https://hub.spigotmc.org/javadocs/spigot/index.html?overview-summary.html
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onServerListRefresh(ServerListPingEvent event) throws IllegalArgumentException, UnsupportedOperationException, Exception {
+		int amtPlayers = (int) ((event.getNumPlayers()*1.5)+2);
+		if (amtPlayers > CivGlobal.maxPlayers) {
+			event.setMaxPlayers(CivGlobal.maxPlayers);
+		} else {
+			event.setMaxPlayers(amtPlayers);
+		}
+		String title = CivColor.Red+"Coal"+CivColor.LightBlue+"Civ: "+CivColor.RESET+CivColor.LightGrayItalic;
+		Random rand = new Random();
+		int msg = rand.nextInt(7);
+		if (msg == 0) {
+			event.setMotd(title+"Speak softly and carry a big stick; you will go far -Roosevelt");
+		} else if (msg == 1) {
+			event.setMotd(title+"The two most powerful warriors are patience and time -Tolstoy");
+		} else if (msg == 2) {
+			event.setMotd(title+"Sometimes by losing a battle you find a new way to win the war -Trump");
+		} else if (msg == 3) {
+			event.setMotd(title+"We are going to have peace even if we have to fight for it -Eisenhower");
+		} else if (msg == 4) {
+			event.setMotd(title+"To be prepared for war is the most effective means of peace -Washington");
+		} else if (msg == 5) {
+			event.setMotd(title+"You mustn't fight too often with an enemy; you'll teach him your art of war -Bonaparte");
+		} else {
+			event.setMotd(title+"Why play with friends when you can play with communities? -YourCoal");
+		}
+		
+		int pic = rand.nextInt(3);
+		if (pic == 0) {
+			event.setServerIcon(Bukkit.loadServerIcon(new File("mcdiamondsword1.png")));
+		} else if (pic == 1) {
+			event.setServerIcon(Bukkit.loadServerIcon(new File("mcworkbench1.png")));
+		} else {
+			event.setServerIcon(Bukkit.loadServerIcon(new File("mcmap1.png")));
+		}
+	}
+	
 }

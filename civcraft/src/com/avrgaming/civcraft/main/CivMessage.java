@@ -224,6 +224,18 @@ public class CivMessage {
 		return out;
 	}
 	
+	public static String buildServerTitle(String title) {
+		String line =   CivColor.LightBlue+"------------------------------------------------";
+		String titleBracket = "[ "+title+" ]";
+		
+		int min = (line.length() / 2) - titleBracket.length() / 2;
+		int max = (line.length() / 2) + titleBracket.length() / 2;
+		
+		String out = CivColor.LightBlue + line.substring(0, Math.max(0, min));
+		out += titleBracket + line.substring(max);
+		return out;
+	}
+	
 	public static void sendHeading(Object sender, String title) {
 		send(sender, buildTitle(title));
 	}

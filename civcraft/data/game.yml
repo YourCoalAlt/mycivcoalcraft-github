@@ -31,9 +31,83 @@ timers:
    # How many seconds to update structures (quarry, trommel, etc)
    structure_process: 2
 
+
 ### Note: The 'fortune' number is the modifier per level from max drop,
 ### meaning fortune III max drop = max_drop + (max_drop_fortune * enchant.level)
 ### (Ex. max drop = 5, max_drop_fortune = 2, fortune V --- max drop = 5 + (2*5) = 15
+
+# Amount of items to drop for farming materials
+#    ---_water: modifier if broken by water. Changes when in culture/town claimed borders. Default in neutral.
+#    ---_level_difference: needs level * the number given to get the next fortune-up buff.
+#  note: fortune for water is going to be a new thing for the town hall... not sure how to upgrade it yet. Will default to 0.
+#        upgrade will count for the town level. Any changes from tech/civic not controlled here... yet.
+wheat_hand:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+   fortune_level_difference: 3
+wheat_water:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+   fortune_level_difference: 3
+   max_drop_upgrade: 1
+   upgrade_level_difference: 3
+#
+wheat_seed_hand:
+   min_drop: 1
+   max_drop: 2
+   max_drop_fortune: 1
+wheat_seed_water:
+   min_drop: 1
+   max_drop: 2
+   max_drop_fortune: 1
+   max_drop_upgrade: 1
+   upgrade_level_difference: 2
+#
+carrot_hand:
+   min_drop: 1
+   max_drop: 4
+   max_drop_fortune: 1
+carrot_water:
+   min_drop: 1
+   max_drop: 3
+   max_drop_fortune: 1
+   max_drop_upgrade: 1
+   upgrade_level_difference: 2
+#
+potato_hand:
+   min_drop: 1
+   max_drop: 4
+   max_drop_fortune: 1
+potato_water:
+   min_drop: 1
+   max_drop: 3
+   max_drop_fortune: 1
+   max_drop_upgrade: 1
+   upgrade_level_difference: 2
+beetroot_hand:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+   fortune_level_difference: 3
+beetroot_water:
+   min_drop: 1
+   max_drop: 1
+   max_drop_fortune: 1
+   fortune_level_difference: 3
+   max_drop_upgrade: 1
+   upgrade_level_difference: 3
+beetroot_seed_hand:
+   min_drop: 1
+   max_drop: 2
+   max_drop_fortune: 1
+beetroot_seed_water:
+   min_drop: 1
+   max_drop: 2
+   max_drop_fortune: 1
+   max_drop_upgrade: 1
+   upgrade_level_difference: 2
 
 
 # Amount of items to drop from Coal Ore
@@ -72,15 +146,7 @@ diamond_hammers:
    min_drop: 2
    max_drop: 4
    max_drop_fortune: 2
-# Amount of Tungston to drop from Lapis Ore
-tungsten_min_drop: 0
-tungsten_max_drop: 1
-tungsten_max_drop_with_fortune: 3
 
-# Amount of Lapis to drop from Lapis Ore
-lapis_min_drop: 2
-lapis_max_drop: 5
-lapis_max_drop_with_fortune: 8
 
 # Amount of Resident Experience to add for Mining XP for blocks broken
 mining_block:
