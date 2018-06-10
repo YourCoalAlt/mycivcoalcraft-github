@@ -897,6 +897,16 @@ materials:
     shaped: false
     components:
        - name: 'BackpackEnable'
+# Checked 27 May 2018
+  - id: 'civ_vanilla_knowledge_book'
+    item_id: 453
+    item_data: 0
+    name: 'Knowledge Book'
+    category: '<lightgray>Special'
+    craftable: false
+    shaped: false
+    components:
+       - name: 'NoRightClick'
 # Checked 25 August 2017
   - id: 'civ_token_of_leadership'
     item_id: 370

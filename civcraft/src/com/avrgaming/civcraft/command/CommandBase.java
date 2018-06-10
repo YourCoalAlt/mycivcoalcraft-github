@@ -367,24 +367,18 @@ public abstract class CommandBase implements CommandExecutor {
 		} catch (NumberFormatException e) {
 			throw new CivException(args[index]+" is not whole a number.");
 		}
-		
 	}
 	
-	protected Resident getNamedResident(int index) throws CivException {
-		if (args.length < (index+1)) {
-			throw new CivException("Enter a resident name.");
-		}
+	protected Player getNamedPlayer(int index) throws CivException {
+		if (args.length < (index+1)) throw new CivException("Enter a resident name.");
 		
 		String name = args[index].toLowerCase();
 		name = name.replace("%", "(\\w*)");
-				
-		ArrayList<Resident> potentialMatches = new ArrayList<Resident>();
-		for (Resident resident : CivGlobal.getResidents()) {
-			String str = resident.getName().toLowerCase();
+		ArrayList<Player> potentialMatches = new ArrayList<Player>();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			String str = p.getName().toLowerCase();
 			try {
-				if (str.matches(name)) {
-					potentialMatches.add(resident);
-				}
+				if (str.matches(name)) potentialMatches.add(p);
 			} catch (Exception e) {
 				throw new CivException("Invalid pattern.");
 			}
@@ -402,14 +396,44 @@ public abstract class CommandBase implements CommandExecutor {
 			CivMessage.send(sender, CivColor.LightPurple+ChatColor.UNDERLINE+"Potential Matches");
 			CivMessage.send(sender, " ");
 			String out = "";
-			for (Resident resident : potentialMatches) {
-				out += resident.getName()+", ";
-			}
+			for (Player p : potentialMatches) out += p.getName()+", ";
+			CivMessage.send(sender, CivColor.LightBlue+ChatColor.ITALIC+out);
+			throw new CivException("More than one player matches, please clarify.");
+		}
+		return potentialMatches.get(0);
+	}
+	
+	protected Resident getNamedResident(int index) throws CivException {
+		if (args.length < (index+1)) throw new CivException("Enter a resident name.");
 		
+		String name = args[index].toLowerCase();
+		name = name.replace("%", "(\\w*)");
+		ArrayList<Resident> potentialMatches = new ArrayList<Resident>();
+		for (Resident resident : CivGlobal.getResidents()) {
+			String str = resident.getName().toLowerCase();
+			try {
+				if (str.matches(name)) potentialMatches.add(resident);
+			} catch (Exception e) {
+				throw new CivException("Invalid pattern.");
+			}
+			
+			if (potentialMatches.size() > MATCH_LIMIT) {
+				throw new CivException("Too many potential matches. Refine your search.");
+			}
+		}
+		
+		if (potentialMatches.size() == 0) {
+			throw new CivException("No resident matching that name.");
+		}
+		
+		if (potentialMatches.size() != 1) {
+			CivMessage.send(sender, CivColor.LightPurple+ChatColor.UNDERLINE+"Potential Matches");
+			CivMessage.send(sender, " ");
+			String out = "";
+			for (Resident resident : potentialMatches) out += resident.getName()+", ";
 			CivMessage.send(sender, CivColor.LightBlue+ChatColor.ITALIC+out);
 			throw new CivException("More than one resident matches, please clarify.");
 		}
-		
 		return potentialMatches.get(0);
 	}
 	

@@ -21,7 +21,6 @@ package com.avrgaming.civcraft.command;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import org.bukkit.entity.Player;
 
@@ -36,7 +35,6 @@ import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
-import com.avrgaming.civcraft.threading.tasks.BuildAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.war.War;
@@ -58,35 +56,48 @@ public class BuildCommand extends CommandBase {
 		commands.put("refreshnearest", "Refreshes the nearest structure's blocks. Requires confirmation.");
 		commands.put("validatenearest", "Validates the nearest structure. Removing any validation penalties if it's ok.");
 		commands.put("supportnearest", "Supports the nearest structure. Places dirt if block is not valid support.");
-		commands.put("calc", "Calculates the amount of time remaining to build a structure.");
 		//commands.put("preview", "shows a preview of this structure at this location.");
 	}
 	
-	public void calc_cmd() throws CivException, IOException {
+	public void progress_cmd() throws CivException, IOException {
 		Town town = this.getSelectedTown();
 		if (town.build_tasks.size() == 0 || town.build_tasks.isEmpty()) {
 			throw new CivException("The town is currently not building a structure.");
 		}
 		
-		CivMessage.sendHeading(sender, "Building Structures Calculations");
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd/YYYY h:mm:ss a z");
-		int i = 0;
-		for (BuildAsyncTask task : town.build_tasks) {
-			i++;
-			Buildable b = task.buildable;
-//			double seconds = ((b.getHammerCost() - b.getBuiltHammers()) / town.getHammers().total) * (60*60) / ((3.1415/(2.71828*2.71828))+(2.71828/(3.1415*3.1415))*3.275);
-//			double seconds = ((b.getHammerCost() - b.getBuiltHammers()) / town.getHammers().total) * (60*60) / (town.getHammerRate().total);
-			
-			double buildTime = (((b.getHammerCost() / town.getHammers().total) * 60) * 60);
-			double timeUntilComplete = ((((b.getHammerCost() - b.getBuiltHammers()) / town.getHammers().total) * 60) * 60);
+		CivMessage.sendHeading(sender, "Building Structures");
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd yyyy H:mm:ss z");
+		for (int i = 0; i < town.build_tasks.size(); i++) {
+			Buildable b = town.build_tasks.get(i).buildable;
 			
 			DecimalFormat df = new DecimalFormat("#.##");
-			long timeNow = Calendar.getInstance().getTimeInMillis();
-			long endTime = (long)(timeNow + (1000 * timeUntilComplete));
+			double totalCost = b.getHammerCost();
+			double currentBuilt = b.getBuiltHammers();
+			double builtPercent = (currentBuilt/totalCost)*100;
 			
-			CivMessage.send(sender, CivColor.GoldBold+i+". "+CivColor.LightGreen+b.getDisplayName()+CivColor.Green+" Completion (Approx.): "+CivColor.LightGreen+sdf.format(endTime));
-			CivMessage.send(sender, "     "+CivColor.LightBlue+df.format((buildTime/60))+" Min. "+CivColor.Yellow+"To Build, "+
-									CivColor.LightBlue+df.format((timeUntilComplete/60))+" Min. "+CivColor.Yellow+"Left");
+			// totalTime still changes and is inconsistant with structures
+			int  totalTime = (int) (((b.getHammerCost() / town.getHammers().total) - (b.getBuiltHammers() / town.getHammers().total)) * 3600);
+			long endTime = (long)(System.currentTimeMillis() + (1000 * totalTime));
+			
+			String time = "";
+		    int hours = (int) (totalTime / 3600);
+		    int remainder = (int) (totalTime - (hours * 3600));
+		    int mins = remainder / 60;
+		    int secs = remainder - (mins * 60);
+		    int days = hours / 24;
+		    if (days > 0) {
+		    	time += days+" dy, ";
+		    	hours -= days * 24;
+		    }
+			if (hours > 0) time += hours+" hr, ";
+			if (mins > 0) time += mins+" min, ";
+			if (secs > 0) time += secs+" sec";
+			
+			CivMessage.send(sender, CivColor.GoldBold+(i+1)+". "+CivColor.LightGreenBold+b.getDisplayName()+" "+CivColor.Purple+
+						df.format(builtPercent)+"% "+CivColor.LightPurpleItalic+"("+df.format(currentBuilt) + "/"+totalCost+") "+
+						CivColor.Gold+" Blocks: "+CivColor.YellowItalic+b.builtBlockCount+"/"+b.getTotalBlockCount());
+			CivMessage.send(sender, CivColor.Green+"  Completion: "+CivColor.LightGreen+sdf.format(endTime)+
+						CivColor.LightGrayItalic+" ["+CivColor.LightBlueItalic+time+CivColor.LightGrayItalic+"]");
 		}
 	}
 	
@@ -226,23 +237,6 @@ public class BuildCommand extends CommandBase {
 		CivMessage.sendError(sender, "This command is currently disabled.");
 //		Town town = getSelectedTown();
 //		town.processUndo();
-	}
-	
-	public void progress_cmd() throws CivException {
-		CivMessage.sendHeading(sender, "Building Structures");
-		Town town = getSelectedTown();
-		int i = 0;
-		for (BuildAsyncTask task : town.build_tasks) {
-			i++;
-			Buildable b = task.buildable;
-			DecimalFormat df = new DecimalFormat("#.###");
-			double totalCost = b.getHammerCost();
-			double currentBuilt = b.getBuiltHammers();
-			double builtPercent = (currentBuilt/totalCost)*100;
-			
-			CivMessage.send(sender, CivColor.GoldBold+i+". "+CivColor.LightPurple+b.getDisplayName()+": "+CivColor.Yellow+df.format(builtPercent)+"% ("+df.format(currentBuilt) + "/"+totalCost+")"+
-					CivColor.LightPurple+" Blocks "+CivColor.Yellow+"("+b.builtBlockCount+"/"+b.getTotalBlockCount()+")");
-		}
 	}
 
 	public void list_available_structures() throws CivException {

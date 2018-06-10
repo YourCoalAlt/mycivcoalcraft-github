@@ -5,7 +5,7 @@
 #type_id - Vanilla item_id
 #drop_chance - Probability to drop.
 #
-default_res_exp: 0.15
+default_res_exp: 0.75
 
 fishing_drops:
   - type: ShulkerBox

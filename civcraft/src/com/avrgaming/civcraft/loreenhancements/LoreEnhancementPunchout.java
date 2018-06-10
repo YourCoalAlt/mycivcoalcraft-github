@@ -12,8 +12,18 @@ import gpl.AttributeUtil;
 public class LoreEnhancementPunchout extends LoreEnhancement {
 	
 	@Override
+	public String getInitName() {
+		return "LoreEnhancementPunchout";
+	}
+	
+	@Override
 	public String getDisplayName() {
 		return "Punchout";
+	}
+	
+	@Override
+	public Integer getMaxLevel() {
+		return 1;
 	}
 	
 	public AttributeUtil add(AttributeUtil attrs) {

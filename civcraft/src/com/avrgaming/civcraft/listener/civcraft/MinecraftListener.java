@@ -1,7 +1,6 @@
 package com.avrgaming.civcraft.listener.civcraft;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +18,21 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Stray;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -49,6 +56,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
@@ -184,15 +192,10 @@ public class MinecraftListener implements Listener {
 			if (ItemManager.getId(event.getBlock().getType()) == m.id) {
 				if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 				ResidentExperience re = CivGlobal.getResidentE(p);
-				DecimalFormat df = new DecimalFormat("0.00");
-				double mod = re.getMiningLevel() + 1; mod /= 2;
-				
+				double mod = (re.getEXPLevel(EXPSlots.MINING)+1) / 2;
 				int eEXP = (int) (event.getExpToDrop()*mod) / 2;
 				if (eEXP >= 1) ItemManager.dropPlayerEXP(p, dropLoc, eEXP);
-				
-				double genrf = m.resxp*mod;
-				double rfEXP = Double.valueOf(df.format(genrf));
-				re.addMiningEXP(rfEXP);
+				re.addResEXP(EXPSlots.MINING, m.resxp);
 			}
 		}
 		
@@ -362,26 +365,26 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.CROPS)) {
 			if (event.isCancelled()) return;
-			event.setDropItems(false);
 			Crops crops = (Crops) event.getBlock().getState().getData();
 			if (crops.getState() != CropState.RIPE) return;
+			event.setDropItems(false);
 			try {
 				int level = 0;
 				int fortune_level_difference = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.fortune_level_difference");
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
 				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
 				
-				// Wheat Drops
-				int min_wheat = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.min_drop");
-				int max_wheat = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.max_drop")
+				// Crop Drops
+				int min_crop = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.min_drop");
+				int max_crop = CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.max_drop")
 						+ (CivSettings.getInteger(CivSettings.gameConfig, "wheat_hand.max_drop_fortune") * (level/fortune_level_difference));
 				
-				if (max_wheat < min_wheat) max_wheat = min_wheat;
-				int rand_wheat = rand.nextInt(max_wheat)+1;
-				if (rand_wheat < min_wheat) rand_wheat = min_wheat;
+				if (max_crop < min_crop) max_crop = min_crop;
+				int rand_crop = rand.nextInt(max_crop)+1;
+				if (rand_crop < min_crop) rand_crop = min_crop;
 				
-				ItemStack stack_wheat = new ItemStack(Material.WHEAT);
-				ItemManager.givePlayerItem(p, stack_wheat, dropLoc, stack_wheat.getItemMeta().getDisplayName(), rand_wheat, true);
+				ItemStack stack_crop = new ItemStack(Material.WHEAT);
+				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 				
 				// Seed Drops
 				int min_seed = CivSettings.getInteger(CivSettings.gameConfig, "wheat_seed_hand.min_drop");
@@ -393,7 +396,103 @@ public class MinecraftListener implements Listener {
 				if (rand_seed < min_seed) rand_seed = min_seed;
 				
 				ItemStack stack_seed = new ItemStack(Material.SEEDS);
-				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, true);
+				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+		if (event.getBlock().getType().equals(Material.BEETROOT_BLOCK)) {
+			if (event.isCancelled()) return;
+			Crops crops = (Crops) event.getBlock().getState().getData();
+			if (crops.getState() != CropState.RIPE) return;
+			event.setDropItems(false);
+			try {
+				int level = 0;
+				int fortune_level_difference = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_hand.fortune_level_difference");
+				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
+				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
+				
+				// Crop Drops
+				int min_crop = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_hand.min_drop");
+				int max_crop = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "beetroot_hand.max_drop_fortune") * (level/fortune_level_difference));
+				
+				if (max_crop < min_crop) max_crop = min_crop;
+				int rand_crop = rand.nextInt(max_crop)+1;
+				if (rand_crop < min_crop) rand_crop = min_crop;
+				
+				ItemStack stack_crop = new ItemStack(Material.BEETROOT);
+				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+				
+				// Seed Drops
+				int min_seed = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_seed_hand.min_drop");
+				int max_seed = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_seed_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "beetroot_seed_hand.max_drop_fortune") * level);
+				
+				if (max_seed < min_seed) max_seed = min_seed;
+				int rand_seed = rand.nextInt(max_seed)+1;
+				if (rand_seed < min_seed) rand_seed = min_seed;
+				
+				ItemStack stack_seed = new ItemStack(Material.BEETROOT_SEEDS);
+				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+		if (event.getBlock().getType().equals(Material.CARROT)) {
+			event.setDropItems(false);
+			Crops crops = (Crops) event.getBlock().getState().getData();
+			if (crops.getState() != CropState.RIPE) return;
+			event.setDropItems(false);
+			try {
+				int level = 0;
+				int fortune_level_difference = CivSettings.getInteger(CivSettings.gameConfig, "carrot_hand.fortune_level_difference");
+				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
+				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
+				
+				// Crop Drops
+				int min_crop = CivSettings.getInteger(CivSettings.gameConfig, "carrot_hand.min_drop");
+				int max_crop = CivSettings.getInteger(CivSettings.gameConfig, "carrot_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "carrot_hand.max_drop_fortune") * (level/fortune_level_difference));
+				
+				if (max_crop < min_crop) max_crop = min_crop;
+				int rand_crop = rand.nextInt(max_crop)+1;
+				if (rand_crop < min_crop) rand_crop = min_crop;
+				
+				ItemStack stack_crop = new ItemStack(Material.CARROT_ITEM);
+				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+		if (event.getBlock().getType().equals(Material.POTATO)) {
+			event.setDropItems(false);
+			Crops crops = (Crops) event.getBlock().getState().getData();
+			if (crops.getState() != CropState.RIPE) return;
+			event.setDropItems(false);
+			try {
+				int level = 0;
+				int fortune_level_difference = CivSettings.getInteger(CivSettings.gameConfig, "potato_hand.fortune_level_difference");
+				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
+				if (enchants.containsKey(Enchantment.LOOT_BONUS_BLOCKS)) level = enchants.get(Enchantment.LOOT_BONUS_BLOCKS);
+				
+				// Crop Drops
+				int min_crop = CivSettings.getInteger(CivSettings.gameConfig, "potato_hand.min_drop");
+				int max_crop = CivSettings.getInteger(CivSettings.gameConfig, "potato_hand.max_drop")
+						+ (CivSettings.getInteger(CivSettings.gameConfig, "potato_hand.max_drop_fortune") * (level/fortune_level_difference));
+				
+				if (max_crop < min_crop) max_crop = min_crop;
+				int rand_crop = rand.nextInt(max_crop)+1;
+				if (rand_crop < min_crop) rand_crop = min_crop;
+				
+				ItemStack stack_crop = new ItemStack(Material.POTATO_ITEM);
+				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -401,6 +500,7 @@ public class MinecraftListener implements Listener {
 		}
 	}
 	
+	// https://minecraft.gamepedia.com/Health#Death_messages 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerDeath(PlayerDeathEvent event) throws CivException {
 		String name = ((CraftLivingEntity) event.getEntity()).getHandle().getScoreboardDisplayName().getText()+CivColor.RESET;
@@ -412,24 +512,127 @@ public class MinecraftListener implements Listener {
 			return;
 		}
 		
+		EntityDamageEvent ed = p.getLastDamageCause();
+		DamageCause dc = ed.getCause();
+		if (dc == DamageCause.SUICIDE) {
+			event.setDeathMessage(name+" commited suicide");
+			return;
+		}
+		
 		if (p.getLastDamageCause() == null) {
 			event.setDeathMessage(name+" had a mysterious death");
 			return;
 		}
 		
-		DamageCause dc = p.getLastDamageCause().getCause();
+		Entity ec = null;
+		Player pc = null;
+		if (ed instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) ed;
+			if (ede.getDamager() != null) ec = ede.getDamager();
+		}
+		if (p.getKiller() != null) pc = p.getKiller();
+		
 		if (dc == DamageCause.FALL) {
-			event.setDeathMessage(name+" doesn't know they can't fly");
+			if (pc != null) {
+				event.setDeathMessage(name+" fell to their doom trying to escape "+pc.getDisplayName());
+			} else if (ec != null) {
+				event.setDeathMessage(name+" fell to their doom trying to escape "+ec.getName());
+			} else {
+				event.setDeathMessage(name+" fell to their doom");
+			}
 		} else if (dc == DamageCause.DROWNING) {
-			event.setDeathMessage(name+" forgot they're not a fish");
+			if (pc != null) {
+				event.setDeathMessage(name+" drowned trying to escape "+pc.getDisplayName());
+			} else if (ec != null) {
+				event.setDeathMessage(name+" drowned trying to escape "+ec.getName());
+			} else {
+				event.setDeathMessage(name+" does not have gills like a fish");
+			}
+		} else if (dc == DamageCause.LAVA) {
+			if (pc != null) {
+				event.setDeathMessage(name+" swam in lava trying to escape "+pc.getDisplayName());
+			} else if (ec != null) {
+				event.setDeathMessage(name+" swam in lava trying to escape "+ec.getName());
+			} else {
+				event.setDeathMessage(name+" got stuck in lava");
+			}
 		} else if (dc == DamageCause.FIRE) {
-			event.setDeathMessage(name+" spent too long standing in a fire pit");
+			if (pc != null) {
+				event.setDeathMessage(name+" was roasted like a marshmallow in flames trying to escape "+pc.getDisplayName());
+			} else if (ec != null) {
+				event.setDeathMessage(name+" was roasted like a marshmallow in flames trying to escape "+ec.getName());
+			} else {
+				event.setDeathMessage(name+" was roasted like a marshmallow in flames");
+			}
 		} else if (dc == DamageCause.FIRE_TICK) {
-			event.setDeathMessage(name+" forgot to stop, drop, and roll");
-		} else if (dc == DamageCause.LIGHTNING) {
-			event.setDeathMessage(name+" was not liked by Zeus");
+			if (pc != null) {
+				event.setDeathMessage(name+" could not stop, drop, and roll in time trying to escape "+pc.getDisplayName());
+			} else if (ec != null) {
+				event.setDeathMessage(name+" could not stop, drop, and roll in time trying to escape "+ec.getName());
+			} else {
+				event.setDeathMessage(name+" could not stop, drop, and roll in time");
+			}
 		} else if (dc == DamageCause.STARVATION) {
 			event.setDeathMessage(name+" missed too many meals and couldn't find a McDonalds");
+		} else if (dc == DamageCause.PROJECTILE) {
+			if (ec != null) {
+				if (ec instanceof Arrow) {
+					Arrow arw = (Arrow) ec;
+					if (arw.getShooter() instanceof Skeleton) {
+						Skeleton atk = (Skeleton) arw.getShooter();
+						if (atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
+							event.setDeathMessage(name+" was shot to death by Skeleton using "+atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName());
+						} else if (atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
+							event.setDeathMessage(name+" was shot to death by Skeleton using "+atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName());
+						} else {
+							event.setDeathMessage(name+" was shot to death by Skeleton");
+						}
+					}
+					if (arw.getShooter() instanceof Stray) {
+						Stray atk = (Stray) arw.getShooter();
+						if (atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
+							event.setDeathMessage(name+" was shot to death by Stray using "+atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName());
+						} else if (atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
+							event.setDeathMessage(name+" was shot to death by Stray using "+atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName());
+						} else {
+							event.setDeathMessage(name+" was shot to death by Stray");
+						}
+					}
+				}
+			}
+		} else if (dc == DamageCause.ENTITY_ATTACK) {
+			if (ec instanceof Wolf) {
+				Wolf w = (Wolf) ec;
+				if (w.getOwner() != null) {
+					event.setDeathMessage(name+" was bit to death by "+w.getOwner().getName()+"'s Wolf");
+				} else {
+					event.setDeathMessage(name+" was bit to death by Wild Wolf");
+				}
+			}
+		} else if (dc == DamageCause.LIGHTNING) {
+			if (p.getWorld().hasStorm() || p.getWorld().isThundering()) {
+				event.setDeathMessage(name+" was struck by Lightning in a thunderstorm");
+			} else {
+				event.setDeathMessage(name+" was not liked by Zeus");
+			}
+		} else if (dc == DamageCause.MAGIC) {
+			if (pc != null) {
+				event.setDeathMessage(name+" was killed using Magic from "+pc.getDisplayName());
+			} else if (ec != null) {
+				if (ec instanceof ThrownPotion) {
+					ThrownPotion pot = (ThrownPotion) ec;
+					if (pot.getShooter() != null) {
+						Entity etp = (Entity) pot.getShooter();
+						event.setDeathMessage(name+" was killed using Magic "+ec.getName()+" by "+etp.getName());
+					} else {
+						event.setDeathMessage(name+" was killed using Magic "+ec.getName());
+					}
+				} else {
+					event.setDeathMessage(name+" was killed with Magic by "+ec.getName());
+				}
+			} else {
+				event.setDeathMessage(name+" was killed using Magic by Unknown Source");
+			}
 		}
 		return;
 	}
@@ -687,7 +890,8 @@ public class MinecraftListener implements Listener {
 	// https://hub.spigotmc.org/javadocs/spigot/index.html?overview-summary.html
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onServerListRefresh(ServerListPingEvent event) throws IllegalArgumentException, UnsupportedOperationException, Exception {
-		int amtPlayers = (int) ((event.getNumPlayers()*1.5)+2);
+		event.setServerIcon(Bukkit.loadServerIcon(new File("mcdiamondsword1.png")));
+		int amtPlayers = (int) ((event.getNumPlayers()*2.5)+2);
 		if (amtPlayers > CivGlobal.maxPlayers) {
 			event.setMaxPlayers(CivGlobal.maxPlayers);
 		} else {
@@ -712,14 +916,6 @@ public class MinecraftListener implements Listener {
 			event.setMotd(title+"Why play with friends when you can play with communities? -YourCoal");
 		}
 		
-		int pic = rand.nextInt(3);
-		if (pic == 0) {
-			event.setServerIcon(Bukkit.loadServerIcon(new File("mcdiamondsword1.png")));
-		} else if (pic == 1) {
-			event.setServerIcon(Bukkit.loadServerIcon(new File("mcworkbench1.png")));
-		} else {
-			event.setServerIcon(Bukkit.loadServerIcon(new File("mcmap1.png")));
-		}
 	}
 	
 }

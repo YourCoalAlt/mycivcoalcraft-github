@@ -71,30 +71,32 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 	public void run() {
 		try {
 			int count = 0;
-			for (int y = 0; y < tpl.size_y; y++) {
-				for (int x = 0; x < tpl.size_x; x++) {
-					for (int z = 0; z < tpl.size_z; z++) {
-						Block b = centerBlock.getRelative(x, y, z);
-						if (tpl.blocks[x][y][z].isAir()) continue;
-						
-						lock.lock();
-						try {
-							if (aborted) return;
-							if (resident.previewUndo.get(new BlockCoord(b.getLocation())) != null && tpl.blocks[x][y][z].isAir()) continue;
-							ItemManager.sendBlockChange(getPlayer(), b.getLocation(), ItemManager.getId(tpl.blocks[x][y][z].getMaterial()), tpl.blocks[x][y][z].getData());
-							resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
-							count++;			
-						} finally {
-							lock.unlock();
-						}
-						
-						if (count < blocksPerTick) continue;
-						count = 0;
-						int timeleft = speed;
-						while (timeleft > 0) {
-							int min = Math.min(10000, timeleft);
-							Thread.sleep(min);
-							timeleft -= 10000;
+			synchronized (this) {
+				for (int y = 0; y < tpl.size_y; y++) {
+					for (int x = 0; x < tpl.size_x; x++) {
+						for (int z = 0; z < tpl.size_z; z++) {
+							Block b = centerBlock.getRelative(x, y, z);
+							if (tpl.blocks[x][y][z].isAir()) continue;
+							
+							lock.lock();
+							try {
+								if (aborted) return;
+								if (resident.previewUndo.get(new BlockCoord(b.getLocation())) != null && tpl.blocks[x][y][z].isAir()) continue;
+								ItemManager.sendBlockChange(getPlayer(), b.getLocation(), ItemManager.getId(tpl.blocks[x][y][z].getMaterial()), tpl.blocks[x][y][z].getData());
+								resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+								count++;			
+							} finally {
+								lock.unlock();
+							}
+							
+							if (count < blocksPerTick) continue;
+							count = 0;
+							int timeleft = speed;
+							while (timeleft > 0) {
+								int min = Math.min(10000, timeleft);
+								Thread.sleep(min);
+								timeleft -= 10000;
+							}
 						}
 					}
 				}

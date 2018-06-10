@@ -161,7 +161,7 @@ public class Capitol extends TownHall {
 		StructureSign structSign;
 		if (commandBlock.command.equals("/guide")) {
 			spawnInfoVillager(absCoord.getLocation(), (byte)commandBlock.getData());
-		} else if (commandBlock.command.equals("/questinfo")) {
+		} else if (commandBlock.command.equals("/squest")) {
 			spawnQuestVillager(absCoord.getLocation(), (byte)commandBlock.getData());
 		} else if (commandBlock.command.equals("/towerfire")) {
 			String id = commandBlock.keyvalues.get("id");

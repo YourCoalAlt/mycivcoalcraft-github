@@ -197,7 +197,7 @@ public class CivMessage {
 	}
 	
 	public static String buildTitle(String title) {
-		String line =   "----------------------------------------";
+		String line =   "------------------------------------------------";
 		String titleBracket = "[ "+CivColor.Yellow+title+CivColor.LightBlue+" ]";
 		
 		if (titleBracket.length() > line.length()) {
@@ -213,7 +213,7 @@ public class CivMessage {
 	}
 	
 	public static String buildSmallTitle(String title) {
-		String line =   CivColor.LightBlue+"----------------------------";
+		String line =   CivColor.LightBlue+"--------------------------------";
 		String titleBracket = "[ "+title+" ]";
 		
 		int min = (line.length() / 2) - titleBracket.length() / 2;

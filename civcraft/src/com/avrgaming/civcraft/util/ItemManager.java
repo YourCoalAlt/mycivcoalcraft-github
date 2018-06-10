@@ -189,7 +189,6 @@ public class ItemManager {
 		return skull;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static boolean removeItemFromPlayer(Player player, Material mat, int amount) {
 		ItemStack m = new ItemStack(mat, amount);
 		if (player.getInventory().contains(mat)) {
@@ -202,7 +201,7 @@ public class ItemManager {
 	
 	// TODO arraylist?
 	public static boolean givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
-		if (name == null) name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
+		if (name == null || name == "") name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
 		String full = "recieved";
 		stack.setAmount(1);
 		for (int i = 0; i < amt; i++) {

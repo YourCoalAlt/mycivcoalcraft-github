@@ -212,6 +212,13 @@ public class CustomItemManager implements Listener {
 		if (material != null) {
 			material.onInteract(event);
 		}
+		
+		AttributeUtil attrs = new AttributeUtil(stack);
+		for (LoreEnhancement enhance : attrs.getEnhancements()) {
+			if (enhance.getDisplayName() == "Prospect") {
+				enhance.onBlockClick(event);
+			}
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOW) 

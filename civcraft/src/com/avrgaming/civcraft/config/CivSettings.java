@@ -109,9 +109,6 @@ public class CivSettings {
 	public static Map<Integer, ConfigGrocerLevel> grocerLevels = new HashMap<Integer, ConfigGrocerLevel>();
 	public static ArrayList<ConfigTempleSacrifice> templeSacrifices = new ArrayList<ConfigTempleSacrifice>();
 	
-	public static FileConfiguration experienceConfig; /* experience.yml */
-	public static Map<Integer, ConfigEXPGenericLevel> expGenericLevels = new HashMap<Integer, ConfigEXPGenericLevel>();
-	
 	public static FileConfiguration structuredataConfig; /* structuredata.yml */
 	public static ArrayList<String> repairableItems = new ArrayList<String>();
 	public static Map<Integer, ConfigBankLevel> bankLevels = new HashMap<Integer, ConfigBankLevel>();
@@ -531,7 +528,6 @@ public class CivSettings {
 	private static void loadConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException {
 		civConfig = loadCivConfig("civ.yml");
 		cultureConfig = loadCivConfig("culture.yml");
-		experienceConfig = loadCivConfig("experience.yml");
 		gameConfig = loadCivConfig("game.yml");
 		mobConfig = loadCivConfig("mobs.yml");
 		structureConfig = loadCivConfig("structures.yml");
@@ -557,8 +553,6 @@ public class CivSettings {
 	}
 
 	private static void loadConfigObjects() throws InvalidConfiguration {
-		ConfigEXPGenericLevel.loadConfig(experienceConfig, expGenericLevels);
-		
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
@@ -710,7 +704,7 @@ public class CivSettings {
 		switchItems.add(CivData.NETHERWART_CROP);
 		switchItems.add(CivData.ENCHANTMENT_TABLE);
 		switchItems.add(CivData.BREWING_STAND_BLOCK);
-		switchItems.add(CivData.CAULDRON);
+		switchItems.add(CivData.CAULDRON_BLOCK);
 		switchItems.add(CivData.COCOA_CROP);
 		switchItems.add(CivData.ENDER_CHEST);
 		switchItems.add(CivData.TRIPWIRE_HOOK);

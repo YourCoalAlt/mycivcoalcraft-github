@@ -19,8 +19,18 @@ public class LoreEnhancementUnitGainAttack extends LoreEnhancement {
 	}
 	
 	@Override
+	public String getInitName() {
+		return "LoreEnhancementUnitGainAttack";
+	}
+	
+	@Override
 	public String getDisplayName() {
 		return "UnitDamage";
+	}
+	
+	@Override
+	public Integer getMaxLevel() {
+		return 10;
 	}
 	
 	@Override

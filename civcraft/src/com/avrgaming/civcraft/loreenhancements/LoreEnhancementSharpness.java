@@ -19,8 +19,18 @@ public class LoreEnhancementSharpness extends LoreEnhancement {
 	}
 	
 	@Override
+	public String getInitName() {
+		return "LoreEnhancementSharpness";
+	}
+	
+	@Override
 	public String getDisplayName() {
 		return "Sharpness";
+	}
+	
+	@Override
+	public Integer getMaxLevel() {
+		return 5;
 	}
 	
 	@Override

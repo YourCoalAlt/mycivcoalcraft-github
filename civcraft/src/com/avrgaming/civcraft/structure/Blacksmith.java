@@ -62,7 +62,6 @@ import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.TimeTools;
 
 import gpl.AttributeUtil;
-import gpl.ItemSerializer;
 
 public class Blacksmith extends Structure {
 	
@@ -484,9 +483,11 @@ public class Blacksmith extends Structure {
 	}
 	
 	public void openSmeltGUI(Player p, Town town) {
-		Inventory inv = Bukkit.createInventory(null, 9*2, town.getName()+"'s Smelter Operator");
+		Inventory inv = Bukkit.createInventory(null, 9*5, town.getName()+"'s Smelter Operator");
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Blacksmith Smelter Menu. You can",
 				CivColor.RESET+"use it to smelt different types of ores to",
 				CivColor.RESET+"get a better yield than furnances. The more",
@@ -502,12 +503,7 @@ public class Blacksmith extends Structure {
 		lore.add(CivColor.Purple+"<Click to Withdraw Completed Smelts>");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
-		inv.setItem(9, item);
-		
-		for (int i = 10; i < 18; i++) {
-			ItemStack is = LoreGuiItem.build(CivColor.WhiteBold+"^^^^", ItemManager.getId(Material.IRON_FENCE), 0, CivColor.LightGreenBold+"Deposit");
-			inv.setItem(i, is);
-		}
+		inv.setItem(36, item);
 		
 		p.openInventory(inv);
 	}
@@ -564,7 +560,7 @@ public class Blacksmith extends Structure {
 		
 		
 		
-		Resident res = CivGlobal.getResident(player);
+//		Resident res = CivGlobal.getResident(player);
 		int full = 0; int partial = 0;
 		for (int stackRefine = (int) (amt*Blacksmith.YIELD_RATE); stackRefine >= 64; stackRefine -= 64) {
 			if (stackRefine < 64) partial = stackRefine;
@@ -587,8 +583,8 @@ public class Blacksmith extends Structure {
 //			res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, is);
 		}
 		
-		String sinv = ItemSerializer.InventoryToString(inv);
-		res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, sinv);
+		// TODO Fix w/ new mail system
+//		res.addMailData("Blacksmith Smelter", inv);
 		
 		
 		

@@ -166,7 +166,7 @@ public class CivData {
 	public static final int NETHERWART_CROP = 115;
 	public static final int ENCHANTMENT_TABLE = 116;
 	public static final int BREWING_STAND_BLOCK = 117;
-	public static final int CAULDRON = 118;
+	public static final int CAULDRON_BLOCK = 118;
 	
 	public static final int END_PORTAL_FRAME = 120;
 	
@@ -243,6 +243,10 @@ public class CivData {
 	public static final int RED_NETHER_BRICK = 215;
 	public static final int BONE_BLOCK = 216;
 	
+	public static final int WHITE_SHULKER_BOX = 219;
+	
+	public static final int CONCRETE = 251;
+	
 	//Global Items
 	public static final int IRON_SHOVEL = 256;
 	public static final int IRON_PICKAXE = 257;
@@ -307,9 +311,14 @@ public class CivData {
 	public static final int GOLD_LEGGINGS = 316;
 	public static final int GOLD_BOOTS = 317;
 	
+	public static final int PAINTING = 321;
 	public static final int GOLDEN_APPLE = 322;
 	public static final int EMPTY_BUCKET = 325;
 	public static final int WATER_BUCKET = 326;
+	
+	public static final int MINECART = 328;
+	
+	public static final int IRON_DOOR_ITEM = 330;
 	public static final int REDSTONE_DUST = 331;
 	
 	public static final int LEATHER = 334;
@@ -317,6 +326,8 @@ public class CivData {
 	public static final int CLAY = 337;
 	public static final int SUGARCANE = 338;
 	public static final int PAPER = 339;
+	
+	public static final int MINECART_WITH_CHEST = 342;
 	
 	public static final int FISHING_ROD = 346;
 	public static final int RAW_FISH = 349;
@@ -342,6 +353,8 @@ public class CivData {
 	public static final int NETHERWART_ITEM = 372;
 	public static final int WATER_BOTTLE = 373;
 	public static final int EMPTY_BOTTLE = 374;
+	
+	public static final int CAULDRON = 380;
 	
 	public static final int SPAWN_EGG = 383;
 	

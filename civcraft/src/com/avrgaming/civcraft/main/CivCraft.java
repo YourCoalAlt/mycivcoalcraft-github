@@ -154,7 +154,6 @@ public final class CivCraft extends JavaPlugin {
 	public static Integer structure_process;
 	
 	private void startTimers() {
-		
 		TaskMaster.asyncTask("SQLUpdate", new SQLUpdate(), 0);
 		
 		// Sync Timers
@@ -168,7 +167,6 @@ public final class CivCraft extends JavaPlugin {
 		
 		// BeakerTimer now runs task to check if player should be unbanned/unmuted.
 //		TaskMaster.asyncTimer("CountdownTimer", new CountdownTimer(), TimeTools.toTicks(1));
-		TaskMaster.asyncTimer("PlayerTagUpdateTimer", new PlayerTagUpdateTimer(), TimeTools.toTicks(10));
 		TaskMaster.asyncTimer("ActionBarUpdateTimer", new ActionBarUpdateTimer(), TimeTools.toTicks(1));
 		
 		// Structure event timers
@@ -344,6 +342,7 @@ public final class CivCraft extends JavaPlugin {
 				
 				CivCraft.updateStructureArrays();
 				BuildUndoTask.resumeUndoTasks();
+				CivLog.info("Force despawning mobs before we start...");
 				MobSpawner.despawnMobs(null, true, true, true, true, true, true, true);
 			}
 		});
@@ -382,6 +381,10 @@ public final class CivCraft extends JavaPlugin {
 	
 	public static void setPlugin(JavaPlugin plugin) {
 		CivCraft.plugin = plugin;
+	}
+	
+	public static void playerForcedUpdate() {
+		TaskMaster.asyncTask(new PlayerTagUpdateTimer(), TimeTools.toTicks(1));
 	}
 	
 	public static void addFurnaceRecipes() {

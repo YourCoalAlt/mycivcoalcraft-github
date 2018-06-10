@@ -90,10 +90,8 @@ public class UnitMaterial extends LoreMaterial {
 
 	@Override
 	public void onBlockInteract(PlayerInteractEvent event) {
-		
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	public void onBlockPlaced(BlockPlaceEvent event) {
 		event.setCancelled(true);
@@ -214,8 +212,7 @@ public class UnitMaterial extends LoreMaterial {
 		}
 		event.setCancelled(true);
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	public void onItemPickup(EntityPickupItemEvent event) {
 		if (event.getEntity() instanceof Player) {
@@ -304,8 +301,7 @@ public class UnitMaterial extends LoreMaterial {
 			onItemFromPlayer(player, stack);
 		}
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	public void onInvItemDrop(InventoryClickEvent event,
 			Inventory toInv, ItemStack stack) {
@@ -349,8 +345,7 @@ public class UnitMaterial extends LoreMaterial {
 		}
 	
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	public void onInvShiftClick(InventoryClickEvent event,
 			Inventory fromInv, Inventory toInv,

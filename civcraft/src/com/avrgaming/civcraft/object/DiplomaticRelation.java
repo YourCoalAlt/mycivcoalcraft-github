@@ -44,6 +44,7 @@ public class DiplomaticRelation extends SQLObject {
 		WAR,
 		PEACE,
 		ALLY,
+		OURSELF
 //		MASTER,
 //		VASSAL
 	}
@@ -197,6 +198,7 @@ public class DiplomaticRelation extends SQLObject {
 			color = CivColor.LightBlue;
 			break;
 		case ALLY:
+		case OURSELF:
 			color = CivColor.Green;
 			break;
 //		case MASTER:

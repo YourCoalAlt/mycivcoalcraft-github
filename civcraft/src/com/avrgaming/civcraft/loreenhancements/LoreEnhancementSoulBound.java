@@ -30,8 +30,18 @@ public class LoreEnhancementSoulBound extends LoreEnhancement {
 	}
 	
 	@Override
+	public String getInitName() {
+		return "LoreEnhancementSoulBound";
+	}
+	
+	@Override
 	public String getDisplayName() {
 		return "Soulbound";
+	}
+	
+	@Override
+	public Integer getMaxLevel() {
+		return 1;
 	}
 	
 	@Override

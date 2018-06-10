@@ -50,7 +50,6 @@ wheat_water:
    min_drop: 1
    max_drop: 1
    max_drop_fortune: 1
-   fortune_level_difference: 3
    max_drop_upgrade: 1
    upgrade_level_difference: 3
 #
@@ -69,6 +68,7 @@ carrot_hand:
    min_drop: 1
    max_drop: 4
    max_drop_fortune: 1
+   fortune_level_difference: 2
 carrot_water:
    min_drop: 1
    max_drop: 3
@@ -80,6 +80,7 @@ potato_hand:
    min_drop: 1
    max_drop: 4
    max_drop_fortune: 1
+   fortune_level_difference: 2
 potato_water:
    min_drop: 1
    max_drop: 3
@@ -95,7 +96,6 @@ beetroot_water:
    min_drop: 1
    max_drop: 1
    max_drop_fortune: 1
-   fortune_level_difference: 3
    max_drop_upgrade: 1
    upgrade_level_difference: 3
 beetroot_seed_hand:

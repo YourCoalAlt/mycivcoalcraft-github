@@ -14,7 +14,6 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
-import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.util.CivColor;
 
 public class AdminReloadCommand extends CommandBase implements Listener {
@@ -24,22 +23,12 @@ public class AdminReloadCommand extends CommandBase implements Listener {
 		command = "/ad reload";
 		displayName = "Admin Reload";
 		
-		commands.put("decformat", "Fixes decimal formats in some SQL saving features. WARNING: Can cause server lag.");
 		commands.put("govs", "Reloads the governments.yml file");
 		commands.put("techs", "Reloads the techs.yml file");
 		commands.put("mobs", "Reloads the mobs.yml file");
 		commands.put("mats", "Reloads the materials.yml file");
 		commands.put("structuredata", "Reloads the structures.yml, wonders.yml, and structuredata.yml file");
 		commands.put("newspaper", "Reloads the game.yml file (newspapers only)");
-	}
-	
-	public void decformat_cmd() {
-		for (ResidentExperience re : CivGlobal.getResidentsExperience()) {
-			re.setQuestEXP(re.getQuestEXP());
-			re.setMiningEXP(re.getMiningEXP());
-			re.setFishingEXP(re.getFishingEXP());
-		}
-		CivMessage.send(sender, CivColor.Gold+"Reformatted decimals for ResidentExperience profiles.");
 	}
 	
 	public void newspaper_cmd() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {

@@ -49,6 +49,7 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigCultureLevel;
 import com.avrgaming.civcraft.config.ConfigHappinessState;
 import com.avrgaming.civcraft.config.ConfigTownLevel;
+import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.items.BonusGoodie;
@@ -543,7 +544,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		case "/guide":
 			spawnInfoVillager(absCoord.getLocation(), (byte)sb.getData());
 			break;
-		case "/questinfo":
+		case "/squest":
 			spawnQuestVillager(absCoord.getLocation(), (byte)sb.getData());
 			break;
 		}
@@ -557,7 +558,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.teleport(vLoc);
 		v.setAdult();
 		v.setAI(false);
-		v.setCustomName(this.getTown().getName()+"'s Handy Assistant");
+		v.setCustomName(this.getTown().getName()+"'s Assistant");
 		v.setProfession(Profession.PRIEST);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
@@ -783,6 +784,11 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.RESET+"structure, we will automatically try to place the",
 				CivColor.RESET+"blocks to support it (if we can)."
 				));
+		
+		if (p.hasPermission(CivPerms.ADMIN_OP)) {
+			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"[Admin] +10,000 Blocks", CivData.BARRIER, 0, 
+					CivColor.LightGray+"« Click to Add »"));
+		}
 		
 		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);

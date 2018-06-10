@@ -15,8 +15,6 @@ public class NoCauldronWash extends ItemComponent {
 	public void onPrepareCreate(AttributeUtil attrUtil) {
 	}
 
-	
-	@SuppressWarnings("deprecation")
 	public void onInteract(PlayerInteractEvent event) {
 		if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			if (!event.hasBlock()) {

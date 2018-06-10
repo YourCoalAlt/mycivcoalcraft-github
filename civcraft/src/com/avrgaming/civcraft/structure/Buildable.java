@@ -46,10 +46,14 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.avrgaming.civcraft.components.Component;
 import com.avrgaming.civcraft.config.CivSettings;
@@ -59,6 +63,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.interactive.InteractiveBuildCommand;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -319,7 +324,6 @@ public abstract class Buildable extends SQLObject {
 		// no hammer cost should be instant...
 		if (this.getHammerCost() == 0)
 			return this.totalBlockCount;
-		
 		return this.totalBlockCount / this.getHammerCost();
 	}
 	
@@ -1011,7 +1015,7 @@ public abstract class Buildable extends SQLObject {
 		// Dont let this get lower than 500 or 1 just in case to prevent any crazyiness...
 		double blocks = (500 / millisecondsPerBlock);
 		if (blocks < 1) blocks = 1;
-		return (int)blocks;		
+		return (int)blocks;
 	}
 	
 	/* Checks to see if the area is covered by another structure */
@@ -1158,10 +1162,10 @@ public abstract class Buildable extends SQLObject {
 		this.save();
 	}
 	
-	public void onDamage(int amount, World world, Player player, BlockCoord coord, BuildableDamageBlock hit) {
+	public void onDamage(int amount, World world, final Player player, BlockCoord coord, final BuildableDamageBlock hit) {
 		boolean wasTenPercent = false;
 		
-		if(hit.getOwner().isDestroyed()) {
+		if (hit.getOwner().isDestroyed()) {
 			if (player != null) {
 				CivMessage.sendError(player, hit.getOwner().getDisplayName()+" is already destroyed.");
 			}
@@ -1180,7 +1184,6 @@ public abstract class Buildable extends SQLObject {
 		}
 			
 		this.damage(player, amount);
-		
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 1);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
 		
@@ -1191,15 +1194,91 @@ public abstract class Buildable extends SQLObject {
 		}
 		
 		if (player != null) {
-		Resident resident = CivGlobal.getResident(player);
-			if (resident.isCombatInfo()) {
-				CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged ("+hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")");
+			try {
+				BarColor color = BarColor.BLUE;
+				double progress = (hit.getOwner().hitpoints*100)/hit.getOwner().getMaxHitPoints(); if (progress < 0) progress = 0;
+				if (progress >= 70) color = BarColor.GREEN;
+				else if (progress >= 45 && progress < 70) color = BarColor.YELLOW;
+				else if (progress >= 20 && progress < 45) color = BarColor.RED;
+				else if (progress >= 0 && progress < 20) color = BarColor.PINK;
+				else color = BarColor.BLUE;
+				final BossBar bar = Bukkit.createBossBar(CivColor.BOLD+hit.getOwner().getDisplayName()+" ("+hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")", color, BarStyle.SOLID);
+				bar.setProgress(progress/100); // Values 0.0 to 1.0, therefore % = Dmg HP / Total HP
+				
+				// For the player destroying a structure
+				final Resident res = CivGlobal.getResident(player);
+				if (res.warbar != null) {
+					res.warbar.removePlayer(player);
+					res.warbar = bar;
+					res.warbar.addPlayer(player);
+				} else {
+					res.warbar = bar;
+					res.warbar.addPlayer(player);
+				}
+				
+				// Adds for residents getting structures destroyed
+				for (Resident resC : hit.getCiv().getOnlineResidents()) {
+					Player p = CivGlobal.getPlayer(resC);
+					if (resC.warbar != null) {
+						resC.warbar.removePlayer(p);
+						resC.warbar = bar;
+						resC.warbar.addPlayer(p);
+					} else {
+						resC.warbar = bar;
+						resC.warbar.addPlayer(p);
+					}
+				}
+				
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						try {
+							if (res.warbar == bar) {
+								bar.removePlayer(player);
+							}
+							for (Resident resC : hit.getCiv().getOnlineResidents()) {
+								Player p = CivGlobal.getPlayer(resC);
+								if (resC.warbar == bar) {
+									bar.removePlayer(p);
+								}
+							}
+						} catch (CivException e) {
+							e.printStackTrace();
+						}
+					}
+				}.runTaskLater(CivCraft.getPlugin(), 100L);
+			} catch (CivException e) {
+				e.printStackTrace();
 			}
 		}
 		
 	}
 	
-	public void onDamageNotification(Player player, BuildableDamageBlock hit) {
+	public void onDamageNotification(final Player player, final BuildableDamageBlock hit) {
+/*		try {
+			final BossBar bar = Bukkit.createBossBar(CivColor.BOLD+hit.getOwner().getDisplayName()+" damaged "+hit.getOwner().getDamagePercentage()+"%!", BarColor.WHITE, BarStyle.SOLID);
+			double progress = hit.getOwner().getDamagePercentage();
+			bar.setProgress(progress/100); // Values 0.0 to 1.0, therefore % = Dmg HP / Total HP
+			
+			// For the player destroying a structure
+			bar.addPlayer(player);
+			
+			// Adds for residents getting structures destroyed
+			for (Resident resC : hit.getCiv().getOnlineResidents()) {
+				Player p = CivGlobal.getPlayer(resC);
+				bar.addPlayer(p);
+			}
+			
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					bar.removeAll();
+				}
+			}.runTaskLater(CivCraft.getPlugin(), 30L);
+		} catch (CivException e) {
+			e.printStackTrace();
+		}*/
+		
 		CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged "+hit.getOwner().getDamagePercentage()+"%!");
 		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"Our "+hit.getOwner().getDisplayName()+" at ("+hit.getOwner().getCorner()+") is under attack! Damage is "+hit.getOwner().getDamagePercentage()+"%!");	
 	}
@@ -1576,5 +1655,47 @@ public abstract class Buildable extends SQLObject {
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+	public static boolean validatePlayerGUI(Player p, Buildable buildable, boolean hastoBeResidentOfTown, boolean hastoBeResidentOfCiv, boolean hastoBePlotAssigned) {
+/*		ArrayList<Buildable> builtHere = new ArrayList<Buildable>();
+		for (Buildable atloc : CivGlobal.getBuildablesAt(buildable.getCenterLocation())) builtHere.add(atloc);
+		if (!builtHere.contains(buildable)) {
+			CivMessage.sendError(res, "Cannot access this villager: You are not on a plot of the "+buildable.getDisplayName()+" you are trying to access.");
+			return false;
+		}*/
+		
+		Resident res = CivGlobal.getResident(p);
+		if (hastoBeResidentOfTown) {
+			if (!res.hasTown()) {
+				CivMessage.sendError(res, "Cannot access this villager: You are not in a town.");
+				return false;
+			}
+			
+			if (buildable.getTown() != res.getTown()) {
+				CivMessage.sendError(res, "Cannot access this villager: You are not a resident of the owning town.");
+				return false;
+			}
+		}
+		
+		if (hastoBeResidentOfCiv) {
+			if (!res.hasCiv()) {
+				CivMessage.sendError(res, "Cannot access this villager: You are not in a civ.");
+				return false;
+			}
+			
+			if (buildable.getCiv() != res.getCiv()) {
+				CivMessage.sendError(res, "Cannot access this villager: You are not a resident of the owning civ.");
+				return false;
+			}
+		}
+		
+		if (hastoBePlotAssigned) {
+			TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
+			if (tc != null && !tc.perms.hasPermission(PlotPermissions.Type.INTERACT, res)) {
+				CivMessage.sendError(res, "Cannot access this villager: You do not have permissions to use the plot you are in.");
+				return false;
+			}
+		}
+		return true;
 	}
 }

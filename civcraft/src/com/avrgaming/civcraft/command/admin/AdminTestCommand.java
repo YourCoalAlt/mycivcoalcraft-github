@@ -1,5 +1,7 @@
 package com.avrgaming.civcraft.command.admin;
 
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
@@ -25,6 +28,17 @@ public class AdminTestCommand extends CommandBase implements Listener {
 		displayName = "Admin Test [NOTE these are test commands, they might break the game!]";
 		
 		commands.put("run", "Runs the command.");
+		commands.put("mail", "Runs the command.");
+	}
+	
+	public void mail_cmd() throws CivException {
+		Resident res = getResident();
+		Random rand = new Random();
+		Inventory inv = Bukkit.createInventory(null, 9*4);
+		inv.addItem(new ItemStack(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_vanilla_knowledge_book"))));
+		inv.addItem(new ItemStack(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hopper"))));
+		inv.addItem(new ItemStack(Material.COBBLESTONE));
+		res.addMail(res, "This is a test mail!", String.valueOf((System.currentTimeMillis()+rand.nextInt(100))), inv);
 	}
 	
 	public void run_cmd() {

@@ -19,8 +19,18 @@ public class LoreEnhancementProtection extends LoreEnhancement {
 	}
 	
 	@Override
+	public String getInitName() {
+		return "LoreEnhancementProtection";
+	}
+	
+	@Override
 	public String getDisplayName() {
 		return "Protection";
+	}
+	
+	@Override
+	public Integer getMaxLevel() {
+		return 5;
 	}
 	
 	@Override

@@ -112,6 +112,7 @@ public class Market extends Structure {
 	}
 	
 	public void openMainMarketMenu(Player p) {
+		if (!Buildable.validatePlayerGUI(p, this, false, false, false)) return;
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Global Market Menu");
 		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Global Market menu. You can buy",

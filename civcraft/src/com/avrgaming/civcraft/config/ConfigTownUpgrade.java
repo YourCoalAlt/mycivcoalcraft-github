@@ -104,8 +104,8 @@ public class ConfigTownUpgrade {
 				Bank bank = (Bank)struct;
 				if (bank.getLevel() < Integer.valueOf(args[1].trim())) {
 					bank.setLevel(Integer.valueOf(args[1].trim()));
-					bank.updateSignText();
 					town.saved_bank_level = bank.getLevel();
+					bank.updateExchangeRate();
 					CivMessage.sendTown(town, "The Bank is now level "+bank.getLevel());
 				}
 			}

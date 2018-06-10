@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -71,15 +70,19 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
-		if (event.getInventory().getName().contains(res.getName()+"'s Mail Menu")) this.clickMainMailMenu(p, event);
+		if (event.getInventory().getName().contains(res.getName()+" Mail Menu [R]")) this.clickResMainMailMenu(p, event);
+		if (event.getInventory().getName().contains(res.getName()+" View Mail [R]")) this.clickResViewMailMenu(p, event);
+		
 		if (event.getInventory().getName().contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Town Info")) this.clickTownInfoViewer(p, event);
 		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")  ||
 				event.getInventory().getName().contains("Building Support")) this.clickTownStatRegister(p, event);
+		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Building Support")) this.clickBuildSupport(p, event);
 		
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) this.clickUnitUpgrade(p, event);
+		if (event.getInventory().getName().contains("Repair Master")) this.clickBarracksRepair(p, event);
 		
 		if (event.getInventory().getName().contains("Global Market Menu")) this.clickMarketMenu(p, event);
 		if (event.getInventory().getName().contains("Market Trade ")) this.clickMarketItem(p, event);
@@ -292,10 +295,56 @@ public class InventoryDisplaysListener implements Listener {
 		}
 	}
 	
-	public void clickUnitUpgrade(Player p, InventoryClickEvent event) {
-		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-			return;
+	public void clickBuildSupport(Player p, InventoryClickEvent event) {
+		Resident res = CivGlobal.getResident(p);
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+		
+		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
+			event.setCancelled(true);
 		}
+		
+		TownHall th = (TownHall) res.getTown().getStructureByType("s_townhall");
+		if (th == null) {
+			th = (TownHall) res.getTown().getStructureByType("s_capitol");
+			if (th == null) {
+				CivMessage.sendError(p, "Town Hall null? Contact an admin if this is wrong!"); p.closeInventory();
+			}
+		}
+		switch (event.getCurrentItem().getType()) {
+		case BARRIER:
+			th.getTown().addSupportDeposit(10000);
+			CivMessage.sendTown(th.getTown(), "Added 10,000 support blocks from Admin OP.");
+			break;
+		default:
+			break;
+		}
+	}
+	
+	// XXX Working
+	public void clickBarracksRepair(Player p, InventoryClickEvent event) {
+		Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+		if (buildable instanceof Barracks) {
+			Barracks b = (Barracks) buildable;
+			Resident res = CivGlobal.getResident(p);
+			if (event.getClickedInventory() != null && event.getClickedInventory().getName().contains("Repair Master")) {
+				switch (event.getCurrentItem().getType()) {
+				case COMMAND:
+					Inventory opened = b.validateRepairItemGUI(p, res.getTown(), event.getInventory());
+					event.getInventory().setContents(opened.getContents());
+					break;
+				default:
+					break;
+				}
+			}
+		} else {
+			event.setCancelled(true);
+			CivMessage.sendError(p, "Barracks you are trying to access is null? Contact an admin if this continues.");
+			p.closeInventory();
+		}
+	}
+	
+	public void clickUnitUpgrade(Player p, InventoryClickEvent event) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
 		
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) {
 			event.setCancelled(true);
@@ -318,7 +367,7 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		} else {
 			event.setCancelled(true);
-			CivMessage.sendError(p, "Warehouse you are trying to access is null? Contact an admin if this continues.");
+			CivMessage.sendError(p, "Barracks you are trying to access is null? Contact an admin if this continues.");
 			p.closeInventory();
 			return;
 		}
@@ -802,6 +851,10 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
+		if (inv.getName().contains("[R] Mail ")) {
+			this.closeResOpenMailPackage(p, inv);
+		}
+		
 		//Town Hall Inv (Building Support)
 		if (inv.getName().contains("'s Building Support")) {
 			this.checkTownBuildingSupport(p, inv);
@@ -982,14 +1035,20 @@ public class InventoryDisplaysListener implements Listener {
 		String material = ChatColor.stripColor(inv.getName()).replace(t.getName()+" Storage (" , "").replace(")", "").replaceAll(" ", "_").toLowerCase();
 		if (material.contains("carrot") || material.contains("potato")) material += "_item";
 		Material mat = ItemManager.getMaterial(material.toUpperCase());
-		
 		boolean addedNotRequiredItems = false;
-		
 		int matGiven = 0;
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR || stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
-				continue;
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			if (stack.hasItemMeta()) {
+				ItemMeta m = stack.getItemMeta();
+				if (m.hasDisplayName()) {
+					String d = m.getDisplayName();
+					if (d.contains("Information")) {
+						inv.removeItem(stack);
+						continue;
+					}
+				}
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -1104,23 +1163,16 @@ public class InventoryDisplaysListener implements Listener {
 		int gravel = 0;
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR) {
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Back")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() && stack.getItemMeta().getDisplayName().contains("[D] ")) {
-				inv.removeItem(stack);
-				continue;
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			if (stack.hasItemMeta()) {
+				ItemMeta m = stack.getItemMeta();
+				if (m.hasDisplayName()) {
+					String d = m.getDisplayName();
+					if ((stack.getType() == Material.PAPER && (d.contains("Information") || d.contains("Back"))) ||
+							(stack.getType() == Material.BARRIER && d.contains("[Admin]"))) {
+						inv.removeItem(stack); continue;
+					}
+				}
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -1166,122 +1218,58 @@ public class InventoryDisplaysListener implements Listener {
 		
 		Town bTown = bank.getTown();
 		boolean addedNotRequiredItems = false;
-		int iiGiven = 0;
-		int giGiven = 0;
-		int diGiven = 0;
-		int eiGiven = 0;
-		
+		Map<String, Integer> mats = new HashMap<String, Integer>();
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR) {
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Sell Values")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() && stack.getItemMeta().getDisplayName().contains("[D] ")) {
-				inv.removeItem(stack);
-				continue;
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			if (stack.hasItemMeta()) {
+				ItemMeta m = stack.getItemMeta();
+				if (m.hasDisplayName()) {
+					String d = m.getDisplayName();
+					if ((stack.getType() == Material.PAPER && (d.contains("Information") || d.contains("Sell Values"))) || 
+							(stack.getType() == Material.STAINED_GLASS_PANE && d.contains("Inventory Border"))) {
+						inv.removeItem(stack); continue;
+					}
+				}
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-			if (stack != null && stack.getType() == Material.IRON_INGOT && craftMat == null) { //Collect all the iron ingots found in the GUI
-				iiGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack != null && stack.getType() == Material.GOLD_INGOT && craftMat == null) { //Collect all the gold ingots found in the GUI
-				giGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack != null && stack.getType() == Material.DIAMOND && craftMat == null) { //Collect all the diamonds found in the GUI
-				diGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack != null && stack.getType() == Material.EMERALD && craftMat == null) { //Collect all the emeralds found in the GUI
-				eiGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (craftMat != null) { //Allow custom items to be dropped
+			if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
 				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
-			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
-				addedNotRequiredItems = true;
+			} else { //Drop any vanilla items in the inventory after check
+				if (stack.getType() == Material.IRON_INGOT || stack.getType() == Material.GOLD_INGOT || stack.getType() == Material.DIAMOND || stack.getType() == Material.EMERALD) {
+					if (mats.get(stack.getType().toString()) != null) mats.put(stack.getType().toString(), mats.get(stack.getType().toString())+stack.getAmount());
+					else mats.put(stack.getType().toString(), stack.getAmount());
+					inv.removeItem(stack);
+				} else {
+					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					addedNotRequiredItems = true;
+				}
 			}
 		}
 		
-		double ber = bank.getBankExchangeRate();
-		
-		if (iiGiven > 0) {
-			int biir = (int)(iiGiven*(bank.IRON_INGOT_RATE*ber));
-			if (res.getTown() == bTown) { //Resident in this town, no fee
-				res.getTreasury().deposit(biir);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+iiGiven+" Iron Ingots for "+biir+ " coins.");
-			} else { // non-resident must pay the town's non-resident tax
-				int giveToPlayer = (int)(iiGiven*(biir));
-				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
-				giveToPlayer -= giveToTown;
-				
-				bTown.deposit(giveToTown);
-				res.getTreasury().deposit(giveToPlayer);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+iiGiven+" Iron Ingots for "+ giveToPlayer+ " coins.");
-				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
-			}
-		}
-		
-		if (giGiven > 0) {
-			int bgir = (int)(giGiven*(bank.GOLD_INGOT_RATE*ber));
-			if (res.getTown() == bTown) { //Resident in this town, no fee
-				res.getTreasury().deposit(bgir);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+giGiven+" Gold Ingots for "+bgir+ " coins.");
-			} else { // non-resident must pay the town's non-resident tax
-				int giveToPlayer = (int)(giGiven*(bgir));
-				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
-				giveToPlayer -= giveToTown;
-				
-				bTown.deposit(giveToTown);
-				res.getTreasury().deposit(giveToPlayer);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+giGiven+" Gold Ingots for "+ giveToPlayer+ " coins.");
-				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
-			}
-		}
-		
-		if (diGiven > 0) {
-			int bdir = (int)(diGiven*(bank.DIAMOND_RATE*ber));
-			if (res.getTown() == bTown) { //Resident in this town, no fee
-				res.getTreasury().deposit(bdir);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+diGiven+" Diamonds for "+bdir+ " coins.");
-			} else { // non-resident must pay the town's non-resident tax
-				int giveToPlayer = (int)(diGiven*(bdir));
-				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
-				giveToPlayer -= giveToTown;
-				
-				bTown.deposit(giveToTown);
-				res.getTreasury().deposit(giveToPlayer);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+diGiven+" Diamonds for "+ giveToPlayer+ " coins.");
-				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
-			}
-		}
-		
-		if (eiGiven > 0) {
-			int beir = (int)(eiGiven*(bank.EMERALD_RATE*ber));
-			if (res.getTown() == bTown) { //Resident in this town, no fee
-				res.getTreasury().deposit(beir);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+eiGiven+" Emeralds for "+beir+ " coins.");
-			} else { // non-resident must pay the town's non-resident tax
-				int giveToPlayer = (int)(eiGiven*(beir));
-				int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
-				giveToPlayer -= giveToTown;
-				
-				bTown.deposit(giveToTown);
-				res.getTreasury().deposit(giveToPlayer);
-				CivMessage.send(res, CivColor.LightGreen + "Exchanged "+eiGiven+" Emeralds for "+ giveToPlayer+ " coins.");
-				CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
+		bank.updateExchangeRate();
+		for (String g : mats.keySet()) {
+			for (String b : bank.rates.keySet()) {
+				if (b.contains(g)) {
+					String name = CivData.getDisplayName(ItemManager.getId(ItemManager.getMaterial(g)), 0);
+					double sold = mats.get(g)*bank.rates.get(b);
+					if (res.getTown() == bTown) { //Resident in this town, no fee
+						res.getTreasury().deposit(sold);
+						CivMessage.send(res, CivColor.LightGreen + "Exchanged "+mats.get(g)+" "+name+" for "+sold+ " coins at "+bank.getExchangeRateString()+" rate.");
+					} else { // non-resident must pay the town's non-resident tax
+						int giveToPlayer = (int)(mats.get(g)*(sold));
+						int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
+						giveToPlayer -= giveToTown;
+						
+						bTown.deposit(giveToTown);
+						res.getTreasury().deposit(giveToPlayer);
+						CivMessage.send(res, CivColor.LightGreen + "Exchanged "+mats.get(g)+" "+name+" for "+ giveToPlayer+ " coins at "+bank.getExchangeRateString()+" rate.");
+						CivMessage.send(res,CivColor.Yellow+" Paid "+giveToTown+" coins in non-resident taxes.");
+					}
+				}
 			}
 		}
 		
@@ -1299,7 +1287,6 @@ public class InventoryDisplaysListener implements Listener {
 			return;
 		}
 		
-		Random rand = new Random();
 		boolean addedNotRequiredItems = false;
 		int ioGiven = 0;
 		int goGiven = 0;
@@ -1309,23 +1296,16 @@ public class InventoryDisplaysListener implements Listener {
 		int cactusGiven = 0;
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR) {
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() && stack.getItemMeta().getDisplayName().contains("Current Smelts")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.getType() == Material.IRON_FENCE) {
-				inv.removeItem(stack);
-				continue;
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			if (stack.hasItemMeta()) {
+				ItemMeta m = stack.getItemMeta();
+				if (m.hasDisplayName()) {
+					String d = m.getDisplayName();
+					if ((stack.getType() == Material.PAPER && (d.contains("Information"))) || (stack.getType() == Material.MAGMA && (d.contains("Current Smelts"))) || 
+							(stack.getType() == Material.STAINED_GLASS_PANE && d.contains("Inventory Border"))) {
+						inv.removeItem(stack); continue;
+					}
+				}
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -1367,18 +1347,12 @@ public class InventoryDisplaysListener implements Listener {
 		}
 		
 		if (loGiven > 0) {
-			int loSmelt = 0;
-			for (int i = 0; i < loGiven; i++) {
-				loSmelt += rand.nextInt(5)+4;
-			}
+			int loSmelt = loGiven*4;
 			bs.depositSmelt(p, Material.LAPIS_ORE, loSmelt, 4);
 		}
 		
 		if (roGiven > 0) {
-			int roSmelt = 0;
-			for (int i = 0; i < roGiven; i++) {
-				roSmelt += rand.nextInt(5)+1;
-			}
+			int roSmelt = roGiven*4;
 			bs.depositSmelt(p, Material.REDSTONE_ORE, roSmelt, 0);
 		}
 		
@@ -1405,28 +1379,16 @@ public class InventoryDisplaysListener implements Listener {
 		ItemStack repair = null;
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
-			if (stack == null || stack.getType() == Material.AIR) {
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Information")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.hasItemMeta() && stack.getItemMeta().getDisplayName().contains("Repairable Items")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.getType() == Material.ANVIL && stack.getItemMeta().getDisplayName().contains("Close Inventory To Repair")) {
-				inv.removeItem(stack);
-				continue;
-			}
-			
-			if (stack.getType() == Material.BARRIER && stack.getItemMeta().getDisplayName().contains("«--")) {
-				inv.removeItem(stack);
-				continue;
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			if (stack.hasItemMeta()) {
+				ItemMeta m = stack.getItemMeta();
+				if (m.hasDisplayName()) {
+					String d = m.getDisplayName();
+					if ((stack.getType() == Material.PAPER && (d.contains("Information"))) || (stack.getType() == Material.WORKBENCH && (d.contains("Repairable Items"))) || 
+							(stack.getType() == Material.BARRIER && d.contains("«--")) || (stack.getType() == Material.ANVIL && d.contains("Close Inventory To Repair"))) {
+						inv.removeItem(stack); continue;
+					}
+				}
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
@@ -1799,18 +1761,77 @@ public class InventoryDisplaysListener implements Listener {
 	
 	// Resident Mail System
 	
-	public void clickMainMailMenu(Player p, InventoryClickEvent event) {
+	public void clickResMainMailMenu(Player p, InventoryClickEvent event) {
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
 		
 		Resident res = CivGlobal.getResident(p);
 		switch (event.getCurrentItem().getType()) {
-		case CHEST:
-			res.openMailMenu(p, res, 0);
+		case WHITE_SHULKER_BOX:
+			res.openViewMailMenu(p, res, 0);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	public void clickResViewMailMenu(Player p, InventoryClickEvent event) {
+		ItemStack is = event.getCurrentItem();
+		Resident res = CivGlobal.getResident(p);
+		if (is.hasItemMeta()) {
+			ItemMeta im = is.getItemMeta();
+			if (im.hasDisplayName() && im.hasLore()) {
+				String mail_code = im.getDisplayName()+"&MAILCODE@"+im.getLore().get(0).replace("Mail ID: ", "");
+				mail_code = ChatColor.stripColor(mail_code);
+				CivMessage.global("mail_code: "+mail_code);
+				if (res.getMails().containsKey(mail_code)) {
+					res.openMailPackage(p, res, mail_code);
+				}
+			}
+		}
+		
+/*		switch (event.getCurrentItem().getType()) {
+		case WHITE_SHULKER_BOX:
+			res.openViewMailMenu(p, res, 0);
+			break;
+		default:
+			break;
+		}*/
+	}
+	
+	public void closeResOpenMailPackage(Player p, Inventory inv) {
+//		boolean addedNotRequiredItems = false;
+		
+//		int inv_slot = 0;
+		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
+			if (stack == null || stack.getType() == Material.AIR) continue;
+			else inv.removeItem(stack);
+/*			if (stack.getType() == Material.STAINED_GLASS_PANE && ((inv_slot > 0 && inv_slot < 9) || (inv_slot > 36 && inv_slot < 45))) {
+				inv.removeItem(stack);
+				continue;
+			}
+			
+			if (stack.hasItemMeta()) {
+				if (stack.getItemMeta().getDisplayName().contains("Collect Mail") || stack.getItemMeta().getDisplayName().contains("Forward Mail")) {
+					inv.removeItem(stack);
+					continue;
+				}
+			}
+			
+			// No drops, we use "Collect Mail" button click to get items out
+			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+			if (craftMat != null) { //Allow custom items to be dropped
+				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
+				newMat.setData(stack.getData());
+				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				addedNotRequiredItems = true;
+			} else { //Drop any vanilla items in the inventory
+				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				addedNotRequiredItems = true;
+			}*/
+		}
+		
+//		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
 	}
 }
 

@@ -62,7 +62,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 	
 	private final int SAVE_INTERVAL = 5*1000; // every 5 sec.
 	
-	public BuildAsyncTask(Buildable bld, Template t, int s, int blocks_per_tick, Block center ) {
+	public BuildAsyncTask(Buildable bld, Template t, int s, int blocks_per_tick, Block center) {
 		buildable = bld;
 		speed = s;
 		tpl = t;

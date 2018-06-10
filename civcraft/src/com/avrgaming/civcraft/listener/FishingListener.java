@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.listener;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -24,6 +23,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 
@@ -51,7 +51,7 @@ public class FishingListener implements Listener {
 			}
 			
 			ResidentExperience re = CivGlobal.getResidentE(p);
-			float mod = (float) (((double) (re.getFishingLevel()-1) / 2) / 100);
+			float mod = (float) (((double) (re.getEXPLevel(EXPSlots.FISHING)-1) / 2) / 100);
 			if (mod > 0) {
 				if (d.loot_type.contains("treasure")) {
 					dc += (mod/2);
@@ -91,9 +91,6 @@ public class FishingListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerFish(PlayerFishEvent event) throws CivException {
-		if (event.getState() == PlayerFishEvent.State.BITE) {
-			CivMessage.send(event.getPlayer(), CivColor.LightGray+"Nibble Nibble!");
-		}
 		if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
 			Player p = event.getPlayer();
 			ResidentExperience re = CivGlobal.getResidentE(p);
@@ -105,7 +102,8 @@ public class FishingListener implements Listener {
 			double res_exp = 0;
 			if (dropped.size() == 0) {
 				ItemStack fish = ItemManager.createItemStack(ItemManager.getId(Material.RAW_FISH), 1);
-				p.getWorld().dropItem(p.getLocation(), fish);
+				ItemManager.givePlayerItem(p, fish, p.getLocation(), null, fish.getAmount(), false);
+				CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+"Raw Fish");
 				
 				try {
 					res_exp = CivSettings.getDouble(CivSettings.fishingConfig, "default_res_exp");
@@ -116,7 +114,6 @@ public class FishingListener implements Listener {
 				
 				Random rand = new Random();
 				exp = rand.nextInt(5);
-				CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+"Raw Fish");
 			} else {
 				for (ConfigFishing d : dropped) {
 					res_exp += d.res_exp;
@@ -124,25 +121,20 @@ public class FishingListener implements Listener {
 					if (d.custom_id != null) {
 						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 						ItemStack cust = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()));
-						p.getWorld().dropItem(p.getLocation(), cust);
+						ItemManager.givePlayerItem(p, cust, p.getLocation(), null, cust.getAmount(), false);
+						CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+craftMat.getName());
 					} else {
 						ItemStack reg = ItemManager.createItemStack(d.type_id, 1, (short)d.type_data);
-						p.getWorld().dropItem(p.getLocation(), reg);
+						ItemManager.givePlayerItem(p, reg, p.getLocation(), null, reg.getAmount(), false);
 						CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+CivData.getDisplayName(d.type_id, d.type_data));
 					}
 				}
 			}
 			
-			DecimalFormat df = new DecimalFormat("0.00");
-			double mod = re.getFishingLevel() + 1;
-			mod /= 2;
-			
+			double mod = (re.getEXPLevel(EXPSlots.FISHING) + 1) / 2;
 			int eEXP = (int) (exp*mod) / 2;
 			event.setExpToDrop(eEXP);
-			
-			double genrf = res_exp*mod;
-			double rfEXP = Double.valueOf(df.format(genrf));
-			re.addFishingEXP(rfEXP);
+			re.addResEXP(EXPSlots.FISHING, res_exp);
 		}
 	}
 }

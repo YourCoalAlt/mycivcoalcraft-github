@@ -152,6 +152,7 @@ public class DiplomacyManager {
 	}
 	
 	public DiplomaticRelation getRelation(Civilization otherCiv) {
+		if (ourCiv == otherCiv && relations.get(ourCiv.getId()) == null) relations.put(ourCiv.getId(), new DiplomaticRelation(ourCiv, otherCiv, Status.ALLY, null));
 		return relations.get(otherCiv.getId());
 	}
 	

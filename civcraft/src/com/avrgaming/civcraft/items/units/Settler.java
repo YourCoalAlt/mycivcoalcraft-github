@@ -71,7 +71,6 @@ public class Settler extends UnitMaterial implements CallbackInterface {
 
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onInteract(PlayerInteractEvent event) {
 		event.setCancelled(true);

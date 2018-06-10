@@ -41,6 +41,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -1103,12 +1104,19 @@ public class BlockListener implements Listener {
 			Villager v = (Villager) event.getRightClicked();
 			event.setCancelled(true);
 			
-			if (v.getCustomName() == null) {
-				return;
-			}
+			if (v.getCustomName() == null) return;
 			
 			String vn = v.getCustomName();
 			Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+			
+			// Structures w/out town restrictions here, or have new Buildable.validatePlayerGUI component
+			if (buildable instanceof Market) {
+				Market m = (Market) buildable;
+				if (vn.contains("Market Tradesman")) {
+					m.openMainMarketMenu(p);
+				}
+			}
+			
 			TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
 			if(tc != null && !tc.perms.hasPermission(PlotPermissions.Type.INTERACT, resident)) {
 				CivMessage.sendError(resident, "You do not have permission to access this villager.");
@@ -1121,7 +1129,7 @@ public class BlockListener implements Listener {
 			}
 			
 			if (buildable instanceof TownHall) {
-				if (vn.contains("Handy Assistant")) {
+				if (vn.contains("'s Assistant")) {
 					TownHall th = (TownHall) buildable;
 					th.openMainInfoGUI(p, th.getTown());
 				}
@@ -1432,7 +1440,7 @@ public class BlockListener implements Listener {
 			if (event.getSpawnReason().equals(SpawnReason.EGG) || event.getSpawnReason().equals(SpawnReason.DISPENSE_EGG)) {
 				Random rand = new Random();
 				int chance = rand.nextInt(100);
-				if (chance < 10) {
+				if (chance < 20) {
 					event.setCancelled(false);
 					return;
 				} else {
@@ -1647,13 +1655,13 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST) 
 	public void onPotionSplashEvent(PotionSplashEvent event) {
 		ThrownPotion potion = event.getPotion();
-
 		if (!(potion.getShooter() instanceof Player)) {
-			return;
-		} 
+			if (potion.getShooter() instanceof Witch) {
+				event.setCancelled(false); return;
+			} else return;
+		}
 
 		Player attacker = (Player)potion.getShooter();
-
 		for (PotionEffect effect : potion.getEffects()) {
 			if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
 				event.setCancelled(true);
@@ -1671,15 +1679,12 @@ public class BlockListener implements Listener {
 				effect.getType().equals(PotionEffectType.SLOW_DIGGING) ||
 				effect.getType().equals(PotionEffectType.WEAKNESS) ||
 				effect.getType().equals(PotionEffectType.WITHER)) {
-
 				protect = true;
 				break;
 			}
 		}
 
-		if (!protect) {
-			return;
-		}
+		if (!protect) return;
 
 		for (LivingEntity entity : event.getAffectedEntities()) {
 			if (entity instanceof Player) {
@@ -1732,6 +1737,7 @@ public class BlockListener implements Listener {
 	}
 	
 	private PvPReason playersCanPVPHere(Player patk, Player pdef, TownChunk tc) {
+		if (patk == null || pdef == null || CivGlobal.getResident(pdef) == null || CivGlobal.getResident(patk) == null) return PvPReason.ALLOWED;
 		Resident def = CivGlobal.getResident(pdef);
 		Resident atk = CivGlobal.getResident(patk);
 		PvPReason reason = PvPReason.NOT_AT_WAR;

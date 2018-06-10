@@ -126,10 +126,8 @@ public abstract class Unit {
 		}
 		return false;
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	public static void removeUnit(Player player) {
-		
 		for (ItemStack stack : player.getInventory().getContents()) {
 			if (stack != null) {
 				LoreMaterial material = LoreMaterial.getMaterial(stack);

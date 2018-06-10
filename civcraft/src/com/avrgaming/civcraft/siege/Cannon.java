@@ -598,7 +598,6 @@ public class Cannon extends Buildable {
 		return false;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void processAngle(PlayerInteractEvent event) throws CivException {
 		validateUse(event.getPlayer());
 		
@@ -629,8 +628,7 @@ public class Cannon extends Buildable {
 		event.getPlayer().updateInventory();
 		updateAngleSign(this.angleSignLocation.getBlock());
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	public void processPower(PlayerInteractEvent event) throws CivException {
 		validateUse(event.getPlayer());
 		

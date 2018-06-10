@@ -1,6 +1,7 @@
 package com.avrgaming.civcraft.threading.timers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.listener.ActionBar;
@@ -19,6 +20,35 @@ public class ActionBarUpdateTimer implements Runnable {
 	public void run() {
 		if (CivCraft.isDisable || War.isWarTime()) return;
 		
+		String weather = CivColor.GrayBold+" [";
+		World w = Bukkit.getWorld(CivCraft.worldName);
+		int weatherTime = w.getWeatherDuration() / 20;
+		if (weatherTime > (60*10)) {
+			w.setWeatherDuration(((60*10)-1)*20);
+			weatherTime = w.getWeatherDuration();
+		}
+		String weatherLength = "";
+	    int hours = (int) (weatherTime / 3600);
+	    int remainder = (int) (weatherTime - (hours * 3600));
+	    int mins = remainder / 60;
+	    int secs = remainder - (mins * 60);
+		if (hours <= 0) weatherLength += mins+" m "+secs+" s";
+		else weatherLength += hours+" h "+mins+" m "+secs+" s";
+		weatherLength.substring(weatherLength.length()-2);
+		if (w.isThundering()) {
+			if (day(w)) weather += CivColor.RedBold+"Storm "+CivColor.RESET+weatherLength;
+			else weather += CivColor.RedBold+"Night Storm "+CivColor.RESET+weatherLength;
+		}
+		else if (w.hasStorm()) {
+			if (day(w))	weather += CivColor.BlueBold+"Rain "+CivColor.RESET+weatherLength;
+			else weather += CivColor.BlueBold+"Night Rain "+CivColor.RESET+weatherLength;
+		}
+		else {
+			if (day(w)) weather += CivColor.GoldBold+"Sunny";
+			else weather += CivColor.LightGrayBold+"Moon";
+		}
+		weather += CivColor.GrayBold+"]";
+		
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Resident res = CivGlobal.getResident(p);
 			ChunkCoord coord = new ChunkCoord(p.getLocation());
@@ -27,16 +57,16 @@ public class ActionBarUpdateTimer implements Runnable {
 			
 			String borders = "";
 			if (cc != null && tc != null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+
-						CivColor.Gold+"claim"+CivColor.LightGreen+" of "+CivColor.LightBlue+tc.getTown().getName();
+				borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
+						CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName()+weather;
 			} else if (tc == null && cc != null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+", "+
-						CivColor.Rose+"unclaimed"+CivColor.LightGreen+" near "+CivColor.LightBlue+cc.getTown().getName();
+				borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
+						CivColor.Rose+"near "+CivColor.LightBlue+cc.getTown().getName()+weather;
 			} else if (tc != null && cc == null) {
-				borders = CivColor.LightGreen+"Borders of "+CivColor.Rose+"Wilderness"+CivColor.LightGreen+", "+CivColor.LightGreen+", "+
-						CivColor.Gold+"claim"+CivColor.LightGreen+" of "+CivColor.LightBlue+tc.getTown().getName();
+				borders = CivColor.Rose+"Wilderness"+CivColor.LightGreen+" - "+
+						CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName()+weather;
 			} else {
-				borders = CivColor.Rose+"Wilderness";
+				borders = CivColor.Rose+"[Wilderness]"+weather;
 			}
 			
 			if (res != null) {
@@ -53,4 +83,10 @@ public class ActionBarUpdateTimer implements Runnable {
 			}
 		}
 	}
+	
+	public boolean day(World w) {
+	    long time = w.getTime();
+	    return time < 12520 || time > 23020;
+	}
+	
 }

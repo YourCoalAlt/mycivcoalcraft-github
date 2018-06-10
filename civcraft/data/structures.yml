@@ -226,7 +226,7 @@ structures:
     itemId: 314
     itemData: 0
     position: 0
-    template: capital
+    template: capitol
     template_y_shift: 0
     displayName: Capitol
     require_tech:

@@ -312,7 +312,6 @@ public class ConfigMarketItem {
 		player.updateInventory();
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void sell(Resident resident, Player player, int amount) {
 		int total_coins = 0;
 		int total_items = 0;
@@ -337,7 +336,7 @@ public class ConfigMarketItem {
 		}
 		
 		resident.getTreasury().deposit(total_coins);	
-		CivMessage.sendSuccess(player, "Sold "+total_items+" "+this.name+" for "+total_coins);
+		CivMessage.sendSuccess(player, "Sold "+total_items+" "+this.name+" for "+total_coins+" coins.");
 		player.updateInventory();
 	}
 	

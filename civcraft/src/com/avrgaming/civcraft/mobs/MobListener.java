@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.mobs;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -28,6 +27,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 
@@ -154,20 +154,14 @@ public class MobListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onEntityDeath(EntityDeathEvent event) {
+	public void onEntityDeath(EntityDeathEvent event) throws CivException {
 		if (CustomMobListener.mobList.get(event.getEntity().getUniqueId()) != null) {
 			ConfigCustomMobs cmob = CustomMobListener.mobList.get(event.getEntity().getUniqueId());
 			if (event.getEntity().getKiller() != null) {
 				Player p = event.getEntity().getKiller();
 				ResidentExperience resE = CivGlobal.getResidentE(p);
-				double mod = ((resE.getWeapondryLevel() + 1) * cmob.rxp_mod) / 2;
-				try {
-					DecimalFormat df = new DecimalFormat("0.00");
-					double genrf = cmob.res_exp*mod;
-					double rfEXP = Double.valueOf(df.format(genrf));
-					resE.addWeapondryEXP(rfEXP);
-				} catch (CivException e1) {
-				}
+				double mod = ((resE.getEXPLevel(EXPSlots.WEAPONDRY) + 1) * cmob.rxp_mod) / 2;
+				resE.addResEXP(EXPSlots.WEAPONDRY, cmob.res_exp);
 				
 				Random rand = new Random();
 				int coins = rand.nextInt(cmob.exp_max);

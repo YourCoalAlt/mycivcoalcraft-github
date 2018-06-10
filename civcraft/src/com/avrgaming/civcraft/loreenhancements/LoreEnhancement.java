@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.main.CivData;
@@ -33,12 +34,17 @@ public abstract class LoreEnhancement {
 		enhancements.put("LoreEnhancementUnitGainProtection", new LoreEnhancementUnitGainProtection());
 		
 		enhancements.put("LoreEnhancementSoulBound", new LoreEnhancementSoulBound());
-		enhancements.put("LoreEnhancementAttack", new LoreEnhancementAttack());
-		enhancements.put("LoreEnhancementDefense", new LoreEnhancementDefense());
 		enhancements.put("LoreEnhancementPunchout", new LoreEnhancementPunchout());
+		
+		enhancements.put("LoreEnhancementProspect", new LoreEnhancementProspect());
 	}
 	
+	public abstract String getInitName();
+	public abstract String getDisplayName();
+	public abstract Integer getMaxLevel();
+	
 	public boolean onDeath(PlayerDeathEvent event, ItemStack stack) { return false; }
+	public void onBlockClick(PlayerInteractEvent event) { }
 
 	public boolean canEnchantItem(ItemStack item) {
 		return true;
@@ -164,8 +170,6 @@ public abstract class LoreEnhancement {
 	public boolean hasEnchantment(ItemStack item) {
 		return false;
 	}
-	
-	public abstract String getDisplayName();
 	
 	public int onStructureBlockBreak(BuildableDamageBlock dmgBlock, int damage) {
 		return damage;

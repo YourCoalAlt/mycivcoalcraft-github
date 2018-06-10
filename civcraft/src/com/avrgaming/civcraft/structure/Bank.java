@@ -2,6 +2,8 @@ package com.avrgaming.civcraft.structure;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +18,7 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBankLevel;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -38,6 +41,7 @@ public class Bank extends Structure {
 	public double GOLD_INGOT_RATE = CivSettings.gold_rate;
 	public double DIAMOND_RATE = CivSettings.diamond_rate;
 	public double EMERALD_RATE = CivSettings.emerald_rate;
+	public Map<String, Double> rates = new HashMap<String, Double>();
 	
 	protected Bank(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
@@ -51,7 +55,7 @@ public class Bank extends Structure {
 		nonMemberFeeComponent.onLoad();
 	}
 	
-	public double getBankExchangeRate() {
+	public double getExchangeRate() {
 		double rate = 0.4;
 		ConfigBankLevel cbl = CivSettings.bankLevels.get(level);
 		if (cbl != null) {
@@ -65,8 +69,17 @@ public class Bank extends Structure {
 		return rate;
 	}
 	
-	private String getExchangeRateString() {
-		return ((int)(getBankExchangeRate()*100) + "%").toString();		
+	public String getExchangeRateString() {
+		return ((int)(getExchangeRate()*100) + "%").toString();		
+	}
+	
+	public void updateExchangeRate() {
+		double update_exchange = this.getExchangeRate();
+		rates.clear();
+		rates.put("IRON_INGOT_RATE", IRON_INGOT_RATE*update_exchange);
+		rates.put("GOLD_INGOT_RATE", GOLD_INGOT_RATE*update_exchange);
+		rates.put("DIAMOND_RATE", DIAMOND_RATE*update_exchange);
+		rates.put("EMERALD_RATE", EMERALD_RATE*update_exchange);
 	}
 	
 	private String getNonResidentFeeString() {
@@ -91,6 +104,7 @@ public class Bank extends Structure {
 	}
 	
 	public void setLevel(int level) {
+		this.getExchangeRate();
 		this.level = level;
 	}
 	
@@ -186,9 +200,11 @@ public class Bank extends Structure {
 	}
 	
 	public void openToolGUI(Player p, Town town) {
-		Inventory inv = Bukkit.createInventory(null, 9*4, town.getName()+"'s Bank Desk");
+		Inventory inv = Bukkit.createInventory(null, 9*5, town.getName()+"'s Bank Desk");
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Bank Menu. You can use it to sell",
 				CivColor.RESET+"different items for a set amount of price as",
 				CivColor.RESET+"listed in the GUI. If upgraded, you can earn",
@@ -196,13 +212,13 @@ public class Bank extends Structure {
 				CivColor.RESET+""
 				));
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Sell Values", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(2, LoreGuiItem.build(CivColor.LightBlueBold+"Sell Values", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.LightGreen+"Bank Rate: "+CivColor.Yellow+getExchangeRateString(),
 				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
-				CivColor.Yellow+(this.IRON_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Iron Ingot",
-				CivColor.Yellow+(this.GOLD_INGOT_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Gold Ingot",
-				CivColor.Yellow+(this.DIAMOND_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Diamond",
-				CivColor.Yellow+(this.EMERALD_RATE*getBankExchangeRate())+CivColor.LightGreen+" Coins/Emerald"
+				CivColor.Yellow+(this.IRON_INGOT_RATE*getExchangeRate())+CivColor.LightGreen+" Coins per Iron Ingot",
+				CivColor.Yellow+(this.GOLD_INGOT_RATE*getExchangeRate())+CivColor.LightGreen+" Coins per Gold Ingot",
+				CivColor.Yellow+(this.DIAMOND_RATE*getExchangeRate())+CivColor.LightGreen+" Coins per Diamond",
+				CivColor.Yellow+(this.EMERALD_RATE*getExchangeRate())+CivColor.LightGreen+" Coins per Emerald"
 				));
 		
 		p.openInventory(inv);

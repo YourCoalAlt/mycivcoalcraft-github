@@ -72,6 +72,66 @@ public class ItemSerializer {
 		return serializedItemStack;
 	}
 	
+	public static ItemStack getItemStackFromSerial(String serial, boolean force_name) {
+		ItemStack is = null;
+		Boolean createdItemStack = false;
+		List<String> lore = new LinkedList<String>();
+		String item_forced_name = "";
+		
+		String[] serializedItemStack = serial.split("&");
+		for (String itemInfo : serializedItemStack) {
+			String[] itemAttribute = itemInfo.split("@");
+			if (itemAttribute[0].equals("t")) {
+				is = ItemManager.createItemStack(Integer.valueOf(itemAttribute[1]), 1);
+				createdItemStack = true;
+			} else if (itemAttribute[0].equals("d") && createdItemStack) {
+				is.setDurability(Short.valueOf(itemAttribute[1]));
+			} else if (itemAttribute[0].equals("a") && createdItemStack) {
+				is.setAmount(Integer.valueOf(itemAttribute[1]));
+			} else if (itemAttribute[0].equals("e") && createdItemStack) {
+				is.addEnchantment(ItemManager.getEnchantById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+			} else if (itemAttribute[0].equals("l") && createdItemStack) {
+				byte[] decode = Base64Coder.decode(itemAttribute[1]);
+				String decodedString = new String(decode);					
+				lore.add(decodedString);
+			} else if (itemAttribute[0].equals("D") && createdItemStack) {
+				ItemMeta meta = is.getItemMeta();
+				if (meta != null) {
+					meta.setDisplayName(itemAttribute[1]);
+					item_forced_name = itemAttribute[1];
+				}
+				is.setItemMeta(meta);
+			} else if (itemAttribute[0].equals("C")) { // Custom Material Item
+				LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(itemAttribute[1]);
+				try {
+					AttributeUtil attrs = new AttributeUtil(is);
+					LoreCraftableMaterial.setMIDAndName(attrs, itemAttribute[1], craftMat.getName());
+					if (force_name) {
+						attrs.setName(item_forced_name);
+					}
+					is = attrs.getStack();
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+				}
+			} else if (itemAttribute[0].equals("Enh")) {
+				is = LoreCraftableMaterial.deserializeEnhancements(is, itemAttribute[1]);
+			} else if (itemAttribute[0].equals("LC")) {
+				AttributeUtil attrs = new AttributeUtil(is);
+				attrs.setColor(Long.valueOf(itemAttribute[1]));
+				is = attrs.getStack();
+			}
+		}
+		
+		if (lore.size() > 0) {
+			ItemMeta meta = is.getItemMeta();
+			if (meta != null) {
+				meta.setLore(lore);
+				is.setItemMeta(meta);
+			}
+		}
+		return is;
+	}
+	
 	public static ItemStack getItemStackFromSerial(String serial) {
 		ItemStack is = null;
 		Boolean createdItemStack = false;

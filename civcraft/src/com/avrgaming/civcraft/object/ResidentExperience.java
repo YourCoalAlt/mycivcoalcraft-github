@@ -4,12 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
 import com.avrgaming.civcraft.database.SQL;
 import com.avrgaming.civcraft.database.SQLUpdate;
 import com.avrgaming.civcraft.exception.CivException;
@@ -22,11 +21,16 @@ public class ResidentExperience extends SQLObject {
 	
 	private UUID uid;
 	private Player player;
+	private Map<EXPSlots, Double> exp_slots = new HashMap<EXPSlots, Double>();
 	
-	private double questEXP;
-	private double miningEXP;
-	private double fishingEXP;
-	private double weapondryEXP;
+	public enum EXPSlots {
+		QUEST,
+		MINING,
+		FISHING,
+		FARMING,
+		SLAUGHTER,
+		WEAPONDRY
+	}
 	
 	public ResidentExperience(UUID uid, String name) throws InvalidNameException {
 		this.setName(name);
@@ -40,7 +44,11 @@ public class ResidentExperience extends SQLObject {
 	}
 	
 	public void loadSettings() {
-//		this.setQuestEXP(0);
+		if (this.exp_slots.keySet().size() != EXPSlots.values().length) {
+			for (EXPSlots s : EXPSlots.values()) {
+				this.exp_slots.put(s, 0.0);
+			}
+		}
 	}
 	
 	public static final String TABLE_NAME = "RESIDENTS_EXPERIENCE";
@@ -50,6 +58,7 @@ public class ResidentExperience extends SQLObject {
 					"`id` int(11) unsigned NOT NULL auto_increment," +
 					"`name` VARCHAR(64) NOT NULL," +
 					"`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN',"+
+					"`exp_slots` mediumtext DEFAULT NULL," +
 					"`questEXP` double DEFAULT 0," +
 					"`miningEXP` double DEFAULT 0," +
 					"`fishingEXP` double DEFAULT 0," +
@@ -65,6 +74,11 @@ public class ResidentExperience extends SQLObject {
 			if (!SQL.hasColumn(TABLE_NAME, "uuid")) {
 				CivLog.info("\tCouldn't find `uuid` for resident experience.");
 				SQL.addColumn(TABLE_NAME, "`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN'");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "exp_slots")) {
+				CivLog.info("\tCouldn't find `exp_slots` for resident.");
+				SQL.addColumn(TABLE_NAME, "`exp_slots` mediumtext default null");
 			}
 			
 			if (!SQL.hasColumn(TABLE_NAME, "questEXP")) {
@@ -94,10 +108,7 @@ public class ResidentExperience extends SQLObject {
 		this.setId(rs.getInt("id"));
 		this.setName(rs.getString("name"));
 		this.uid = UUID.fromString(rs.getString("uuid"));
-		this.setQuestEXP(rs.getDouble("questEXP"));
-		this.setMiningEXP(rs.getDouble("miningEXP"));
-		this.setFishingEXP(rs.getDouble("fishingEXP"));
-		this.setWeapondryEXP(rs.getDouble("weapondryEXP"));
+		this.loadCategoriesFromString(rs.getString("exp_slots"));
 	}
 	
 	@Override
@@ -110,10 +121,7 @@ public class ResidentExperience extends SQLObject {
 		HashMap<String, Object> hashmap = new HashMap<String, Object>();
 		hashmap.put("name", this.getName());
 		hashmap.put("uuid", this.getUUIDString());
-		hashmap.put("questEXP", this.getQuestEXP());
-		hashmap.put("miningEXP", this.getMiningEXP());
-		hashmap.put("fishingEXP", this.getFishingEXP());
-		hashmap.put("weapondryEXP", this.getWeapondryEXP());
+		hashmap.put("exp_slots", this.saveCategoriesToString(this.exp_slots));
 		SQL.updateNamedObject(this, hashmap, TABLE_NAME);
 	}
 	
@@ -122,210 +130,119 @@ public class ResidentExperience extends SQLObject {
 		SQL.deleteByName(this.getName(), TABLE_NAME);
 	}
 	
-	// Quest EXP
-	public double getQuestEXP() {
-		return questEXP;
+	private void loadCategoriesFromString(String string) {
+		if (string == null || string == "") {
+			this.loadSettings();
+			return;
+		}
+		String[] keyvalues = string.split(";");
+		for (String keyvalue : keyvalues) {
+			String key = keyvalue.split(":")[0];
+			String value = keyvalue.split(":")[1];
+			exp_slots.put(EXPSlots.valueOf(key), Double.valueOf(value));
+		}
 	}
 	
-	public void addQuestEXP(double generated) throws CivException {
+	private String saveCategoriesToString(Map<EXPSlots, Double> exp_slots) {
+		String out = "";
+		for (EXPSlots key : exp_slots.keySet()) {
+			double value = exp_slots.get(key);
+			out += key+":"+value+";";
+		}
+		return out;
+	}
+	
+	public Map<EXPSlots, Double> getEXPSlots() {
+		return this.exp_slots;
+	}
+	
+	public String getSlotString(EXPSlots slot) {
+		String string = "";
+		string = slot.toString().toUpperCase().substring(0, 1)+slot.toString().toLowerCase().substring(1);
+		return string;
+	}
+	
+	public int getEXPLevel(EXPSlots slot) {
+		int level = 1;
+		if (this.exp_slots.containsKey(slot)) {
+			double exp = this.exp_slots.get(slot);
+			for (int i = level; i < 300; i++) {
+				int comp1 = (10*level);
+				int comp2 = (int) (Math.multiplyExact((int) Math.pow(level, 2), 5));
+				int tmplvl = (comp1+comp2)*2;
+				if (exp >= tmplvl) level++;
+				else return level;
+			}
+		}
+		return level;
+	}
+	
+	public double getEXPCount(EXPSlots slot) {
+		if (this.exp_slots.containsKey(slot)) {
+			return this.exp_slots.get(slot);
+		} else {
+			return 0.0;
+		}
+	}
+	
+	public int getEXPToNextLevel(EXPSlots slot) {
+		int level = getEXPLevel(slot);
+		int comp1 = (10*level);
+		int comp2 = (int) (Math.multiplyExact((int) Math.pow(level, 2), 5));
+		int next_level = (comp1+comp2)*2;
+		return next_level;
+	}
+	
+	public void addResEXP(EXPSlots slot, double base_points) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getQuestLevel());
-		DecimalFormat df = new DecimalFormat("0.00");
-		this.questEXP = Double.valueOf(df.format(this.questEXP + generated));
-		this.save();
-		if (this.getQuestLevel() < getMaxQuestLevel()) {
-			if (this.questEXP >= clc.amount) {
-				CivMessage.sendQuestExp(player, "You have became Quest Level "+this.getQuestLevel()+"!");
-			}
-		}
-		CivMessage.sendQuestExp(player, "+"+generated+" Quest EXP");
-	}
-	
-	public void setQuestEXP(double generated) {
-		DecimalFormat df = new DecimalFormat("0.00");
-		double gen = Double.valueOf(df.format(generated));
-		this.questEXP = gen;
-	}
-	
-	public int getQuestLevel() {
-		// Get the first level
-		int bestLevel = 0;
-		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
+		DecimalFormat df = new DecimalFormat("#.##");
+		int level = this.getEXPLevel(slot);
+		double gen1 = base_points*(level-1)*0.01;
+		double gen2 = base_points+(level-1)*0.01;
+		double gen3 = (1-level)*0.05;
+		double genEq = (base_points+gen1)-(gen2*gen3);
+		double generatedEXP = Double.valueOf(df.format(genEq));
+//		double generatedEXP = Double.valueOf(df.format(base_points+(gen1)-((base_points+(level-1)*0.01)*(1-level)*0.05)));
 		
-		while (this.questEXP >= level.amount) {
-			level = CivSettings.expGenericLevels.get(bestLevel+1);
-			if (level == null) {
-				level = CivSettings.expGenericLevels.get(bestLevel);
-				break;
+		if (this.exp_slots.containsKey(slot)) {
+			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + generatedEXP));
+			int checkNewLvl = this.getEXPLevel(slot);
+			if (checkNewLvl > level) {
+				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
-			bestLevel++;
+			this.exp_slots.put(slot, newTotalEXP);
+		} else {
+			this.exp_slots.put(slot, generatedEXP);
 		}
-		return level.level;
-	}
-	
-	public static int getMaxQuestLevel() {
-		int returnLevel = 0;
-		for (Integer level : CivSettings.expGenericLevels.keySet()) {
-			if (returnLevel < level) {
-				returnLevel = level;
-			}
+		CivMessage.sendQuestExp(player, "+"+generatedEXP+" "+this.getSlotString(slot)+" EXP");
+		try {
+			this.saveNow();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return returnLevel;
 	}
 	
-	// Mining EXP
-	public double getMiningEXP() {
-		return miningEXP;
-	}
-	
-	public void addMiningEXP(double generated) throws CivException {
+	public void addResEXPviaAdmin(EXPSlots slot, double base_points) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getMiningLevel());
-		DecimalFormat df = new DecimalFormat("0.00");
-		this.miningEXP = Double.valueOf(df.format(this.miningEXP + generated));
-		this.save();
-		if (this.getMiningLevel() < getMaxMiningLevel()) {
-			if (this.miningEXP >= clc.amount) {
-				CivMessage.sendQuestExp(player, "You have became Mining Level "+this.getMiningLevel()+"!");
-			}
-		}
-		CivMessage.sendQuestExp(player, "+"+generated+" Mining EXP");
-	}
-	
-	public void setMiningEXP(double generated) {
-		DecimalFormat df = new DecimalFormat("0.00");
-		double gen = Double.valueOf(df.format(generated));
-		this.miningEXP = gen;
-	}
-	
-	public int getMiningLevel() {
-		// Get the first level
-		int bestLevel = 0;
-		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
+		DecimalFormat df = new DecimalFormat("#.##");
+		int level = this.getEXPLevel(slot);
 		
-		while (this.miningEXP >= level.amount) {
-			level = CivSettings.expGenericLevels.get(bestLevel+1);
-			if (level == null) {
-				level = CivSettings.expGenericLevels.get(bestLevel);
-				break;
+		if (this.exp_slots.containsKey(slot)) {
+			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + base_points));
+			int checkNewLvl = this.getEXPLevel(slot);
+			if (checkNewLvl > level) {
+				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
-			bestLevel++;
+			this.exp_slots.put(slot, newTotalEXP);
+		} else {
+			this.exp_slots.put(slot, base_points);
 		}
-		return level.level;
-	}
-	
-	public static int getMaxMiningLevel() {
-		int returnLevel = 0;
-		for (Integer level : CivSettings.expGenericLevels.keySet()) {
-			if (returnLevel < level) {
-				returnLevel = level;
-			}
+		CivMessage.sendQuestExp(player, "+"+base_points+" "+this.getSlotString(slot)+" EXP [via Admin]");
+		try {
+			this.saveNow();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return returnLevel;
-	}
-	
-	// Fishing EXP
-	public double getFishingEXP() {
-		return fishingEXP;
-	}
-	
-	public void addFishingEXP(double generated) throws CivException {
-		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getFishingLevel());
-		DecimalFormat df = new DecimalFormat("0.00");
-		this.fishingEXP = Double.valueOf(df.format(this.fishingEXP + generated));
-		this.save();
-		
-		if (this.getFishingLevel() < getMaxFishingLevel()) {
-			if (this.fishingEXP >= clc.amount) {
-				CivMessage.sendQuestExp(player, "You have became Fishing Level "+this.getFishingLevel()+"!");
-			}
-		}
-		CivMessage.sendQuestExp(player, "+"+generated+" Fishing EXP");
-	}
-	
-	public void setFishingEXP(double generated) {
-		DecimalFormat df = new DecimalFormat("0.00");
-		double gen = Double.valueOf(df.format(generated));
-		this.fishingEXP = gen;
-	}
-	
-	public int getFishingLevel() {
-		// Get the first level
-		int bestLevel = 0;
-		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
-		
-		while (this.fishingEXP >= level.amount) {
-			level = CivSettings.expGenericLevels.get(bestLevel+1);
-			if (level == null) {
-				level = CivSettings.expGenericLevels.get(bestLevel);
-				break;
-			}
-			bestLevel++;
-		}
-		return level.level;
-	}
-	
-	public static int getMaxFishingLevel() {
-		int returnLevel = 0;
-		for (Integer level : CivSettings.expGenericLevels.keySet()) {
-			if (returnLevel < level) {
-				returnLevel = level;
-			}
-		}
-		return returnLevel;
-	}
-	
-	// Weapondry EXP
-	public double getWeapondryEXP() {
-		return weapondryEXP;
-	}
-	
-	public void addWeapondryEXP(double generated) throws CivException {
-		player = CivGlobal.getPlayerE(this.getName());
-		ConfigEXPGenericLevel clc = CivSettings.expGenericLevels.get(this.getWeapondryLevel());
-		DecimalFormat df = new DecimalFormat("0.00");
-		this.weapondryEXP = Double.valueOf(df.format(this.weapondryEXP + generated));
-		this.save();
-		
-		if (this.getWeapondryLevel() < getMaxWeapondryLevel()) {
-			if (this.weapondryEXP >= clc.amount) {
-				CivMessage.sendQuestExp(player, "You have became Weapondry Level "+this.getWeapondryLevel()+"!");
-			}
-		}
-		CivMessage.sendQuestExp(player, "+"+generated+" Weapondry EXP");
-	}
-	
-	public void setWeapondryEXP(double generated) {
-		DecimalFormat df = new DecimalFormat("0.00");
-		double gen = Double.valueOf(df.format(generated));
-		this.weapondryEXP = gen;
-	}
-	
-	public int getWeapondryLevel() {
-		// Get the first level
-		int bestLevel = 0;
-		ConfigEXPGenericLevel level = CivSettings.expGenericLevels.get(0);
-		
-		while (this.weapondryEXP >= level.amount) {
-			level = CivSettings.expGenericLevels.get(bestLevel+1);
-			if (level == null) {
-				level = CivSettings.expGenericLevels.get(bestLevel);
-				break;
-			}
-			bestLevel++;
-		}
-		return level.level;
-	}
-	
-	public static int getMaxWeapondryLevel() {
-		int returnLevel = 0;
-		for (Integer level : CivSettings.expGenericLevels.keySet()) {
-			if (returnLevel < level) {
-				returnLevel = level;
-			}
-		}
-		return returnLevel;
 	}
 	
 	// UUID Info

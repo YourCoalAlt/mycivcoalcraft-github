@@ -77,6 +77,7 @@ import com.avrgaming.civcraft.items.units.UnitItemMaterial;
 import com.avrgaming.civcraft.items.units.UnitMaterial;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -326,6 +327,13 @@ public class PlayerListener implements Listener {
 		PlayerLocationCacheUpdate.playerQueue.add(event.getPlayer().getName());
 		MobSpawnerTimer.playerQueue.add(event.getPlayer().getName());
 		setModifiedMovementSpeed(event.getPlayer());
+		CivCraft.playerForcedUpdate();
+		
+		// TODO Make this a /res toggle serverpack?
+		// Send the player the resource pack
+/*		Bukkit.getScheduler().runTaskLater(CivCraft.getPlugin(), () -> {
+			event.getPlayer().setResourcePack("https://github.com/YourCoal/YourCoal-Resource-Pack/files/2087472/YourCoal_Simple.zip");
+		}, 30L); // Give time for the player to join*/
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

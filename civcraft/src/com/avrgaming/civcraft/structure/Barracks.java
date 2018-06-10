@@ -53,6 +53,7 @@ import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainAttack;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
+import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -331,6 +332,7 @@ public class Barracks extends Structure {
 		}
 	}
 	
+	private double last_percentage;
 	public void updateProgressBar() {
 		double percentageDone = this.currentHammers / this.trainingUnit.hammer_cost;
 		DecimalFormat df = new DecimalFormat("#.#");
@@ -369,9 +371,11 @@ public class Barracks extends Structure {
 			structSign.update();
 		}
 		StructureChest sc = this.getAChestById(0);
-		Location loc = new Location(Bukkit.getWorld("world"), sc.getCoord().getX()+0.5, sc.getCoord().getY()+2.0, sc.getCoord().getZ()+0.5);
-		String title = CivColor.GoldBold+"Training: "+CivColor.LightGreen+this.trainingUnit.name;
-		HolographicDisplaysListener.updateBarracksHolo(loc, title, per);
+		if (last_percentage != sipe) {
+			Location loc = new Location(Bukkit.getWorld("world"), sc.getCoord().getX()+0.5, sc.getCoord().getY()+2.0, sc.getCoord().getZ()+0.5);
+			String title = CivColor.GoldBold+"Training: "+CivColor.LightGreen+this.trainingUnit.name;
+			HolographicDisplaysListener.updateBarracksHolo(loc, title, per);
+		}
 	}
 	
 	public String getSessionKey() {
@@ -547,13 +551,10 @@ public class Barracks extends Structure {
 	}
 	
 	public void openRepairGUI(Player p, Town t) {
-		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Repair Master");
-		for (int i = 0; i < 9*1; i++) {
-			ItemStack is = LoreGuiItem.build("«--", ItemManager.getId(Material.BARRIER), 0);
-			inv.setItem(i, is);
-		}
+		Inventory inv = Bukkit.createInventory(null, 9*1, "Repair Master");
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivData.PAPER, 0, 
 				CivColor.RESET+"This is the Barracks Repair Menu. In here,",
 				CivColor.RESET+"you can put an item inside the inventory to",
 				CivColor.RESET+"repair, in exchange for hammers.",
@@ -561,7 +562,7 @@ public class Barracks extends Structure {
 				CivColor.RESET+""
 				));
 		
-		inv.setItem(1, LoreGuiItem.build(CivColor.LightPurpleBold+"Repairable Items", ItemManager.getId(Material.WORKBENCH), 0, 
+		inv.setItem(1, LoreGuiItem.build(CivColor.LightPurpleBold+"Repairable Items", CivData.WORKBENCH, 0, 
 				CivColor.RESET+"Must meet these standards to repair items:",
 				CivColor.RESET+"  » Custom Material",
 				CivColor.RESET+"  » Is Repairable Material",
@@ -571,11 +572,45 @@ public class Barracks extends Structure {
 				));
 		
 		ItemStack tmp = new ItemStack(Material.BEDROCK);
-		inv.setItem(2, tmp);
-		inv.removeItem(tmp);
-		inv.setItem(8, LoreGuiItem.build(CivColor.LightGreenBold+"Close Inventory To Repair", ItemManager.getId(Material.ANVIL), 0));
-		
+		inv.setItem(2, tmp); inv.removeItem(tmp);
+		inv.setItem(3, LoreGuiItem.build(CivColor.YellowBold+"Click To Check Item", CivData.COMMAND_BLOCK, 0));
+		inv.setItem(4, LoreGuiItem.build(CivColor.GoldBold+"No Item To Repair", CivData.PAINTING, 0));
+		inv.setItem(6, LoreGuiItem.build(CivColor.GoldBold+"No Item To Repair", CivData.STAINED_GLASS_PANE, 4));
+		inv.setItem(8, LoreGuiItem.build(CivColor.Rose+"Click to Cancel Repair", CivData.STAINED_GLASS_PANE, 14));
 		p.openInventory(inv);
+	}
+	
+	public Inventory validateRepairItemGUI(Player p, Town t, Inventory inv) {
+		ItemStack is = inv.getItem(2);
+		if (is == null || is.getType() == Material.AIR) {
+			inv.setItem(3, LoreGuiItem.build(CivColor.YellowBold+"Click To Check Item", CivData.COMMAND_BLOCK, 0));
+			inv.setItem(4, LoreGuiItem.build(CivColor.GoldBold+"No Item To Repair", CivData.PAINTING, 0));
+			inv.setItem(6, LoreGuiItem.build(CivColor.GoldBold+"No Item To Repair", CivData.STAINED_GLASS_PANE, 4));
+			return inv;
+		}
+		
+		if (this.canRepairItem(is)) {
+//			this.repairItemCalculate(p, CivGlobal.getResident(p), is);
+			inv.setItem(4, LoreGuiItem.build(CivColor.GreenBold+"Repairable Item", CivData.ANVIL, 0, 
+					"Click the Green Glass Pane to repair. ",
+					"Cost of Repair: ",
+					CivColor.RESET+"  » Coins: ",
+					CivColor.RESET+"  » Hammers: ",
+					CivColor.RESET+"  » Ingots: ",
+					CivColor.RESET+""));
+			
+			inv.setItem(6, LoreGuiItem.build(CivColor.LightGreen+"Click to Confirm Repair", CivData.STAINED_GLASS_PANE, 5));
+		} else {
+			inv.setItem(4, LoreGuiItem.build(CivColor.RedBold+"Cannot Repair Item", CivData.BARRIER, 0, 
+					"Item does not fit one of the requirements: ",
+					CivColor.RESET+"  » Custom Material",
+					CivColor.RESET+"  » Is Repairable Material",
+					CivColor.RESET+"  » Item Takes Durability Damage",
+					CivColor.RESET+"  » Item Has Durability Damage",
+					CivColor.RESET+""));
+			inv.setItem(6, LoreGuiItem.build(CivColor.GoldBold+"No Item To Repair", CivData.STAINED_GLASS_PANE, 4));
+		}
+		return inv;
 	}
 	
 	// Unit Upgrade Villager

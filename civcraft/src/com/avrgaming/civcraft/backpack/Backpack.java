@@ -10,7 +10,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigEXPGenericLevel;
 import com.avrgaming.civcraft.config.ConfigFishing;
 import com.avrgaming.civcraft.config.ConfigMaterial;
 import com.avrgaming.civcraft.config.ConfigMaterialCategory;
@@ -23,6 +22,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
+import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
 
@@ -119,8 +119,8 @@ public class Backpack {
 //				ConfigEXPFishingLevel fishinglvl = CivSettings.expFishingLevels.get(re.getFishingLevel());
 				for (ConfigFishing d : CivSettings.fishingDrops) {
 					double dc = d.drop_chance;
-					float mod = (float) (((double) (re.getFishingLevel()-1) / 2) / 100);
-					double mod2 = re.getFishingLevel() + 1;
+					float mod = (float) (((double) (re.getEXPLevel(EXPSlots.FISHING)-1) / 2) / 100);
+					double mod2 = re.getEXPLevel(EXPSlots.FISHING)+1;
 					if (d.loot_type.contains("treasure")) {
 						dc += (mod/2);
 					} else if (d.loot_type.contains("legendary")) {
@@ -407,23 +407,18 @@ public class Backpack {
 		Resident res = CivGlobal.getResident(player);
 		ResidentExperience re = CivGlobal.getResidentE(player);
 		if (res != null && re != null) {
-			ConfigEXPGenericLevel questlvl = CivSettings.expGenericLevels.get(re.getQuestLevel());
-			ConfigEXPGenericLevel mininglvl = CivSettings.expGenericLevels.get(re.getMiningLevel());
-			ConfigEXPGenericLevel fishinglvl = CivSettings.expGenericLevels.get(re.getFishingLevel());
-			ConfigEXPGenericLevel weapondrylvl = CivSettings.expGenericLevels.get(re.getWeapondryLevel());
-			
 			String town = "None"; if (res.hasTown()) town = res.getTown().getName();
 			String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
 			
 			ItemStack playerInfo = LoreGuiItem.buildWithStack(CivColor.WhiteBold+player.getName(), ItemManager.spawnPlayerHead(player, CivColor.WhiteBold+player.getName()),
 					CivColor.LightGreen+"Coins: "+CivColor.Yellow+res.getTreasury().getBalance(),
 					CivColor.LightGreen+"Town, Civ: "+CivColor.Yellow+town+", "+civ,
-					CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+questlvl.level+" ("+re.getQuestEXP()+"/"+questlvl.amount+" XP)",
-					CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+mininglvl.level+" ("+re.getMiningEXP()+"/"+mininglvl.amount+" XP)",
-					CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+fishinglvl.level+" ("+re.getFishingEXP()+"/"+fishinglvl.amount+" XP)",
+					CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.QUEST)+" ("+re.getEXPCount(EXPSlots.QUEST)+"/"+re.getEXPToNextLevel(EXPSlots.QUEST)+" XP)",
+					CivColor.LightGreen+"Mining Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.MINING)+" ("+re.getEXPCount(EXPSlots.MINING)+"/"+re.getEXPToNextLevel(EXPSlots.MINING)+" XP)",
+					CivColor.LightGreen+"Fishing Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.FISHING)+" ("+re.getEXPCount(EXPSlots.FISHING)+"/"+re.getEXPToNextLevel(EXPSlots.FISHING)+" XP)",
 					CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
 					CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
-					CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+weapondrylvl.level+" ("+re.getWeapondryEXP()+"/"+weapondrylvl.amount+" XP)",
+					CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.WEAPONDRY)+" ("+re.getEXPCount(EXPSlots.WEAPONDRY)+"/"+re.getEXPToNextLevel(EXPSlots.WEAPONDRY)+" XP)",
 					CivColor.LightGray+"« Click for Experience Info »");
 			playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
 			playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
@@ -449,7 +444,7 @@ public class Backpack {
 		gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
 		guiInventory.setItem(8, gameInfo);
 		
-		ItemStack civMenu = LoreGuiItem.build("Civilization Menu", ItemManager.getId(Material.BLAZE_ROD), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+		ItemStack civMenu = LoreGuiItem.build("Civ Menu", ItemManager.getId(Material.COMMAND), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
 //		civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
 //		civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
 		guiInventory.setItem(9, civMenu);

@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.command.admin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
@@ -14,7 +15,10 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemManager;
+
+import gpl.AttributeUtil;
 
 public class AdminItemCommand extends CommandBase {
 
@@ -54,6 +58,7 @@ public class AdminItemCommand extends CommandBase {
 		Player player = getPlayer();
 		HashMap<String, LoreEnhancement> enhancements = new HashMap<String, LoreEnhancement>();
 		ItemStack inHand = getPlayer().getInventory().getItemInMainHand();
+		AttributeUtil attr = new AttributeUtil(inHand);
 		
 		for (LoreEnhancement le : LoreEnhancement.enhancements.values()) {
 			enhancements.put(le.getDisplayName().toLowerCase(), le);
@@ -84,14 +89,29 @@ public class AdminItemCommand extends CommandBase {
 			throw new CivException("Cannot enhance an item more than 10,000 times at once.");
 		}
 		
+		ArrayList<String> le = new ArrayList<String>();
+		for (LoreEnhancement les : attr.getEnhancements()) le.add(les.getDisplayName());
+		
 		name.toLowerCase();
 		for (String str : enhancements.keySet()) {
 			if (name.equals(str)) {
 				LoreEnhancement enh = enhancements.get(str);
-				ItemStack stack = LoreMaterial.addEnhancement(inHand, enh, mult);
-				player.getInventory().setItemInMainHand(stack);
-				CivMessage.sendSuccess(sender, "Enhanced with "+name+" x"+mult);
-				return;
+				if (enh.getMaxLevel() == 1) {
+					if (attr.hasEnhancement(enh.getInitName())) {
+						throw new CivException("Cannot add this enhancement since this item already has it and can only have it once.");
+					} else {
+						ItemStack stack = LoreMaterial.addEnhancement(inHand, enh, 1);
+						player.getInventory().setItemInMainHand(stack);
+						CivMessage.sendSuccess(sender, "Enhanced with "+name+" x"+1);
+						CivMessage.send(sender, CivColor.LightGrayItalic+"(Only added once since the max level for this enhancement is 1)");
+						return;
+					}
+				} else {
+					ItemStack stack = LoreMaterial.addEnhancement(inHand, enh, mult);
+					player.getInventory().setItemInMainHand(stack);
+					CivMessage.sendSuccess(sender, "Enhanced with "+name+" x"+mult);
+					return;
+				}
 			}
 		}
 	}

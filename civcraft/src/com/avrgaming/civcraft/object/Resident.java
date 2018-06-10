@@ -31,6 +31,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,9 +44,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -67,6 +72,7 @@ import com.avrgaming.civcraft.interactive.InteractiveResponse;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -107,8 +113,9 @@ public class Resident extends SQLObject {
 	
 	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
-	public ArrayList<String> mailData = new ArrayList<String>();
+	private Map<String, Inventory> mails = new ConcurrentHashMap<String, Inventory>();
 	
+	public BossBar warbar;
 	public boolean isSuicidal = false;
 	public boolean isTPing = false;
 	
@@ -219,7 +226,7 @@ public class Resident extends SQLObject {
 					"`debug_town` mediumtext DEFAULT NULL,"+
 					"`debug_civ` mediumtext DEFAULT NuLL,"+
 					"`alts` mediumtext DEFAULT NULL," +
-					"`mailData` longtext DEFAULT NULL," +
+					"`mails` longtext DEFAULT NULL," +
 					"UNIQUE KEY (`name`), " +
 					"PRIMARY KEY (`id`)" + ")";
 			
@@ -263,9 +270,9 @@ public class Resident extends SQLObject {
 				SQL.addColumn(TABLE_NAME, "`alts` mediumtext DEFAULT NULL");
 			}
 			
-			if (!SQL.hasColumn(TABLE_NAME, "mailData")) {
-				CivLog.info("\tCouldn't find `mailData` for resident.");
-				SQL.addColumn(TABLE_NAME, "`mailData` longtext DEFAULT NULL");
+			if (!SQL.hasColumn(TABLE_NAME, "mails")) {
+				CivLog.info("\tCouldn't find `mails` for resident.");
+				SQL.addColumn(TABLE_NAME, "`mails` longtext DEFAULT NULL");
 			}
 			
 			SQL.makeCol("flags", "mediumtext", TABLE_NAME);
@@ -336,7 +343,7 @@ public class Resident extends SQLObject {
 		this.getTreasury().setDebt(rs.getDouble("debt"));
 		this.loadFriendsFromSaveString(rs.getString("friends"));
 		if (rs.getString("alts") != null) this.setAlts(rs.getString("alts")); // split
-		if (rs.getString("mailData") != null) this.setMailData(rs.getString("mailData")); // split
+		this.loadMails(rs.getString("mails"));
 	}
 	
 	@Override
@@ -379,15 +386,7 @@ public class Resident extends SQLObject {
 			hashmap.put("alts", finalalts);
 		}
 		
-		if (this.getMailData() != null) {
-			String finalMail = "";
-			for (String s : this.getMailData()) {
-				if (s != null) {
-					finalMail += s+"~";
-				}
-			}
-			hashmap.put("mailData", finalMail);
-		}
+		hashmap.put("mails", this.saveMails());
 		
 		if (this.getTown() != null) { hashmap.put("debug_town", this.getTown().getName());
 		if (this.getTown().getCiv() != null) hashmap.put("debug_civ", this.getCiv().getName());
@@ -1536,122 +1535,6 @@ public class Resident extends SQLObject {
 	public void setUUID(UUID uid) {
 		this.uid = uid;
 	}
-	
-	
-	
-	
-	
-	
-	
-	// Mail
-	
-	private void setMailData(String data) {
-		String[] split = data.split("PKGE");
-		for (String str : split) {
-			synchronized (str) {
-				if (str == null) continue;
-				this.mailData.add(str);
-			}
-		}
-	}
-	
-	public void addMailData(String name, String msg, String data, String inv) {
-		String div = "PKIO";
-		String pkge = name+div+msg+div+data+inv;
-		this.mailData.add(pkge);
-	}
-	
-	public ArrayList<String> getMailData() {
-		return this.mailData;
-	}
-	
-	public void openMainMailMenu(Player p, Resident res) {
-		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Menu");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
-				CivColor.RESET+"This is Mail Menu. You can use this to",
-				CivColor.RESET+"send messages to players, as well as to",
-				CivColor.RESET+"collect items/recieve notices from your",
-				CivColor.RESET+"structures, town, civ, or game in general.",
-				CivColor.RESET+""
-				));
-		
-		inv.setItem(2, LoreGuiItem.build(CivColor.GreenBold+"View Mail", CivData.CHEST, 0));
-		
-		p.openInventory(inv);
-	}
-	
-	
-/*	public void openMailMenu(Player p, Resident res) {
-		if (!p.isOp()) return;
-		
-		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
-		//CivMessage.global(p.getInventory().getItemInMainHand().serialize().toString()+" - item");
-		if (this.mailData == null || this.mailData.toString().equals("")) {
-			p.openInventory(inv);
-			return;
-		}
-		for (String str : this.mailData) {
-			String[] packages = str.split("~");
-			
-			for (String pkg : packages) {
-				if (pkg == null || pkg == "") continue;
-				ItemStack item = ItemSerializer.getItemStackFromSerial(pkg);
-				if (item == null) continue;
-				inv.addItem(item);
-			}
-		}
-		p.openInventory(inv);
-	}*/
-	
-	public void openMailMenu(Player p, Resident res, int pageNumber) {
-		if (!p.isOp()) return;
-		
-		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+"'s Mail Inventory");
-		if (this.mailData == null || this.mailData.toString().equals("")) {
-			p.openInventory(inv);
-			return;
-		}
-		
-		int add = 0;
-		HashMap<Integer, String> items = new HashMap<Integer, String>();
-		for (String str : this.mailData) {
-			String[] packages = str.split("~");
-			
-			for (String pkg : packages) {
-				if (pkg == null || pkg == "") continue;
-				ItemStack item = ItemSerializer.getItemStackFromSerial(pkg);
-				if (item == null) continue;
-				add++;
-				items.put(add, pkg);
-			}
-		}
-		
-		Paginator paginator = new Paginator();
-		paginator.paginate(items.values(), pageNumber);
-		
-		for (Object obj : paginator.page) {
-			ItemStack item = ItemSerializer.getItemStackFromSerial((String) obj);
-			if (item == null) continue;
-			inv.addItem(item);
-	//		CivMessage.global(item.getType()+","+item.getAmount());
-		}
-		
-		if (paginator.hasPrevPage) {
-			ItemStack stack = LoreGuiItem.build("Prev Page", ItemManager.getId(Material.PAPER), 0, "");
-			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
-			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber-1));
-			inv.setItem(9*5, stack);
-		}
-		
-		if (paginator.hasNextPage) {
-			ItemStack stack = LoreGuiItem.build("Next Page", ItemManager.getId(Material.PAPER), 0, "");
-			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
-			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber+1));
-			inv.setItem((9*6)-1, stack);
-		}
-		
-		p.openInventory(inv);
-	}
 
 	public boolean hasChatEnabled() {
 		return this.chatToggle;
@@ -1776,6 +1659,163 @@ public class Resident extends SQLObject {
 	
 	private static String Color(String input) {
 		return ChatColor.translateAlternateColorCodes('&', input);
+	}
+	
+	
+	
+	// Mail
+	private void loadMails(String string) {
+		if (string == null || string.equals("")) {
+			return;
+		}
+		
+		String[] techs = string.split("&DIV_P@");
+		for (String pkgs : techs) {
+			String[] pkg = pkgs.split("&DIV_M@"); // [0] = title, [1] = inventory
+			Inventory inv = Bukkit.createInventory(null, 9*4);
+			ItemSerializer.StringToInventory(inv, pkg[1]);
+			this.mails.put(pkg[0], inv);
+		}
+	}
+	
+	private Object saveMails() {
+		String out = "";
+		for (Entry<String, Inventory> pkgs : this.mails.entrySet()) {
+			out += pkgs.getKey()+"&DIV_M@"+ItemSerializer.InventoryToString(pkgs.getValue())+"&DIV_P@";
+		}
+		return out;
+	}
+	
+	public Map<String, Inventory> getMails() {
+		return this.mails;
+	}
+	
+/*	private boolean hasMail(String mail_name, String mail_id) {
+		String mail_code = mail_name+"&MAILCODE@"+mail_id;
+		if (mail_code == null || mail_code.equals("")) {
+			return false;
+		}
+		return mails.containsKey(mail_code);
+	}*/
+	
+	public void addMail(Resident res, String mail_name, String mail_id, Inventory inv) {
+		String mail_code = mail_name+"&MAILCODE@"+mail_id;
+		mails.put(mail_code, inv);
+	}
+	
+	public void removeMail(String mail_name, String mail_id) {
+		String mail_code = mail_name+"&MAILCODE@"+mail_id;
+		mails.remove(mail_code);
+	}
+	
+	Inventory inv_mainmail = null;
+	public void openMainMailMenu(Player p, Resident res) {
+		if (inv_mainmail == null) {
+			inv_mainmail = Bukkit.getServer().createInventory(p, 9*3, res.getName()+" Mail Menu [R]");
+		}
+		
+		inv_mainmail.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+				CivColor.RESET+"This is Mail Menu. You can use this to",
+				CivColor.RESET+"send messages to players, as well as to",
+				CivColor.RESET+"collect items/recieve notices from your",
+				CivColor.RESET+"structures, town, civ, or game in general.",
+				CivColor.RESET+""
+				));
+		
+		inv_mainmail.setItem(1, LoreGuiItem.build(CivColor.GreenBold+"View Mail", CivData.WHITE_SHULKER_BOX, 0));
+		inv_mainmail.setItem(3, LoreGuiItem.build(CivColor.YellowBold+"Send Mail w/ Message", CivData.PAPER, 0));
+		inv_mainmail.setItem(4, LoreGuiItem.build(CivColor.YellowBold+"Send Mail w/ Item(s)", CivData.CHEST, 0));
+		
+		// Standard in all mail windows, but block the one out of the open viewing window.
+//		inv_mainmail.setItem(6, LoreGuiItem.build(CivColor.White+"Open Res Mail Panel", CivData.MINECART_WITH_CHEST, 0));
+		inv_mainmail.setItem(6, LoreGuiItem.build(CivColor.RoseBold+"Open Res Mail Panel", CivData.CONCRETE, 5, CivColor.Red+" « Already Selected » "));
+		inv_mainmail.setItem(7, LoreGuiItem.build(CivColor.White+"Open Civ Mail Panel", CivData.COMMAND_BLOCK, 0, CivColor.Red+" « Coming Soon » "));
+		inv_mainmail.setItem(8, LoreGuiItem.build(CivColor.White+"Open Town Mail Panel", CivData.IRON_DOOR_ITEM, 0, CivColor.Red+" « Coming Soon » "));
+		
+		p.openInventory(inv_mainmail);
+	}
+	
+	public void openViewMailMenu(Player p, Resident res, int pageNumber) {
+		if (!p.isOp()) return;
+		
+		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+" View Mail [R]");
+		if (this.mails == null || this.mails.isEmpty()) {
+			p.openInventory(inv);
+			return;
+		}
+		
+		int add = 0;
+		HashMap<Integer, String> items = new HashMap<Integer, String>();
+		for (Entry<String, Inventory> pkgs : this.mails.entrySet()) {
+			add++;
+			ItemStack is = new ItemStack(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_vanilla_knowledge_book")));
+			String[] mail_code = pkgs.getKey().split("&MAILCODE@");
+			ItemMeta meta = is.getItemMeta();
+			meta.setDisplayName(mail_code[0]);
+			List<String> lore = new ArrayList<>();
+			lore.add(CivColor.LightGray+"Mail ID: "+mail_code[1]);
+			meta.setLore(lore);
+			is.setItemMeta(meta);
+			items.put(add, ItemSerializer.getSerializedItemStack(is));
+		}
+		
+		// Add Back Button
+		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Mail Menu");
+		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
+		backButton = LoreGuiItem.setActionData(backButton, "invType", "openResMail");
+		inv.setItem((9*6)-1, backButton);
+		
+		Paginator paginator = new Paginator();
+		paginator.paginate(items.values(), pageNumber);
+		
+		for (Object obj : paginator.page) {
+			ItemStack item = ItemSerializer.getItemStackFromSerial((String) obj, true);
+			if (item == null) continue;
+			inv.addItem(item);
+		}
+		
+		if (paginator.hasPrevPage) {
+			ItemStack stack = LoreGuiItem.build("Prev Page", ItemManager.getId(Material.PAPER), 0, "");
+			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
+			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber-1));
+			inv.setItem(9*5, stack);
+		}
+		
+		if (paginator.hasNextPage) {
+			ItemStack stack = LoreGuiItem.build("Next Page", ItemManager.getId(Material.PAPER), 0, "");
+			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
+			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber+1));
+			inv.setItem((9*6)-2, stack);
+		}
+		
+		p.openInventory(inv);
+	}
+	
+	public void openMailPackage(Player p, Resident res, String mail_code) {
+		String[] mail_code_final = mail_code.split("&MAILCODE@");
+		Inventory inv = Bukkit.createInventory(p, 9*5, "[R] Mail "+mail_code_final[1]);
+		
+		Inventory mail_inv = mails.get(mail_code);
+		int inv_slot = 0;
+		for (ItemStack is : mail_inv.getContents()) {
+			if (is == null || is.getType() == Material.AIR) {
+				inv_slot++;
+				continue;
+			} else {
+				inv.setItem(inv_slot, is);
+				inv_slot++;
+			}
+		}
+		
+		for (int i = 0; i >= 36 && i <= 44; i++) {
+			ItemStack mail_options = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
+			inv.setItem(i, mail_options);
+		}
+		
+		inv.setItem(38, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.LightGray+" « Click to Collect Materials » "));
+		inv.setItem(42, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.LightGray+" « Click to Send to Another Player » "));
+		
+		p.openInventory(inv);
 	}
 	
 }
