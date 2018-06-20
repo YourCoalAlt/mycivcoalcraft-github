@@ -57,7 +57,7 @@ public class SQLUpdate implements Runnable {
 	public void run() {	
 		while(true) {
 			try {
-				if (CivCraft.isDisable || !CivCraft.isStarted) { break; }
+				if (CivCraft.isDisable || !CivCraft.isStarted) break;
 				SQLObject obj = saveObjects.poll();
 				if (obj == null) {
 					if (saveObjects.isEmpty()) Thread.sleep(500);

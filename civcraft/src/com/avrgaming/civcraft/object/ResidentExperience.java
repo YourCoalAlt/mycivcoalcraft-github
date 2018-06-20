@@ -207,7 +207,7 @@ public class ResidentExperience extends SQLObject {
 		if (this.exp_slots.containsKey(slot)) {
 			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + generatedEXP));
 			int checkNewLvl = this.getEXPLevel(slot);
-			if (checkNewLvl > level) {
+			if (checkNewLvl != level) {
 				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
 			this.exp_slots.put(slot, newTotalEXP);
@@ -230,7 +230,7 @@ public class ResidentExperience extends SQLObject {
 		if (this.exp_slots.containsKey(slot)) {
 			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + base_points));
 			int checkNewLvl = this.getEXPLevel(slot);
-			if (checkNewLvl > level) {
+			if (checkNewLvl != level) {
 				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
 			this.exp_slots.put(slot, newTotalEXP);
@@ -238,6 +238,29 @@ public class ResidentExperience extends SQLObject {
 			this.exp_slots.put(slot, base_points);
 		}
 		CivMessage.sendQuestExp(player, "+"+base_points+" "+this.getSlotString(slot)+" EXP [via Admin]");
+		try {
+			this.saveNow();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setResEXPviaAdmin(EXPSlots slot, double base_points) throws CivException {
+		player = CivGlobal.getPlayerE(this.getName());
+		DecimalFormat df = new DecimalFormat("#.##");
+		int level = this.getEXPLevel(slot);
+		
+		if (this.exp_slots.containsKey(slot)) {
+			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(base_points)));
+			int checkNewLvl = this.getEXPLevel(slot);
+			if (checkNewLvl != level) {
+				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
+			}
+			this.exp_slots.put(slot, newTotalEXP);
+		} else {
+			this.exp_slots.put(slot, base_points);
+		}
+		CivMessage.sendQuestExp(player, "Set "+base_points+" "+this.getSlotString(slot)+" EXP [via Admin]");
 		try {
 			this.saveNow();
 		} catch (SQLException e) {

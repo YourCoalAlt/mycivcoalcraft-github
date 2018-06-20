@@ -87,7 +87,7 @@ public class CivPerms {
 	}
 	
 	// Reload configs
-	public static void validRefresh(Player p) throws CivException {
+	public static void validReload(Player p) throws CivException {
 		if (!p.isOp() || !p.hasPermission(CONTROL) || !p.hasPermission(ADMIN_OP) || !p.hasPermission(ADMIN) ||
 				!p.hasPermission(MINI_ADMIN) || !p.hasPermission(DEVELOPER) || !p.hasPermission(RELOAD)) {
 			throw new CivException("You must have Reload permission, or be ranked Developer or higher to use this command.");
@@ -181,6 +181,14 @@ public class CivPerms {
 	public static boolean isEcon(Player p) {
 		if (!p.isOp() || !p.hasPermission(CONTROL) || !p.hasPermission(ADMIN_OP) || !p.hasPermission(ADMIN) ||
 				!p.hasPermission(CivSettings.ECON)) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean isReload(Player p) throws CivException {
+		if (!p.isOp() || !p.hasPermission(CONTROL) || !p.hasPermission(ADMIN_OP) || !p.hasPermission(ADMIN) ||
+				!p.hasPermission(DEVELOPER) || !p.hasPermission(RELOAD)) {
 			return false;
 		}
 		return true;

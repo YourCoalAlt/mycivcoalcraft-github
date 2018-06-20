@@ -12,19 +12,18 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.war.War;
 
 public class ActionBarUpdateTimer implements Runnable {
 	
 	@Override
 	public void run() {
-		if (CivCraft.isDisable || War.isWarTime()) return;
+//		if (CivCraft.isDisable || War.isWarTime()) return;
 		
 		String weather = CivColor.GrayBold+" [";
 		World w = Bukkit.getWorld(CivCraft.worldName);
 		int weatherTime = w.getWeatherDuration() / 20;
-		if (weatherTime > (60*10)) {
-			w.setWeatherDuration(((60*10)-1)*20);
+		if (weatherTime > (60*20)) {
+			w.setWeatherDuration(((60*20)-1)*20);
 			weatherTime = w.getWeatherDuration();
 		}
 		String weatherLength = "";

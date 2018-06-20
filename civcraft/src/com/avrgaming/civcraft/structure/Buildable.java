@@ -614,13 +614,13 @@ public abstract class Buildable extends SQLObject {
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
 				loc.setZ(loc.getZ() + SHIFT_OUT);
 			}
-//		}   
+//		}
 		if (info.templateYShift != 0) {
 			// Y-Shift based on the config, this allows templates to be built underground.
 			loc.setY(loc.getY() + info.templateYShift);
 			
-			if (loc.getY() < 2) {
-				throw new CivException("Cannot build here, too close to bedrock. (Current Y: "+loc.getY()+", must be greater than 2.)");
+			if (loc.getY() < 10) {
+				throw new CivException("Cannot build here, too close to bedrock. (Current Y: "+loc.getY()+", must be greater than 10.)");
 			}
 		}
 		return loc;
@@ -656,8 +656,8 @@ public abstract class Buildable extends SQLObject {
 			// Y-Shift based on the config, this allows templates to be built underground.
 			loc.setY(loc.getY() + this.getTemplateYShift());
 			
-			if (loc.getY() < 2) {
-				throw new CivException("Cannot build here, too close to bedrock.");
+			if (loc.getY() < 10) {
+				throw new CivException("Cannot build here, too close to bedrock. (Current Y: "+loc.getY()+", must be greater than 10.)");
 			}
 		}
 		return loc;

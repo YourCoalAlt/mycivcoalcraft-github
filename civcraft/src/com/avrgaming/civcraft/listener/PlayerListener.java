@@ -214,9 +214,19 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) throws InvalidNameException {
 		TaskMaster.asyncTask("CountdownTimer", new CountdownTimer(), 0);
-		
 		Player p = event.getPlayer();
 		Resident res = CivGlobal.getResident(p);
+		if (CivCraft.isRestarting) {
+			p.kickPlayer(" §b§l« CivilizationCraft »"+"\n"+
+					" "+"\n"+
+					"§c§lKicked By §r§8»§ §d§o"+"CONSOLE"+"\n"+
+					"§c§lReason §r§8»§ §f"+"Server Locked -- Rebooting"+"\n"+
+					" "+"\n"+
+					" "+"\n"+
+					"§7§o[Please wait to re-join the server.]"+"\n");
+			return;
+		}
+		
 		CivLog.info("Scheduling Player Login Task for:"+p.getName());
 		if (res == null) {
 			CivLog.info("No resident found. Creating for "+p.getName());

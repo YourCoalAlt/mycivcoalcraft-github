@@ -33,8 +33,7 @@ public class ArrowTower extends Structure {
 	
 	ProjectileArrowComponent arrowComponent;
 	
-	protected ArrowTower(Location center, String id, Town town)
-			throws CivException {
+	protected ArrowTower(Location center, String id, Town town) throws CivException {
 		super(center, id, town);
 		this.hitpoints = this.getMaxHitPoints();
 	}

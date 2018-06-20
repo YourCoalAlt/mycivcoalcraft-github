@@ -44,6 +44,7 @@ import com.avrgaming.civcraft.command.EconCommand;
 import com.avrgaming.civcraft.command.HereCommand;
 import com.avrgaming.civcraft.command.KillCommand;
 import com.avrgaming.civcraft.command.PayCommand;
+import com.avrgaming.civcraft.command.RebootCommand;
 import com.avrgaming.civcraft.command.ReportCommand;
 import com.avrgaming.civcraft.command.SelectCommand;
 import com.avrgaming.civcraft.command.VoteCommand;
@@ -136,6 +137,7 @@ import com.avrgaming.civcraft.threading.timers.WindmillTimer;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
+import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.TimeTools;
 import com.avrgaming.civcraft.war.WarListener;
 import com.avrgaming.global.perks.PlatinumManager;
@@ -149,9 +151,11 @@ public final class CivCraft extends JavaPlugin {
 	private static JavaPlugin plugin;
 	public static boolean isDisable = false;
 	public static boolean isStarted = false;
+	public static boolean isRestarting = false;
 	
 	public static String worldName;
 	public static Integer structure_process;
+	public static final String server_name = CivColor.LightGray+"["+CivColor.Red+"Coal"+CivColor.LightBlue+"CivCraft"+CivColor.LightGray+"] "+CivColor.RESET;
 	
 	private void startTimers() {
 		TaskMaster.asyncTask("SQLUpdate", new SQLUpdate(), 0);
@@ -311,6 +315,7 @@ public final class CivCraft extends JavaPlugin {
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("kill").setExecutor(new KillCommand());
+		getCommand("reboot").setExecutor(new RebootCommand());
 	
 		registerEvents();
 		

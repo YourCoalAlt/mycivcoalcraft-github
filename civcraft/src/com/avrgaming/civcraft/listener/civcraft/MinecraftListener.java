@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.CropState;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -203,7 +204,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.COAL_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -243,7 +244,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.REDSTONE_ORE) || event.getBlock().getType().equals(Material.GLOWING_REDSTONE_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -283,7 +284,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.LAPIS_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -323,7 +324,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.DIAMOND_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true);
+			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -498,6 +499,17 @@ public class MinecraftListener implements Listener {
 				return;
 			}
 		}
+	}
+	
+	public ItemStack reduceItemDurability(Player p, ItemStack is) {
+		short newDura = (short) (is.getDurability()+1);
+		if (newDura < 0) {
+			is = new ItemStack(Material.AIR);
+			p.playSound(p.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+		} else {
+			is.setDurability(newDura);
+		}
+		return is;
 	}
 	
 	// https://minecraft.gamepedia.com/Health#Death_messages 
@@ -891,29 +903,34 @@ public class MinecraftListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onServerListRefresh(ServerListPingEvent event) throws IllegalArgumentException, UnsupportedOperationException, Exception {
 		event.setServerIcon(Bukkit.loadServerIcon(new File("mcdiamondsword1.png")));
-		int amtPlayers = (int) ((event.getNumPlayers()*2.5)+2);
-		if (amtPlayers > CivGlobal.maxPlayers) {
-			event.setMaxPlayers(CivGlobal.maxPlayers);
+		if (CivCraft.isRestarting) {
+			event.setMaxPlayers(0);
+			event.setMotd(CivCraft.server_name+" -- Server Rebooting!");
 		} else {
-			event.setMaxPlayers(amtPlayers);
-		}
-		String title = CivColor.Red+"Coal"+CivColor.LightBlue+"Civ: "+CivColor.RESET+CivColor.LightGrayItalic;
-		Random rand = new Random();
-		int msg = rand.nextInt(7);
-		if (msg == 0) {
-			event.setMotd(title+"Speak softly and carry a big stick; you will go far -Roosevelt");
-		} else if (msg == 1) {
-			event.setMotd(title+"The two most powerful warriors are patience and time -Tolstoy");
-		} else if (msg == 2) {
-			event.setMotd(title+"Sometimes by losing a battle you find a new way to win the war -Trump");
-		} else if (msg == 3) {
-			event.setMotd(title+"We are going to have peace even if we have to fight for it -Eisenhower");
-		} else if (msg == 4) {
-			event.setMotd(title+"To be prepared for war is the most effective means of peace -Washington");
-		} else if (msg == 5) {
-			event.setMotd(title+"You mustn't fight too often with an enemy; you'll teach him your art of war -Bonaparte");
-		} else {
-			event.setMotd(title+"Why play with friends when you can play with communities? -YourCoal");
+			int amtPlayers = (int) ((event.getNumPlayers()*2.5)+2);
+			if (amtPlayers > CivGlobal.maxPlayers) {
+				event.setMaxPlayers(CivGlobal.maxPlayers);
+			} else {
+				event.setMaxPlayers(amtPlayers);
+			}
+			String title = CivCraft.server_name+CivColor.LightGrayItalic;
+			Random rand = new Random();
+			int msg = rand.nextInt(7);
+			if (msg == 0) {
+				event.setMotd(title+"Speak softly and carry a big stick; you will go far -Roosevelt");
+			} else if (msg == 1) {
+				event.setMotd(title+"The two most powerful warriors are patience and time -Tolstoy");
+			} else if (msg == 2) {
+				event.setMotd(title+"Sometimes by losing a battle you find a new way to win the war -Trump");
+			} else if (msg == 3) {
+				event.setMotd(title+"We are going to have peace even if we have to fight for it -Eisenhower");
+			} else if (msg == 4) {
+				event.setMotd(title+"To be prepared for war is the most effective means of peace -Washington");
+			} else if (msg == 5) {
+				event.setMotd(title+"You mustn't fight too often with an enemy; you'll teach him your art of war -Bonaparte");
+			} else {
+				event.setMotd(title+"Why play with friends when you can play with communities? -YourCoal");
+			}
 		}
 		
 	}

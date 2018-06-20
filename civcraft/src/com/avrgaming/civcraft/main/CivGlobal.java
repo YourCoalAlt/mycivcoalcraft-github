@@ -149,7 +149,6 @@ public class CivGlobal {
 	private static Map<BlockCoord, ProtectedBlock> protectedBlocks = new ConcurrentHashMap<BlockCoord, ProtectedBlock>();
 	private static Map<ChunkCoord, FarmChunk> farmChunks = new ConcurrentHashMap<ChunkCoord, FarmChunk>();
 	private static Queue<FarmChunk> farmChunkUpdateQueue = new LinkedList<FarmChunk>();
-	private static Queue<FarmChunk> farmGrowQueue = new LinkedList<FarmChunk>();
 	private static Map<UUID, ItemFrameStorage> protectedItemFrames = new ConcurrentHashMap<UUID, ItemFrameStorage>();
 	private static Map<BlockCoord, BonusGoodie> bonusGoodies = new ConcurrentHashMap<BlockCoord, BonusGoodie>();
 	private static Map<ChunkCoord, HashSet<Wall>> wallChunks = new ConcurrentHashMap<ChunkCoord, HashSet<Wall>>();
@@ -1265,16 +1264,35 @@ public class CivGlobal {
 
 	public static void addFarmChunk(ChunkCoord coord, FarmChunk fc) {
 		farmChunks.put(coord, fc);	
-		CivGlobal.queueFarmChunk(fc);
-		farmGrowQueue.add(fc);
+		CivGlobal.addQueueFarmChunk(fc);
 	}
 	
 	public static FarmChunk getFarmChunk(ChunkCoord coord) {
 		return farmChunks.get(coord);
 	}
 	
+	public static void removeFarmChunk(ChunkCoord coord) {
+		farmChunks.remove(coord);
+	}
+	
 	public static Collection<FarmChunk> getFarmChunks() {
 		return farmChunks.values();
+	}
+	
+	public static void addQueueFarmChunk(FarmChunk fc) {
+		farmChunkUpdateQueue.add(fc);
+	}
+	
+	public static void removeQueueFarmChunk(FarmChunk fc) {
+		farmChunkUpdateQueue.remove(fc);
+	}
+	
+	public static FarmChunk pollFarmChunks() {
+		return farmChunkUpdateQueue.poll();
+	}
+
+	public static boolean farmChunkValid(FarmChunk fc) {
+		return farmChunks.containsKey(fc.getCoord());
 	}
 	
 	public static Date getNextUpkeepDate() {
@@ -1313,10 +1331,6 @@ public class CivGlobal {
 	public static Date getNextHourlyTickDate() {
 		EventTimer hourly = EventTimer.timers.get("hourly");
 		return hourly.getNext().getTime();
-	}
-
-	public static void removeFarmChunk(ChunkCoord coord) {
-		farmChunks.remove(coord);
 	}
 	
 	public static void addProtectedItemFrame(ItemFrameStorage framestore) {
@@ -1958,26 +1972,6 @@ public class CivGlobal {
 
 	public static Collection<Structure> getStructures() {
 		return structures.values();
-	}
-	
-	public static void queueFarmChunk(FarmChunk fc) {
-		farmChunkUpdateQueue.add(fc);
-	}
-	
-	public static FarmChunk pollFarmChunk() {
-		return farmChunkUpdateQueue.poll();
-	}
-
-	public static boolean farmChunkValid(FarmChunk fc) {
-		return farmChunks.containsKey(fc.getCoord());
-	}
-
-	public static Queue<FarmChunk> getFarmGrowQueue() {
-		return farmGrowQueue;
-	}
-
-	public static void setFarmGrowQueue(Queue<FarmChunk> farmGrowQueue) {
-		CivGlobal.farmGrowQueue = farmGrowQueue;
 	}
 	
 	public static void addRoadBlock(RoadBlock rb) {

@@ -17,6 +17,7 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 		displayName = "Admin Resident Experience";
 		commands.put("view", "[name] View all slots and values.");
 		commands.put("add", "[name] [slot] [amount] Changes the player's selected slot XP based on the amount.");
+		commands.put("set", "[name] [slot] [amount] Sets the player's selected slot XP based on the amount.");
 	}
 	
 	public void view_cmd() throws CivException {
@@ -40,6 +41,22 @@ public class AdminExperienceCommand extends CommandBase implements Listener {
 		double value = Double.valueOf(args[3]);
 		re.addResEXPviaAdmin(exps, value);
 		CivMessage.sendSuccess(sender, "Changed "+re.getName()+" "+re.getSlotString(exps)+" XP by "+value+". Their total is now "+re.getEXPCount(exps));
+	}
+	
+	public void set_cmd() throws CivException {
+		if (args.length < 4) throw new CivException("Please check your command: Must include resident name, slot, and value.");
+		ResidentExperience re = CivGlobal.getResidentE(args[1]);
+		if (EXPSlots.valueOf(args[2].toString().toUpperCase()) == null) {
+			String slots = "";
+			for (EXPSlots sts : EXPSlots.values()) {
+				slots += re.getSlotString(sts);
+			}
+			throw new CivException("Invalid slot name. Please choose from one of the following: "+slots);
+		}
+		EXPSlots exps = EXPSlots.valueOf(args[2].toString().toUpperCase());
+		double value = Double.valueOf(args[3]);
+		re.setResEXPviaAdmin(exps, value);
+		CivMessage.sendSuccess(sender, "Set "+re.getName()+" "+re.getSlotString(exps)+" XP by "+value+". Their total is now "+re.getEXPCount(exps));
 	}
 	
 	@Override

@@ -54,6 +54,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.threading.tasks.MailToResidentTask;
 import com.avrgaming.civcraft.threading.tasks.NotificationTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
@@ -550,62 +551,39 @@ public class Blacksmith extends Structure {
 	
 	public void depositSmelt(Player player, Material mat, int amt, int data) {
 		int iid = ItemManager.getId(mat);
-		String value = convertType(iid)+":"+(int) (amt*Blacksmith.YIELD_RATE)+":"+data;
+		int amtYield = (int) (amt*Blacksmith.YIELD_RATE);
+		String value = convertType(iid)+":"+amtYield+":"+data;
 		String key = getKey(player, this, "smelt");
 		sessionAdd(key, value);
 		
 		// Schedule a message to notify the player when the smelting is finished.
 		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
-				CivColor.LightGreen+" Your stack of "+amt+" "+CivData.getDisplayName(iid, data)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+				CivColor.LightGreen+" Your stack of "+amtYield+" "+CivData.getDisplayName(iid, data)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
 		
 		
 		
-//		Resident res = CivGlobal.getResident(player);
+		Resident res = CivGlobal.getResident(player);
 		int full = 0; int partial = 0;
-		for (int stackRefine = (int) (amt*Blacksmith.YIELD_RATE); stackRefine >= 64; stackRefine -= 64) {
-			if (stackRefine < 64) partial = stackRefine;
+		for (int stackRefine = amtYield; stackRefine > 0; stackRefine -= 64) {
+			if (stackRefine < 0) {
+				int fix = stackRefine + 64;
+				partial = fix;
+			} else if (stackRefine < 64) partial = stackRefine;
 			else full += 1;
 		}
 		
-		Inventory inv = Bukkit.createInventory(player, 9*5, System.currentTimeMillis()+player.getName()+"blacksmith_forge");
-		
+		Inventory inv = Bukkit.createInventory(null, 9*5);
 		for (int i = 0; i < full; i++) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64, (short) data);
-			inv.addItem(item);
-//			String is = ItemSerializer.getSerializedItemStack(item);
-//			res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, is);
+			inv.addItem(new ItemStack(ItemManager.getMaterial(convertType(iid)), 64, (short) data));
 		}
-		
 		if (partial > 0) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial, (short) data);
-			inv.addItem(item);
-//			String is = ItemSerializer.getSerializedItemStack(item);
-//			res.addMailData("Blacksmith Smelter", "Contains: "+amt+" "+CivData.getDisplayName(iid, data), null, is);
+			inv.addItem(new ItemStack(ItemManager.getMaterial(convertType(iid)), partial, (short) data));
 		}
+//		res.addMail(res, "blacksmith_forge", System.currentTimeMillis(), inv);
+		BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(res, "blacksmith_forge", System.currentTimeMillis(), inv), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
 		
 		// TODO Fix w/ new mail system
 //		res.addMailData("Blacksmith Smelter", inv);
-		
-		
-		
-		// TODO We need to make a timer to add to resident's mail or else they won't recieve the items.
-/*		int full = 0; int partial = 0;
-		for (int stackRefine = (int) (amt*Blacksmith.YIELD_RATE); stackRefine >= 64; stackRefine -= 64) {
-			if (stackRefine < 64) partial = stackRefine;
-			else full += 1;
-		}
-		
-		for (int i = 0; i < full; i++) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), 64);
-			String is = InventorySerializer.getSerializedItemStack(item);
-			BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(player.getUniqueId().toString(), is), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
-		}
-		
-		if (partial > 0) {
-			ItemStack item = new ItemStack(ItemManager.getMaterial(iid), partial);
-			String is = InventorySerializer.getSerializedItemStack(item);
-			BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(player.getUniqueId().toString(), is), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
-		}*/
 		
 		CivMessage.send(player,CivColor.LightGreen+ "Deposited "+amt+" "+CivData.getDisplayName(iid, data)+".");
 	}

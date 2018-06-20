@@ -1,7 +1,5 @@
 package com.avrgaming.civcraft.command.admin;
 
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,12 +31,11 @@ public class AdminTestCommand extends CommandBase implements Listener {
 	
 	public void mail_cmd() throws CivException {
 		Resident res = getResident();
-		Random rand = new Random();
 		Inventory inv = Bukkit.createInventory(null, 9*4);
 		inv.addItem(new ItemStack(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_vanilla_knowledge_book"))));
 		inv.addItem(new ItemStack(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hopper"))));
 		inv.addItem(new ItemStack(Material.COBBLESTONE));
-		res.addMail(res, "This is a test mail!", String.valueOf((System.currentTimeMillis()+rand.nextInt(100))), inv);
+		res.addMail(res, "This is a test mail!", System.currentTimeMillis(), inv);
 	}
 	
 	public void run_cmd() {

@@ -114,6 +114,7 @@ public class Resident extends SQLObject {
 	public boolean anticheat = false;
 	private ArrayList<String> alts = new ArrayList<String>();
 	private Map<String, Inventory> mails = new ConcurrentHashMap<String, Inventory>();
+	public String view_mail; // Has information on current mail open, else null
 	
 	public BossBar warbar;
 	public boolean isSuicidal = false;
@@ -1698,7 +1699,10 @@ public class Resident extends SQLObject {
 		return mails.containsKey(mail_code);
 	}*/
 	
-	public void addMail(Resident res, String mail_name, String mail_id, Inventory inv) {
+	private long last_mail_code;
+	public void addMail(Resident res, String mail_name, long mail_id, Inventory inv) {
+		if (last_mail_code == mail_id) mail_id += 1;
+		last_mail_code = mail_id;
 		String mail_code = mail_name+"&MAILCODE@"+mail_id;
 		mails.put(mail_code, inv);
 	}
@@ -1706,6 +1710,18 @@ public class Resident extends SQLObject {
 	public void removeMail(String mail_name, String mail_id) {
 		String mail_code = mail_name+"&MAILCODE@"+mail_id;
 		mails.remove(mail_code);
+	}
+	
+	public void removeMail(String mail_code) {
+		mails.remove(mail_code);
+	}
+	
+	public Inventory getMail(String mail_code) {
+		if (mails.get(mail_code) != null) {
+			return mails.get(mail_code);
+		} else {
+			return null;
+		}
 	}
 	
 	Inventory inv_mainmail = null;
@@ -1793,7 +1809,7 @@ public class Resident extends SQLObject {
 	
 	public void openMailPackage(Player p, Resident res, String mail_code) {
 		String[] mail_code_final = mail_code.split("&MAILCODE@");
-		Inventory inv = Bukkit.createInventory(p, 9*5, "[R] Mail "+mail_code_final[1]);
+		Inventory inv = Bukkit.createInventory(p, 9*6, "[RR] Mail "+mail_code_final[1]);
 		
 		Inventory mail_inv = mails.get(mail_code);
 		int inv_slot = 0;
@@ -1807,13 +1823,12 @@ public class Resident extends SQLObject {
 			}
 		}
 		
-		for (int i = 0; i >= 36 && i <= 44; i++) {
-			ItemStack mail_options = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
-			inv.setItem(i, mail_options);
-		}
+		for (int i = 45; i <= 53; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(38, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.LightGray+" « Click to Collect Materials » "));
-		inv.setItem(42, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.LightGray+" « Click to Send to Another Player » "));
+		inv.setItem(45, LoreGuiItem.build(CivColor.GreenBold+"Information", CivData.PAPER, 0, CivColor.LightGray+"Sent By: "+CivColor.Red+"« In Dev » ", CivColor.LightGray+"Forwarded: « In Dev » "));
+		inv.setItem(46, LoreGuiItem.build(CivColor.GreenBold+"Message", CivData.PAPER, 0, CivColor.LightGray+" « In Dev » ")); //XXX Messages need 10 line limit
+		inv.setItem(49, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.LightGray+" « Click to Collect Materials » "));
+		inv.setItem(51, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.LightGray+" « Click to Send to Another Player » ", CivColor.Red+"« In Dev » "));
 		
 		p.openInventory(inv);
 	}

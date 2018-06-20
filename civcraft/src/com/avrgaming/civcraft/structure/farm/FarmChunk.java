@@ -385,6 +385,9 @@ public class FarmChunk {
 				for (int z = 0; z < 16; z++) {
 					for (int y = 10; y < 192; y++) {					
 						
+						BlockCoord below = new BlockCoord(snapshot.getWorldName(), (snapshot.getX() << 4) + x, y-1, (snapshot.getZ() << 4) + z);
+						if (ItemManager.getId(below.getBlock().getType()) != CivData.FARMLAND) continue;
+						
 						//Block nextBlock = this.struct.getCorner().getBlock().getChunk().getBlock(x, y, z);
 						//BlockCoord bcoord = new BlockCoord(nextBlock);
 						 bs.setFromSnapshotLocation(x, y, z, snapshot);

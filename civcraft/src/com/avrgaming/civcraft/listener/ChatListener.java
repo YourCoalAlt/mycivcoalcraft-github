@@ -111,7 +111,7 @@ public class ChatListener implements Listener {
 			    int secs = remainder;
 				if (hours > 0) onlineTime += hours+" hr, ";
 				if (mins > 0) onlineTime += mins+" min, ";
-				if (secs > 0) onlineTime += secs+" sec";
+				if (secs > 0) onlineTime += secs+" sec, ";
 			}
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd h:mm:ss a z");
@@ -125,7 +125,7 @@ public class ChatListener implements Listener {
 			newFormat.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(
 					CivColor.GreenBold+"Civilization: "+CivColor.LightGreen+civ+"\n"+
 					CivColor.GreenBold+"Town: "+CivColor.LightGreen+town+"\n"+
-					CivColor.GoldBold+"Online For: "+CivColor.Yellow+onlineTime+"\n"+
+					CivColor.GoldBold+"Online For: "+CivColor.Yellow+onlineTime.subSequence(0, onlineTime.length()-2)+"\n"+
 					CivColor.GrayBold+"Time Sent: "+CivColor.LightGray+sdf.format(cal.getTime())
 					).create()));
 	        for (Player all : Bukkit.getOnlinePlayers()) {

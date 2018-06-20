@@ -22,21 +22,16 @@ import java.util.LinkedList;
 
 import com.avrgaming.civcraft.main.CivGlobal;
 
-
 public class FarmCachePopulateTask implements Runnable {
-
-	LinkedList<FarmChunk> farms;
 	
+	LinkedList<FarmChunk> farms;
 	public FarmCachePopulateTask(LinkedList<FarmChunk> farms) {
 		this.farms = farms;
 	}
 	
 	@Override
 	public void run() {
-		if (!CivGlobal.growthEnabled) {
-			return;
-		}
-		
+		if (!CivGlobal.growthEnabled) return;
 		for (FarmChunk fc : farms) {
 			try {
 				fc.populateCropLocationCache();
@@ -44,7 +39,5 @@ public class FarmCachePopulateTask implements Runnable {
 				e.printStackTrace();
 			}
 		}
-
 	}
-
 }

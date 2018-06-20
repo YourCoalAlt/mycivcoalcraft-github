@@ -76,7 +76,8 @@ public class BuildCommand extends CommandBase {
 			double builtPercent = (currentBuilt/totalCost)*100;
 			
 			// totalTime still changes and is inconsistant with structures
-			int  totalTime = (int) (((b.getHammerCost() / town.getHammers().total) - (b.getBuiltHammers() / town.getHammers().total)) * 3600);
+//			int  totalTime = (int) (((b.getHammerCost() / town.getHammers().total) - (b.getBuiltHammers() / town.getHammers().total)) * 3600);
+			int totalTime = (int) (((b.getHammerCost() - b.getBuiltHammers()) / b.getBuildSpeed()) * 1000);
 			long endTime = (long)(System.currentTimeMillis() + (1000 * totalTime));
 			
 			String time = "";

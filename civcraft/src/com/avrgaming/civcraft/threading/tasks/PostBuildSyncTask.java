@@ -35,6 +35,7 @@ import com.avrgaming.civcraft.structure.ArrowTower;
 import com.avrgaming.civcraft.structure.Blacksmith;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.CannonTower;
+import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.TradeOutpost;
 import com.avrgaming.civcraft.structure.Warehouse;
@@ -60,29 +61,31 @@ public class PostBuildSyncTask implements Runnable {
 	}
 	
 	public static void start(Template tpl, Buildable buildable) {
-		for (int x = 0; x < tpl.size_x; x++) {
-			for (int y = 0; y < tpl.size_y; y++) {
-				for (int z = 0; z < tpl.size_z; z++) {
-					Block b = buildable.getCorner().getBlock().getRelative(x, y, z);
-					SimpleBlock sb = tpl.blocks[x][y][z];
-					
-					if (sb.getMaterial() == Material.AIR) continue;
-					if (b.getType() != sb.getMaterial()) {
-						if (sb.getMaterial() == Material.CHEST || b.getType() == Material.CHEST) continue;
-						ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
-					}
-					
-					if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
-						Sign s2 = (Sign)b.getState();
+		if (!(buildable instanceof Farm)) {
+			// Resets all structure blocks
+			for (int x = 0; x < tpl.size_x; x++) {
+				for (int y = 0; y < tpl.size_y; y++) {
+					for (int z = 0; z < tpl.size_z; z++) {
+						Block b = buildable.getCorner().getBlock().getRelative(x, y, z);
+						SimpleBlock sb = tpl.blocks[x][y][z];
+						if (sb.getMaterial() == Material.AIR) continue;
+						if (b.getType() != sb.getMaterial()) {
+							if (sb.getMaterial() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST ||
+									sb.getMaterial() == Material.FURNACE || sb.getMaterial() == Material.BURNING_FURNACE) continue;
+							ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+						}
 						
-						if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
-							ItemManager.setTypeIdAndData(b, 0, 0, false);
-						} else {
-							s2.setLine(0, tpl.blocks[x][y][z].message[0]);
-							s2.setLine(1, tpl.blocks[x][y][z].message[1]);
-							s2.setLine(2, tpl.blocks[x][y][z].message[2]);
-							s2.setLine(3, tpl.blocks[x][y][z].message[3]);
-							s2.update();
+						if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+							Sign s2 = (Sign)b.getState();
+							if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
+								ItemManager.setTypeIdAndData(b, 0, 0, false);
+							} else {
+								s2.setLine(0, tpl.blocks[x][y][z].message[0]);
+								s2.setLine(1, tpl.blocks[x][y][z].message[1]);
+								s2.setLine(2, tpl.blocks[x][y][z].message[2]);
+								s2.setLine(3, tpl.blocks[x][y][z].message[3]);
+								s2.update();
+							}
 						}
 					}
 				}

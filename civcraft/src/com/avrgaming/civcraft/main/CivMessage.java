@@ -245,15 +245,16 @@ public class CivMessage {
 	}
 	
 	public static void sendAll(String str) {
+		CivLog.info("[sendAll] "+str);
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.sendMessage(str);
 		}
 	}
 	
-	public static void global(String string) {
-		CivLog.info("[Global] "+string);
+	public static void global(String str) {
+		CivLog.info("[Global] "+str);
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			player.sendMessage(CivColor.LightBlue+"[Global] "+CivColor.White+string);
+			player.sendMessage(CivColor.LightBlue+"[Global] "+CivColor.White+str);
 		}
 	}
 	

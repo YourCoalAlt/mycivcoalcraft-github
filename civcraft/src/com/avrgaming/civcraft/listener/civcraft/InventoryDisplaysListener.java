@@ -66,12 +66,11 @@ public class InventoryDisplaysListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		Resident res = CivGlobal.getResident(p);
-		if (!res.hasTown() || res == null) {
-			return;
-		}
+		if (!res.hasTown() || res == null) return;
 		
 		if (event.getInventory().getName().contains(res.getName()+" Mail Menu [R]")) this.clickResMainMailMenu(p, event);
 		if (event.getInventory().getName().contains(res.getName()+" View Mail [R]")) this.clickResViewMailMenu(p, event);
+		if (event.getInventory().getName().contains("[RR] Mail ")) this.clickResReadMailMenu(p, event);
 		
 		if (event.getInventory().getName().contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
 		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
@@ -1762,6 +1761,7 @@ public class InventoryDisplaysListener implements Listener {
 	// Resident Mail System
 	
 	public void clickResMainMailMenu(Player p, InventoryClickEvent event) {
+		if (event.getClickedInventory() == null) return;
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
 		
@@ -1776,6 +1776,7 @@ public class InventoryDisplaysListener implements Listener {
 	}
 	
 	public void clickResViewMailMenu(Player p, InventoryClickEvent event) {
+		if (event.getClickedInventory() == null) return;
 		ItemStack is = event.getCurrentItem();
 		Resident res = CivGlobal.getResident(p);
 		if (is.hasItemMeta()) {
@@ -1783,9 +1784,9 @@ public class InventoryDisplaysListener implements Listener {
 			if (im.hasDisplayName() && im.hasLore()) {
 				String mail_code = im.getDisplayName()+"&MAILCODE@"+im.getLore().get(0).replace("Mail ID: ", "");
 				mail_code = ChatColor.stripColor(mail_code);
-				CivMessage.global("mail_code: "+mail_code);
 				if (res.getMails().containsKey(mail_code)) {
 					res.openMailPackage(p, res, mail_code);
+					res.view_mail = mail_code;
 				}
 			}
 		}
@@ -1799,10 +1800,43 @@ public class InventoryDisplaysListener implements Listener {
 		}*/
 	}
 	
+	public void clickResReadMailMenu(Player p, InventoryClickEvent event) {
+		if (event.getClickedInventory() == null) return;
+		Resident res = CivGlobal.getResident(p);
+		ItemStack is = event.getCurrentItem();
+		if (is.hasItemMeta()) {
+			ItemMeta im = is.getItemMeta();
+			if (im.hasDisplayName() && im.hasLore()) {
+				if (im.getDisplayName().contains("Collect Mail")) {
+					String mail_code = res.view_mail;
+					Inventory inv = res.getMail(mail_code);
+					res.removeMail(mail_code);
+					res.view_mail = null;
+					for (ItemStack items : inv.getContents()) {
+						if (items == null || items.getType() == Material.AIR || 
+								(items.getType() == Material.STAINED_GLASS_PANE && items.getDurability() == 7 && items.getItemMeta().getDisplayName().contains("Inventory Border")) ||
+								(items.getType() == Material.PAPER && items.getItemMeta().getDisplayName().contains("Information")) ||
+								(items.getType() == Material.PAPER && items.getItemMeta().getDisplayName().contains("Message")) ||
+								(items.getType() == Material.CAULDRON_ITEM && items.getItemMeta().getDisplayName().contains("Collect Mail")) ||
+								(items.getType() == Material.MINECART && items.getItemMeta().getDisplayName().contains("Forward Mail"))) {
+							continue;
+						} else {
+							ItemManager.givePlayerItem(p, items, p.getEyeLocation(), items.getItemMeta().getDisplayName(), items.getAmount(), false);
+						}
+					}
+					p.closeInventory();
+					CivMessage.sendSuccess(p, "Mail package recieved!");
+				}
+			}
+		}
+	}
+	
 	public void closeResOpenMailPackage(Player p, Inventory inv) {
 //		boolean addedNotRequiredItems = false;
 		
 //		int inv_slot = 0;
+		Resident res = CivGlobal.getResident(p);
+		res.view_mail = null;
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
 			if (stack == null || stack.getType() == Material.AIR) continue;
 			else inv.removeItem(stack);

@@ -89,7 +89,7 @@ public class DebugFarmCommand extends CommandBase {
 	}
 	
 	public void grow_cmd() throws CivException {
-		
+		TaskMaster.asyncTask(new FarmPreCachePopulateTimer(), 0);
 		int count = getNamedInteger(1);
 		for (int i = 0; i < count; i++) {
 			TaskMaster.asyncTask(new FarmGrowthSyncTask(), 0);

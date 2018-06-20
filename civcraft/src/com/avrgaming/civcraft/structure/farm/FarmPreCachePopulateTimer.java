@@ -29,7 +29,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 
 public class FarmPreCachePopulateTimer implements Runnable {
 	
-	public static int updateLimit = 50;
+	public static int updateLimit = 64;
 	public static ReentrantLock lock = new ReentrantLock();
 	
 	/*
@@ -39,20 +39,25 @@ public class FarmPreCachePopulateTimer implements Runnable {
 	public FarmPreCachePopulateTimer() {
 	}
 	
+	
+	
 	@Override
 	public void run() {
-		if (!CivGlobal.growthEnabled) {
-			return;
-		}
+		if (!CivGlobal.growthEnabled) return;
 		
 		if (lock.tryLock()) {
 			try {
 				LinkedList<FarmChunk> farms = new LinkedList<FarmChunk>();
-		
 				for (int i = 0; i < updateLimit; i++) {
-					FarmChunk fc = CivGlobal.pollFarmChunk();
+					FarmChunk fc = CivGlobal.pollFarmChunks();
 					if (fc == null) {
-						break;
+						continue;
+					}
+					
+					// If farm cannot be gotten, it may have been deleted.
+					if (CivGlobal.getFarmChunk(fc.getCoord()) == null) {
+						CivGlobal.removeQueueFarmChunk(fc);
+						continue;
 					}
 					
 					/* 
@@ -70,7 +75,7 @@ public class FarmPreCachePopulateTimer implements Runnable {
 					// put valid farms back on the queue to be populated again later.
 					// dont do it in the loop above, since it causes < 50 farms to be
 					// populated up to 50 times.
-					CivGlobal.queueFarmChunk(fc);
+					CivGlobal.addQueueFarmChunk(fc);
 				}
 				
 				if (farms.size() > 0) {

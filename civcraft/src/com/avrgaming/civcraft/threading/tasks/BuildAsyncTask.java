@@ -153,10 +153,8 @@ public class BuildAsyncTask extends CivAsyncTask {
 					if ((this.percent_complete % 10 == 0)) {
 						if (buildable instanceof Wonder) {
 							CivMessage.global(buildable.getDisplayName()+" in "+buildable.getTown().getName()+" is "+nextPercentComplete+"% complete.");
-						} else {					
-							CivMessage.sendTown(buildable.getTown(),
-									CivColor.Yellow+"The "+buildable.getDisplayName()+" is now "+(nextPercentComplete)+"% complete.");
-						}
+						}				
+						CivMessage.sendTown(buildable.getTown(), CivColor.Yellow+"The "+buildable.getDisplayName()+" is now "+(nextPercentComplete)+"% complete.");
 					}
 				}
 				

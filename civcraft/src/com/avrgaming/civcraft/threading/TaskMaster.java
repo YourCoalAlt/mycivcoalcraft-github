@@ -70,8 +70,7 @@ public class TaskMaster {
 		BukkitObjects.scheduleSyncDelayedTask(runnable, l);	
 	}
 
-	public static void asyncTimer(String name, Runnable runnable,
-			long delay, long repeat) {
+	public static void asyncTimer(String name, Runnable runnable, long delay, long repeat) {
 		addTimer(name, BukkitObjects.scheduleAsyncRepeatingTask(runnable, delay, repeat));
 	}
 	

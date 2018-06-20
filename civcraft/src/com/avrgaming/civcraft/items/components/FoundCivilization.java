@@ -47,14 +47,11 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 		attrs.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
 		attrs.addLore(CivColor.LightGray+" « Right Click to Use » ");
 		attrs.addEnhancement("LoreEnhancementSoulBound", null, null);
-//		attrs.addLore(CivColor.Gold+"Soulbound");
 	}
 	
 	public void foundCiv(Player player) throws CivException {
 		Resident resident = CivGlobal.getResident(player);
-		if (resident == null) {
-			throw new CivException("You must be a registered resident to found a civ. This shouldn't happen. Contact an admin.");
-		}
+		if (resident == null) throw new CivException("You must be a registered resident to found a civ. This shouldn't happen. Contact an admin.");
 			
 		// Build a preview for the Capitol structure.
 		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Checking structure position...Please wait.");
@@ -71,9 +68,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	
 	public void onInteract(PlayerInteractEvent event) {
 		event.setCancelled(true);
-		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			return;
-		}
+		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
 		
 		class SyncTask implements Runnable {
 			String name;
