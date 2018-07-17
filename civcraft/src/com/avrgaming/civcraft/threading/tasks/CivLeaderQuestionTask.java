@@ -38,9 +38,9 @@ public class CivLeaderQuestionTask extends QuestionBaseTask implements Runnable 
 	public void run() {	
 		
 		for (Resident resident : askedCivilization.getLeaderGroup().getMemberList()) {
-			CivMessage.send(resident, CivColor.LightGray+"Question from: "+CivColor.LightBlue+questionPlayer.getName());
-			CivMessage.send(resident, CivColor.LightPurple+CivColor.BOLD+question);
-			CivMessage.send(resident, CivColor.LightGray+"Respond by typing "+CivColor.LightBlue+"/accept"+CivColor.LightGray+" or "+CivColor.LightBlue+"/deny");
+			CivMessage.send(resident, CivColor.Gray+"Question from: "+CivColor.LightBlue+questionPlayer.getName());
+			CivMessage.send(resident, CivColor.LightPurpleBold+question);
+			CivMessage.send(resident, CivColor.Gray+"Respond by typing "+CivColor.LightBlue+"/accept"+CivColor.Gray+" or "+CivColor.LightBlue+"/deny");
 		}
 		
 		try {
@@ -48,7 +48,7 @@ public class CivLeaderQuestionTask extends QuestionBaseTask implements Runnable 
 				this.wait(timeout);
 			}
 		} catch (InterruptedException e) {
-			CivMessage.send(questionPlayer, CivColor.LightGray+"Task interrupted before a response could be given.");
+			CivMessage.send(questionPlayer, CivColor.Gray+"Task interrupted before a response could be given.");
 			cleanup();
 			return;
 		}
@@ -59,7 +59,7 @@ public class CivLeaderQuestionTask extends QuestionBaseTask implements Runnable 
 			return;
 		}
 		
-		CivMessage.send(questionPlayer, CivColor.LightGray+"No Response from civilization leaders");
+		CivMessage.send(questionPlayer, CivColor.Gray+"No Response from civilization leaders");
 		cleanup();
 	}
 

@@ -90,11 +90,9 @@ public abstract class ProjectileComponent extends Component {
 
 	public Vector getVectorBetween(Location to, Location from) {
 		Vector dir = new Vector();
-		
 		dir.setX(to.getX() - from.getX());
 		dir.setY(to.getY() - from.getY());
 		dir.setZ(to.getZ() - from.getZ());
-	
 		return dir;
 	}
 	

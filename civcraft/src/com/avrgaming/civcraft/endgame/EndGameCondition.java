@@ -80,8 +80,8 @@ public abstract class EndGameCondition {
 		
 		for (SessionEntry entry : entries) {
 			if (civ == EndGameCondition.getCivFromSessionData(entry.value)) {
-				CivMessage.global(CivColor.LightBlue+CivColor.BOLD+civ.getName()+CivColor.White+" was "+CivColor.Rose+CivColor.BOLD+"DEFEATED"+CivColor.White+
-						" and their "+CivColor.LightPurple+CivColor.BOLD+this.victoryName+CivColor.White+" victory has been reset.");
+				CivMessage.global(CivColor.LightBlueBold+civ.getName()+CivColor.White+" was "+CivColor.RoseBold+"DEFEATED"+CivColor.White+
+						" and their "+CivColor.LightPurpleBold+this.victoryName+CivColor.White+" victory has been reset.");
 				CivGlobal.getSessionDB().delete(entry.request_id, entry.key);
 				onVictoryReset(civ);
 				return;

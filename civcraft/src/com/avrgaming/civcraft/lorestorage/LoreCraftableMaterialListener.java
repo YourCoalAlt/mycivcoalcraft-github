@@ -132,6 +132,12 @@ public class LoreCraftableMaterialListener implements Listener {
 				}
 			}
 			
+			String matName =loreMat.getId(); 
+			if (matName.contains("_alt")) {
+				String id = matName.replaceAll("_alt(.*)", "");
+				loreMat = LoreCraftableMaterial.getCraftMaterialFromId(id);
+			}
+			
 			ItemStack newStack;
 			if (!loreMat.isVanilla()) {
 				newStack = LoreMaterial.spawn(loreMat);
@@ -170,6 +176,12 @@ public class LoreCraftableMaterialListener implements Listener {
 				}
 			}
 			
+			String matName =loreMat.getId(); 
+			if (matName.contains("_alt")) {
+				String id = matName.replaceAll("_alt(.*)", "");
+				loreMat = LoreCraftableMaterial.getCraftMaterialFromId(id);
+			}
+			
 			ItemStack newStack;
 			if (!loreMat.isVanilla()) {
 				newStack = LoreMaterial.spawn(loreMat);
@@ -196,7 +208,7 @@ public class LoreCraftableMaterialListener implements Listener {
 				Tagged tagged = (Tagged)craftMat.getComponent("Tagged");
 				ItemStack stack = tagged.addTag(event.getInventory().getResult(), tag);
 				AttributeUtil attrs = new AttributeUtil(stack);
-				attrs.addLore(CivColor.LightGray+tag);
+				attrs.addLore(CivColor.Gray+tag);
 				stack = attrs.getStack();
 				event.getInventory().setResult(stack);
 			}

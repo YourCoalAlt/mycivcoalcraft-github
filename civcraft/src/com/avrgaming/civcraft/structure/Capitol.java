@@ -73,13 +73,13 @@ public class Capitol extends TownHall {
 		ArrayList<RespawnLocationHolder> respawnables = this.getTown().getCiv().getAvailableRespawnables();
 		if (this.respawnSign != null) {
 			if (newIndex > respawnables.size()) {
-				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(0).getRespawnName());
+				this.respawnSign.setText("Respawn At\n"+CivColor.GreenBold+respawnables.get(0).getRespawnName());
 				index = 0;
 			} else if (newIndex < 0) {
-				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(respawnables.size()).getRespawnName());
+				this.respawnSign.setText("Respawn At\n"+CivColor.GreenBold+respawnables.get(respawnables.size()).getRespawnName());
 				index = respawnables.size();
 			} else {
-				this.respawnSign.setText("Respawn At\n"+CivColor.Green+CivColor.BOLD+respawnables.get(newIndex).getRespawnName());
+				this.respawnSign.setText("Respawn At\n"+CivColor.GreenBold+respawnables.get(newIndex).getRespawnName());
 				index = newIndex;
 			}
 			this.respawnSign.update();
@@ -243,7 +243,7 @@ public class Capitol extends TownHall {
 			e.printStackTrace();
 			return;
 		}
-		CivMessage.sendTown(this.getTown(), CivColor.Rose+CivColor.BOLD+"Our civ's capitol cannot be supported by the blocks underneath!"+
+		CivMessage.sendTown(this.getTown(), CivColor.RoseBold+"Our civ's capitol cannot be supported by the blocks underneath!"+
 				" It will take us an extra "+invalid_respawn_penalty+" mins to respawn during war if its not fixed in time!");
 	}
 	

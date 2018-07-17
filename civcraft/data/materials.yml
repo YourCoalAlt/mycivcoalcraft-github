@@ -188,6 +188,30 @@ materials:
        - name: 'DurabilityOnDeath'
          value: '0.0'
 # Tier 1 Material Recipes  ===========================================
+# Checked 20 June 2018
+  - id: 'civ_refined_wood'
+    item_id: 126
+    item_data: 0
+    name: 'T1 Refined Wood'
+    craftable: true
+    shaped: false
+    category: '<lightgreen>Tier 1 Materials'
+    ingredients:
+       - type_id: 17
+         data: -1
+         count: 9
+# Checked 20 June 2018
+  - id: 'civ_refined_wood_alt0'
+    item_id: 126
+    item_data: 0
+    name: 'T1 Refined Wood'
+    craftable: true
+    shaped: false
+    category: '<lightgreen>Tier 1 Materials'
+    ingredients:
+       - type_id: 162
+         data: -1
+         count: 9
 # Checked 25 August 2017
   - id: 'civ_refined_stone'
     item_id: 1
@@ -200,7 +224,7 @@ materials:
        - type_id: 4
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_crafted_reeds'
     item_id: 338
     item_data: 0
@@ -212,7 +236,7 @@ materials:
        - type_id: 338
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_forged_clay'
     item_id: 336
     item_data: 0
@@ -224,7 +248,7 @@ materials:
        - type_id: 337
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_crafted_sticks'
     item_id: 280
     item_data: 0
@@ -236,7 +260,7 @@ materials:
        - type_id: 280
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_slime'
     item_id: 341
     item_data: 0
@@ -249,7 +273,7 @@ materials:
 #         custom_id: 'civ_vanilla_slimeball'
          data: 0
          count: 4
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_sugar'
     item_id: 353
     item_data: 0
@@ -261,7 +285,7 @@ materials:
        - type_id: 353
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_sulphur'
     item_id: 289
     item_data: 0
@@ -273,7 +297,7 @@ materials:
        - type_id: 289
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_wart'
     item_id: 372
     item_data: 0
@@ -288,7 +312,7 @@ materials:
        - type_id: 353
          data: 0
          count: 1
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_string'
     item_id: 287
     item_data: 0
@@ -300,7 +324,7 @@ materials:
        - type_id: 287
          data: 0
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_refined_leather'
     item_id: 334
     item_data: 0
@@ -357,13 +381,6 @@ materials:
 
 
 
-
-
-
-
-
-
-
     # XXX Statically coded to drop from lapis.  
 # Checked 25 August 2017
   - id: 'civ_tungsten_ore'
@@ -388,6 +405,19 @@ materials:
 #======================================================#
 #============[ Secondary Materials Tier 2 ]============#
 #======================================================#
+# Checked 20 June 2018
+  - id: 'civ_milled_lumber'
+    item_id: 126
+    item_data: 0
+    name: 'T2 Milled Lumber'
+    craftable: true
+    shaped: false
+    category: '<yellow>Tier 2 Materials'
+    ingredients:
+       - type_id: 0
+         data: 0
+         custom_id: 'civ_refined_wood'
+         count: 9
 # Checked 25 August 2017
   - id: 'civ_crushed_stone'
     item_id: 44
@@ -522,7 +552,7 @@ materials:
 #======================================================#
 #=============[ ------- Materials Tier 3 ]=============#
 #======================================================#
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_masonry_mortar'
     item_id: 45
     item_data: 0
@@ -552,7 +582,7 @@ materials:
          data: 0
          custom_id: 'civ_crushed_stone'
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_slimey_varnish'
     item_id: 437
     item_data: 0
@@ -572,7 +602,7 @@ materials:
          custom_id: 'civ_varnish'
          data: 0
          count: 2
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_smithy_resin'
     item_id: 378
     item_data: 0
@@ -591,7 +621,7 @@ materials:
          custom_id: 'civ_sticky_resin'
          data: 0
          count: 4
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_improved_molding'
     item_id: 44
     item_data: 4
@@ -608,7 +638,7 @@ materials:
          custom_id: 'civ_woven_sticks'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_hardened_leather'
     item_id: 31
     item_data: 0
@@ -625,7 +655,7 @@ materials:
          custom_id: 'civ_slimey_varnish'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_hardened_string'
     item_id: 30
     item_data: 0
@@ -642,7 +672,7 @@ materials:
          custom_id: 'civ_slimey_varnish'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_hardened_sticks'
     item_id: 280
     item_data: 0
@@ -679,7 +709,7 @@ materials:
          data: 0
          custom_id: 'civ_compacted_stone'
          count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_composite_leather'
     item_id: 31
     item_data: 0
@@ -696,7 +726,7 @@ materials:
          custom_id: 'civ_mega_varnish'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_composite_string'
     item_id: 30
     item_data: 0
@@ -713,7 +743,7 @@ materials:
          custom_id: 'civ_mega_varnish'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_composite_stick'
     item_id: 280
     item_data: 0
@@ -737,7 +767,7 @@ materials:
 #======================================================#
 #============[ Ultimate Materials Tier 4 ]============##
 #======================================================#
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_mega_varnish'
     item_id: 384
     item_data: 0
@@ -754,7 +784,7 @@ materials:
          custom_id: 'civ_slimey_varnish'
          data: 0
          count: 3
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_mega_resin'
     item_id: 433
     item_data: 0
@@ -771,7 +801,7 @@ materials:
          custom_id: 'civ_smithy_resin'
          data: 0
          count: 6
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_mega_molding'
     item_id: 380
     item_data: 0
@@ -791,11 +821,53 @@ materials:
 #======================================================#
 #=================[ Special  Recipes ]=================#
 #======================================================#
-# Checked 01/21/2017
+    # XXX mat ID hard coded for camp refund. with /camp undo 
+# Checked 20 June 2018
+  - id: 'civ_found_camp'
+    item_id: 324
+    item_data: 0
+    name: 'Founding Camp Door'
+    craftable: true
+    shaped: true
+    category: 'Special'
+    components:
+        - name: 'FoundCamp'
+    ingredients:
+        - type_id: 0
+          data: 0
+          custom_id: 'civ_milled_lumber'
+          letter: 'l'
+        - type_id: 0
+          data: 0
+          custom_id: 'civ_refined_stone'
+          letter: 's'
+        - type_id: 0
+          data: 0
+          custom_id: 'civ_forged_clay'
+          letter: 'f'
+        - type_id: 173
+          data: 0
+          letter: 'c'
+    shape:
+        - " f "
+        - "lcl"
+        - "csc"
+# Checked 20 June 2018
+  - id: 'civ_token_of_leadership'
+    item_id: 370
+    item_data: 0
+    name: 'Token Of Leadership'
+    craftable: false
+    shaped: false
+    category: 'Special'
+    components:
+        - name: 'Tagged'
+# Checked 21 January 2017
   - id: 'civ_found_civ'
     item_id: 422
     item_data: 0
-    name: 'Founding City-State Flag'
+#    name: 'Founding City-State Flag'
+    name: 'Founding Civilization Flag'
     craftable: true
     shaped: true
     category: '<lightgray>Special'
@@ -819,7 +891,7 @@ materials:
         - " r "
         - "mmm"
         - "sss"
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_royal_crown'
     item_id: 314
     item_data: 0
@@ -840,7 +912,7 @@ materials:
           custom_id: 'civ_decorative_jewels'
           data: 0
           count: 1
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_jewelry_grade_gold'
     item_id: 322
     item_data: 0
@@ -852,7 +924,7 @@ materials:
         - type_id: 41
           data: 0
           count: 9
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_decorative_jewels'
     item_id: 372
     item_data: 0
@@ -864,7 +936,7 @@ materials:
         - type_id: 57
           data: 0
           count: 2
-# Checked 01/21/2017
+# Checked 21 January 2017
   - id: 'civ_hopper'
     item_id: 154
     item_data: 0
@@ -980,7 +1052,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Damage'
-         value: '6.5'
+         value: '4'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1005,7 +1077,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'RangedAttack'
-         value: '8.0'
+         value: '5.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1054,7 +1126,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '1.0'
+         value: '1.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1076,7 +1148,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '0.5'
+         value: '1.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1098,7 +1170,7 @@ materials:
     category: '<green>Gear Tier 1'
     components:
        - name: 'Armor'
-         value: '0.5'
+         value: '1.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1122,7 +1194,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Damage'
-         value: '9.0'
+         value: '5.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1150,7 +1222,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'RangedAttack'
-         value: '10.0'
+         value: '6.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1202,7 +1274,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '2.5'
+         value: '3.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1226,7 +1298,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '2.0'
+         value: '2.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1250,7 +1322,7 @@ materials:
     category: '<gold>Gear Tier 2'
     components:
        - name: 'Armor'
-         value: '0.5'
+         value: '1.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1275,7 +1347,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Damage'
-         value: '11.0'
+         value: '6.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1303,7 +1375,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'RangedAttack'
-         value: '12.0'
+         value: '7.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1355,7 +1427,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '3.0'
+         value: '5.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1379,7 +1451,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '2.5'
+         value: '3.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1403,7 +1475,7 @@ materials:
     category: '<red>Gear Tier 3'
     components:
        - name: 'Armor'
-         value: '1.0'
+         value: '2.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1428,7 +1500,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Damage'
-         value: '13.0'
+         value: '7.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1456,7 +1528,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'RangedAttack'
-         value: '14.0'
+         value: '8.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1508,7 +1580,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '3.5'
+         value: '6.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1532,7 +1604,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '3.0'
+         value: '5.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1556,7 +1628,7 @@ materials:
     category: '<darkblue>Gear Tier 4'
     components:
        - name: 'Armor'
-         value: '1.5'
+         value: '2.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1581,7 +1653,7 @@ materials:
     category: '<purple>Gear Tier 5'
     components:
        - name: 'Damage'
-         value: '15.0'
+         value: '8.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1609,7 +1681,7 @@ materials:
     category: '<purple>Gear Tier 5'
     components:
        - name: 'RangedAttack'
-         value: '16.0'
+         value: '9.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1661,7 +1733,7 @@ materials:
     category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '4.0'
+         value: '8.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1685,7 +1757,7 @@ materials:
     category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '3.5'
+         value: '6.0'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1709,7 +1781,7 @@ materials:
     category: '<purple>Gear Tier 5'
     components:
        - name: 'Armor'
-         value: '2.0'
+         value: '3.5'
        - name: 'NoVanillaDurability'
        - name: 'DurabilityOnDeath'
          value: '0.05'
@@ -1775,8 +1847,8 @@ removed_recipes:
 # Bow & Arrow
   - type_id: 261
     data: 0
-  - type_id: 262
-    data: 0
+#  - type_id: 262
+#    data: 0
 
 # Bacon (not mispelled)
   - type_id: 138

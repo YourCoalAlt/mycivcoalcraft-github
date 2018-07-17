@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -77,6 +78,8 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.object.WallBlock;
+import com.avrgaming.civcraft.object.camp.Camp;
+import com.avrgaming.civcraft.object.camp.CampBlock;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.populators.TradeGoodPreGenerate;
 import com.avrgaming.civcraft.questions.QuestionBaseTask;
@@ -109,15 +112,16 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
+import com.avrgaming.civcraft.war.WarCamp;
 import com.avrgaming.civcraft.war.WarRegen;
-import com.avrgaming.civcraft.war.camp.WarCamp;
 import com.avrgaming.global.perks.PerkManager;
 
 public class CivGlobal {
 	
 	public static final double MIN_FRAME_DISTANCE = 3.0;
 	
-	public static Map<String, Villager> structureVillagers = new ConcurrentHashMap<String, Villager>();
+	public static Map<String, Villager> civVillagers = new ConcurrentHashMap<String, Villager>();
+	public static ArrayList<UUID> civVillagerUUIDs = new ArrayList<UUID>();
 	
 	private static Map<String, QuestionBaseTask> questions = new ConcurrentHashMap<String, QuestionBaseTask>();
 	public static Map<String, CivQuestionTask> civQuestions = new ConcurrentHashMap<String, CivQuestionTask>();
@@ -132,6 +136,9 @@ public class CivGlobal {
 	public static ArrayList<Mine> mines = new ArrayList<Mine>();
 	public static ArrayList<Lab> labs = new ArrayList<Lab>();
 	
+	private static Map<String, Camp> camps = new ConcurrentHashMap<String, Camp>();
+	private static Map<ChunkCoord, Camp> campChunks = new ConcurrentHashMap<ChunkCoord, Camp>();
+	private static Map<BlockCoord, CampBlock> campBlocks = new ConcurrentHashMap<BlockCoord, CampBlock>();
 	private static Map<String, Town> towns = new ConcurrentHashMap<String, Town>();
 	private static Map<String, Civilization> civs = new ConcurrentHashMap<String, Civilization>();
 	private static Map<String, Civilization> conqueredCivs = new ConcurrentHashMap<String, Civilization>();
@@ -198,6 +205,7 @@ public class CivGlobal {
 		CivLog.heading("Loading CivCraft Objects From Database");
 			
 		sdb = new SessionDatabase();
+		loadCamps();
 		loadCivs();
 		loadRelations();
 		loadTowns();
@@ -213,6 +221,7 @@ public class CivGlobal {
 		loadTradeGoods();
 		loadRandomEvents();
 		loadProtectedBlocks();
+		loadStructureSignBlocks();
 		EventTimer.loadGlobalEvents();
 		EndGameCondition.init();
 		War.init();
@@ -244,16 +253,30 @@ public class CivGlobal {
 		loadCompleted = true;
 	}
 	
-	public static void addStructureVillager(String named, Villager v) {
-		structureVillagers.put(named, v);
+	
+	public static boolean inGamemode(Player p) {
+		GameMode gm = p.getGameMode();
+		if (gm.equals(GameMode.SURVIVAL) || gm.equals(GameMode.ADVENTURE)) return true;
+		return false;
 	}
 	
-	public static Villager getStructureVillager(String named) {
-		return structureVillagers.get(named);
+	public static void addCivVillager(String named, Villager v) {
+		civVillagers.put(named, v);
+		civVillagerUUIDs.add(v.getUniqueId());
 	}
 	
-	public static Villager removeStructureVillager(String named) {
-		return structureVillagers.remove(named);
+	public static Villager getCivVillager(String named) {
+		return civVillagers.get(named);
+	}
+	
+	public static UUID getVillagerByUUID(UUID uuid) {
+		if (civVillagerUUIDs.indexOf(uuid) != -1) return civVillagerUUIDs.get(civVillagerUUIDs.indexOf(uuid));
+			else return null;
+	}
+	
+	public static void removeCivVillager(String named, Villager v) {
+		civVillagers.remove(named);
+		civVillagerUUIDs.remove(v.getUniqueId());
 	}
 	
 	public static void resetGlobalVillagers() {
@@ -266,7 +289,7 @@ public class CivGlobal {
 				if (e instanceof Villager) {
 					Villager v = (Villager) e; // TODO We will allow regular villagers to exist with HIDDEN name 'civcraft_villager'
 					if (v.getCustomName() != null) {
-						CivGlobal.removeStructureVillager(tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString());
+						CivGlobal.removeCivVillager(tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString(), v);
 						villagersRemoved++; v.setHealth(0); e.remove();
 					}
 				}
@@ -361,8 +384,29 @@ public class CivGlobal {
 					break;
 			}
 			CivMessage.global(CivColor.Green+civ.getName()+CivColor.White+" has entered the "+CivColor.LightGreen+newEra+" Era!");
-			
 		}
+	}
+	
+	public static void loadCamps() throws SQLException {
+		Connection context = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			context = SQL.getGameConnection();		
+			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+Camp.TABLE_NAME);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				try {
+					Camp camp = new Camp(rs);
+					CivGlobal.addCamp(camp);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} finally {
+			SQL.close(rs, ps, context);
+		}
+		CivLog.info("Loaded "+camps.size()+" Camps");
 	}
 	
 	private static void loadCivs() throws SQLException {
@@ -733,6 +777,33 @@ public class CivGlobal {
 		}
 	}
 	
+	public static void loadStructureSignBlocks() throws SQLException {
+		Connection context = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+
+		try {
+			context = SQL.getGameConnection();		
+			ps = context.prepareStatement("SELECT * FROM "+SQL.tb_prefix+StructureSign.TABLE_NAME);
+			rs = ps.executeQuery();
+	
+			int count = 0;
+			while(rs.next()) {
+				try {
+					StructureSign ss = new StructureSign(rs);
+					CivGlobal.addStructureSign(ss);
+					count++;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+	
+			CivLog.info("Loaded "+count+" Structure Signs");
+		} finally {
+			SQL.close(rs, ps, context);
+		}
+	}
+	
 	public static Player getPlayer(Resident resident) throws CivException {
 		Player player = Bukkit.getPlayer(resident.getUUID());
 		if (player == null)
@@ -877,7 +948,11 @@ public class CivGlobal {
 	public static void addTown(Town town) {
 		towns.put(town.getName().toLowerCase(), town);
 	}
-
+	
+	public static TownChunk getTownChunk(ChunkCoord coord) {
+		return townChunks.get(coord);
+	}
+	
 	public static TownChunk getTownChunk(Location location) {
 		ChunkCoord coord = new ChunkCoord(location);
 		return townChunks.get(coord);
@@ -909,10 +984,6 @@ public class CivGlobal {
 		}
 		return null;
 	}*/
-
-	public static TownChunk getTownChunk(ChunkCoord coord) {
-		return townChunks.get(coord);
-	}
 
 	public static PermissionGroup getPermissionGroupFromName(Town town, String name) {
 		for (PermissionGroup grp : town.getGroups()) {
@@ -1546,6 +1617,32 @@ public class CivGlobal {
 		return nearest;
 	}
 	
+	public static Buildable getNearestBuildable(Location location, double radius) {
+		Buildable nearest = null;
+		double lowest_distance = Double.MAX_VALUE;
+		
+		for (Buildable struct : structures.values()) {
+			Location loc = new Location(Bukkit.getWorld("world"), struct.getCenterLocation().getX(), struct.getCorner().getLocation().getY(), struct.getCenterLocation().getZ());
+			double distance = loc.distance(location);
+			if (distance < lowest_distance) {
+				lowest_distance = distance;
+				nearest = struct;
+			}
+		}
+		
+		for (Buildable wonder : wonders.values()) {
+			Location loc = new Location(Bukkit.getWorld("world"), wonder.getCenterLocation().getX(), wonder.getCorner().getLocation().getY(), wonder.getCenterLocation().getZ());
+			double distance = loc.distance(location);
+			if (distance < lowest_distance) {
+				lowest_distance = distance;
+				nearest = wonder;
+			}
+		}
+		
+		if (lowest_distance > radius) return null;
+		return nearest;
+	}
+	
 	public static void movePlayersFromCulture(Civilization fromCiv, Civilization toCiv) {
 	}
 	
@@ -1957,7 +2054,59 @@ public class CivGlobal {
 		}
 		return null;
 	}
-
+	
+	public static Camp getCamp(String name) {
+		return camps.get(name.toLowerCase());
+	}
+	
+	public static void addCamp(Camp camp) {
+		camps.put(camp.getName().toLowerCase(), camp);
+	}
+	
+	public static void removeCamp(Camp camp) {
+		camps.remove(camp.getName().toLowerCase());
+	}
+	
+	public static void addCampBlock(CampBlock cb) {
+		campBlocks.put(cb.getCoord(), cb);
+		ChunkCoord coord = new ChunkCoord(cb.getCoord());
+		campChunks.put(coord, cb.getCamp());
+	}
+	
+	public static CampBlock getCampBlock(BlockCoord bcoord) {
+		return campBlocks.get(bcoord);
+	}
+	
+	public static void removeCampBlock(BlockCoord bcoord) {
+		campBlocks.remove(bcoord);
+	}
+	
+	public static Collection<Camp> getCamps() {
+		return camps.values();
+	}
+	
+	public static Camp getCampChunk(ChunkCoord coord) {
+		return campChunks.get(coord);
+	}
+	
+	public static Camp getCampChunk(Location location) {
+		ChunkCoord coord = new ChunkCoord(location);
+		return campChunks.get(coord);
+	}
+	
+	public static void removeCampChunk(ChunkCoord coord) {
+		campChunks.remove(coord);
+	}
+	
+	public static Camp getCampFromId(int campID) {
+		for (Camp camp : camps.values()) {
+			if (camp.getId() == campID) {
+				return camp;
+			}
+		}
+		return null;
+	}
+	
 	public static Collection<Market> getMarkets() {
 		return markets.values();
 	}

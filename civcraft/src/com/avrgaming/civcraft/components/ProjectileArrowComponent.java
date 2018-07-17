@@ -21,12 +21,14 @@ package com.avrgaming.civcraft.components;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Buildable;
@@ -59,10 +61,8 @@ public class ProjectileArrowComponent extends ProjectileComponent {
 	
 	@Override
 	public void fire(Location turretLoc, Entity targetEntity) {
-		if (!buildable.isValid()) {
-			return;
-		}
-		
+		if (!buildable.isValid()) return;
+		if (targetEntity instanceof Player && (!CivGlobal.inGamemode(((Player) targetEntity)))) return;
 		Location playerLoc = targetEntity.getLocation();
 		playerLoc.setY(playerLoc.getY()+1); //Target the head instead of feet.
 					

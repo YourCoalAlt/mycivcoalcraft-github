@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.items.components;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +20,7 @@ public class DurabilityOnDeath extends ItemComponent {
 		attrs.setCivCraftProperty("death_percent_value", String.valueOf(this.getDouble("value")));
 		attrs.setCivCraftProperty("last_death", String.valueOf((System.currentTimeMillis()- 4*1000)));
 	}
-
+	
 	@Override
 	public ItemChangeResult onDurabilityDeath(PlayerDeathEvent event, ItemChangeResult result, ItemStack sourceStack) {
 		if (result == null) {
@@ -37,11 +36,10 @@ public class DurabilityOnDeath extends ItemComponent {
 			result.destroyItem = true;
 		} else {
 			result.stack = newStack;
-			if (!event.getKeepInventory()) {
-				result.destroyItem = true;
-				Location loc = event.getEntity().getLocation();
-				loc.getWorld().dropItemNaturally(loc, newStack);
-			}
+			sourceStack.setType(newStack.getType());
+			sourceStack.setData(newStack.getData());
+			sourceStack.setItemMeta(newStack.getItemMeta());
+			sourceStack.setDurability(newStack.getDurability());
 		}
 		
 		return result;

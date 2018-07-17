@@ -62,7 +62,7 @@ public class TownUpgradeCommand extends CommandBase {
 		for (ConfigTownUpgrade upgrade : CivSettings.townUpgrades.values()) {
 			if (category.equalsIgnoreCase("all") || upgrade.category.equalsIgnoreCase(category)) {	
 				if (upgrade.isAvailable(town)) {
-					CivMessage.send(sender, upgrade.name+CivColor.LightGray+" Cost: "+CivColor.Yellow+upgrade.cost);
+					CivMessage.send(sender, upgrade.name+CivColor.Gray+" Cost: "+CivColor.Yellow+upgrade.cost);
 				}
 			}
 		}

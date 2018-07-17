@@ -1,5 +1,9 @@
 package com.avrgaming.civcraft.items.components;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -11,8 +15,8 @@ import org.bukkit.potion.PotionEffectType;
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
-import com.avrgaming.civcraft.loreenhancements.LoreEnhancementProtection;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainProtection;
+import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
@@ -46,49 +50,28 @@ public class Armor extends ItemComponent {
 	public void onHold(PlayerItemHeldEvent event) {	
 		Resident resident = CivGlobal.getResident(event.getPlayer());
 		if (!resident.hasTechForItem(event.getPlayer().getInventory().getItem(event.getNewSlot()))) {		
-			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.LightGray+"You do not have the required technology for this item. Its protection output will be reduced in half.");
+			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.Gray+"You do not have the required technology for this item. Its protection output will be reduced in half.");
 		}
 	}
 	
 	@Override
 	public void onDefense(EntityDamageByEntityEvent event, ItemStack stack) {
 		double def = this.getDouble("value");
-//		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-//		if (craftMat == null) return;
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
+		if (craftMat == null) return;
 		
-		double extraDef = 0.0;
-		AttributeUtil attrs = new AttributeUtil(stack);
-		for (LoreEnhancement enh : attrs.getEnhancements()) {
-			if (enh instanceof LoreEnhancementProtection) {
-				extraDef += (((LoreEnhancementProtection)enh).getExtraDamage(attrs) * 0.15);
-			}
-		}
-		def += extraDef;	
-		
-		/*double defProt = 0.0;
 		Map<Enchantment, Integer> enchant = stack.getEnchantments();
-		if (enchant.containsKey(Enchantment.PROTECTION_ENVIRONMENTAL)) {
-			int level = enchant.get(Enchantment.PROTECTION_ENVIRONMENTAL);
-			if (level == 1) defProt = 0.1;
-			else if (level == 2) defProt = 0.2;
-			else if (level == 3) defProt = 0.3;
-			else if (level == 4) defProt = 0.4;
-			else defProt = 0.0;
+		if (enchant.containsKey(Enchantment.DAMAGE_ALL)) {
+			int level = enchant.get(Enchantment.DAMAGE_ALL);
+			def += (level*0.5);
 		}
-		def += defProt;*/
 		
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
 			for (PotionEffect effect : p.getActivePotionEffects()) {
-				if (effect.getType().equals(PotionEffectType.WEAKNESS)) {
-					int weaknessDmg = 2+(2*effect.getAmplifier());
-					def -= weaknessDmg;
-				}
-				
-				if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
-					int strengthDmg = 2+(2*effect.getAmplifier());
-					def += strengthDmg;
-				}
+				double potionDifference = 0.48*(1+effect.getAmplifier());
+				if (effect.getType().equals(PotionEffectType.WEAKNESS)) def -= potionDifference;
+				if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) def += potionDifference;
 			}
 			
 			double unitperk = 1.0;
@@ -114,8 +97,20 @@ public class Armor extends ItemComponent {
 			if (!resident.hasTechForItem(stack)) def = def/2;
 		}
 		
-		double damage = event.getDamage() - def;
-		if (damage < 0.5) damage = 0.5;
-		event.setDamage(damage);
+		double evDmg = event.getDamage();
+		CivMessage.global("Damage: "+evDmg);
+		DecimalFormat df = new DecimalFormat("0.00");
+		double returnDmg = Double.valueOf(df.format((evDmg * (1 - ((def + (evDmg/2)) - evDmg / (2)) / ((25+(evDmg/2.25))-.8687922)))));
+		CivMessage.global("Return Damage: "+returnDmg);
+		if (evDmg < 4.8687893) {
+			// This number [4.8687893] was calculated on a TI-84 Plus C Silver Edition, so it is 105% correct.
+			double fixedDamage = (-(returnDmg-3.4965076))+4.8687893;
+			returnDmg = fixedDamage;
+		}
+		if (returnDmg < 0.5) returnDmg = 0.5;
+		
+//		double damage = event.getDamage() - def;
+//		if (damage < 0.5) damage = 0.5;
+		event.setDamage(returnDmg);
 	}
 }

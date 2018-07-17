@@ -37,6 +37,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.util.CivColor;
 import com.connorlinfoot.titleapi.TitleAPI;
 
@@ -108,23 +109,23 @@ public class CivMessage {
 	}
 	
 	public static void sendQuestExp(Object sender, String message) {
-		send(sender, CivColor.Green+"[Quest] "+CivColor.LightGray+message);
+		send(sender, CivColor.Green+"[Quest] "+CivColor.Gray+message);
 	}
 	
 	public static void sendSuccess(Object sender, String message) {
-		send(sender, CivColor.LightGrayBold+"  » "+CivColor.LightGreenItalic+"[Success] "+CivColor.LightGreen+message);
+		send(sender, CivColor.GrayBold+"  » "+CivColor.LightGreenItalic+"[Success] "+CivColor.LightGreen+message);
 	}
 	
 	public static void sendWarning(Object sender, String message) {		
-		send(sender, CivColor.LightGrayBold+"  » "+CivColor.YellowItalic+"[Warning] "+CivColor.Rose+message);
+		send(sender, CivColor.GrayBold+"  » "+CivColor.YellowItalic+"[Warning] "+CivColor.Rose+message);
 	}
 	
 	public static void sendError(Object sender, String message) {		
-		send(sender, CivColor.LightGrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+message);
+		send(sender, CivColor.GrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+message);
 	}
 	
 	public static void sendErrorPlayerCmd(Object sender) {		
-		send(sender, CivColor.LightGrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+"Only a player can execute this command.");
+		send(sender, CivColor.GrayBold+"  » "+CivColor.RoseItalic+"[Error] "+CivColor.Rose+"Only a player can execute this command.");
 	}
 	
 	public static void sendErrorNoRepeat(Object sender, String line) {
@@ -251,6 +252,12 @@ public class CivMessage {
 		}
 	}
 	
+	public static void sendAllNoLog(String str) {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			player.sendMessage(str);
+		}
+	}
+	
 	public static void global(String str) {
 		CivLog.info("[Global] "+str);
 		for (Player player : Bukkit.getOnlinePlayers()) {
@@ -272,6 +279,19 @@ public class CivMessage {
 		}
 	}
 	
+	public static void sendCamp(Camp camp, String message) {
+		for (Resident resident : camp.getMembers()) {
+			try {
+				Player player = CivGlobal.getPlayer(resident);
+				player.sendMessage(CivColor.Yellow+"[Camp] "+CivColor.Yellow+message);		
+				CivLog.info("[Camp:"+camp.getName()+"] "+message);
+
+			} catch (CivException e) {
+				//player not online.
+			}
+		}
+	}
+	
 	public static void sendScout(Civilization civ, String string) {
 		CivLog.info("[Scout:"+civ.getName()+"] "+string);
 		for (Town t : civ.getTowns()) {
@@ -290,19 +310,16 @@ public class CivMessage {
 		}
 	}
 	
-	@Deprecated
-	public static void sendTownCottage(Town town, String string) {
+	public static void sen1dTownCottage(Town town, String string) {
 		CivLog.info("[Town-Cottage:"+town.getName()+"] "+string);
 		for (Resident resident : town.getResidents()) {
-			if (!resident.isShowTown()) {
-				continue;
-			}
+			if (!resident.isShowTown()) continue;
 			
 			Player player;
 			try {
 				player = CivGlobal.getPlayer(resident);
 				if (player != null) {
-					CivMessage.send(player, CivColor.Gold+"[Town] "+CivColor.Blue+"[Cottage] "+CivColor.White+string);
+					CivMessage.send(player, CivColor.Gold+"[Town] "+CivColor.Aqua+"[Cottage] "+CivColor.White+string);
 				}
 			} catch (CivException e) {
 			}

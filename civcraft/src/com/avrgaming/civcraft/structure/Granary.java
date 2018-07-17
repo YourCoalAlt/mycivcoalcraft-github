@@ -101,10 +101,10 @@ public class Granary extends Structure {
 		v.setProfession(Profession.NITWIT);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -182,10 +182,10 @@ public class Granary extends Structure {
 		cv.onSpawn(vLoc, "Granary Tasks", false, Profession.NITWIT);
 		
 		String vilKey = this.getTown().getName()+":"+cv.getCustomName()+":"+vLoc.toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			cv.setHealth(0); cv.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, cv);
+			CivGlobal.addCivVillager(vilKey, cv);
 		}
 	}*/
 	
@@ -204,7 +204,7 @@ public class Granary extends Structure {
 			if (this.getTown().getLevel() < t.task) {
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Locked] Task "+t.task);
+				meta.setDisplayName(CivColor.WhiteBold+CivColor.Italic+"[Locked] Task "+t.task);
 				List<String> lore = new ArrayList<>();
 				lore.add(CivColor.LightGreen+"Will Require: "+CivColor.Rose+t.required+" Bread");
 				lore.add(CivColor.LightGreen+"Will Reward: "+CivColor.Rose+t.reward+" Culture");
@@ -227,7 +227,7 @@ public class Granary extends Structure {
 				} else {
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Completed] Task "+t.task);
+					meta.setDisplayName(CivColor.WhiteBold+CivColor.Italic+"[Completed] Task "+t.task);
 					List<String> lore = new ArrayList<>();
 					lore.add(CivColor.LightGreen+"Consumed: "+CivColor.Rose+t.required+" Bread");
 					lore.add(CivColor.LightGreen+"Rewarded: "+CivColor.Rose+t.reward+" Culture");

@@ -77,7 +77,7 @@ public class EspionageMissionTask implements Runnable {
 			return;
 		}
 		Resident resident = CivGlobal.getResident(player);	
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Mission Started.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Mission Started.");
 			
 		while (secondsLeft > 0) {
 	
@@ -147,9 +147,9 @@ public class EspionageMissionTask implements Runnable {
 				}
 				
 				if ((secondsLeft % 15) == 0) {
-					CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+""+secondsLeft+" seconds remain");
+					CivMessage.send(player, CivColor.YellowBold+""+secondsLeft+" seconds remain");
 				} else if (secondsLeft < 10) {
-					CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+""+secondsLeft+" seconds remain");
+					CivMessage.send(player, CivColor.YellowBold+""+secondsLeft+" seconds remain");
 				}
 				
 			}

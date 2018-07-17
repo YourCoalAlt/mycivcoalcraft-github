@@ -148,10 +148,10 @@ public class Warehouse extends Structure {
 		v.setProfession(Profession.LIBRARIAN);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	

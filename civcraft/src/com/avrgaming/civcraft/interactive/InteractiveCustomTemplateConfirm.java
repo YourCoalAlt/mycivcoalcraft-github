@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.interactive;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -36,11 +35,11 @@ public class InteractiveCustomTemplateConfirm implements InteractiveResponse {
 		Perk perk = customTemplate.getParent();
 		
 		CivMessage.sendHeading(player, "Confirm Template Binding");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"You are about to bind the "+perk.getDisplayName()+" template to your town of "+town.getName());
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Once the template is bound, you will be able to build the custom template by");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Using the normal build command. This action consumes the perk, and cannot be undone.");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Are you sure you want to bind the template? Type "+CivColor.Yellow+CivColor.BOLD+"yes");
-		CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"Type anything else to abort.");
+		CivMessage.send(player, CivColor.LightGreenBold+"You are about to bind the "+perk.getDisplayName()+" template to your town of "+town.getName());
+		CivMessage.send(player, CivColor.LightGreenBold+"Once the template is bound, you will be able to build the custom template by");
+		CivMessage.send(player, CivColor.LightGreenBold+"Using the normal build command. This action consumes the perk, and cannot be undone.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Are you sure you want to bind the template? Type "+CivColor.YellowBold+"yes");
+		CivMessage.send(player, CivColor.LightGreenBold+"Type anything else to abort.");
 	}
 	
 	@Override

@@ -105,7 +105,7 @@ public class CivData {
 	public static final int OBSIDIAN = 49;
 	public static final int TORCH = 50;
 	public static final int FIRE = 51;
-	public static final int SPAWNER = 52;
+	public static final int MOB_SPAWNER = 52;
 	public static final int OAK_STAIRS = 53;
 	public static final int CHEST = 54;
 	public static final int REDSTONE_WIRE = 55;
@@ -246,6 +246,7 @@ public class CivData {
 	public static final int WHITE_SHULKER_BOX = 219;
 	
 	public static final int CONCRETE = 251;
+	public static final int CONCRETE_POWDER = 252;
 	
 	//Global Items
 	public static final int IRON_SHOVEL = 256;
@@ -313,9 +314,11 @@ public class CivData {
 	
 	public static final int PAINTING = 321;
 	public static final int GOLDEN_APPLE = 322;
+	public static final int SIGN_ITEM = 323;
+	
 	public static final int EMPTY_BUCKET = 325;
 	public static final int WATER_BUCKET = 326;
-	
+	public static final int LAVA_BUCKET = 327;
 	public static final int MINECART = 328;
 	
 	public static final int IRON_DOOR_ITEM = 330;
@@ -327,7 +330,9 @@ public class CivData {
 	public static final int SUGARCANE = 338;
 	public static final int PAPER = 339;
 	
+	public static final int SLIMEBALL = 341;
 	public static final int MINECART_WITH_CHEST = 342;
+	public static final int MINECART_WITH_FURNACE = 343;
 	
 	public static final int FISHING_ROD = 346;
 	public static final int RAW_FISH = 349;
@@ -370,6 +375,13 @@ public class CivData {
 	public static final int SKULL = 397;
 	
 	public static final int QUARTZ = 406;
+	
+	public static final int ARMOR_STAND = 416;
+	public static final int IRON_HORSE_ARMOR = 417;
+	public static final int GOLD_HORSE_ARMOR = 418;
+	public static final int DIAMOND_HORSE_ARMOR = 419;
+	
+	public static final int MINECART_WITH_COMMAND_BLOCK = 422;
 	
 	public static final int POPPED_CHORUS_FRUIT = 433;
 	public static final int BEETROOT_ITEM = 434;
@@ -530,7 +542,7 @@ public class CivData {
 		if (id == OBSIDIAN) return "Obsidian";
 		if (id == TORCH) return "Torch";
 		
-		if (id == SPAWNER) return "Spawner (byte"+data+")";
+		if (id == MOB_SPAWNER) return "Spawner (byte"+data+")";
 		if (id == OAK_STAIRS) return "Oak Stair";
 		if (id == CHEST) return "Chest";
 		if (id == DIAMOND_ORE) return "Diamond Ore";
@@ -619,6 +631,8 @@ public class CivData {
 		if (id == CLAY) return "Clay";
 		if (id == SUGARCANE) return "Sugar Cane";
 		if (id == PAPER) return "Paper";
+		
+		if (id == SLIMEBALL) return "Slimeball";
 		
 		if (id == RAW_FISH && data == DATA_0) return "Raw Fish";
 		if (id == RAW_FISH && data == DATA_1) return "Raw Salmon";

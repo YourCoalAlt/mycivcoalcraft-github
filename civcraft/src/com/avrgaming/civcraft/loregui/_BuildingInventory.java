@@ -30,7 +30,7 @@ public class _BuildingInventory implements GuiAction {
 			guiInventory.setItem(i, is);
 		}
 		
-		ItemStack bs = LoreGuiItem.build("Build a Structure", ItemManager.getId(Material.BRICK_STAIRS), 0, CivColor.LightGrayItalic+"An in-game wiki for all structure information.");
+		ItemStack bs = LoreGuiItem.build("Build a Structure", ItemManager.getId(Material.BRICK_STAIRS), 0, CivColor.GrayItalic+"An in-game wiki for all structure information.");
 		bs = LoreGuiItem.setAction(bs, "_BuildingStructureBuildInventory");
 		guiInventory.setItem(0, bs);
 		
@@ -38,7 +38,7 @@ public class _BuildingInventory implements GuiAction {
 		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.guiInventory.getName());
+		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
 		guiInventory.setItem((9*3)-1, backButton);
 		
 		LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);

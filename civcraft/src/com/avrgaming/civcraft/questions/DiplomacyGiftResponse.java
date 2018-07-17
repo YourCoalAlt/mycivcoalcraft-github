@@ -47,7 +47,7 @@ public class DiplomacyGiftResponse implements QuestionResponseInterface {
 				
 				toCiv.getTreasury().withdraw(town.getGiftCost());
 				town.changeCiv(toCiv);
-				CivMessage.sendCiv(fromCiv, CivColor.LightGray+toCiv.getName()+" has accepted the offer of our town of "+town.getName());
+				CivMessage.sendCiv(fromCiv, CivColor.Gray+toCiv.getName()+" has accepted the offer of our town of "+town.getName());
 				return;
 			} else if (giftedObject instanceof Civilization) {
 				int coins = fromCiv.getMergeCost();
@@ -68,7 +68,7 @@ public class DiplomacyGiftResponse implements QuestionResponseInterface {
 				return;
 			}
 		} else {
-			CivMessage.sendCiv(fromCiv, CivColor.LightGray+toCiv.getName()+" declined our offer.");
+			CivMessage.sendCiv(fromCiv, CivColor.Gray+toCiv.getName()+" declined our offer.");
 		}
 		
 	}

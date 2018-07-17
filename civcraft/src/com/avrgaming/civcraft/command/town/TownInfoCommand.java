@@ -96,11 +96,11 @@ public class TownInfoCommand extends CommandBase {
 		}
 		
 		if (showhelp)  {
-			out.add(CivColor.LightGray+"These structures have been disabled in this town since they've exceeded the structure limit.");
-			out.add(CivColor.LightGray+"To enable them, you must do one of the following:");
-			out.add(CivColor.LightGray+"1) Move this structure to another town using: /town movestructure <coord>");
-			out.add(CivColor.LightGray+"2) Demolish this structure with /build demolish <coord> or /build demolishnearest.");
-			out.add(CivColor.LightGray+"3) Move other structures of the same type to another town, or demolish them, and issue /town enablestructure <coord>");
+			out.add(CivColor.Gray+"These structures have been disabled in this town since they've exceeded the structure limit.");
+			out.add(CivColor.Gray+"To enable them, you must do one of the following:");
+			out.add(CivColor.Gray+"1) Move this structure to another town using: /town movestructure <coord>");
+			out.add(CivColor.Gray+"2) Demolish this structure with /build demolish <coord> or /build demolishnearest.");
+			out.add(CivColor.Gray+"3) Move other structures of the same type to another town, or demolish them, and issue /town enablestructure <coord>");
 		}
 		
 		CivMessage.send(sender, out);
@@ -333,7 +333,7 @@ public class TownInfoCommand extends CommandBase {
 		if (maxedCount) {
 			out.add(CivColor.LightPurple+"Goods in this color have reached the max good multiplier");
 		}
-		out.add(CivColor.LightGray+"Base Value * ( 100% + ( 50% * MIN(ExtraGoods,"+goodMax+") )) = Good Value");
+		out.add(CivColor.Gray+"Base Value * ( 100% + ( 50% * MIN(ExtraGoods,"+goodMax+") )) = Good Value");
 		out.add(CivColor.Green+"Total Trade: Good Total: "+CivColor.Yellow+df.format(TradeGood.getTownBaseGoodPaymentViaGoodie(town))+" * "+df.format(town.getTradeRate())+" = "
 					+df.format(TradeGood.getTownTradePayment(town)));
 		
@@ -496,7 +496,7 @@ public class TownInfoCommand extends CommandBase {
 
 		CivMessage.send(sender, CivColor.Green+"SubTotal: "+CivColor.LightGreen+town.getTotalUpkeep()+
 								CivColor.Green+" Upkeep Rate: "+CivColor.LightGreen+town.getGovernment().upkeep_rate);
-		CivMessage.send(sender, CivColor.LightGray+"---------------------------------");
+		CivMessage.send(sender, CivColor.Gray+"---------------------------------");
 		CivMessage.send(sender, CivColor.Green+"Total: "+CivColor.LightGreen+town.getTotalUpkeep()*town.getCiv().getGovernment().upkeep_rate);
 		
 	}
@@ -640,7 +640,7 @@ public class TownInfoCommand extends CommandBase {
 	@Override
 	public void doDefaultAction() throws CivException {
 		show_info();
-		CivMessage.send(sender, CivColor.LightGray+"Subcommands available: See /town info help");
+		CivMessage.send(sender, CivColor.Gray+"Subcommands available: See /town info help");
 	}
 
 	@Override

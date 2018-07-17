@@ -476,17 +476,17 @@ public class Blacksmith extends Structure {
 		v.setProfession(Profession.BLACKSMITH);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
 	public void openSmeltGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*5, town.getName()+"'s Smelter Operator");
-		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
-		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Blacksmith Smelter Menu. You can",

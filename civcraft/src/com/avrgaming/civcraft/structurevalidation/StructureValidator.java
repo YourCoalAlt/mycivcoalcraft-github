@@ -128,30 +128,22 @@ public class StructureValidator implements Runnable {
 			if (playerName != null) {
 				player = CivGlobal.getPlayer(playerName);
 			}
-		} catch (CivException e) {
-		}
+		} catch (CivException e) {} // Player Offline
 		
-		int checkedLevelCount = 0;
 		boolean valid = true;
 		String message = "";
-
+		
 		for (int y = cornerLoc.getY()-1; y > 0; y--) {
-			checkedLevelCount++;
 			double totalBlocks = 0;
 			double reinforcementValue = 0;
 			
 			for (SimpleBlock sb : bottomLayer) {				
-				/* We only want the bottom layer of a template to be checked. */
-				if (sb.getType() == CivData.AIR) {
-					continue;
-				}
+				// We only want the bottom layer of a template to be checked.
+				if (sb.getType() == CivData.AIR) continue;
 				
 				try {
-					int absX;
-					int absZ;
-					absX = cornerLoc.getX() + sb.x;
-					absZ = cornerLoc.getZ() + sb.z;
-					
+					int absX = cornerLoc.getX() + sb.x;
+					int absZ = cornerLoc.getZ() + sb.z;
 					int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, cornerLoc.getWorldname());
 					totalBlocks++;
 					reinforcementValue += Buildable.getReinforcementValue(type);
@@ -163,15 +155,14 @@ public class StructureValidator implements Runnable {
 			
 			double percentValid = reinforcementValue / totalBlocks;
 			if (buildable != null) {
-
 				buildable.layerValidPercentages.put(y, new BuildableLayer((int)reinforcementValue, (int)totalBlocks));
 			}
 			
 			if (valid) {
-				if (percentValid < Buildable.getReinforcementRequirementForLevel(checkedLevelCount)) {
+				if (percentValid < Buildable.getReinforcementRequirementForLevel(y)) {
 					DecimalFormat df = new DecimalFormat();
 					message = "Layer: "+y+" is "+df.format(percentValid*100)+"%("+reinforcementValue+"/"+totalBlocks+
-							") valid, it needs to be "+df.format(Buildable.validPercentRequirement*100)+"%.";
+							") valid, it needs to be "+df.format(Buildable.getReinforcementRequirementForLevel(y)*100)+"%.";
 					valid = false;
 					continue;
 				}
@@ -183,7 +174,7 @@ public class StructureValidator implements Runnable {
 			buildable.invalidLayerMessage = message;
 			buildable.setValid(valid);
 		}
-	
+		
 		if (player != null) {
 			if (message != "") {
 				CivMessage.sendWarning(player, message);
@@ -191,7 +182,7 @@ public class StructureValidator implements Runnable {
 				CivMessage.send(player, message);
 			}
 			if (player.isOp()) {
-				CivMessage.send(player, CivColor.LightGray+"Since you're OP we'll let you build here anyway.");
+				CivMessage.send(player, CivColor.Gray+"Since you're OP we'll let you build here anyway.");
 				valid = true;
 			}
 			
@@ -203,7 +194,7 @@ public class StructureValidator implements Runnable {
 				}	
 			}
 		}
-						
+		
 		if (callback != null) {
 			if (valid || (player != null && player.isOp())) {
 				callback.execute(playerName);

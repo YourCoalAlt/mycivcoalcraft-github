@@ -48,6 +48,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -65,7 +66,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemManager;
-import com.avrgaming.civcraft.war.camp.WarCamp;
+import com.avrgaming.civcraft.war.WarCamp;
 
 public class Civilization extends SQLObject {
 
@@ -541,6 +542,10 @@ public class Civilization extends SQLObject {
 			throw new CivException("You must be holding an item that can found a Civilization.");
 		}
 		
+		if (resident.hasCamp()) {
+			throw new CivException("You must first leave your camp before founding a civilization.");
+		}
+		
 		Civilization existCiv = CivGlobal.getCiv(name);
 		if (existCiv != null) {
 			throw new CivException("A Civilization named "+name+" already exists!");
@@ -623,6 +628,7 @@ public class Civilization extends SQLObject {
 			}
 			
 			CivGlobal.addCiv(civ);
+			CivCraft.playerTagUpdate();
 			ItemStack newStack = new ItemStack(Material.AIR);
 			player.getInventory().setItemInMainHand(newStack);
 			CivMessage.global("The Civilization of "+civ.getName()+" has been founded! "+civ.getCapitolName()+" is it's capitol!");
@@ -1277,7 +1283,7 @@ public class Civilization extends SQLObject {
 				this.daysInDebt = 0;
 				CivMessage.global("Civilization of "+this.getName()+" is no longer in debt.");
 				if (leftAmount > 0) {
-					CivMessage.send(res, CivColor.LightGrayItalic+"You deposited "+leftAmount+" extra coins, they were returned to you.");
+					CivMessage.send(res, CivColor.GrayItalic+"You deposited "+leftAmount+" extra coins, they were returned to you.");
 				}
 			}
 		} else {

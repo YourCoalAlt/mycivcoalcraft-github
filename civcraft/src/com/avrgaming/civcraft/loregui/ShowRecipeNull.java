@@ -29,7 +29,7 @@ public class ShowRecipeNull implements GuiAction {
 		ItemStack entryStack;
 		if (ingred.custom_id == null) {
 			name = ItemManager.getMaterialData(ingred.type_id, ingred.data).toString();
-			message = CivColor.LightGray+"Vanilla Item";
+			message = CivColor.Gray+"Vanilla Item";
 			entryStack = LoreGuiItem.build(name, ingred.type_id, ingred.data, message);
 		} else {
 			LoreCraftableMaterial cmat = LoreCraftableMaterial.getCraftMaterialFromId(ingred.custom_id);

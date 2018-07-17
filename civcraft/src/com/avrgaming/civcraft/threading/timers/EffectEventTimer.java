@@ -26,6 +26,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.TownHall;
@@ -43,6 +44,18 @@ public class EffectEventTimer extends CivAsyncTask {
 		// Clear the last taxes so they don't accumulate.
 		for (Civilization civ : CivGlobal.getCivs()) {
 			civ.lastTaxesPaidMap.clear();
+		}
+		
+		CivLog.info("TimerEvent: Camps Tick --------------------");
+		for (Camp camp : CivGlobal.getCamps()) {
+			try {
+				camp.processFirepoints();
+				if (camp.isLonghouseEnabled()) {
+					camp.processLonghouse();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		CivLog.info("TimerEvent: Mine Tick --------------------");

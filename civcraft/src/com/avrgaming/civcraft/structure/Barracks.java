@@ -462,10 +462,10 @@ public class Barracks extends Structure {
 		v.setProfession(Profession.LIBRARIAN);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -543,16 +543,16 @@ public class Barracks extends Structure {
 		v.setProfession(Profession.BLACKSMITH);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
 	public void openRepairGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*1, "Repair Master");
-		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivData.PAPER, 0, 
 				CivColor.RESET+"This is the Barracks Repair Menu. In here,",
@@ -625,10 +625,10 @@ public class Barracks extends Structure {
 		v.setProfession(Profession.BLACKSMITH);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -673,13 +673,13 @@ public class Barracks extends Structure {
 				
 				attr.setEnhancementData("LoreEnhancementUnitGainAttack", "level", String.valueOf(lvl));
 				attr.addLore(CivColor.LightGreen+"Upgrade Level "+lvl);
-				attr.addLore(CivColor.LightGrayItalic+"   +5% Attack Damage");
+				attr.addLore(CivColor.GrayItalic+"   +5% Attack Damage");
 				p.getInventory().addItem(attr.getStack());
 				CivMessage.sendSuccess(p, "Unit upgraded to level "+lvl+"!");
 			} else {
 				attr.addEnhancement("LoreEnhancementUnitGainAttack", "level", "1");
 				attr.addLore(CivColor.LightGreen+"Upgrade Level 1");
-				attr.addLore(CivColor.LightGrayItalic+"   +5% Attack Damage");
+				attr.addLore(CivColor.GrayItalic+"   +5% Attack Damage");
 				p.getInventory().addItem(attr.getStack());
 				CivMessage.sendSuccess(p, "Unit upgraded to level 1!");
 			}

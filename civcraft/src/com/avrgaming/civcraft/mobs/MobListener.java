@@ -16,10 +16,13 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigCustomMobs;
+import com.avrgaming.civcraft.config.ConfigMobsCustom;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
@@ -35,20 +38,15 @@ import net.minecraft.server.v1_12_R1.Entity;
 
 public class MobListener implements Listener {
 	
-/*	@EventHandler(priority = EventPriority.NORMAL)
-	public void onChunkLoad(ChunkLoadEvent event) {
-		for (Entity e : event.getChunk().getEntities()) {
-			if (e instanceof Monster) {
-				e.remove();
-				return;
-			}
-			
-			if (e instanceof IronGolem) {
-				e.remove();
-				return;
-			}
-		}
-	}*/
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
+		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onChunkLoadEvent(ChunkLoadEvent event) {
+		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
+	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityCatchFire(EntityCombustEvent event) {
@@ -63,7 +61,7 @@ public class MobListener implements Listener {
 		
 		Entity mob_attack = CustomMobListener.customMobs.get(event.getDamager().getUniqueId());
 		if (mob_attack != null) {
-			if (CivGlobal.getTownChunk(event.getDamager().getLocation()) != null) {
+			if (CivGlobal.getTownChunk(event.getDamager().getLocation()) != null || CivGlobal.getCampChunk(event.getDamager().getLocation()) != null) {
 				CustomMobListener.customMobs.remove(event.getDamager().getUniqueId());
 				CustomMobListener.mobList.remove(event.getDamager().getUniqueId());
 				event.getDamager().remove();
@@ -75,7 +73,7 @@ public class MobListener implements Listener {
 		Entity mob = CustomMobListener.customMobs.get(event.getEntity().getUniqueId());
 		if (mob == null) return;
 		
-		ConfigCustomMobs cmob = CivSettings.customMobs.get(ChatColor.stripColor(mob.getCustomName()).toString().toUpperCase().replaceAll(" ", "_"));
+		ConfigMobsCustom cmob = CivSettings.customMobs.get(ChatColor.stripColor(mob.getCustomName()).toString().toUpperCase().replaceAll(" ", "_"));
 		// Entity invalid? Remove.
 		if (cmob == null) {
 			CivLog.warning("Invalid mob found? "+mob.getCustomName()+"; removed.");
@@ -109,12 +107,12 @@ public class MobListener implements Listener {
 			if (rand.nextInt(2) == 0) {
 				if (player != null) {
 					damage = (rand.nextInt(3) / 2) + 0.5;
-					CivMessage.send(player, CivColor.LightGray+"Attack grazed by "+damage+" HP");
+					CivMessage.send(player, CivColor.Gray+"Attack grazed by "+damage+" HP");
 				}
 			} else {
 				if (player != null) {
 					damage *= -1;
-					CivMessage.send(player, CivColor.LightGray+"Attack ineffective by "+damage+" HP");
+					CivMessage.send(player, CivColor.Gray+"Attack ineffective by "+damage+" HP");
 					damage = 0.0;
 				}
 			}
@@ -156,7 +154,7 @@ public class MobListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(EntityDeathEvent event) throws CivException {
 		if (CustomMobListener.mobList.get(event.getEntity().getUniqueId()) != null) {
-			ConfigCustomMobs cmob = CustomMobListener.mobList.get(event.getEntity().getUniqueId());
+			ConfigMobsCustom cmob = CustomMobListener.mobList.get(event.getEntity().getUniqueId());
 			if (event.getEntity().getKiller() != null) {
 				Player p = event.getEntity().getKiller();
 				ResidentExperience resE = CivGlobal.getResidentE(p);
@@ -237,16 +235,13 @@ public class MobListener implements Listener {
 		}
 	}
 	
-/*	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLeash(PlayerLeashEntityEvent event) {
-		if (event.getEntity() instanceof LivingEntity) {
-			CustomMobListener mob = CustomMobListener.customMobs.get(event.getEntity().getUniqueId());
-			if (mob != null) {
-				CivMessage.sendError(event.getPlayer(), "This beast cannot be tamed.");
-				event.setCancelled(true);
-				return;
-			}
+		if (CustomMobListener.mobList.get(event.getEntity().getUniqueId()) != null) {
+			CivMessage.sendError(event.getPlayer(), "This beast cannot be tamed.");
+			event.setCancelled(true);
+			return;
 		}
-	}*/
+	}
 	
 }

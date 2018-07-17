@@ -35,6 +35,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avrgaming.civcraft.accounts.AccountLogger;
+import com.avrgaming.civcraft.anticheat.AC_Manager;
 import com.avrgaming.civcraft.command.AcceptCommand;
 import com.avrgaming.civcraft.command.BackpackCommand;
 import com.avrgaming.civcraft.command.BuildCommand;
@@ -51,6 +52,7 @@ import com.avrgaming.civcraft.command.VoteCommand;
 import com.avrgaming.civcraft.command.admin.AdminCommand;
 import com.avrgaming.civcraft.command.admin.AdminGUICommand;
 import com.avrgaming.civcraft.command.admin.AdminTestCommand;
+import com.avrgaming.civcraft.command.camp.CampCommand;
 import com.avrgaming.civcraft.command.civ.CivChatCommand;
 import com.avrgaming.civcraft.command.civ.CivCommand;
 import com.avrgaming.civcraft.command.debug.DebugCommand;
@@ -84,7 +86,6 @@ import com.avrgaming.civcraft.listener.civcraft.InventoryDisplaysListener;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterialListener;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
-import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.mobs.MobListener;
 import com.avrgaming.civcraft.mobs.MobSpawner;
 import com.avrgaming.civcraft.mobs.MobSpawnerTimer;
@@ -96,6 +97,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.object.TradeGood;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.populators.TradeGoodPopulator;
 import com.avrgaming.civcraft.randomevents.RandomEventSweeper;
 import com.avrgaming.civcraft.siege.CannonListener;
@@ -155,7 +157,7 @@ public final class CivCraft extends JavaPlugin {
 	
 	public static String worldName;
 	public static Integer structure_process;
-	public static final String server_name = CivColor.LightGray+"["+CivColor.Red+"Coal"+CivColor.LightBlue+"CivCraft"+CivColor.LightGray+"] "+CivColor.RESET;
+	public static final String server_name = CivColor.Gray+"["+CivColor.Red+"Coal"+CivColor.LightBlue+"CivCraft"+CivColor.Gray+"] "+CivColor.RESET;
 	
 	private void startTimers() {
 		TaskMaster.asyncTask("SQLUpdate", new SQLUpdate(), 0);
@@ -189,8 +191,9 @@ public final class CivCraft extends JavaPlugin {
 			int exposure_time = CivSettings.getInteger(CivSettings.espionageConfig, "espionage.reduce_time");
 			TaskMaster.asyncTimer("ReduceExposureTimer", new ReduceExposureTimer(), 0, TimeTools.toTicks(exposure_time));
 			
-			int tips_timer = CivSettings.getInteger(CivSettings.gameConfig, "tips.amount");
-			TaskMaster.asyncTimer("announcer", new AnnouncementTimer("tips.txt"), 0, TimeTools.toTicks(60*(4*tips_timer)));
+			int tips_timer = CivSettings.getIntegerGameConfig("tips.amount");
+			int tips_cooldown = CivSettings.getIntegerGameConfig("tips.cooldown");
+			TaskMaster.asyncTimer("announcer", new AnnouncementTimer("civ_tips.txt"), 0, TimeTools.toTicks(tips_cooldown*tips_timer));
 			
 			double arrow_firerate = CivSettings.getDouble(CivSettings.warConfig, "arrow_tower.fire_rate");
 			TaskMaster.syncTimer("arrowTower", new ProjectileComponentTimer(), (int)(arrow_firerate*20));	
@@ -270,7 +273,7 @@ public final class CivCraft extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		CivLog.init(this);
-		isDisable = false;
+		isDisable = false; isStarted = false; isRestarting = false;
 		setPlugin(this);
 		this.saveDefaultConfig();
 		
@@ -301,6 +304,7 @@ public final class CivCraft extends JavaPlugin {
 		getCommand("plot").setExecutor(new PlotCommand());
 		getCommand("accept").setExecutor(new AcceptCommand());
 		getCommand("deny").setExecutor(new DenyCommand());
+		getCommand("camp").setExecutor(new CampCommand());
 		getCommand("civ").setExecutor(new CivCommand());
 		getCommand("tc").setExecutor(new TownChatCommand());
 		getCommand("cc").setExecutor(new CivChatCommand());
@@ -318,6 +322,7 @@ public final class CivCraft extends JavaPlugin {
 		getCommand("reboot").setExecutor(new RebootCommand());
 	
 		registerEvents();
+		acManager = new AC_Manager(this);
 		
 		if (hasPlugin("NoCheatPlus")) {
 			registerNPCHooks();
@@ -345,10 +350,10 @@ public final class CivCraft extends JavaPlugin {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
 				}
 				
-				CivCraft.updateStructureArrays();
-				BuildUndoTask.resumeUndoTasks();
 				CivLog.info("Force despawning mobs before we start...");
 				MobSpawner.despawnMobs(null, true, true, true, true, true, true, true);
+				CivCraft.updateStructureArrays();
+				BuildUndoTask.resumeUndoTasks();
 			}
 		});
 	}
@@ -372,6 +377,11 @@ public final class CivCraft extends JavaPlugin {
 		super.onDisable();
 	}
 	
+	private static AC_Manager acManager;
+	public static AC_Manager getACManager() {
+		return acManager;
+	}
+	
 	public boolean isError() {
 		return isError;
 	}
@@ -388,8 +398,8 @@ public final class CivCraft extends JavaPlugin {
 		CivCraft.plugin = plugin;
 	}
 	
-	public static void playerForcedUpdate() {
-		TaskMaster.asyncTask(new PlayerTagUpdateTimer(), TimeTools.toTicks(1));
+	public static void playerTagUpdate() {
+		TaskMaster.asyncTask(new PlayerTagUpdateTimer(), 1);
 	}
 	
 	public static void addFurnaceRecipes() {
@@ -408,11 +418,11 @@ public final class CivCraft extends JavaPlugin {
 		Bukkit.addRecipe(recipe3);
 		plugin.getServer().addRecipe(recipe3);
 		
-		ItemStack cio = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk"), 1);
-		MaterialData crushed_iron = new MaterialData(Material.IRON_ORE);
-		FurnaceRecipe recipe4 = new FurnaceRecipe(cio, crushed_iron, 0.5f);
-		Bukkit.addRecipe(recipe4);
-		plugin.getServer().addRecipe(recipe4);
+//		ItemStack cio = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk"), 1);
+//		MaterialData crushed_iron = new MaterialData(Material.IRON_ORE);
+//		FurnaceRecipe recipe4 = new FurnaceRecipe(cio, crushed_iron, 0.5f);
+//		Bukkit.addRecipe(recipe4);
+//		plugin.getServer().addRecipe(recipe4);
 	}
 	
 	public static void updateStructureArrays() {
@@ -441,6 +451,11 @@ public final class CivCraft extends JavaPlugin {
 	public void disableCivGlobal() {
 		for (Location loc : ParticleEffectTimer.externalParticleBlocks.keySet()) {
 			ParticleEffectTimer.externalParticleBlocks.remove(loc);
+		}
+		
+		for (Camp ca : CivGlobal.getCamps()) {
+			ca.save();
+			CivGlobal.removeCamp(ca);
 		}
 		
 		for (AccountLogger al : CivGlobal.getAccounts()) {

@@ -25,9 +25,9 @@ public class WarAntiCheat {
 		}
 		
 		if (War.isOnlyWarriors()) {
-			CivMessage.global(CivColor.LightGray+"All invalid players or any players not at war have been expelled during WarTime.");
+			CivMessage.global(CivColor.Gray+"All invalid players or any players not at war have been expelled during WarTime.");
 		} else {
-			CivMessage.global(CivColor.LightGray+"All invalid players have been expelled during WarTime.");
+			CivMessage.global(CivColor.Gray+"All invalid players have been expelled during WarTime.");
 		}
 	}
 	

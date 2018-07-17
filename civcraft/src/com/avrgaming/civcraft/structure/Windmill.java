@@ -106,10 +106,10 @@ public class Windmill extends Structure {
 		CivVillager.onSpawn(v, vLoc, "Windmill Manager", false, Profession.FARMER);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -129,8 +129,8 @@ public class Windmill extends Structure {
 		wm.setDisplayName(CivData.getDisplayName(295, 0));
 		List<String> wl = new ArrayList<>();
 		wl.add(CivColor.LightGreen+this.wheat_sel);
-		wl.add(CivColor.LightGray+" « Left Click +1 » ");
-		wl.add(CivColor.LightGray+" « Right Click -1 » ");
+		wl.add(CivColor.Gray+" « Left Click +1 » ");
+		wl.add(CivColor.Gray+" « Right Click -1 » ");
 		wm.setLore(wl); w.setItemMeta(wm);
 		inv.addItem(w);
 		
@@ -139,8 +139,8 @@ public class Windmill extends Structure {
 		cm.setDisplayName(CivData.getDisplayName(391, 0));
 		List<String> cl = new ArrayList<>();
 		cl.add(CivColor.LightGreen+this.carrot_sel);
-		cl.add(CivColor.LightGray+" « Left Click +1 » ");
-		cl.add(CivColor.LightGray+" « Right Click -1 » ");
+		cl.add(CivColor.Gray+" « Left Click +1 » ");
+		cl.add(CivColor.Gray+" « Right Click -1 » ");
 		cm.setLore(cl); c.setItemMeta(cm);
 		inv.addItem(c);
 		
@@ -149,8 +149,8 @@ public class Windmill extends Structure {
 		pm.setDisplayName(CivData.getDisplayName(392, 0));
 		List<String> pl = new ArrayList<>();
 		pl.add(CivColor.LightGreen+this.potato_sel);
-		pl.add(CivColor.LightGray+" « Left Click +1 » ");
-		pl.add(CivColor.LightGray+" « Right Click -1 » ");
+		pl.add(CivColor.Gray+" « Left Click +1 » ");
+		pl.add(CivColor.Gray+" « Right Click -1 » ");
 		pm.setLore(pl); p.setItemMeta(pm);
 		inv.addItem(p);
 		
@@ -159,8 +159,8 @@ public class Windmill extends Structure {
 		bm.setDisplayName(CivData.getDisplayName(434, 0));
 		List<String> bl = new ArrayList<>();
 		bl.add(CivColor.LightGreen+this.beetroot_sel);
-		bl.add(CivColor.LightGray+" « Left Click +1 » ");
-		bl.add(CivColor.LightGray+" « Right Click -1 » ");
+		bl.add(CivColor.Gray+" « Left Click +1 » ");
+		bl.add(CivColor.Gray+" « Right Click -1 » ");
 		bm.setLore(bl); b.setItemMeta(bm);
 		inv.addItem(b);
 		

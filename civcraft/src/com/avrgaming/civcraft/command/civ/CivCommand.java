@@ -93,9 +93,8 @@ public class CivCommand extends CommandBase {
 		for (Civilization civ : CivGlobal.getCivs()) {
 			Integer votes = EndConditionDiplomacy.getVotesFor(civ);
 			if (votes != 0) {
-				CivMessage.send(sender, CivColor.LightBlue+
-						CivColor.BOLD+civ.getName()+CivColor.White+" has "+
-						CivColor.LightPurple+CivColor.BOLD+votes+CivColor.White+" votes");
+				CivMessage.send(sender, CivColor.LightBlueBold+civ.getName()+CivColor.White+" has "+
+						CivColor.LightPurpleBold+votes+CivColor.White+" votes");
 			}
 		}
 	}
@@ -115,14 +114,14 @@ public class CivCommand extends CommandBase {
 			for (SessionEntry entry : entries) {
 				Civilization civ = EndGameCondition.getCivFromSessionData(entry.value);
 				Integer daysLeft = endCond.getDaysToHold() - endCond.getDaysHeldFromSessionData(entry.value);
-				CivMessage.send(sender, CivColor.LightBlue+CivColor.BOLD+civ.getName()+CivColor.White+" is "+
-				CivColor.Yellow+CivColor.BOLD+daysLeft+CivColor.White+" days away from a "+CivColor.LightPurple+CivColor.BOLD+endCond.getVictoryName()+
+				CivMessage.send(sender, CivColor.LightBlueBold+civ.getName()+CivColor.White+" is "+
+				CivColor.YellowBold+daysLeft+CivColor.White+" days away from a "+CivColor.LightPurpleBold+endCond.getVictoryName()+
 				CivColor.White+" victory!");
 			}
 		}
 		
 		if (!anybody) {
-			CivMessage.send(sender, CivColor.LightGray+"Nobody yet...");
+			CivMessage.send(sender, CivColor.Gray+"Nobody yet...");
 		}
 		
 	}
@@ -211,8 +210,8 @@ public class CivCommand extends CommandBase {
 		
 		town.getTreasury().withdraw(revolutionFee);
 		CivMessage.global(CivColor.Yellow+ChatColor.BOLD+"The civilization of "+motherCiv.getName()+" demands its freedom and has started a revolution! It has declared WAR on any civ that owns its old towns.");
-		CivMessage.global(CivColor.Rose+"RED!"+CivColor.LightGreen+" The blood of angry men! "+CivColor.LightGray+"BLACK!"+CivColor.LightGreen+" The dark of ages past!");
-		CivMessage.global(CivColor.Rose+"RED!"+CivColor.LightGreen+" A world about to dawn! "+CivColor.LightGray+"BLACK!"+CivColor.LightGreen+" The night that ends at last!");
+		CivMessage.global(CivColor.Rose+"RED!"+CivColor.LightGreen+" The blood of angry men! "+CivColor.Gray+"BLACK!"+CivColor.LightGreen+" The dark of ages past!");
+		CivMessage.global(CivColor.Rose+"RED!"+CivColor.LightGreen+" A world about to dawn! "+CivColor.Gray+"BLACK!"+CivColor.LightGreen+" The night that ends at last!");
 
 	}
 	
@@ -277,7 +276,7 @@ public class CivCommand extends CommandBase {
 			CivMessage.sendHeading(sender, "Civilization Victories");
 			for (SessionEntry se : entries) {
 				Civilization civ = EndGameCondition.getCivFromSessionData(se.value);
-				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+civ.getScore()+" points  --  "+CivColor.BOLD+" VICTORY");
+				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+civ.getScore()+" points  --  "+CivColor.LightGreenBold+" VICTORY");
 				i++; v++;
 			}
 			return;

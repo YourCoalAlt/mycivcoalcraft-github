@@ -28,7 +28,7 @@ public class UnitTrainBarracks implements GuiAction {
 		TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
 		
 		p.closeInventory();
-		if(tc != null && !tc.perms.hasPermission(PlotPermissions.Type.INTERACT, res)) {
+		if(tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.INTERACT, res)) {
 			CivMessage.sendError(res, "You do not have permission to access this barracks.");
 			return;
 		}

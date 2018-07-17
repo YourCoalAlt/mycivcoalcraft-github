@@ -47,42 +47,14 @@ public class TrommelAsyncTask extends CivAsyncTask {
 	
 	public void processTrommelUpdate(int ticks) {
 		debug(trommel, "Processing Trommel...");
+		ticks += trommel.skippedCounter; // Add in any ticks we previously missed
 		// Make sure the chunk is loaded before continuing. Also, add get chest and add it to inventory.
 		MultiInventory source_inv = new MultiInventory();
 		MultiInventory dest_inv = new MultiInventory();
-
+		ArrayList<ItemStack> process = new ArrayList<ItemStack>();
+		
 		try {
-			for (StructureChest src : sources) {
-				Inventory tmp;
-				try {
-					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
-				} catch (CivTaskAbortException e) {
-					trommel.skippedCounter += ticks;
-					CivLog.warning("Trommel: "+e.getMessage());
-					return;
-				}
-				if (tmp == null) {
-					trommel.skippedCounter += ticks;
-					return;
-				}
-				
-				// If inventory as what we want, add it and forget any others.
-				boolean brk = false;
-				for (Iterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
-					ItemStack stack = iter.next();
-					if (stack == null) continue;
-					
-					ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
-					if (cti == null) continue;
-					else {
-						source_inv.addInventory(tmp);
-						brk = true;
-						break;
-					}
-				}
-				if (brk) break;
-			}
-			
+			// If it is full, don't even both trying to continue
 			boolean full = true;
 			for (StructureChest dst : destinations) {
 				Inventory tmp;
@@ -110,48 +82,80 @@ public class TrommelAsyncTask extends CivAsyncTask {
 				debug(trommel, "Outputs full, cancelling.");
 				return;
 			}
-		} catch (InterruptedException e) {
-			return;
-		}
-		
-		ticks += trommel.skippedCounter;
-		debug(trommel, "Processing trommel (Prev. Skipped, & Govt. Process): "+ticks);
-		
-		for (int i = 0; i < ticks; i++) {
-			for (Inventory inv : source_inv.getInventories()) {
-				for (Iterator<ItemStack> iter = inv.iterator(); iter.hasNext();) {
+			
+			boolean maxed = false;
+			for (StructureChest src : sources) {
+				Inventory tmp;
+				try {
+					tmp = this.getChestInventory(src.getCoord().getWorldname(), src.getCoord().getX(), src.getCoord().getY(), src.getCoord().getZ(), false);
+				} catch (CivTaskAbortException e) {
+					trommel.skippedCounter += ticks;
+					CivLog.warning("Trommel: "+e.getMessage());
+					return;
+				}
+				if (tmp == null) {
+					trommel.skippedCounter += ticks;
+					return;
+				}
+				
+				// Get collection from all available chess
+				for (Iterator<ItemStack> iter = tmp.iterator(); iter.hasNext();) {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
 					ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
-					if (cti == null) continue;
-					
-					if (ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data && trommel.getLevel() >= cti.level) {
-						try {
-							this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(cti.item, 1, (byte)cti.item_data));
-						} catch (InterruptedException e) {
-							return;
+					if (cti != null) {
+						if (process.size() >= ticks) {
+							maxed = true;
+							break;
 						}
 						
-						ArrayList<ItemStack> dropped = getRandomDrops(trommel.getTown(), cti.item, cti.item_data);
-						if (dropped.size() < 1) {
-							dropped.add(getReturnDrop());
-						}
-						
-						try { //Try to add the new item to the dest chest, if we cant, oh well.
-							for (ItemStack ni : dropped) {
-								debug(trommel, "Updating inventory: "+ni);
-								this.updateInventory(Action.ADD, dest_inv, ni);
+						for (int i = stack.getAmount(); i > 0; i--) {
+							ItemStack tis = new ItemStack(stack.getType(), 1, stack.getDurability());
+							process.add(tis);
+							stack.setAmount(stack.getAmount()-1);
+							if (process.size() >= ticks) {
+								maxed = true;
+								break;
 							}
-						} catch (InterruptedException e) {
-							return;
 						}
-						break;
 					}
+//					else source_inv.addInventory(tmp);
 				}
+				if (maxed) break;
+			}
+		} catch (InterruptedException e) {
+			return;
+		}
+		
+		debug(trommel, "Processing trommel (Prev. Skipped, & Govt. Process): "+process.size());
+		ArrayList<ItemStack> dropped = new ArrayList<ItemStack>();
+		for (int i = 0; i < process.size(); i++) {
+			ItemStack stack = process.get(i);
+			ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
+			if (ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data && trommel.getLevel() >= cti.level) {
+				try {
+					this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(cti.item, 1, (byte)cti.item_data));
+				} catch (InterruptedException e) {
+					return;
+				}
+				
+				ArrayList<ItemStack> toDrop = getRandomDrops(trommel.getTown(), cti.item, cti.item_data);
+				if (toDrop.size() < 1) dropped.add(getReturnDrop());
+				else dropped.addAll(toDrop);
 			}
 		}
-		trommel.skippedCounter = 0;
+		
+		try { //Try to add the new item to the dest chest, if we cant, oh well.
+			for (ItemStack ni : dropped) {
+				debug(trommel, "Updating inventory: "+ni);
+				this.updateInventory(Action.ADD, dest_inv, ni);
+			}
+		} catch (InterruptedException e) {
+			trommel.skippedCounter += ticks;
+			return;
+		}
+//		trommel.skippedCounter = 0;
 	}
 	
 	private ItemStack getReturnDrop() {

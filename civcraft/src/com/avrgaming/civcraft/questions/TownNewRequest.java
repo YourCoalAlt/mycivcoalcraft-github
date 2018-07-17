@@ -20,7 +20,7 @@ public class TownNewRequest implements QuestionResponseInterface {
 			CivMessage.send(civ, CivColor.LightGreen+"Our Civilization leader "+leader.getName()+" has accepted the request to found the town of "+name);
 			TaskMaster.syncTask(new FoundTownSync(resident));
 		} else {
-			CivMessage.send(resident, CivColor.LightGray+"Our request to found a town has been denied.");
+			CivMessage.send(resident, CivColor.Gray+"Our request to found a town has been denied.");
 		}		
 	}
 

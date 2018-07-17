@@ -19,6 +19,7 @@
 package com.avrgaming.civcraft.command.admin;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -29,12 +30,15 @@ import com.avrgaming.civcraft.exception.AlreadyRegisteredException;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.listener.civcraft.MinecraftListener;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.GivePlayerStartingKit;
+import com.avrgaming.civcraft.util.CivColor;
 
 public class AdminResCommand extends CommandBase {
 
@@ -52,6 +56,13 @@ public class AdminResCommand extends CommandBase {
 		commands.put("togglechat", "Turn chat messages being sent on or off.");
 		commands.put("begin", "Does whole beginning process on first join (if player was null).");
 		commands.put("givekit", "[resident] - Gives this player a new starting kit.");
+		commands.put("listmods", "[resident] - View the mods used by this player.");
+	}
+	
+	public void listmods_cmd() throws CivException {
+		Player p = getNamedPlayer(1);
+		Map<String, String> mods = CivCraft.getACManager().getModData(p).getModsMap();
+		mods.forEach((mod, version) -> CivMessage.send(sender, CivColor.LightGreenBold+"Mod: "+CivColor.Yellow+mod+CivColor.LightBlueBold+" Version: "+CivColor.Yellow+version));
 	}
 	
 	public void givekit_cmd() throws CivException {
@@ -152,32 +163,40 @@ public class AdminResCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Enchanted.");
 	}
 	
-	public void cleartown_cmd() throws CivException {
+	public void setcamp_cmd() throws CivException {		
+		Resident resident = getNamedResident(1);
+		Camp camp = getNamedCamp(2);
+		if (resident.hasCamp()) {
+			resident.getCamp().removeMember(resident);
+		}		
+		
+		camp.addMember(resident);
+		camp.save();
+		resident.save();
+		CivMessage.sendSuccess(sender, "Moved "+resident.getName()+" into camp "+camp.getName());
+	}
+	
+	public void clearcamp_cmd() throws CivException {
 		if (args.length < 2) {
 			throw new CivException("Enter a player name");
 		}
 				
 		Resident resident = getNamedResident(1);
-		
-		if (resident.hasTown()) {
-			resident.getTown().removeResident(resident);
+		if (resident.hasCamp()) {
+			resident.getCamp().removeMember(resident);
 		}
 		
 		resident.save();
-		CivMessage.sendSuccess(sender, "Cleared "+resident.getName()+" from any town.");
-
+		CivMessage.sendSuccess(sender, "Cleared "+resident.getName()+" from any camp.");
 	}
 	
 	public void settown_cmd() throws CivException {
-		
 		if (args.length < 3) {
 			throw new CivException("Enter player and its new town.");
 		}
 		
 		Resident resident = getNamedResident(1);
-
 		Town town = getNamedTown(2);
-
 		if (resident.hasTown()) {
 			resident.getTown().removeResident(resident);
 		}
@@ -192,6 +211,20 @@ public class AdminResCommand extends CommandBase {
 		town.save();
 		resident.save();
 		CivMessage.sendSuccess(sender, "Moved "+resident.getName()+" into town "+town.getName());
+	}
+	
+	public void cleartown_cmd() throws CivException {
+		if (args.length < 2) {
+			throw new CivException("Enter a player name");
+		}
+				
+		Resident resident = getNamedResident(1);
+		if (resident.hasTown()) {
+			resident.getTown().removeResident(resident);
+		}
+		
+		resident.save();
+		CivMessage.sendSuccess(sender, "Cleared "+resident.getName()+" from any town.");
 	}
 	
 	@Override

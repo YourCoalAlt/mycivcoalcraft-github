@@ -247,18 +247,15 @@ public class PlotCommand extends CommandBase {
 		this.validPlotOwner();
 		
 		if (args.length < 2) {
-			throw new CivException("Please specifiy mobs or fire to toggle.");
+			throw new CivException("Please specifiy spawners, customspawns, or fire to toggle.");
 		}
 		
-		if (args[1].equalsIgnoreCase("mobs")) {
-			if (tc.perms.isMobs()) {
-				tc.perms.setMobs(false);
-			} else {
-				tc.perms.setMobs(true);
-			}
-			
-			CivMessage.sendSuccess(sender, "Set mob spawning on this plot to "+tc.perms.isMobs());
-			
+		if (args[1].equalsIgnoreCase("spawners")) {
+			tc.perms.setSpawnerMobs(!tc.perms.isSpawnerMobs());
+			CivMessage.sendSuccess(sender, "Set mob spawning on this plot to "+tc.perms.isSpawnerMobs());
+		} else if (args[1].equalsIgnoreCase("customspawns")) {
+			tc.perms.setCustomSpawnMobs(!tc.perms.isCustomSpawnMobs());
+			CivMessage.sendSuccess(sender, "Set mob spawning on this plot to "+tc.perms.isCustomSpawnMobs());
 		} else if (args[1].equalsIgnoreCase("fire")) {
 			if (tc.perms.isFire()) {
 				tc.perms.setFire(false);
@@ -326,7 +323,8 @@ public class PlotCommand extends CommandBase {
 	}
 	
 	private void showToggles(TownChunk tc) {
-		CivMessage.send(sender, CivColor.Green+"Mobs: "+CivColor.LightGreen+tc.perms.isMobs()+" "+
+		CivMessage.send(sender, CivColor.Green+"Spawner Mobs: "+CivColor.LightGreen+tc.perms.isSpawnerMobs()+" "+
+								CivColor.Green+"Custom Spawn Mobs: "+CivColor.LightGreen+tc.perms.isCustomSpawnMobs()+" "+
 								CivColor.Green+"Fire: "+CivColor.LightGreen+tc.perms.isFire());
 	}
 

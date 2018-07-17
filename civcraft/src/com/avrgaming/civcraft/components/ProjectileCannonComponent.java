@@ -23,10 +23,12 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.cache.CannonExplosionProjectile;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -64,6 +66,7 @@ public class ProjectileCannonComponent extends ProjectileComponent {
 	
 	@Override
 	public void fire(Location turretLoc, Entity targetEntity) {
+		if (targetEntity instanceof Player && (!CivGlobal.inGamemode(((Player) targetEntity)))) return;
 		if (halfSecondCount < fireRate) {
 			halfSecondCount++;
 			return;

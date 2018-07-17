@@ -37,6 +37,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -62,6 +63,7 @@ import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.interactive.InteractiveBuildableRefresh;
 import com.avrgaming.civcraft.items.BonusGoodie;
 import com.avrgaming.civcraft.items.units.Unit;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -70,6 +72,7 @@ import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.randomevents.RandomEvent;
 import com.avrgaming.civcraft.road.Road;
 import com.avrgaming.civcraft.structure.Buildable;
+import com.avrgaming.civcraft.structure.BuildableLayer;
 import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.structure.Structure;
@@ -88,6 +91,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
+import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
@@ -136,14 +140,10 @@ public class Town extends SQLObject {
 	private double baseCulture = 0.0;
 	private double culture;
 	
-	private PermissionGroup defaultGroup;
-	private PermissionGroup mayorGroup;
-	private PermissionGroup assistantGroup;
+	private PermissionGroup civMemberGroup, residentGroup, mayorGroup, assistantGroup;
 	
 	// These are used to resolve reverse references after the database loads.
-	private String defaultGroupName;
-	private String mayorGroupName;
-	private String assistantGroupName;
+	private String civMemberGroupName, residentGroupName, mayorGroupName, assistantGroupName;
 	
 	public ArrayList<TownChunk> savedEdgeBlocks = new ArrayList<TownChunk>();
 	public HashSet<Town> townTouchList = new HashSet<Town>();
@@ -176,6 +176,9 @@ public class Town extends SQLObject {
 	public int saved_trommel_level = 1;
 	public int saved_warehouse_level = 1;
 	public int saved_lumber_mill_level = 1;
+	
+	public int saved_mob_grinder_level = 1;
+	public ArrayList<EntityType> saved_mob_grinder_spawners = new ArrayList<EntityType>();
 	
 	public int saved_structures_default_level = 1;
 	
@@ -212,9 +215,6 @@ public class Town extends SQLObject {
 					"`civ_id` int(11) NOT NULL DEFAULT 0," +
 					"`master_civ_id` int(11) NOT NULL DEFAULT 0," + //XXX no longer used.
 					"`mother_civ_id` int(11) NOT NULL DEFAULT 0," +
-					"`defaultGroupName` mediumtext DEFAULT NULL," +
-					"`mayorGroupName` mediumtext DEFAULT NULL," +
-					"`assistantGroupName` mediumtext DEFAULT NULL," +
 					"`upgrades` mediumtext DEFAULT NULL," +
 					"`level` int(11) DEFAULT 1," +
 					"`debt` double DEFAULT 0," +
@@ -288,10 +288,17 @@ public class Town extends SQLObject {
 		this.setExtraHammers(rs.getDouble("extra_hammers"));
 		this.setAccumulatedCulture(rs.getDouble("culture"));
 		
-		defaultGroupName = "residents";
+		civMemberGroupName = "civ_members";
+		residentGroupName = "residents";
 		mayorGroupName = "mayors";
 		assistantGroupName = "assistants";
-
+		
+/*		for (Town t : this.getCiv().getTowns()) {
+			for (Resident res : t.getResidents()) {
+				this.getCivMemberGroup().addMember(res);
+			}
+		}*/
+		
 		this.setTreasury(new EconObject(this));
 		this.getTreasury().setBalance(rs.getDouble("coins"), false);
 		this.setDebt(rs.getDouble("debt"));
@@ -299,7 +306,6 @@ public class Town extends SQLObject {
 		String outlawRaw = rs.getString("outlaws");
 		if (outlawRaw != null) {
 			String[] outlaws = outlawRaw.split(",");
-			
 			for (String outlaw : outlaws) {
 				this.outlaws.add(outlaw);
 			}
@@ -333,9 +339,6 @@ public class Town extends SQLObject {
 			hashmap.put("mother_civ_id", 0);
 		}
 		
-		hashmap.put("defaultGroupName", this.getDefaultGroupName());
-		hashmap.put("mayorGroupName", this.getMayorGroupName());
-		hashmap.put("assistantGroupName", this.getAssistantGroupName());
 		hashmap.put("level", this.getLevel());
 		hashmap.put("debt", this.getTreasury().getDebt());
 		hashmap.put("daysInDebt", this.getDaysInDebt());
@@ -534,14 +537,13 @@ public class Town extends SQLObject {
 		res.setTown(this);				
 		String value = res.getName().toLowerCase();
 		residents.put(res, value);
-		if (this.defaultGroup != null && !this.defaultGroup.hasMember(res)) {
-			this.defaultGroup.addMember(res);
-			this.defaultGroup.save();
+		if (this.residentGroup != null && !this.residentGroup.hasMember(res)) {
+			this.residentGroup.addMember(res);
+			this.residentGroup.save();
 		}
 	}
 	
 	public void addTownChunk(TownChunk tc) throws AlreadyRegisteredException {
-		
 		if (townChunks.containsKey(tc.getChunkCoord())) {
 			throw new AlreadyRegisteredException("TownChunk at "+tc.getChunkCoord()+" already registered to town "+this.getName());
 		}
@@ -661,6 +663,10 @@ public class Town extends SQLObject {
 				throw new CivException("Towns must be founded inside a Civilization.");
 			}
 			
+			if (resident.hasCamp()) {
+				throw new CivException("You must first leave your camp before starting a town.");
+			}
+			
 			if (resident.getTown() != null && resident.getTown().isMayor(resident)) {
 				throw new CivException("You cannot start another town since you are the mayor of "+resident.getTown().getName());
 			}
@@ -777,7 +783,7 @@ public class Town extends SQLObject {
 				residentsGroup = new PermissionGroup(newTown, "residents");	
 				residentsGroup.addMember(resident);
 				residentsGroup.saveNow();
-				newTown.setDefaultGroup(residentsGroup);
+				newTown.setResidentGroup(residentsGroup);
 				
 				PermissionGroup mayorGroup = new PermissionGroup(newTown, "mayors");
 				mayorGroup.addMember(resident);
@@ -834,12 +840,12 @@ public class Town extends SQLObject {
 					resident.getTown().removeResident(resident);
 				}
 				newTown.addResident(resident);
+				CivCraft.playerTagUpdate();
 			} catch (AlreadyRegisteredException e) {
 				e.printStackTrace();
 				throw new CivException("Internal error, resident already registered to this town but creating it?");
 			}
 			resident.saveNow();
-			
 			CivGlobal.processCulture();
 			newTown.saveNow();
 			return newTown;
@@ -848,16 +854,25 @@ public class Town extends SQLObject {
 			throw new CivException("Internal SQL Error.");
 		}
 	}
-
-	public PermissionGroup getDefaultGroup() {
-		return defaultGroup;
+	
+	public PermissionGroup getCivMemberGroup() {
+		return this.civMemberGroup;
 	}
-
-	public void setDefaultGroup(PermissionGroup defaultGroup) {
-		this.defaultGroup = defaultGroup;
-		this.groups.put(defaultGroup.getName(), defaultGroup);
+	
+	public void setCivMemberGroup(PermissionGroup group) {
+		this.civMemberGroup = group;
+		this.groups.put(group.getName(), group);
 	}
-
+	
+	public PermissionGroup getResidentGroup() {
+		return this.residentGroup;
+	}
+	
+	public void setResidentGroup(PermissionGroup group) {
+		this.residentGroup = group;
+		this.groups.put(group.getName(), group);
+	}
+	
 	public Collection<PermissionGroup> getGroups() {
 		return groups.values();
 	}
@@ -876,17 +891,16 @@ public class Town extends SQLObject {
 	}
 	
 	public void addGroup(PermissionGroup grp) {
-		
-		if (grp.getName().equalsIgnoreCase(this.defaultGroupName)) {
-			this.defaultGroup = grp;
+		if (grp.getName().equalsIgnoreCase(this.civMemberGroupName)) {
+			this.civMemberGroup = grp;
+		} else if (grp.getName().equalsIgnoreCase(this.residentGroupName)) {
+			this.residentGroup = grp;
 		} else if (grp.getName().equalsIgnoreCase(this.mayorGroupName)) {
 			this.mayorGroup = grp;
 		} else if (grp.getName().equalsIgnoreCase(this.assistantGroupName)) {
 			this.assistantGroup = grp;
 		}
-		
 		groups.put(grp.getName(), grp);
-		
 	}
 	
 	public void removeGroup(PermissionGroup grp) {
@@ -910,15 +924,15 @@ public class Town extends SQLObject {
 		}
 		return null;
 	}
-
-	public String getDefaultGroupName() {
-//		if (this.defaultGroup == null) {
-//			return "none";
-//		}
-//		return this.defaultGroup.getName();
-		return "residents";
+	
+	public String getResidentGroupName() {
+		return this.residentGroupName;
 	}
-
+	
+	public String getCivMemberGroupName() {
+		return this.civMemberGroupName;
+	}
+	
 	public PermissionGroup getMayorGroup() {
 		return mayorGroup;
 	}
@@ -1099,24 +1113,26 @@ public class Town extends SQLObject {
 	}
 	
 	private void kickResident(Resident resident) {
-		/* Repo all this resident's plots. */
+		// Repo all this resident's plots.
 		for (TownChunk tc : townChunks.values()) {
 			if (tc.perms.getOwner() == resident) {
 				tc.perms.setOwner(null);
-				tc.perms.replaceGroups(defaultGroup);
+				tc.perms.replaceGroups(this.residentGroup);
 				tc.perms.resetPerms();
 				tc.save();
 			}
 		}
 		
-		/* Clear resident's debt and remove from town. */
+		for (Town t : this.getCiv().getTowns()) {
+			t.getCivMemberGroup().removeMember(resident);
+		}
+		
+		// Clear resident's debt and remove from town.
 		resident.getTreasury().setDebt(0);
 		resident.setDaysTilEvict(0);
 		resident.setTown(null);
 		resident.setRejoinCooldown(this);
-
 		this.residents.remove(resident);
-		
 		resident.save();
 		this.save();
 	}
@@ -1546,7 +1562,7 @@ public class Town extends SQLObject {
 		}
 		
 		try {
-			this.buildSupport((Buildable)struct, struct.getCorner());
+			this.buildSupport((Buildable)struct);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1570,7 +1586,7 @@ public class Town extends SQLObject {
 	//		throw new CivException("Internal database error");
 	//	}
 	}
-
+	
 	public boolean isStructureAddable(Structure struct) {
 		int count = this.getStructureTypeCount(struct.getConfigId());
 
@@ -1596,9 +1612,8 @@ public class Town extends SQLObject {
 			this.disabledBuildables.remove(struct.getCorner());
 			struct.setEnabled(true);
 		}
-		
 	}
-
+	
 	public Structure getStructureByType(String id) {
 		for (Structure struct : this.structures.values()) {
 			if (struct.getConfigId().equalsIgnoreCase(id)) {
@@ -1607,9 +1622,41 @@ public class Town extends SQLObject {
 		}
 		return null;
 	}
-
-	public void loadUpgrades() throws CivException {
+	
+	// TODO test if this works. Should get nearest structure, and remove all structures too far away.
+	public Structure getNearestStructureByType(Location loc, String id) {
+		ArrayList<Structure> nearby = new ArrayList<Structure>();
+		for (Structure struc : this.structures.values()) {
+			if (struc.getConfigId().equalsIgnoreCase(id)) {
+				nearby.add(struc);
+			}
+		}
 		
+		double closest = Double.MAX_VALUE;
+		for (Structure struc : nearby) {
+			Location sl = new Location(Bukkit.getWorld("world"), struc.getCenterLocation().getX(), struc.getCorner().getLocation().getY(), struc.getCenterLocation().getZ());
+			double distance = sl.distance(loc);
+			if (distance > closest || struc.getTown() != this) nearby.remove(struc);
+		}
+		
+		return nearby.get(0);
+	}
+	
+	public Buildable getStructureAtLocationByType(Location loc, String id) {
+		BlockCoord bcoord = new BlockCoord(loc);
+		if (CivGlobal.getBuildablesAt(bcoord) != null)
+			for (Buildable bld : CivGlobal.getBuildablesAt(bcoord)) {
+				if (bld.getConfigId().equalsIgnoreCase(id)) {
+					if (bld.getCorner().getY() <= loc.getBlockY() &&
+							(((bld.getCenterLoc().getY()-bld.getCorner().getY())*2)+(bld.getCorner().getY()+1)) >= loc.getBlockY()) {
+						return bld;
+					}
+				}
+			}
+		return null;
+	}
+	
+	public void loadUpgrades() throws CivException {
 		for (ConfigTownUpgrade upgrade : this.upgrades.values()) {
 			try {
 			upgrade.processAction(this);
@@ -1780,7 +1827,7 @@ public class Town extends SQLObject {
 			out += CivColor.LightGreen+"» "+goodie.getDisplayName();
 			out += ";";
 		}
-		out += CivColor.LightGray+"« Click for Buffs List »";
+		out += CivColor.Gray+"« Click for Buffs List »";
 		return out;
 	}
 	
@@ -2215,12 +2262,12 @@ public class Town extends SQLObject {
 	}
 
 	public void validateResidentSelect(Resident resident) throws CivException {
-		if (this.getMayorGroup() == null || this.getAssistantGroup() == null || this.getDefaultGroup() == null || 
+		if (this.getMayorGroup() == null || this.getAssistantGroup() == null || this.getResidentGroup() == null || 
 				this.getCiv().getLeaderGroup() == null || this.getAssistantGroup() == null) {
 			throw new CivException("You cannot switch to this town, one of its protected groups could not be found. Contact an admin.");
 		}
 		
-		if (!this.getMayorGroup().hasMember(resident) && !this.getAssistantGroup().hasMember(resident) && !this.getDefaultGroup().hasMember(resident)
+		if (!this.getMayorGroup().hasMember(resident) && !this.getAssistantGroup().hasMember(resident) && !this.getResidentGroup().hasMember(resident)
 				&& !this.getCiv().getLeaderGroup().hasMember(resident) && !this.getCiv().getAdviserGroup().hasMember(resident)) {			
 			throw new CivException("You do not have permission to select this town.");
 		}		
@@ -2322,7 +2369,7 @@ public class Town extends SQLObject {
 				this.daysInDebt = 0;
 				CivMessage.global("Town of "+this.getName()+" is no longer in debt.");
 				if (leftAmount > 0) {
-					CivMessage.send(res, CivColor.LightGrayItalic+"You deposited "+leftAmount+" extra coins, they were returned to you.");
+					CivMessage.send(res, CivColor.DarkGrayItalic+"You deposited "+leftAmount+" extra coins, they were returned to you.");
 				}
 			}
 		} else {
@@ -2431,7 +2478,7 @@ public class Town extends SQLObject {
 			
 			if (percent >= CivSettings.getDouble(CivSettings.espionageConfig, "espionage.town_exposure_failure")) {
 				failed = true;
-				CivMessage.sendTown(this, CivColor.Yellow+CivColor.BOLD+"The enemy spy mission has been thwarted by our defenses.");
+				CivMessage.sendTown(this, CivColor.YellowBold+"The enemy spy mission has been thwarted by our defenses.");
 				return failed;
 			} 
 			
@@ -2449,7 +2496,7 @@ public class Town extends SQLObject {
 
 			if (message.length() > 0) {
 				if (lastMessage == null || !lastMessage.equals(message)) {
-					CivMessage.sendTown(this, CivColor.Yellow+CivColor.BOLD+message);
+					CivMessage.sendTown(this, CivColor.YellowBold+message);
 					lastMessage = message;
 				}
 			}
@@ -3618,49 +3665,74 @@ public class Town extends SQLObject {
 		}
 	}
 	
-	public void buildSupport(Buildable buildable, BlockCoord cornerLoc) throws IOException {
+	public void buildSupport(Buildable buildable) throws IOException {
+		Town t = buildable.getTown();
+		BlockCoord corner = buildable.getCorner();
 		String templateFilepath = buildable.getSavedTemplatePath();
 		TemplateStream tplStream = new TemplateStream(templateFilepath);
 		List<SimpleBlock> bottomLayer = tplStream.getBlocksForLayer(0);
 		HashMap<ChunkCoord, ChunkSnapshot> chunks = new HashMap<ChunkCoord, ChunkSnapshot>();
-		
 		for (SimpleBlock sb : bottomLayer) {
-			Block next = cornerLoc.getBlock().getRelative(sb.x, cornerLoc.getY(), sb.z);
+			Block next = corner.getBlock().getRelative(sb.x, corner.getY(), sb.z);
 			ChunkCoord coord = new ChunkCoord(next.getLocation());
-			if (chunks.containsKey(coord)) { continue; }
+			if (chunks.containsKey(coord)) continue;
 			chunks.put(coord, next.getChunk().getChunkSnapshot());
 		}
 		
-		int canSupport = this.getSupportDeposit();
-		int supported = 0;
-		int failed = 0;
-		for (int y = cornerLoc.getY()-1; y > 0; y--) {
-			for (SimpleBlock sb : bottomLayer) {				
-				/* We only want the bottom layer of a template to be checked. */
-				try {
-					int absX;
-					int absZ;
-					absX = cornerLoc.getX() + sb.x;
-					absZ = cornerLoc.getZ() + sb.z;
-					int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, cornerLoc.getWorldname());
-					if (type == CivData.AIR) {
-						if (canSupport > 0) {
-							// Set block
-							Bukkit.getWorld("world").getBlockAt(absX, y, absZ).setType(Material.COBBLESTONE);
-							canSupport--;
-							supported++;
-						} else {
-							failed++;
-						}
-					}
-				} catch (CivException e) {
-					e.printStackTrace();
-				}
-			}
+		// If validation check failed, do not continue;
+		if (buildable.layerValidPercentages.isEmpty()) {
+			CivMessage.sendTown(t, "Cannot do support check on "+buildable.getDisplayName()+"... Must validate the structure first!");
+			return;
 		}
 		
-		Town t = buildable.getTown();
-		this.setSupportDeposit(canSupport);
+		int canSupport = t.getSupportDeposit();
+		int supported = 0;
+		int failed = 0;
+		for (int y = corner.getY()-1; y > 0; y--) {
+			BuildableLayer bl = buildable.layerValidPercentages.get(y);
+			double total = bl.total;
+			double reinforcementValue = bl.current;
+			double percentValid = reinforcementValue / total;
+			// Only add support to where validation is required.
+			if (percentValid < Buildable.getReinforcementRequirementForLevel(y)) {
+				for (SimpleBlock sb : bottomLayer) {
+					// We only want the bottom layer of a template to be checked.
+					if (sb.getType() == CivData.AIR) continue;
+					
+					try {
+						int absX = corner.getX() + sb.x;
+						int absZ = corner.getZ() + sb.z;
+						int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, corner.getWorldname());
+						if (type == CivData.AIR || CivSettings.restrictedUndoBlocks.contains(ItemManager.getMaterial(type))) {
+							if (canSupport > 0) {
+								// Set block
+								Bukkit.getWorld(corner.getWorldname()).getBlockAt(absX, y, absZ).setType(Material.DIRT);
+								canSupport--; supported++;
+								reinforcementValue += Buildable.getReinforcementValue(3);
+								if ((reinforcementValue / total) > Buildable.getReinforcementRequirementForLevel(y)) {
+									// We validated this layer, move to the next.
+									break;
+								}
+							} else {
+								failed++;
+							}
+						}
+					} catch (CivException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}
+		
+		// Re-validate structure
+		try {
+			buildable.validate(null);
+		} catch (CivException e) {
+			e.printStackTrace();
+		}
+		
+		t.setSupportDeposit(canSupport);
 		t.save();
 		CivMessage.sendTown(t, "Our "+buildable.getName()+" has consumed "+supported+" blocks to fill in unsupportive blocks.");
 		if (failed > 0) {

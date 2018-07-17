@@ -32,6 +32,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.BrewEvent;
@@ -59,6 +61,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
@@ -109,21 +112,17 @@ public class PlayerListener implements Listener {
 	public void onPlayerPickup(EntityPickupItemEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			Resident resident = CivGlobal.getResident(p);
-			if (resident.getItemMode().equals("none")) return;
+			Resident res = CivGlobal.getResident(p);
 			
-			ItemStack i = event.getItem().getItemStack();
-			String name = CivData.getDisplayName(ItemManager.getId(i), i.getDurability());
-			boolean rare = false;
-			if (i.getItemMeta().hasDisplayName()) {
-				name = i.getItemMeta().getDisplayName();
-				rare = true;
-			}
-			
-			if (resident.getItemMode().equals("all")) {
-				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
-			} else if (resident.getItemMode().equals("rare") && rare) {
-				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+event.getItem().getItemStack().getAmount()+" "+name);
+			// Item Pickup Messages
+			if (res.getItemMode().equals("none")) return;
+			ItemStack is = event.getItem().getItemStack();
+			String name = CivData.getDisplayName(ItemManager.getId(is), is.getDurability());
+			if (res.getItemMode().equals("all")) {
+				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+is.getAmount()+" "+name);
+			} else if (is.getItemMeta().hasDisplayName() && res.getItemMode().equals("rare")) {
+				name = is.getItemMeta().getDisplayName();
+				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+is.getAmount()+" "+name);
 			}
 		}
 	}
@@ -132,6 +131,24 @@ public class PlayerListener implements Listener {
 	public void onPlayerItemMend(PlayerItemMendEvent event) {
 		if (LoreEnhancement.isWeaponOrArmor(event.getItem())) {
 			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerShootBow(EntityShootBowEvent event) {
+		if (event.getEntity() instanceof Player) {
+//			ItemStack bow = event.getBow();
+			
+/*			Projectile j = (Projectile) event.getProjectile();
+			Random rand = new Random();
+			if (rand.nextInt(3) < 1) {
+				CivMessage.global("Changed");
+				Vector v = new Vector(j.getVelocity().getX()*1.75, j.getVelocity().getY()*1.4, j.getVelocity().getZ()*1.75);
+				j.setVelocity(v);
+				event.setProjectile(j);
+			} else {
+				CivMessage.global("Normal");
+			}*/
 		}
 	}
 	
@@ -236,7 +253,6 @@ public class PlayerListener implements Listener {
 				TaskMaster.syncTask(new PlayerKickBan(p.getName(), true, false, "You have an invalid name? Sorry, contact an admin."));
 				return;
 			}
-			
 			CivGlobal.addResident(res);
 		}
 		
@@ -254,7 +270,7 @@ public class PlayerListener implements Listener {
 				track = new AccountLogger(p.getUniqueId(), ip);
 				CivGlobal.addAccount(track);
 				track.save();
-				event.disallow(Result.KICK_OTHER, "Setting up pre-account data... Please re-join the server.");
+				event.disallow(Result.KICK_OTHER, "An error occured. Please re-join the server.");
 			}
 			
 			boolean isSaved = false;
@@ -292,7 +308,7 @@ public class PlayerListener implements Listener {
 			Date date = new Date(al.getBanLength());
 			String msg = (" §b§l« CivilizationCraft »"+"\n"+
 					" "+"\n"+
-					"§c§lKicked By §r§8»§ §4§oCONSOLE-PreLogin\n"+
+					"§c§lKicked By §r§8»§ §4§oCONSOLE\n"+
 					"§c§lReason §r§8»§ §fBanned: "+al.getBanMessage()+"\n"+
 					"§c§lUnbanned At §r§8»§ §f"+sdf.format(date)+"\n"+
 					" "+"\n"+
@@ -300,7 +316,7 @@ public class PlayerListener implements Listener {
 					"§e§lAppeal at §r§8»§ §6http://coalcivcraft.enjin.com/forum"+"\n"+
 					"§7§o[You are banned, cannot rejoin server.]"+"\n");
 			event.disallow(Result.KICK_OTHER, msg);
-			CivLog.info("Denied Player Join Task for:"+p.getName()+" (They're Banned)");
+			CivLog.info("Denied Player Join Task for:"+p.getName()+" (Banned)");
 		}
 		
 		if (AdminCommand.isLockdown() && !p.isOp() && !CivPerms.isMiniAdmin(p)) {
@@ -332,12 +348,15 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		CivLog.info("Scheduling Player Join Task for:"+event.getPlayer().getName());
-		TaskMaster.asyncTask("onPlayerLogin-"+event.getPlayer().getName(), new PlayerLoginAsyncTask(event.getPlayer().getUniqueId()), 0);
-		PlayerLocationCacheUpdate.playerQueue.add(event.getPlayer().getName());
-		MobSpawnerTimer.playerQueue.add(event.getPlayer().getName());
-		setModifiedMovementSpeed(event.getPlayer());
-		CivCraft.playerForcedUpdate();
+		Player p = event.getPlayer();
+		CivLog.info("Scheduling Player Join Task for:"+p.getName());
+		TaskMaster.asyncTask("onPlayerLogin-"+event.getPlayer().getName(), new PlayerLoginAsyncTask(p.getUniqueId()), 0);
+		PlayerLocationCacheUpdate.playerQueue.add(p.getName());
+		MobSpawnerTimer.playerQueue.add(p.getName());
+		setModifiedMovementSpeed(p);
+		CivCraft.playerTagUpdate();
+		
+//		Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), "minecraft:recipe give "+event.getPlayer().getName()+" *");
 		
 		// TODO Make this a /res toggle serverpack?
 		// Send the player the resource pack
@@ -362,6 +381,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
+		TaskMaster.asyncTask(PlayerChunkNotifyAsyncTask.class.getSimpleName(), new PlayerChunkNotifyAsyncTask(event.getFrom(), event.getTo(), event.getPlayer().getName()), 0);
 		if (event.getCause().equals(TeleportCause.COMMAND) || event.getCause().equals(TeleportCause.PLUGIN)) {
 			CivLog.info("[TELEPORT] "+event.getPlayer().getName()+" to:"+event.getTo().getBlockX()+","+event.getTo().getBlockY()+","+event.getTo().getBlockZ()+
 					" from:"+event.getFrom().getBlockX()+","+event.getFrom().getBlockY()+","+event.getFrom().getBlockZ());
@@ -416,7 +436,6 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onArmorWear(ArmorEquipEvent event) {
-
 		class SyncTask implements Runnable {
 			Player p;
 				
@@ -429,17 +448,22 @@ public class PlayerListener implements Listener {
 				setModifiedMovementSpeed(p);
 			}
 		}
-		TaskMaster.syncTask(new SyncTask(event.getPlayer()), 3);
+		TaskMaster.syncTask(new SyncTask(event.getPlayer()), 5);
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerVelocity(VehicleCreateEvent event) {
+		if (event.getVehicle() instanceof Minecart) {
+			Minecart mc = (Minecart) event.getVehicle();
+			// Default speed is 0.4
+			mc.setMaxSpeed(0.45);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		// Abort if we havn't really moved
-//		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && 
-//			event.getFrom().getBlockZ() == event.getTo().getBlockZ() && 
-//			event.getFrom().getBlockY() == event.getTo().getBlockY()) {
-//			return;
-//		}
+		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ() && event.getFrom().getBlockY() == event.getTo().getBlockY()) return;
 		
 		ChunkCoord fromChunk = new ChunkCoord(event.getFrom());
 		ChunkCoord toChunk = new ChunkCoord(event.getTo());
@@ -464,7 +488,7 @@ public class PlayerListener implements Listener {
 						//PlayerReviveTask reviveTask = new PlayerReviveTask(player, townhall.getRespawnTime(), townhall, event.getRespawnLocation());
 						resident.setLastKilledTime(new Date());
 						event.setRespawnLocation(respawn.getCenteredLocation());
-						CivMessage.send(player, CivColor.LightGray+"You've respawned in the War Room since it's WarTime and you're at war.");
+						CivMessage.send(player, CivColor.Gray+"You've respawned in the War Room since it's WarTime and you're at war.");
 						
 						//TaskMaster.asyncTask("", reviveTask, 0);
 					}
@@ -702,7 +726,7 @@ public class PlayerListener implements Listener {
 			Resident defenderResident = CivGlobal.getResident(defender);
 			if (defenderResident.isCombatInfo()) {	
 				if (attacker != null) {
-					CivMessage.send(defender, CivColor.LightGray+"  [Combat] Took "+CivColor.Rose+damage+" damage "+CivColor.LightGray+" from "+CivColor.LightPurple+attacker.getName());				
+					CivMessage.send(defender, CivColor.Gray+"  [Combat] Took "+CivColor.Rose+damage+" damage "+CivColor.Gray+" from "+CivColor.LightPurple+attacker.getName());				
 				} else {
 					String entityName = null;
 					if (event.getDamager() instanceof LivingEntity) {
@@ -715,7 +739,7 @@ public class PlayerListener implements Listener {
 					
 					if (entityName.equalsIgnoreCase("SNOWBALL") && event.getDamage() >= 1.0) entityName = "Bullet";
 					
-					CivMessage.send(defender, CivColor.LightGray+"  [Combat] Took "+CivColor.Rose+damage+" damage "+CivColor.LightGray+" from a "+entityName);
+					CivMessage.send(defender, CivColor.Gray+"  [Combat] Took "+CivColor.Rose+damage+" damage "+CivColor.Gray+" from a "+entityName);
 				}
 			}
 		}
@@ -724,7 +748,7 @@ public class PlayerListener implements Listener {
 			Resident attackerResident = CivGlobal.getResident(attacker);
 			if (attackerResident.isCombatInfo()) {
 				if (defender != null) {
-					CivMessage.send(attacker, CivColor.LightGray+"    [Combat] Gave "+CivColor.LightGreen+damage+CivColor.LightGray+" damage to "+CivColor.LightPurple+defender.getName());
+					CivMessage.send(attacker, CivColor.Gray+"    [Combat] Gave "+CivColor.LightGreen+damage+CivColor.Gray+" damage to "+CivColor.LightPurple+defender.getName());
 				} else {
 					String entityName = null;
 					if (event.getEntity() instanceof LivingEntity) {
@@ -737,7 +761,7 @@ public class PlayerListener implements Listener {
 					
 					if (entityName.equalsIgnoreCase("SNOWBALL") && event.getDamage() >= 1.0) entityName = "Bullet";
 					
-					CivMessage.send(attacker, CivColor.LightGray+"    [Combat] Gave "+CivColor.LightGreen+damage+CivColor.LightGray+" damage to a "+entityName);
+					CivMessage.send(attacker, CivColor.Gray+"    [Combat] Gave "+CivColor.LightGreen+damage+CivColor.Gray+" damage to a "+entityName);
 				}
 			}
 		}

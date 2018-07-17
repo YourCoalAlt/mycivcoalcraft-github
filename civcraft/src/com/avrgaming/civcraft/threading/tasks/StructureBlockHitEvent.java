@@ -72,7 +72,7 @@ public class StructureBlockHitEvent implements Runnable {
 				AttributeUtil attrs = new AttributeUtil(player.getInventory().getItemInMainHand());
 				for (LoreEnhancement enhance : attrs.getEnhancements()) {
 					int addDamage = enhance.onStructureBlockBreak(dmgBlock, damage);
-					CivMessage.send(player, CivColor.LightGray+enhance.getDisplayName()+" "+enhance.getLevel(attrs)+" does "+(addDamage)+" extra damage!");
+					CivMessage.send(player, CivColor.Gray+enhance.getDisplayName()+" "+enhance.getLevel(attrs)+" does "+(addDamage)+" extra damage!");
 					damage += addDamage;
 				}
 			}

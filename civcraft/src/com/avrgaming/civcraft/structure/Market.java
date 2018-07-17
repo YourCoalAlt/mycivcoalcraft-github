@@ -104,15 +104,15 @@ public class Market extends Structure {
 		CivVillager.onSpawn(v, vLoc, "Market Tradesman", false, Profession.FARMER);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
 	public void openMainMarketMenu(Player p) {
-		if (!Buildable.validatePlayerGUI(p, this, false, false, false)) return;
+		if (!Buildable.validatePlayerGUI(p, this, false, false, false, false)) return;
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Global Market Menu");
 		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Global Market menu. You can buy",
@@ -124,11 +124,11 @@ public class Market extends Structure {
 		
 		for (ConfigMarketItem mat : CivSettings.marketItems.values()) {
 			if (mat.custom_id == null) {
-				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, CivColor.LightGray+" « Click for More » ");
+				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, CivColor.Gray+" « Click for More » ");
 				inv.addItem(is);
 			} else {
 				String cid = mat.custom_id.replace("mat_", "").replaceAll("_", " ");
-				ItemStack is = LoreGuiItem.build(cid, 7, 0, CivColor.LightGray+" « Click for More » ");
+				ItemStack is = LoreGuiItem.build(cid, 7, 0, CivColor.Gray+" « Click for More » ");
 				inv.addItem(is);
 			}
 		}
@@ -139,7 +139,7 @@ public class Market extends Structure {
 		switch (m.lastaction) {
 			case BUY: return CivColor.LightGreen;
 			case SELL: return CivColor.Rose;
-			default: return CivColor.Gray;
+			default: return CivColor.DarkGray;
 		}
 	}
 	
@@ -188,21 +188,21 @@ public class Market extends Structure {
 		}
 		
 		ItemStack sell = LoreGuiItem.build("Sell", m.type_id, m.data,
-				CivColor.LightGray+"1 for "+getItemColor(m)+m.getSellCostForAmount(1)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+"64 for "+getItemColor(m)+m.getSellCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+"Inventory ("+sellFull+") for "+getItemColor(m)+m.getSellCostForAmount(sellFull)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+" « Left Click for 1 » ",
-				CivColor.LightGray+" « Shift + Left Click for 64 » ",
-				CivColor.LightGray+" « Middle Click for Inventory ("+sellFull+") » ");
+				CivColor.Gray+"1 for "+getItemColor(m)+m.getSellCostForAmount(1)+CivColor.Gray+" Coins",
+				CivColor.Gray+"64 for "+getItemColor(m)+m.getSellCostForAmount(BULK_AMOUNT)+CivColor.Gray+" Coins",
+				CivColor.Gray+"Inventory ("+sellFull+") for "+getItemColor(m)+m.getSellCostForAmount(sellFull)+CivColor.Gray+" Coins",
+				CivColor.Gray+" « Left Click for 1 » ",
+				CivColor.Gray+" « Shift + Left Click for 64 » ",
+				CivColor.Gray+" « Middle Click for Inventory ("+sellFull+") » ");
 		inv.setItem(3, sell);
 		
 		ItemStack buy = LoreGuiItem.build("Buy", m.type_id, m.data,
-				CivColor.LightGray+"1 for "+getItemColor(m)+m.getBuyCostForAmount(1)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+"64 for "+getItemColor(m)+m.getBuyCostForAmount(BULK_AMOUNT)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+"Inventory ("+buyFull+") for "+getItemColor(m)+m.getBuyCostForAmount(buyFull)+CivColor.LightGray+" Coins",
-				CivColor.LightGray+" « Left Click for 1 » ",
-				CivColor.LightGray+" « Shift + Left Click for 64 » ",
-				CivColor.LightGray+" « Middle Click for Inventory ("+buyFull+") » ");
+				CivColor.Gray+"1 for "+getItemColor(m)+m.getBuyCostForAmount(1)+CivColor.Gray+" Coins",
+				CivColor.Gray+"64 for "+getItemColor(m)+m.getBuyCostForAmount(BULK_AMOUNT)+CivColor.Gray+" Coins",
+				CivColor.Gray+"Inventory ("+buyFull+") for "+getItemColor(m)+m.getBuyCostForAmount(buyFull)+CivColor.Gray+" Coins",
+				CivColor.Gray+" « Left Click for 1 » ",
+				CivColor.Gray+" « Shift + Left Click for 64 » ",
+				CivColor.Gray+" « Middle Click for Inventory ("+buyFull+") » ");
 		inv.setItem(5, buy);
 		
 		ItemStack back = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Market Menu");
@@ -219,10 +219,10 @@ public class Market extends Structure {
 		CivVillager.onSpawn(v, vLoc, "Grocer Salesman", false, Profession.BUTCHER);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -248,18 +248,18 @@ public class Market extends Structure {
 		for (ConfigGrocerLevel gl : CivSettings.grocerLevels.values()) {
 			if (gl.level <= this.getGrocerLevel()) {
 				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(gl.itemId, gl.itemData), gl.itemId, gl.itemData,
-						CivColor.LightGray+"1 for "+CivColor.Yellow+(gl.price)+CivColor.LightGray+" Coins",
-						CivColor.LightGray+"64 for "+CivColor.Yellow+(gl.price*64)+CivColor.LightGray+" Coins",
-						CivColor.LightGray+"Inventory ("+buyFull+") for "+CivColor.Yellow+(gl.price*buyFull)+CivColor.LightGray+" Coins",
-						CivColor.LightGray+" « Left Click for 1 » ",
-						CivColor.LightGray+" « Shift + Left Click for 64 » ",
-						CivColor.LightGray+" « Middle Click for Inventory ("+buyFull+") » ",
+						CivColor.Gray+"1 for "+CivColor.Yellow+(gl.price)+CivColor.Gray+" Coins",
+						CivColor.Gray+"64 for "+CivColor.Yellow+(gl.price*64)+CivColor.Gray+" Coins",
+						CivColor.Gray+"Inventory ("+buyFull+") for "+CivColor.Yellow+(gl.price*buyFull)+CivColor.Gray+" Coins",
+						CivColor.Gray+" « Left Click for 1 » ",
+						CivColor.Gray+" « Shift + Left Click for 64 » ",
+						CivColor.Gray+" « Middle Click for Inventory ("+buyFull+") » ",
 						getNonResidentFeeString());
 				inv.addItem(is);
 			} else {
 				ItemStack is = LoreGuiItem.build("Locked", 7, 0,
-						CivColor.LightGray+" « Requires Level "+gl.level+" » ",
-						CivColor.LightGray+" « Currently Level "+this.getGrocerLevel()+" » ");
+						CivColor.Gray+" « Requires Level "+gl.level+" » ",
+						CivColor.Gray+" « Currently Level "+this.getGrocerLevel()+" » ");
 				inv.addItem(is);
 			}
 		}

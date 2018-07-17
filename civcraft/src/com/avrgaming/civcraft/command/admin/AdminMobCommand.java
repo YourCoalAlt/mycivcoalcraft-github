@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.command.CommandBase;
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigCustomMobs;
+import com.avrgaming.civcraft.config.ConfigMobsCustom;
 import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivCraft;
@@ -55,7 +55,7 @@ public class AdminMobCommand extends CommandBase {
 			throw new CivException("No custom mob with id: "+smob);
 		}
 		
-		ConfigCustomMobs cmob = CivSettings.customMobs.get(smob);
+		ConfigMobsCustom cmob = CivSettings.customMobs.get(smob);
 		if (cmob == null) {
 			throw new CivException(smob+" is not a valid ID.");
 		}
@@ -70,7 +70,7 @@ public class AdminMobCommand extends CommandBase {
 	public void killall_cmd() throws CivException {
 		Player player = getPlayer();
 		String name = getNamedString(1, "Enter a mob ID.").toUpperCase();
-		ConfigCustomMobs cmob = CivSettings.customMobs.get(name);
+		ConfigMobsCustom cmob = CivSettings.customMobs.get(name);
 		if (cmob == null) {
 			throw new CivException(name+" is not a valid ID.");
 		}
@@ -107,7 +107,7 @@ public class AdminMobCommand extends CommandBase {
 			}
 			
 			CivMessage.sendHeading(player, "Custom Mob Counts");
-			CivMessage.send(player, CivColor.LightGray+"Red mobs are over their count limit for this area and should no longer spawn.");
+			CivMessage.send(player, CivColor.Gray+"Red mobs are over their count limit for this area and should no longer spawn.");
 			for (String mob : amounts.keySet()) {
 				int count = amounts.get(mob);
 				
@@ -130,7 +130,7 @@ public class AdminMobCommand extends CommandBase {
 			}
 			
 			CivMessage.sendHeading(sender, "Custom Mob Counts");
-			CivMessage.send(sender, CivColor.LightGray+"Cannot tell you if entities are over limit due to you are not a player.");
+			CivMessage.send(sender, CivColor.Gray+"Cannot tell you if entities are over limit due to you are not a player.");
 			for (String mob : amounts.keySet()) {
 				int count = amounts.get(mob);
 				CivMessage.send(sender, CivColor.Yellow+mob+": "+CivColor.LightGreen+count);

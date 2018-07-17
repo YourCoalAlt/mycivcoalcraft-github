@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
@@ -30,29 +28,27 @@ public class ConfigRemovedRecipes {
 			
 			ItemStack is = new ItemStack(ItemManager.getMaterial(item.type_id), 1, (short)item.data);
 			List<Recipe> backup = new ArrayList<Recipe>();
-			Iterator<Recipe> a = Bukkit.getServer().recipeIterator();
-			while(a.hasNext()) {
-				Recipe recipe = a.next();
+			Iterator<Recipe> it = Bukkit.recipeIterator();
+			while (it.hasNext()) {
+				Recipe recipe = it.next();
 				ItemStack result = recipe.getResult();
 				if (!result.isSimilar(is)) {
 					backup.add(recipe);
 				}
 				
-				if (recipe instanceof FurnaceRecipe) {
-					FurnaceRecipe fr = (FurnaceRecipe) recipe;
-					if (fr.getInput().getType() == Material.IRON_ORE) {
-						if (backup.contains(fr)) {
-							backup.remove(fr);
-						}
-						continue;
-					}
-				}
+//				if (recipe instanceof FurnaceRecipe) {
+//					FurnaceRecipe fr = (FurnaceRecipe) recipe;
+//					if (fr.getInput().getType() == Material.IRON_ORE) {
+//						if (backup.contains(fr)) backup.remove(fr);
+//						continue;
+//					}
+//				}
 			}
 			
-			 Bukkit.getServer().clearRecipes();
-			 for (Recipe r : backup) {
-				 Bukkit.getServer().addRecipe(r);
-			 }
+			Bukkit.clearRecipes();
+			for (Recipe r : backup) {
+				Bukkit.addRecipe(r);
+			}
 		}
 	}
 }

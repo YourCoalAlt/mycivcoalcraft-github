@@ -20,6 +20,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.StructureBlock;
+import com.avrgaming.civcraft.object.camp.CampBlock;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -84,13 +85,13 @@ public class CannonProjectile {
 					if (loc.distance(b.getLocation()) <= yield) {
 						bcoord.setFromLocation(b.getLocation());
 						StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
-						if (sb == null) {
+						CampBlock cb = CivGlobal.getCampBlock(bcoord);
+						if (sb == null && cb == null) {
 							explodeBlock(b);
 							continue;
 						}
 						
 						if (sb != null) {
-							
 							if (!sb.isDamageable()) {
 								continue;
 							}
@@ -160,7 +161,7 @@ public class CannonProjectile {
 			Player player = (Player)e;
 			player.damage(playerDamage);
 			if (player.isDead()) {
-				CivMessage.global(CivColor.LightGray+whoFired.getName()+" obliterated "+player.getName()+" with a cannon blast!");
+				CivMessage.global(CivColor.Gray+whoFired.getName()+" obliterated "+player.getName()+" with a cannon blast!");
 			}
 		}
 	}

@@ -329,7 +329,7 @@ public class SpyMissions extends UnitItemMaterial {
 		double failMod = 1.0;
 		if (resident.getTown().getBuffManager().hasBuff("buff_sabotage")) {
 			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_sabotage");
-			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Sabotage' will come in handy here.");
+			CivMessage.send(player, CivColor.Gray+"Your goodie buff 'Sabotage' will come in handy here.");
 		}
 		
 		if (processMissionResult(player, cc.getTown(), mission, failMod, 1.0)) {
@@ -604,7 +604,7 @@ public class SpyMissions extends UnitItemMaterial {
 		double failMod = 1.0;
 		if (resident.getTown().getBuffManager().hasBuff("buff_dirty_money")) {
 			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_dirty_money");
-			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Dirty Money' will come in handy here.");
+			CivMessage.send(player, CivColor.Gray+"Your goodie buff 'Dirty Money' will come in handy here.");
 		}
 		
 		if(processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {
@@ -639,7 +639,7 @@ public class SpyMissions extends UnitItemMaterial {
 		}
 		
 		// Check if the town actully has a town hall
-		Granary granary = (Granary) tc.getTown().getStructureByType("s_granary");
+		Granary granary = (Granary) tc.getTown().getNearestStructureByType(player.getLocation(), "s_granary");
 		if (granary == null) {
 			throw new CivException("This Town doesnt have a Town Hall... that sucks. Contact an admin.");
 		}
@@ -672,7 +672,7 @@ public class SpyMissions extends UnitItemMaterial {
 		double failMod = 1.0;
 		if (resident.getTown().getBuffManager().hasBuff("buff_espionage")) {
 			failMod = resident.getTown().getBuffManager().getEffectiveDouble("buff_espionage");
-			CivMessage.send(player, CivColor.LightGray+"Your goodie buff 'Espionage' will come in handy here.");
+			CivMessage.send(player, CivColor.Gray+"Your goodie buff 'Espionage' will come in handy here.");
 		}
 		
 		if (processMissionResult(player, tc.getTown(), mission, failMod, 1.0)) {

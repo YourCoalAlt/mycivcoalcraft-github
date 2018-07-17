@@ -59,10 +59,10 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
-import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.object.TradeGood;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.threading.TaskMaster;
@@ -118,6 +118,12 @@ public class AdminCommand extends CommandBase {
 		commands.put("debug", "Admin Debugging commands.");
 		commands.put("mob", "Admin Mob commands.");
 		commands.put("player", "Admin Player commands.");
+		commands.put("camp", "Admin Camp commands.");
+	}
+	
+	public void camp_cmd() {
+		AdminCampCommand cmd = new AdminCampCommand();	
+		cmd.onCommand(sender, null, "camp", this.stripArgs(args, 1));
 	}
 	
 	public void player_cmd() {
@@ -203,6 +209,7 @@ public class AdminCommand extends CommandBase {
 	public void savesql_cmd() {
 		try {
 			for (AccountLogger al : CivGlobal.getAccounts()) al.saveNow();
+			for (Camp c : CivGlobal.getCamps()) c.saveNow();
 			for (Civilization c : CivGlobal.getCivs()) c.saveNow();
 			for (Town t : CivGlobal.getTowns()) t.saveNow();
 			for (Resident r : CivGlobal.getResidents()) r.saveNow();
@@ -211,7 +218,7 @@ public class AdminCommand extends CommandBase {
 			for (Wonder w : CivGlobal.getWonders()) w.saveNow();
 			for (TradeGood tg : CivGlobal.getTradeGoods()) tg.saveNow();
 			for (BonusGoodie bg : CivGlobal.getBonusGoodies()) bg.saveNow();
-			for (StructureSign ss : CivGlobal.getStructureSigns()) ss.saveNow();
+//			for (StructureSign ss : CivGlobal.getStructureSigns()) ss.saveNow();
 			CivMessage.sendSuccess(sender, "Saved All SQL Information.");
 		} catch (SQLException e) {
 			e.printStackTrace();

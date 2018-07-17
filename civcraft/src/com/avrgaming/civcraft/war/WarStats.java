@@ -55,7 +55,7 @@ public class WarStats {
 				mostDeaths = deaths;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostDeaths+" deaths)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostDeaths+" deaths)";
 	}
 	
 	public static void incrementPlayerKills(String playerName) {
@@ -78,7 +78,7 @@ public class WarStats {
 				mostKills = kills;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostKills+" kills)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostKills+" kills)";
 	}
 	
 	public static void incrementPlayerDamage(String playerName, double amt) {
@@ -101,7 +101,7 @@ public class WarStats {
 				mostDmg = dmg;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostDmg+" damage taken)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostDmg+" damage taken)";
 	}
 	
 	public static void incrementPlayerAttack(String playerName, double amt) {
@@ -124,7 +124,7 @@ public class WarStats {
 				mostDmg = dmg;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostDmg+" damage given)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostDmg+" damage given)";
 	}
 	
 	public static void incrementPlayerDestroyedBuildings(String playerName) {
@@ -147,7 +147,7 @@ public class WarStats {
 				mostB = b;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostB+" structures destroyed)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostB+" structures destroyed)";
 	}
 	
 	public static void incrementPlayerDamageBuildings(String playerName, int amt) {
@@ -170,7 +170,7 @@ public class WarStats {
 				mostDmg = dmg;
 			}
 		}
-		return CivColor.LightGreenBold+out+CivColor.LightGray+" ("+mostDmg+" hitpoints damaged)";
+		return CivColor.LightGreenBold+out+CivColor.Gray+" ("+mostDmg+" hitpoints damaged)";
 	}
 	
 	public static void logCapturedCiv(Civilization winner, Civilization captured) {
@@ -190,7 +190,7 @@ public class WarStats {
 				continue;
 			}
 			
-			String line = CivColor.LightGreenBold+key+CivColor.RoseBold+" Conquered: "+CivColor.LightGray;
+			String line = CivColor.LightGreenBold+key+CivColor.RoseBold+" Conquered: "+CivColor.Gray;
 			String tmp = "";
 			for (String str : conquered) {
 				tmp += str+", ";
@@ -218,7 +218,7 @@ public class WarStats {
 				continue;
 			}
 			
-			String line = CivColor.LightGreenBold+key+CivColor.LightPurpleBold+" Captured Towns of: "+CivColor.LightGray;
+			String line = CivColor.LightGreenBold+key+CivColor.LightPurpleBold+" Captured Towns of: "+CivColor.Gray;
 			String tmp = "";
 			for (String str : conquered) {
 				tmp += str+", ";

@@ -178,7 +178,7 @@ public class WarehouseAsyncTask extends CivAsyncTask {
 		sources.clear();
 		destinations.clear();
 		
-		Warehouse whs = (Warehouse) warehouse.getTown().getStructureByType("s_warehouse");
+		Warehouse whs = warehouse;
 		if (whs == null) return;
 		
 		if (whs.isComplete() && whs.isEnabled()) {

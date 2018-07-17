@@ -30,7 +30,7 @@ public class ReportCommand extends CommandBase {
 		CivMessage.send(sender, " ");
 		CivMessage.send(sender, CivColor.Yellow+ChatColor.BOLD+"Reporting players allows our staff to determine patterns of behavior in players," +
 				"if a player gets too many bad reports they may be banned. Please know that filing false reports is also a bannable offense.");
-		CivMessage.send(sender, CivColor.LightGray+ChatColor.BOLD+"Type 'cancel' to cancel this report.");
+		CivMessage.send(sender, CivColor.Gray+ChatColor.BOLD+"Type 'cancel' to cancel this report.");
 		resident.setInteractiveMode(new InteractiveReportPlayer(reportedResident.getName()));
 	}
 	

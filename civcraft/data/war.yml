@@ -84,7 +84,7 @@ scout_tower:
 
 arrow_tower:
     # Damage done per hit from arrow tower
-    damage: 4.0
+    damage: 3.5
 
     # Range of the arrow tower
     range: 112.0
@@ -93,17 +93,17 @@ arrow_tower:
     min_range: 5.0
 
     # power of watch tower (basically arrow speed)
-    power: 2.8
+    power: 3.0
 
     # how fast each arrow is fired in seconds.
-    fire_rate: 2.0
+    fire_rate: 1.5
 
     # Distance before homing stops.
-    homing_stop_distance: 8.0
+    homing_stop_distance: 4.0
 
 cannon_tower:
     # Damage done by cannon blast
-    damage: 7.0
+    damage: 8.0
     
     # Cannon tower range
     range: 144.0

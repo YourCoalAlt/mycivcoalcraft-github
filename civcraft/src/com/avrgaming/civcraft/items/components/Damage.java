@@ -1,6 +1,9 @@
 package com.avrgaming.civcraft.items.components;
 
+import java.util.Map;
+
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -11,8 +14,8 @@ import org.bukkit.potion.PotionEffectType;
 import com.avrgaming.civcraft.config.ConfigUnit;
 import com.avrgaming.civcraft.items.units.Unit;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
-import com.avrgaming.civcraft.loreenhancements.LoreEnhancementSharpness;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancementUnitGainAttack;
+import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
@@ -53,50 +56,28 @@ public class Damage extends ItemComponent {
 	public void onHold(PlayerItemHeldEvent event) {	
 		Resident resident = CivGlobal.getResident(event.getPlayer());
 		if (!resident.hasTechForItem(event.getPlayer().getInventory().getItem(event.getNewSlot()))) {		
-			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.LightGray+"You do not have the required technology for this item. Its damage output will be reduced in half.");
+			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.Gray+"You do not have the required technology for this item. Its damage output will be reduced in half.");
 		}
 	}
 	
 	@Override
 	public void onAttack(EntityDamageByEntityEvent event, ItemStack inHand) {
 		double dmg = this.getDouble("value");
-//		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-//		if (craftMat == null) return;
+		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(inHand);
+		if (craftMat == null) return;
 		
-		double extraAtt = 0.0;
-		AttributeUtil attrs = new AttributeUtil(inHand);
-		for (LoreEnhancement enh : attrs.getEnhancements()) {
-			if (enh instanceof LoreEnhancementSharpness) {
-				extraAtt += (((LoreEnhancementSharpness)enh).getExtraDamage(attrs) * 0.5);
-			}
-		}
-		dmg += extraAtt;
-		
-		/*double atkSharp = 0.0;
 		Map<Enchantment, Integer> enchant = inHand.getEnchantments();
 		if (enchant.containsKey(Enchantment.DAMAGE_ALL)) {
 			int level = enchant.get(Enchantment.DAMAGE_ALL);
-			if (level == 1) atkSharp = 0.5;
-			else if (level == 2) atkSharp = 1.0;
-			else if (level == 3) atkSharp = 1.5;
-			else if (level == 4) atkSharp = 2.0;
-			else if (level == 5) atkSharp = 2.5;
-			else atkSharp = 0.0;
+			dmg += (level*0.5);
 		}
-		dmg += atkSharp;*/
 		
 		if (event.getDamager() instanceof Player) {
 			Player p = (Player) event.getDamager();
 			for (PotionEffect effect : p.getActivePotionEffects()) {
-				if (effect.getType().equals(PotionEffectType.WEAKNESS)) {
-					int weaknessDmg = 2+(2*effect.getAmplifier());
-					dmg -= weaknessDmg;
-				}
-				
-				if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-					int strengthDmg = 2+(2*effect.getAmplifier());
-					dmg += strengthDmg;
-				}
+				double potionDifference = 0.4*(1+effect.getAmplifier());
+				if (effect.getType().equals(PotionEffectType.WEAKNESS)) dmg -= potionDifference;
+				if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) dmg += potionDifference;
 			}
 			
 			double unitperk = 1.0;
@@ -122,7 +103,7 @@ public class Damage extends ItemComponent {
 			if (!resident.hasTechForItem(inHand)) dmg = dmg/2;
 		}
 		
-		if (dmg < 0.75) dmg = 0.75;
+		if (dmg < 0.5) dmg = 0.5;
 		event.setDamage(dmg);
 	}
 }

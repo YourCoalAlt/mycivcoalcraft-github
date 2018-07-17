@@ -392,7 +392,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	public void onControlBlockHit(ControlPoint cp, World world, Player player, StructureBlock hit) {
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.25F, 0.75F);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-		CivMessage.send(player, CivColor.LightGray+"Damaged Control Block ("+cp.getHitpoints()+" / "+cp.getMaxHitpoints()+")");
+		CivMessage.send(player, CivColor.Gray+"Damaged Control Block ("+cp.getHitpoints()+" / "+cp.getMaxHitpoints()+")");
 		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"One of our Town Hall's Control Points is under attack!");
 	}
 	
@@ -477,7 +477,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			e.printStackTrace();
 			return;
 		}
-		CivMessage.sendTown(this.getTown(), CivColor.Rose+CivColor.BOLD+"Our town's town hall cannot be supported by the blocks underneath!"+
+		CivMessage.sendTown(this.getTown(), CivColor.RoseBold+"Our town's town hall cannot be supported by the blocks underneath!"+
 				" It will take us an extra "+invalid_respawn_penalty+" mins to respawn during war if its not fixed in time!");
 	}
 	
@@ -562,10 +562,10 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setProfession(Profession.PRIEST);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -616,22 +616,22 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		inv.setItem(9, LoreGuiItem.build(CivColor.GreenBold+"Growth", CivData.WHEAT_ITEM, 0, 
 				CivColor.LightGreen+df.format(t.getGrowth().total),
-				CivColor.LightGray+"« Click for More Options »"
+				CivColor.Gray+"« Click for More Options »"
 				));
 		inv.setItem(10, LoreGuiItem.build(CivColor.GreenBold+"Hammers", CivData.COBBLESTONE_WALL, 0, 
 				CivColor.LightGreen+df.format(t.getHammers().total),
-				CivColor.LightGray+"« Click for More Options »"
+				CivColor.Gray+"« Click for More Options »"
 				));
 		inv.setItem(11, LoreGuiItem.build(CivColor.GreenBold+"Beakers", CivData.EMPTY_BOTTLE, 0, 
 				CivColor.LightGreen+df.format(t.getBeakers().total),
-				CivColor.LightGray+"« Click for More Options »"
+				CivColor.Gray+"« Click for More Options »"
 				));
 		
 		ConfigCultureLevel clc = CivSettings.cultureLevels.get(t.getCultureLevel());	
 		inv.setItem(18, LoreGuiItem.build(CivColor.GreenBold+"Culture", CivData.NETHERWART_ITEM, 0, 
 				CivColor.Green+"Level: "+CivColor.LightGreen+clc.level,
 				CivColor.Green+"Amount: "+CivColor.LightGreen+t.getAccumulatedCulture()+" / "+clc.amount,
-				CivColor.LightGray+"« Click for More Options »"
+				CivColor.Gray+"« Click for More Options »"
 				));
 		ConfigHappinessState state = t.getHappinessState();
 		inv.setItem(19, LoreGuiItem.build(CivColor.GreenBold+"Happiness", CivData.OTHER_FLOWERS, 8, 
@@ -679,14 +679,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		
 		inv.setItem(24, LoreGuiItem.build(CivColor.RoseBold+"In Development", CivData.BEDROCK, 0, 
-				CivColor.LightGray+"« Check Back Later »"
+				CivColor.Gray+"« Check Back Later »"
 				));
 		
 		inv.setItem(26, LoreGuiItem.build(CivColor.GreenBold+"Structure Support", CivData.BEACON, 0, 
 				CivColor.Yellow+"Use the command '/build supportnearest' on a",
 				CivColor.Yellow+"structure to use & fill in invalid blocks!",
 				CivColor.Green+"Currently Storing: "+CivColor.LightGreen+t.getSupportDeposit()+" Blocks",
-				CivColor.LightGray+"« Click to Deposit Blocks »"
+				CivColor.Gray+"« Click to Deposit Blocks »"
 				));
 		
 		p.openInventory(inv);
@@ -787,7 +787,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		if (p.hasPermission(CivPerms.ADMIN_OP)) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"[Admin] +10,000 Blocks", CivData.BARRIER, 0, 
-					CivColor.LightGray+"« Click to Add »"));
+					CivColor.Gray+"« Click to Add »"));
 		}
 		
 		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
@@ -805,10 +805,10 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		v.setProfession(Profession.LIBRARIAN);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
@@ -824,34 +824,34 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		if (t.getStructureByType("ti_mine") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Mine Tasks", CivData.STONE_PICKAXE, 0, 
-					CivColor.LightGray+"« Click to View »"));
+					CivColor.Gray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Mine Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
+					CivColor.Gray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_lab") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Lab Tasks", CivData.EMPTY_BOTTLE, 0, 
-					CivColor.LightGray+"« Click to View »"));
+					CivColor.Gray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Lab Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
+					CivColor.Gray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_monument") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Monument Tasks", CivData.SKULL, 4, 
-					CivColor.LightGray+"« Click to View »"));
+					CivColor.Gray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Monument Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
+					CivColor.Gray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		
 		if (t.getStructureByType("ti_cottage") != null) {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+"Cottage Tasks", CivData.REDSTONE_LAMP, 0, 
-					CivColor.LightGray+"« Click to View »"));
+					CivColor.Gray+"« Click to View »"));
 		} else {
 			inv.addItem(LoreGuiItem.build(CivColor.RedBold+"Cottage Tasks", CivData.BEDROCK, 0, 
-					CivColor.LightGray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
+					CivColor.Gray+" « Cannot View Tasks »", CivColor.Rose+"« Structure Not Found »"));
 		}
 		p.openInventory(inv);
 	}

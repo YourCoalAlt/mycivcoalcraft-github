@@ -16,7 +16,7 @@ public class TeleportPlayer extends ItemComponent {
 	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrUtil) {
-		attrUtil.addLore(CivColor.LightGray+" - Teleport to a Player - ");
+		attrUtil.addLore(CivColor.Gray+" - Teleport to a Player - ");
 		attrUtil.addLore(CivColor.Gold+" « Right Click To Use » ");
 	}
 	
@@ -36,7 +36,7 @@ public class TeleportPlayer extends ItemComponent {
 			CivMessage.send(p, CivColor.LightGreen+"You found the magical tool to allow you to travel accross the world!");
 			CivMessage.send(p, CivColor.LightGreen+"What player do you wish to teleport to? Please type your response.");
 			CivMessage.send(p, " ");
-			CivMessage.send(p, CivColor.LightGray+"(To cancel, type 'cancel')");
+			CivMessage.send(p, CivColor.Gray+"(To cancel, type 'cancel')");
 			resident.setInteractiveMode(new InteractiveTeleportToPlayer());
 		}
 	}

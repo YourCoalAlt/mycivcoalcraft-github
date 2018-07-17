@@ -1,5 +1,7 @@
 package com.avrgaming.civcraft.command.admin;
 
+import java.text.DecimalFormat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,6 +29,26 @@ public class AdminTestCommand extends CommandBase implements Listener {
 		
 		commands.put("run", "Runs the command.");
 		commands.put("mail", "Runs the command.");
+		commands.put("dmg", ".");
+	}
+	
+	public void dmg_cmd() throws CivException {
+		double damage = getNamedDouble(1);
+		double defense = getNamedDouble(2);
+		DecimalFormat df = new DecimalFormat("0.00");
+		double returnDamage = Double.valueOf(df.format((damage * (1 - ((defense + (damage/2)) - damage / (2)) / ((25+(damage/2.25))-.8687922)))));
+		if (damage < 4.8687893) {
+			// This number [4.8687893] was calculated on a TI-84 Plus C Silver Edition, so it is 105% correct.
+			double fixedDamage = (-(returnDamage-3.4965076))+4.8687893;
+			returnDamage = fixedDamage;
+		}
+		
+		double deathHits = Double.valueOf(df.format(20 / returnDamage));
+//		double rtndmg = damage * ( 1 - Math.min(20, Math.max( defense / 5, defense - damage / ( toughness / 4 + 2 ) ) ) / 25 );
+		//calc 6.5 * (1 - ((0 + 3.25) - 6.5 / (0 / 4 + 2)) / 25)
+		//calc 8 * (1 - ((20 + 4) - 8 / (2)) / 25)
+		//calc (8 * (1 - ((20 + 4) - 8 / (2)) / ((25+(8/2.25))-.8687922)))
+		CivMessage.global("Final Damage: "+returnDamage+" [] Death Hits: "+deathHits);
 	}
 	
 	public void mail_cmd() throws CivException {
@@ -81,7 +103,7 @@ public class AdminTestCommand extends CommandBase implements Listener {
 			}
 			
 			if (addedNotRequired == true) {
-				CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+				CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 			}
 			
 			int depositAmt = toRemove*5;

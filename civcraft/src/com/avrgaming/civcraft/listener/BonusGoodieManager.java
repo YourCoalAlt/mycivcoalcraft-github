@@ -459,12 +459,12 @@ public class BonusGoodieManager implements Listener {
 			
 			player.getWorld().dropItemNaturally(frame.getLocation(), stack);
 			frame.setItem(ItemManager.createItemStack(CivData.AIR, 1));
-			CivMessage.send(player, CivColor.LightGray+"You unsocket the trade goodie from the frame.");
+			CivMessage.send(player, CivColor.Gray+"You unsocket the trade goodie from the frame.");
 		} else if (goodie != null) {
 			//Item frame was empty, add goodie to it.
 			frame.setItem(player.getInventory().getItemInMainHand());
 			player.getInventory().remove(player.getInventory().getItemInMainHand());
-			CivMessage.send(player, CivColor.LightGray+"You socket the trade goodie into the frame");
+			CivMessage.send(player, CivColor.Gray+"You socket the trade goodie into the frame");
 			clickedFrame.getTown().onGoodiePlaceIntoFrame(clickedFrame, goodie);
 			
 			try {

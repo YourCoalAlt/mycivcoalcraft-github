@@ -631,7 +631,7 @@ public class Template {
 		
 	private void getTemplateBlocks(BufferedReader reader, int regionX, int regionY, int regionZ) throws NumberFormatException, IOException {
 		
-        String line;
+		String line;
 		SimpleBlock blocks[][][] = new SimpleBlock[regionX][regionY][regionZ];
 		
 		// Read blocks from file.
@@ -732,31 +732,18 @@ public class Template {
 	}
 	
 	public static String parseDirection(Location loc){
-	    double rotation = (loc.getYaw() - 90) % 360;
-	      if (rotation < 0) {
-	          rotation += 360.0;
-	      }
-	      if (0 <= rotation && rotation < 22.5) {
-	          return "east"; //S > E
-	      } else if (22.5 <= rotation && rotation < 67.5) {
-	          return "east"; //SW > SE
-	      } else if (67.5 <= rotation && rotation < 112.5) {
-	          return "south"; //W > E
-	      } else if (112.5 <= rotation && rotation < 157.5) {
-	          return "west"; //NW > SW
-	      } else if (157.5 <= rotation && rotation < 202.5) {
-	          return "west"; //N > W
-	      } else if (202.5 <= rotation && rotation < 247.5) {
-	          return "west"; //NE > NW
-	      } else if (247.5 <= rotation && rotation < 292.5) {
-	          return "north"; //E > N
-	      } else if (292.5 <= rotation && rotation < 337.5) {
-	          return "east"; //SE > NE
-	      } else if (337.5 <= rotation && rotation < 360.0) {
-	          return "east"; //S > E
-	      } else {
-	          return null;
-	      }
+		double rotation = (loc.getYaw() - 90) % 360;
+		if (rotation < 0) rotation += 360.0;
+		if (0 <= rotation && rotation < 22.5) return "east"; //S > E
+		else if (22.5 <= rotation && rotation < 67.5) return "east"; //SW > SE
+		else if (67.5 <= rotation && rotation < 112.5) return "south"; //W > E
+		else if (112.5 <= rotation && rotation < 157.5) return "west"; //NW > SW
+		else if (157.5 <= rotation && rotation < 202.5) return "west"; //N > W
+		else if (202.5 <= rotation && rotation < 247.5) return "west"; //NE > NW
+		else if (247.5 <= rotation && rotation < 292.5) return "north"; //E > N
+		else if (292.5 <= rotation && rotation < 337.5) return "east"; //SE > NE
+		else if (337.5 <= rotation && rotation < 360.0) return "east"; //S > E
+		else return null;
 	 }
 	
 	public static Integer faceVillager(int d) {
@@ -769,22 +756,14 @@ public class Template {
 		if (d == 11 || d == 12 || d == 13) return -90;
 		if (d == 14) return -45;
 		return 0;
-		
 	}
 	
 	public static String invertDirection(String dir) {
-			if (dir.equalsIgnoreCase("east"))
-				return "west";
-			if (dir.equalsIgnoreCase("west")) {
-				return "east";
-			}
-			if (dir.equalsIgnoreCase("north")) {
-				return "south";
-			}
-			if (dir.equalsIgnoreCase("south")) {
-				return "north";
-			}
-			return null;
+		if (dir.equalsIgnoreCase("east")) return "west";
+		if (dir.equalsIgnoreCase("west")) return "east";
+		if (dir.equalsIgnoreCase("north")) return "south";
+		if (dir.equalsIgnoreCase("south")) return "north";
+		return null;
 	}
 
 	public void deleteUndoTemplate(String string, String subdir) throws CivException, IOException {

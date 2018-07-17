@@ -219,7 +219,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 
 		tpl.deleteInProgessTemplate(buildable.getCorner().toString(), buildable.getTown());
 		buildable.getTown().build_tasks.remove(this);
-		TaskMaster.syncTask(new PostBuildSyncTask(tpl, buildable), 10); // Wait a few ticks before placing items that may drop (if structure insta builds)
+		TaskMaster.syncTask(new PostBuildSyncTask(tpl, buildable, true), 10); // Wait a few ticks before placing items that may drop (if structure insta builds)
 		CivMessage.global("The town of "+buildable.getTown().getName()+" has completed a "+buildable.getDisplayName()+"!");
 		buildable.onComplete();
 		return false;
@@ -275,7 +275,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 					if (sb.specialType != Type.COMMAND) {
 						BlockCoord coord = new BlockCoord(sb.worldname, sb.x, sb.y, sb.z);
 						if (sb.y == 0) {
-							buildable.addStructureBlock(coord, false);				
+							buildable.addStructureBlock(coord, false);
 						} else {
 							buildable.addStructureBlock(coord, true);
 						}
@@ -302,7 +302,7 @@ public class BuildAsyncTask extends CivAsyncTask {
 		CivMessage.sendTown(buildable.getTown(), CivColor.Rose+"You can no longer build "+buildable.getDisplayName()+" since it was built in a far away land.");
 		
 		//Refund the town half the cost of the wonder.
-		double refund = buildable.getCost() / 2;			
+		double refund = buildable.getCost() / 2;
 		buildable.getTown().deposit(refund);
 
 		CivMessage.sendTown(buildable.getTown(), CivColor.Yellow+"Town was refunded 50% ("+refund+" coins) of the cost to build the wonder.");

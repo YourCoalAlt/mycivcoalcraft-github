@@ -12,7 +12,7 @@ import org.bukkit.entity.Damageable;
 
 import com.avrgaming.civcraft.main.CivLog;
 
-public class ConfigCustomMobs {
+public class ConfigMobsCustom {
 	
 	public String id;
 	public String name;
@@ -51,11 +51,11 @@ public class ConfigCustomMobs {
 		return false;
 	}*/
 	
-	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigCustomMobs> mobMap) {
+	public static void loadConfig(FileConfiguration cfg, Map<String, ConfigMobsCustom> mobMap) {
 		mobMap.clear();
 		List<Map<?, ?>> custom_mobs = cfg.getMapList("custom_mobs");
 		for (Map<?, ?> cl : custom_mobs) {
-			ConfigCustomMobs minfo = new ConfigCustomMobs();
+			ConfigMobsCustom minfo = new ConfigMobsCustom();
 			minfo.id = (String)cl.get("id");
 			minfo.name = (String)cl.get("name");
 			minfo.visible = (Boolean)cl.get("visible");
@@ -83,7 +83,7 @@ public class ConfigCustomMobs {
 			
 			@SuppressWarnings("unchecked")
 			ArrayList<String> drops = (ArrayList<String>) cl.get("drops");
-			if (biomes != null) {
+			if (drops != null) {
 				for (String compObj : drops) {
 					minfo.drops.add(compObj);	
 				}

@@ -28,7 +28,7 @@ public class InteractiveRenameCivOrTown implements InteractiveResponse {
 	public void displayQuestion(Resident resident) {		
 		CivMessage.send(resident, CivColor.Green+"Would you like to rename a "+CivColor.LightGreen+"CIV"+
 								  CivColor.Green+" or a "+CivColor.LightGreen+"TOWN"+CivColor.Green+"?");
-		CivMessage.send(resident, CivColor.Gray+"(Type 'civ' or 'town' anything else cancels.)");
+		CivMessage.send(resident, CivColor.DarkGray+"(Type 'civ' or 'town' anything else cancels.)");
 		return;
 	}
 	

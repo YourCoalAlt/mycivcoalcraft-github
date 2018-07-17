@@ -15,6 +15,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.TownChunk;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.EntityProximity;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -25,11 +26,11 @@ public class MobSpawnerTimer implements Runnable {
 	
 //	public static int UPDATE_LIMIT = 40;
 	public static int MOB_AREA_LIMIT = 10;
-	public static int MOB_AREA = 48;
+	public static int MOB_AREA = 40;
 	
-	public static int MIN_SPAWN_DISTANCE = 10;
+	public static int MIN_SPAWN_DISTANCE = 16;
 	public static int MAX_SPAWN_DISTANCE = 40;
-	public static int MIN_SPAWN_AMOUNT = 5;
+	public static int MIN_SPAWN_AMOUNT = 3;
 	
 	public static int Y_SHIFT = 4;
 	
@@ -66,10 +67,14 @@ public class MobSpawnerTimer implements Runnable {
 					
 					LinkedList<Entity> entities = EntityProximity.getNearbyEntities(null, loc, MOB_AREA, EntityCreature.class);
 					// Dont spawn if we've reach the mob limit
-					if (entities.size() > MOB_AREA_LIMIT) continue;
+					if (entities.size() >= MOB_AREA_LIMIT) continue;
 					
-					TownChunk tc = CivGlobal.getTownChunk(new ChunkCoord(loc));
-					if (tc != null && !tc.perms.isMobs()) continue;
+					ChunkCoord chunk = new ChunkCoord(loc);
+					TownChunk tc = CivGlobal.getTownChunk(chunk);
+					if (tc != null && !tc.perms.isCustomSpawnMobs()) continue;
+					
+					Camp cc = CivGlobal.getCampChunk(chunk);
+					if (cc != null) continue;
 					
 					// Dont spawn mobs at invalid blocks
 					Location blockLoc = loc; blockLoc.setY(loc.getY()-Y_SHIFT);

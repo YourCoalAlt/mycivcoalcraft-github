@@ -26,7 +26,7 @@ public class BackpackCommand implements CommandExecutor {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("v") || args[0].equalsIgnoreCase("view")) {
 				CivMessage.sendSuccess(p, "Opened your backpack GUI.");
-				Backpack.spawnGuiBook(p, true);
+				Backpack.openBackpackGUI(p, true);
 				return true;
 			} else {
 				CivMessage.sendError(p, "Invalid parameter '"+args[0]+"'");
@@ -82,7 +82,7 @@ public class BackpackCommand implements CommandExecutor {
 				String itemName = slot8Item.getType().toString();
 				displayName = itemName.substring(0,1).toUpperCase() + itemName.substring(1).toLowerCase();
 			}
-			CivMessage.send(p, CivColor.LightGrayItalic+"Since you had "+CivColor.White+displayName+CivColor.LightGrayItalic+" in hotbar slot 9, we moved it to slot "+(newSlot+1)+".");
+			CivMessage.send(p, CivColor.GrayItalic+"Since you had "+CivColor.White+displayName+CivColor.GrayItalic+" in hotbar slot 9, we moved it to slot "+(newSlot+1)+".");
 		}
 		
 		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId("civ_backpack");

@@ -18,7 +18,7 @@ public class CapitulateRequest implements QuestionResponseInterface {
 			capitulator.capitulate();
 			CivMessage.global(from+" has capitulated to "+to);
 		} else {
-			CivMessage.send(playerName, CivColor.LightGray+to+" declined our offer.");
+			CivMessage.send(playerName, CivColor.Gray+to+" declined our offer.");
 		}
 	}
 

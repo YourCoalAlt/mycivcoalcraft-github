@@ -45,12 +45,12 @@ public class TownEventCommand extends CommandBase {
 			CivMessage.send(sender, CivColor.Green+"Started On: "+CivColor.LightGreen+sdf.format(event.getStartDate()));
 			CivMessage.send(sender, CivColor.Green+"End Date:"+CivColor.LightGreen+sdf.format(event.getEndDate()));
 			if (event.isActive()) {
-				CivMessage.send(sender, CivColor.LightGray+"Event has been activated.");
+				CivMessage.send(sender, CivColor.Gray+"Event has been activated.");
 			} else {
 				CivMessage.send(sender, CivColor.Yellow+"Event has not been activated. Use '/town event activate' to activate the event.");
 			}
 			CivMessage.send(sender, CivColor.Green+"-- Messages From Event ---");
-			CivMessage.send(sender, CivColor.LightGray+event.getMessages());
+			CivMessage.send(sender, CivColor.Gray+event.getMessages());
 		}
 	}
 	

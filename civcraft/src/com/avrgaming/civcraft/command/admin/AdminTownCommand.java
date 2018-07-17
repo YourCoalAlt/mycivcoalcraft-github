@@ -161,11 +161,36 @@ public class AdminTownCommand extends CommandBase {
 	public void rebuildgroups_cmd() throws CivException {
 		Town town = getNamedTown(1);
 		
-		if (town.getDefaultGroup() == null) {
+		if (town.getCivMemberGroup() == null) {
+			PermissionGroup civMembers;
+			try {
+				civMembers = new PermissionGroup(town, town.getCivMemberGroupName());
+				for (Town t : town.getCiv().getTowns()) {
+					for (Resident res : t.getResidents()) {
+						civMembers.addMember(res);
+					}
+				}
+				town.setCivMemberGroup(civMembers);
+				try {
+					civMembers.saveNow();
+					town.saveNow();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} catch (InvalidNameException e1) {
+				e1.printStackTrace();
+			}
+			CivMessage.sendSuccess(sender, "Created civ_members group.");
+		}
+		
+		if (town.getResidentGroup() == null) {
 			PermissionGroup residents;
 			try {
-				residents = new PermissionGroup(town, "residents");		
-				town.setDefaultGroup(residents);
+				residents = new PermissionGroup(town, town.getResidentGroupName());
+				for (Resident res : town.getResidents()) {
+					residents.addMember(res);
+				}
+				town.setResidentGroup(residents);
 				try {
 					residents.saveNow();
 					town.saveNow();
@@ -181,8 +206,7 @@ public class AdminTownCommand extends CommandBase {
 		if (town.getAssistantGroup() == null) {
 			PermissionGroup assistant;
 			try {
-				assistant = new PermissionGroup(town, "assistants");
-				
+				assistant = new PermissionGroup(town, town.getAssistantGroupName());
 				town.setAssistantGroup(assistant);
 				try {
 					assistant.saveNow();
@@ -200,7 +224,7 @@ public class AdminTownCommand extends CommandBase {
 		if (town.getMayorGroup() == null) {
 			PermissionGroup mayor;
 			try {
-				mayor = new PermissionGroup(town, "mayors");	
+				mayor = new PermissionGroup(town, town.getMayorGroupName());	
 				town.setMayorGroup(mayor);
 				try {
 					mayor.saveNow();
@@ -213,7 +237,6 @@ public class AdminTownCommand extends CommandBase {
 			}
 			CivMessage.sendSuccess(sender, "Created mayors groups.");
 		}
-		
 	}
 	
 	public void chestreport_cmd() throws CivException {

@@ -36,11 +36,9 @@ public class PlayerTagUpdateTimer implements Runnable {
 			}
 			
 			if (res != null) {
-				if (res.getCiv() != null) {
-					suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
-				} else {
-					suffix = CivColor.LightGrayBold+" [None]";
-				}
+				if (res.hasCiv()) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
+				if (res.hasCamp()) suffix = CivColor.GrayBold+" ["+StringUtils.left(res.getCamp().getName(), 4)+"]";
+//				if (!res.hasTown() && !res.hasCamp()) suffix = CivColor.GrayBold+" [None]";
 				res.changePlayerName(p, suffix);
 			} else {
 				suffix = CivColor.RoseItalic+" [NULL]";

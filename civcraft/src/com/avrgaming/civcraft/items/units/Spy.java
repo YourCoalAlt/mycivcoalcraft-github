@@ -145,7 +145,7 @@ public class Spy extends UnitMaterial {
 				if (can) {
 					out += CivColor.Gold+"<Click To Perform Mission>";
 				} else {
-					out += CivColor.LightGrayItalic+"<Cannot Execute Mission>";
+					out += CivColor.GrayItalic+"<Cannot Execute Mission>";
 				}
 				
 				ItemStack si = LoreGuiItem.build(m.name, m.itemId, m.itemData, out.split(";"));

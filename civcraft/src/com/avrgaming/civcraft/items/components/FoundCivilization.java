@@ -34,7 +34,6 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.structure.Buildable;
 import com.avrgaming.civcraft.structure.Structure;
-import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CallbackInterface;
 import com.avrgaming.civcraft.util.CivColor;
 
@@ -45,7 +44,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
 		attrs.addLore(ChatColor.RESET+CivColor.Gold+"Founds a Civilization");
-		attrs.addLore(CivColor.LightGray+" « Right Click to Use » ");
+		attrs.addLore(CivColor.Gray+" « Right Click to Use » ");
 		attrs.addEnhancement("LoreEnhancementSoulBound", null, null);
 	}
 	
@@ -54,7 +53,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 		if (resident == null) throw new CivException("You must be a registered resident to found a civ. This shouldn't happen. Contact an admin.");
 			
 		// Build a preview for the Capitol structure.
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Checking structure position...Please wait.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Checking structure position...Please wait.");
 		ConfigBuildableInfo info = CivSettings.structures.get("s_capitol");
 		Buildable.buildPerklessVerifyStatic(player, info, player.getLocation(), this);
 		
@@ -68,31 +67,17 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 	
 	public void onInteract(PlayerInteractEvent event) {
 		event.setCancelled(true);
-		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-		
-		class SyncTask implements Runnable {
-			String name;
-			
-			public SyncTask(String name) {
-				this.name = name;
-			}
-			
-			@Override
-			public void run() {
-				Player player;
-				try {
-					player = CivGlobal.getPlayer(name);
-					try {
-						foundCiv(player);
-					} catch (CivException e) {
-						CivMessage.sendError(player, e.getMessage());
-					}
-				} catch (CivException e) {
-					return;
-				}
-			}
+		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			CivMessage.sendError(event.getPlayer(), "Right click to found a civ.");
+			return;
 		}
-		TaskMaster.syncTask(new SyncTask(event.getPlayer().getName()));
+		
+		try {
+			foundCiv(event.getPlayer());
+		} catch (CivException e) {
+			CivMessage.sendError(event.getPlayer(), e.getMessage());
+		}
+		return;
 	}
 	
 	@Override
@@ -114,7 +99,7 @@ public class FoundCivilization extends ItemComponent implements CallbackInterfac
 		CivMessage.send(player, CivColor.LightGreen+"Can you build a Civilization that can stand the test of time?");
 		CivMessage.send(player, " ");
 		CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"What shall your new Civilization be called?");
-		CivMessage.send(player, CivColor.LightGray+"(To cancel, type 'cancel')");
+		CivMessage.send(player, CivColor.Gray+"(To cancel, type 'cancel')");
 		
 		resident.setInteractiveMode(new InteractiveCivName());
 	}

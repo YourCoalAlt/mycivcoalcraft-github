@@ -207,13 +207,17 @@ public class Cannon extends Buildable {
 					}
 		
 					BlockCoord coord = new BlockCoord(b);
-										
+					
 					if (CivGlobal.getProtectedBlock(coord) != null) {
 						throw new CivException("Cannot build here, protected blocks in the way.");
 					}
 					
 					if (CivGlobal.getStructureBlock(coord) != null) {
 						throw new CivException("Cannot build here, structure blocks in the way.");
+					}
+					
+					if (CivGlobal.getCampBlock(coord) != null) {
+						throw new CivException("Cannot build here, a camp is in the way.");
 					}
 					
 					if (Cannon.cannonBlocks.containsKey(coord)) {
@@ -272,19 +276,19 @@ public class Cannon extends Buildable {
 		boolean loaded = false;
 		
 		if (this.tntLoaded >= tntCost) {
-			sign.setLine(1, CivColor.LightGreen+CivColor.BOLD+"LOADED");
+			sign.setLine(1, CivColor.LightGreenBold+"LOADED");
 			loaded = true;
 		} else {
 			sign.setLine(1, CivColor.Yellow+"("+this.tntLoaded+"/"+tntCost+") TNT");
 		}
 		
 		if (this.shotCooldown > 0) {
-			sign.setLine(2, CivColor.LightGray+"Wait "+this.shotCooldown);
+			sign.setLine(2, CivColor.Gray+"Wait "+this.shotCooldown);
 		} else {
 			if (loaded) {
-				sign.setLine(2, CivColor.LightGray+"READY");
+				sign.setLine(2, CivColor.Gray+"READY");
 			} else {
-				sign.setLine(2, CivColor.LightGray+"Add TNT");
+				sign.setLine(2, CivColor.Gray+"Add TNT");
 			}
 		}
 		
@@ -676,7 +680,7 @@ public class Cannon extends Buildable {
 		
 		if (hitpoints <= 0) {
 			destroy();
-			CivMessage.send(event.getPlayer(), CivColor.LightGreen+CivColor.BOLD+"Cannon Destroyed!");
+			CivMessage.send(event.getPlayer(), CivColor.LightGreenBold+"Cannon Destroyed!");
 			CivMessage.sendCiv(owner.getCiv(), CivColor.Yellow+"Our Cannon at "+
 					cannonLocation.getBlockX()+","+cannonLocation.getBlockY()+","+cannonLocation.getBlockZ()+
 					" has been destroyed!");
@@ -684,7 +688,7 @@ public class Cannon extends Buildable {
 		}
 		
 		CivMessage.send(event.getPlayer(), CivColor.Yellow+"Hit Cannon! ("+this.hitpoints+"/"+maxHitpoints+")");
-		CivMessage.sendCiv(owner.getCiv(), CivColor.LightGray+"Our Cannon at "+
+		CivMessage.sendCiv(owner.getCiv(), CivColor.Gray+"Our Cannon at "+
 				cannonLocation.getBlockX()+","+cannonLocation.getBlockY()+","+cannonLocation.getBlockZ()+
 				" has been hit! ("+hitpoints+"/"+maxHitpoints+")");
 	}

@@ -16,7 +16,7 @@ public class BackpackEnable extends ItemComponent {
 	
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
-		attrs.addLore(CivColor.LightGray+" « Right Click to Open » ");
+		attrs.addLore(CivColor.Gray+" « Right Click to Open » ");
 	}
 	
 	public void onInteract(PlayerInteractEvent event) {
@@ -25,7 +25,7 @@ public class BackpackEnable extends ItemComponent {
 			event.setUseItemInHand(Result.DENY);
 			return;
 		}
-		Backpack.spawnGuiBook(event.getPlayer(), true);
+		Backpack.openBackpackGUI(event.getPlayer(), true);
 	}
 	
 	@Override

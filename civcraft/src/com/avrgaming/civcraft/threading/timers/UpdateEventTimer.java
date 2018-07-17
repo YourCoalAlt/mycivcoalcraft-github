@@ -23,9 +23,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.avrgaming.civcraft.main.CivGlobal;
+import com.avrgaming.civcraft.object.camp.Camp;
+import com.avrgaming.civcraft.object.camp.CampUpdateTick;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
+import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 
 public class UpdateEventTimer extends CivAsyncTask {
@@ -47,6 +50,12 @@ public class UpdateEventTimer extends CivAsyncTask {
 			
 			for (Wonder wonder : CivGlobal.getWonders()) {
 				wonder.onUpdate();
+			}
+			
+			for (Camp camp : CivGlobal.getCamps()) {
+				if (!camp.sifterLock.isLocked()) {
+					TaskMaster.asyncTask(new CampUpdateTick(camp), 0);
+				}
 			}
 		} finally {
 			lock.unlock();

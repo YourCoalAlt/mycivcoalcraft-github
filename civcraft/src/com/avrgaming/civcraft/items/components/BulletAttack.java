@@ -32,7 +32,7 @@ public class BulletAttack extends ItemComponent {
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
 		attrs.addLore(" ");
-		attrs.addLore(CivColor.LightGray+"When Shot:");
+		attrs.addLore(CivColor.Gray+"When Shot:");
 		attrs.addLore(CivColor.Navy+" +"+this.getDouble("value")+" Attack Damage");
 	}
 	
@@ -40,7 +40,7 @@ public class BulletAttack extends ItemComponent {
 	public void onHold(PlayerItemHeldEvent event) {	
 		Resident resident = CivGlobal.getResident(event.getPlayer());
 		if (!resident.hasTechForItem(event.getPlayer().getInventory().getItem(event.getNewSlot()))) {		
-			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.LightGray+"You do not have the required technology to use this item. Its attack output will be reduced in half.");
+			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.Gray+"You do not have the required technology to use this item. Its attack output will be reduced in half.");
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class BulletAttack extends ItemComponent {
 			
 			Resident resident = CivGlobal.getResident(((Player)sb.getShooter()));
 			if (p.getInventory().getItemInMainHand().getType() == Material.BEDROCK) {
-				CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.LightGray+"Your gun was not found, nerfing bullet damage by 50%.");
+				CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.Gray+"Your gun was not found, nerfing bullet damage by 50%.");
 			} else {
 				if (!resident.hasTechForItem(p.getInventory().getItemInMainHand())) dmg = dmg/2;
 			}
@@ -121,8 +121,8 @@ public class BulletAttack extends ItemComponent {
 			if (sb.getShooter() instanceof Player) {
 				Player attacker = (Player)sb.getShooter();
 				if (CivGlobal.getResident(((Player)sb.getShooter())).isCombatInfo()) {
-					CivMessage.send(attacker, CivColor.LightGray+"    [Combat] Gave "+CivColor.LightGreen+dmg+CivColor.LightGray+" damage to "+CivColor.LightPurple+event.getEntity().getName()
-									+CivColor.LightGray+" using Gun");
+					CivMessage.send(attacker, CivColor.Gray+"    [Combat] Gave "+CivColor.LightGreen+dmg+CivColor.Gray+" damage to "+CivColor.LightPurple+event.getEntity().getName()
+									+CivColor.Gray+" using Gun");
 				}
 			}
 		}

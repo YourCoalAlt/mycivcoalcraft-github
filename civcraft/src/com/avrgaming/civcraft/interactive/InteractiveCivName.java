@@ -58,7 +58,7 @@ public class InteractiveCivName implements InteractiveResponse {
 		CivMessage.send(player, CivColor.LightGreen+"The Civilization of "+CivColor.Yellow+message+CivColor.LightGreen+"? An awesome choice.");
 		CivMessage.send(player, " ");
 		CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"Now what should your capitol be called?");
-		CivMessage.send(player, CivColor.LightGray+"(To cancel type 'cancel')");
+		CivMessage.send(player, CivColor.Gray+"(To cancel type 'cancel')");
 		resident.setInteractiveMode(new InteractiveCapitolName());
 		return;
 	}

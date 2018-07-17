@@ -126,7 +126,7 @@ public class ChatListener implements Listener {
 					CivColor.GreenBold+"Civilization: "+CivColor.LightGreen+civ+"\n"+
 					CivColor.GreenBold+"Town: "+CivColor.LightGreen+town+"\n"+
 					CivColor.GoldBold+"Online For: "+CivColor.Yellow+onlineTime.subSequence(0, onlineTime.length()-2)+"\n"+
-					CivColor.GrayBold+"Time Sent: "+CivColor.LightGray+sdf.format(cal.getTime())
+					CivColor.DarkGrayBold+"Time Sent: "+CivColor.Gray+sdf.format(cal.getTime())
 					).create()));
 	        for (Player all : Bukkit.getOnlinePlayers()) {
 	            all.spigot().sendMessage(newFormat);

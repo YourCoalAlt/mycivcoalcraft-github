@@ -23,6 +23,7 @@ import gpl.AttributeUtil;
 public class ShowRecipe implements GuiAction {
 
 	public static final int START_OFFSET = LoreGuiItem.INV_ROW_COUNT + 3;
+	private static ItemStack back_head = ItemManager.spawnPlayerHead("MHF_ArrowRight");
 	
 	public ItemStack getIngredItem(ConfigIngredient ingred, Inventory recInv) {
 		String name;
@@ -30,7 +31,7 @@ public class ShowRecipe implements GuiAction {
 		ItemStack entryStack;
 		if (ingred.custom_id == null) {
 			name = ItemManager.getMaterialData(ingred.type_id, ingred.data).toString();
-			message = CivColor.LightGray+"Vanilla Item";
+			message = CivColor.Gray+"Vanilla Item";
 			entryStack = LoreGuiItem.build(name, ingred.type_id, ingred.data, message);
 		} else {
 			LoreCraftableMaterial cmat = LoreCraftableMaterial.getCraftMaterialFromId(ingred.custom_id);
@@ -151,7 +152,7 @@ public class ShowRecipe implements GuiAction {
 		String backInventory = LoreGuiItem.getActionData(stack, "backInventory");
 		if (backInventory != null) {
 			Inventory inv = LoreGuiItemListener.guiInventories.get(backInventory);
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back");
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", inv.getName());
@@ -159,7 +160,7 @@ public class ShowRecipe implements GuiAction {
 		} else {
 			ConfigMaterialCategory cat = ConfigMaterialCategory.getCategory(craftMat.getConfigMaterial().categoryCivColorStripped); 
 			if (cat != null) {					
-				ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Category "+cat.name);
+				ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Category "+cat.name);
 				backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 				backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 				backButton = LoreGuiItem.setActionData(backButton, "invName", cat.name+" Recipes");

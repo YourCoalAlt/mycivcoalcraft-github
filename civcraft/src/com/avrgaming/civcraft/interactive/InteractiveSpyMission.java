@@ -2,7 +2,6 @@ package com.avrgaming.civcraft.interactive;
 
 import java.text.DecimalFormat;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -63,13 +62,13 @@ public class InteractiveSpyMission implements InteractiveResponse {
 			length += seconds+" seconds";
 		}
 		
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"We have a "+CivColor.LightGreen+successChance+CivColor.Green+CivColor.BOLD+" chance of success.");
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"If we fail, the chance of being compromised is "+CivColor.LightGreen+compromiseChance);
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"It will cost our town "+CivColor.Yellow+mission.cost+CivColor.Green+CivColor.BOLD+" coins to perform this mission.");
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"The mission will take "+CivColor.Yellow+length+CivColor.Green+CivColor.BOLD+" to complete.");
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"You must remain within the civ's borders during the mission, otherwise you'll fail the mission.");
-		CivMessage.send(player, CivColor.Green+CivColor.BOLD+"If these conditions are acceptible, type "+CivColor.Yellow+"yes");
-		CivMessage.send(player, CivColor.Green+ChatColor.BOLD+"Type anything else to abort.");
+		CivMessage.send(player, CivColor.GreenBold+"We have a "+CivColor.LightGreen+successChance+CivColor.GreenBold+" chance of success.");
+		CivMessage.send(player, CivColor.GreenBold+"If we fail, the chance of being compromised is "+CivColor.LightGreen+compromiseChance);
+		CivMessage.send(player, CivColor.GreenBold+"It will cost our town "+CivColor.Yellow+mission.cost+CivColor.GreenBold+" coins to perform this mission.");
+		CivMessage.send(player, CivColor.GreenBold+"The mission will take "+CivColor.Yellow+length+CivColor.GreenBold+" to complete.");
+		CivMessage.send(player, CivColor.GreenBold+"You must remain within the civ's borders during the mission, otherwise you'll fail the mission.");
+		CivMessage.send(player, CivColor.GreenBold+"If these conditions are acceptible, type "+CivColor.Yellow+"yes");
+		CivMessage.send(player, CivColor.GreenBold+"Type anything else to abort.");
 	}
 	
 	

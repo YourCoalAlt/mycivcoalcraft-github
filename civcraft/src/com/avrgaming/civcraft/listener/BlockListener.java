@@ -23,6 +23,7 @@ import java.util.Random;
 
 import org.bukkit.Chunk;
 import org.bukkit.Color;
+import org.bukkit.CropState;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
@@ -30,6 +31,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -73,14 +75,16 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Crops;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.avrgaming.civcraft.cache.ArrowFiredCache;
 import com.avrgaming.civcraft.cache.CannonFiredCache;
 import com.avrgaming.civcraft.cache.CivCache;
+import com.avrgaming.civcraft.components.ProjectileArrowComponent;
+import com.avrgaming.civcraft.components.ProjectileCannonComponent;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTempleSacrifice;
 import com.avrgaming.civcraft.exception.CivException;
@@ -88,7 +92,8 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.mobs.MobSpawner;
+import com.avrgaming.civcraft.object.ControlPoint;
+import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.object.ProtectedBlock;
@@ -97,7 +102,10 @@ import com.avrgaming.civcraft.object.StructureBlock;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.StructureTables;
+import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
+import com.avrgaming.civcraft.object.camp.Camp;
+import com.avrgaming.civcraft.object.camp.CampBlock;
 import com.avrgaming.civcraft.permission.PlotPermissions;
 import com.avrgaming.civcraft.road.Road;
 import com.avrgaming.civcraft.road.RoadBlock;
@@ -110,6 +118,7 @@ import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.Granary;
 import com.avrgaming.civcraft.structure.Library;
 import com.avrgaming.civcraft.structure.Market;
+import com.avrgaming.civcraft.structure.MobGrinder;
 import com.avrgaming.civcraft.structure.Pasture;
 import com.avrgaming.civcraft.structure.Stable;
 import com.avrgaming.civcraft.structure.Temple;
@@ -131,6 +140,8 @@ import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarRegen;
 
 import gpl.HorseModifier;
+import net.minecraft.server.v1_12_R1.Entity;
+import net.minecraft.server.v1_12_R1.EntitySlime;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 public class BlockListener implements Listener {
@@ -155,19 +166,25 @@ public class BlockListener implements Listener {
 						}
 						return;
 					}
-
+					
 					RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 					if (rb != null) {
 						event.setCancelled(true);
 						return;
 					}
-
+					
+					CampBlock cb = CivGlobal.getCampBlock(bcoord);
+					if (cb != null) {
+						event.setCancelled(true);
+						return;
+					}
+					
 					StructureSign structSign = CivGlobal.getStructureSign(bcoord);
 					if (structSign != null) {
 						event.setCancelled(true);
 						return;
 					}
-
+					
 					StructureChest structChest = CivGlobal.getStructureChest(bcoord);
 					if (structChest != null) {
 						event.setCancelled(true);
@@ -176,8 +193,7 @@ public class BlockListener implements Listener {
 				}
 			}
 		}
-
-
+		
 		coord.setFromLocation(event.getBlock().getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
 
@@ -194,13 +210,18 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityBlockChange(EntityChangeBlockEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation());
-
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
 		if (sb != null) {
 			event.setCancelled(true);
 			return;
 		}
-
+		
 		RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 		if (rb != null) {
 			event.setCancelled(true);
@@ -212,13 +233,18 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBurnEvent(BlockBurnEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation());
-
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
 		if (sb != null) {
 			event.setCancelled(true);
 			return;
 		}
-
+		
 		RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 		if (rb != null) {
 			event.setCancelled(true);
@@ -289,7 +315,7 @@ public class BlockListener implements Listener {
 			}
 		}
 
-		if (!(event.getEntity() instanceof Player)) {			
+		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}	
 
@@ -300,42 +326,44 @@ public class BlockListener implements Listener {
 		}
 
 		if (event.getDamager() instanceof Arrow) {
-			ArrowFiredCache afc = CivCache.arrowsFired.get(event.getDamager().getUniqueId());
+			Arrow arrow = (Arrow) event.getDamager();
+			ArrowFiredCache afc = CivCache.arrowsFired.get(arrow.getUniqueId());
 			if (afc != null) {
 				afc.setHit(true);
-				afc.destroy(event.getDamager());
-				CivMessage.sendTownSound(afc.getFromTower().getTown(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 1.8f);
-				CivMessage.sendTown(afc.getFromTower().getTown(), "An Arrow Tower at "+afc.getFromTower().getTurretCenter().getX()+", "+
-							afc.getFromTower().getTurretCenter().getY()+", "+afc.getFromTower().getTurretCenter().getZ()+" has hit a target!");
+				afc.destroy(arrow);
+				ProjectileArrowComponent pac = afc.getFromTower();
+				Location turloc = pac.getTurretCenter();
+				CivMessage.sendTownSound(pac.getTown(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 1.8f);
+				CivMessage.sendTown(pac.getTown(), pac.getBuildable().getDisplayName()+" at "+turloc.getX()+", "+turloc.getY()+", "+turloc.getZ()+" has hit a target!");
 				
 				Resident defenderResident = CivGlobal.getResident(defender);
-				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == afc.getFromTower().getTown().getCiv()) {
-					// friendly fire from arrow towers reduced
-					event.setDamage(afc.getFromTower().getDamage()/4);
-					CivMessage.send(defenderResident, CivColor.LightGrayItalic+"Because you were hit in friendly-fire by an Arrow Tower, damage was reduced by 75%.");
+				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == pac.getTown().getCiv()) {
+					event.setDamage(pac.getDamage()/4); // friendly fire from towers reduced
+					CivMessage.send(defenderResident, CivColor.DarkGrayItalic+"Damage from a friendly-fire "+pac.getBuildable().getDisplayName()+" was reduced by 75%.");
 				} else {
-					event.setDamage(afc.getFromTower().getDamage());
+					event.setDamage(pac.getDamage());
 				}
 				return;
 			}
 		}
 
 		if (event.getDamager() instanceof Fireball) {
-			CannonFiredCache cfc = CivCache.cannonBallsFired.get(event.getDamager().getUniqueId());
+			Fireball fb = (Fireball) event.getDamager();
+			CannonFiredCache cfc = CivCache.cannonBallsFired.get(fb.getUniqueId());
 			if (cfc != null) {
 				cfc.setHit(true);
-				cfc.destroy(event.getDamager());
-				CivMessage.sendTownSound(cfc.getFromTower().getTown(), Sound.ENTITY_WITHER_AMBIENT, 1.0f, 1.35f);
-				CivMessage.sendTown(cfc.getFromTower().getTown(), "Cannon Tower at "+cfc.getFromTower().getTurretCenter().getX()+", "+
-							cfc.getFromTower().getTurretCenter().getY()+", "+cfc.getFromTower().getTurretCenter().getZ()+" has fired!");
+				cfc.destroy(fb);
+				ProjectileCannonComponent pac = cfc.getFromTower();
+				Location turloc = pac.getTurretCenter();
+				CivMessage.sendTownSound(pac.getTown(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 1.8f);
+				CivMessage.sendTown(pac.getTown(), pac.getBuildable().getDisplayName()+" at "+turloc.getX()+", "+turloc.getY()+", "+turloc.getZ()+" has hit a target!");
 				
 				Resident defenderResident = CivGlobal.getResident(defender);
-				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == cfc.getFromTower().getTown().getCiv()) {
-					// friendly fire from arrow towers reduced
-					event.setDamage(cfc.getFromTower().getDamage()/4);
-					CivMessage.send(defenderResident, CivColor.LightGrayItalic+"Because you were hit in friendly-fire by a Cannon Tower, damage was reduced by 75%.");
+				if (defenderResident != null && defenderResident.hasTown() && defenderResident.getTown().getCiv() == pac.getTown().getCiv()) {
+					event.setDamage(pac.getDamage()/4); // friendly fire from towers reduced
+					CivMessage.send(defenderResident, CivColor.DarkGrayItalic+"Damage from a friendly-fire "+pac.getBuildable().getDisplayName()+" was reduced by 75%.");
 				} else {
-					event.setDamage(cfc.getFromTower().getDamage());
+					event.setDamage(pac.getDamage());
 				}
 				return;
 			}
@@ -443,20 +471,15 @@ public class BlockListener implements Listener {
 
 		coord.setFromLocation(event.getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
-		if (tc == null) {
-			return;
-		}
+		if (tc == null) return;
 
-		if (tc.perms.isMobs() == false) {
-			if (event.getSpawnReason().equals(SpawnReason.CUSTOM)) {
-				return;
-			}
-
-			if (CivSettings.restrictedSpawns.contains(event.getEntityType())) {
+		if (!tc.perms.isSpawnerMobs()) {
+			if (event.getSpawnReason().equals(SpawnReason.CUSTOM) || CivSettings.restrictedSpawns.contains(event.getEntityType()) ||
+					CivSettings.vanillaHostileMobs.contains(event.getEntityType())) {
 				event.setCancelled(true);
 				return;
 			}
-		}		
+		}
 	}
 
 
@@ -474,24 +497,30 @@ public class BlockListener implements Listener {
 
 		for (Block block : event.blockList()) {
 			bcoord.setFromLocation(block.getLocation());
+			CampBlock cb = CivGlobal.getCampBlock(bcoord);
+			if (cb != null) {
+				event.setCancelled(true);
+				return;
+			}
+			
 			StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
 			if (sb != null) {
 				event.setCancelled(true);
 				return;
 			}
-
+			
 			RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
 			if (rb != null) {
 				event.setCancelled(true);
 				return;
 			}
-
+			
 			StructureSign structSign = CivGlobal.getStructureSign(bcoord);
 			if (structSign != null) {
 				event.setCancelled(true);
 				return;
 			}
-
+			
 			StructureChest structChest = CivGlobal.getStructureChest(bcoord);
 			if (structChest != null) {
 				event.setCancelled(true);
@@ -503,9 +532,8 @@ public class BlockListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-
+			
 			coord.setFromLocation(block.getLocation());
-
 			HashSet<Wall> walls = CivGlobal.getWallChunk(coord);
 			if (walls != null) {
 				for (Wall wall : walls) {
@@ -515,16 +543,15 @@ public class BlockListener implements Listener {
 					}
 				}
 			}
-
+			
 			TownChunk tc = CivGlobal.getTownChunk(coord);
 			if (tc == null) {
 				continue;
 			}
-
+			
 			event.setCancelled(true);
 			return;
 		}
-
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -547,15 +574,11 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void OnBlockPlaceEvent(BlockPlaceEvent event) {
 		Resident resident = CivGlobal.getResident(event.getPlayer());
-
 		if (resident == null) {
 			event.setCancelled(true);
 			return;
 		}
-
-		if(resident.isSBPermOverride()) {
-			return;
-		}
+		if (resident.isSBPermOverride()) return;
 
 		bcoord.setFromLocation(event.getBlockAgainst().getLocation());
 		StructureSign sign = CivGlobal.getStructureSign(bcoord);
@@ -565,6 +588,13 @@ public class BlockListener implements Listener {
 		}
 
 		bcoord.setFromLocation(event.getBlock().getLocation());
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null && !cb.canBreak(event.getPlayer().getName())) {
+			event.setCancelled(true);
+			CivMessage.sendError(event.getPlayer(), "This block is part of camp "+cb.getCamp().getName()+" owned by "+cb.getCamp().getOwner().getName()+" and cannot be destroyed.");
+			return;
+		} 
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
 		if (sb != null) {
 			event.setCancelled(true);
@@ -592,7 +622,7 @@ public class BlockListener implements Listener {
 		}
 
 		if (tc != null) {	
-			if(!tc.perms.hasPermission(PlotPermissions.Type.BUILD, resident)) {
+			if(!tc.perms.hasPermission(PlotPermissions.PlotNodeType.BUILD, resident)) {
 				if (War.isWarTime() && resident.hasTown() && 
 						resident.getTown().getCiv().getDiplomacyManager().atWarWith(tc.getTown().getCiv())) {
 					if (WarRegen.canPlaceThisBlock(event.getBlock())) {
@@ -643,20 +673,30 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnBlockBreakEvent(BlockBreakEvent event) {
 		Resident resident = CivGlobal.getResident(event.getPlayer());
-
 		if (resident == null) {
 			CivMessage.send(event.getPlayer(), "Cannot break blocks, resident is null! Contact an admin.");
 			event.setCancelled(true);
 			return;
 		}
-
-		if (resident.isSBPermOverride()) {
-			return;
-		}
+		
+		if (resident.isSBPermOverride()) return;
 
 		bcoord.setFromLocation(event.getBlock().getLocation());
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null && !cb.canBreak(event.getPlayer().getName())) {
+			ControlPoint cBlock = cb.getCamp().controlBlocks.get(bcoord);
+			if (cBlock != null) {
+				cb.getCamp().onDamage(1, event.getBlock().getWorld(), event.getPlayer(), bcoord, null);
+				event.setCancelled(true);
+				return;
+			} else {	
+				event.setCancelled(true);
+				CivMessage.sendError(event.getPlayer(), "This block is part of camp "+cb.getCamp().getName()+" owned by "+cb.getCamp().getOwner().getName()+" and cannot be destroyed.");
+				return;
+			}
+		}
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
-
 		if (sb != null) {
 			event.setCancelled(true);
 			TaskMaster.syncTask(new StructureBlockHitEvent(event.getPlayer().getName(), bcoord, sb, event.getBlock().getWorld()), 0);
@@ -720,7 +760,7 @@ public class BlockListener implements Listener {
 						event.setCancelled(true);
 						return;
 					} else {
-						CivMessage.send(event.getPlayer(), CivColor.LightGray+"We destroyed a block protected by a wall. This was allowed because we're a member of "+
+						CivMessage.send(event.getPlayer(), CivColor.Gray+"We destroyed a block protected by a wall. This was allowed because we're a member of "+
 								resident.getTown().getCiv().getName());
 						break;
 					}
@@ -730,7 +770,7 @@ public class BlockListener implements Listener {
 
 		TownChunk tc = CivGlobal.getTownChunk(coord);
 		if (tc != null) {
-			if(!tc.perms.hasPermission(PlotPermissions.Type.DESTROY, resident)) {
+			if(!tc.perms.hasPermission(PlotPermissions.PlotNodeType.DESTROY, resident)) {
 				event.setCancelled(true);
 
 				if (War.isWarTime() && resident.hasTown() && 
@@ -763,11 +803,9 @@ public class BlockListener implements Listener {
 				}
 
 				double current = layer.current - Buildable.getReinforcementValue(ItemManager.getId(event.getBlock()));
-				if (current < 0) {
-					current = 0;
-				}
-				Double percentValid = (double)(current) / (double)layer.max;
-
+				if (current < 0) current = 0;
+				
+				Double percentValid = (double)(current) / (double)layer.total;
 				if (percentValid < Buildable.validPercentRequirement) {
 					CivMessage.sendError(event.getPlayer(), "Cannot break this block since it's supporting the "+buildable.getDisplayName()+" above it.");
 					event.setCancelled(true);
@@ -973,8 +1011,37 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockGrowEvent(BlockGrowEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation().add(0, -1, 0));
+		
 		// Allow vanilla growth on these plots
-		if (CivGlobal.vanillaGrowthLocations.contains(bcoord)) return;
+		if (CivGlobal.vanillaGrowthLocations.contains(bcoord)) {
+			if (CivGlobal.getCampBlock(bcoord) != null) {
+				Camp camp = CivGlobal.getCampBlock(bcoord).getCamp();
+				if (camp.hasUpgrade("camp_upgrade_second_garden")) {
+					Random rand = new Random();
+					if (rand.nextInt(100) < 25) { // 25% chance for extra crop growth with second camp upgrade
+						Crops crops = (Crops) event.getBlock().getState().getData();
+						if (crops.getItemType().equals(Material.CROPS) || crops.getItemType().equals(Material.CARROT) || crops.getItemType().equals(Material.POTATO)) {
+							if (crops.getState() == CropState.SEEDED) crops.setState(CropState.VERY_SMALL);
+							else if (crops.getState() == CropState.GERMINATED) crops.setState(CropState.SMALL);
+							else if (crops.getState() == CropState.VERY_SMALL) crops.setState(CropState.MEDIUM);
+							else if (crops.getState() == CropState.SMALL) crops.setState(CropState.TALL);
+							else if (crops.getState() == CropState.MEDIUM) crops.setState(CropState.VERY_TALL);
+							else if (crops.getState() == CropState.TALL) crops.setState(CropState.RIPE);
+							else if (crops.getState() == CropState.VERY_TALL) crops.setState(CropState.RIPE);
+							else if (crops.getState() == CropState.RIPE) return;
+							else CivLog.warning("Crop at "+bcoord.toString()+" tried to vanilla grow with invalid crop state?");
+						} else if (crops.getItemType().equals(Material.BEETROOT_BLOCK)) {
+							if (crops.getState() == CropState.SEEDED) crops.setState(CropState.TALL);
+							else if (crops.getState() == CropState.SMALL) crops.setState(CropState.RIPE);
+							else if (crops.getState() == CropState.TALL) crops.setState(CropState.RIPE);
+							else if (crops.getState() == CropState.RIPE) return;
+							else CivLog.warning("Crop at "+bcoord.toString()+" tried to vanilla grow with invalid crop state?");
+						}
+					}
+				}
+			}
+			return;
+		}
 		
 		Block b = event.getBlock();
 		Material t = b.getRelative(0, -1, 0).getType();
@@ -990,17 +1057,33 @@ public class BlockListener implements Listener {
 	
 	public void OnPlayerBedEnterEvent(PlayerBedEnterEvent event) {
 		Resident resident = CivGlobal.getResident(event.getPlayer().getName());
-
 		if (resident == null) {
 			event.setCancelled(true);
 			return;
-		}	
+		}
+		
+		coord.setFromLocation(event.getPlayer().getLocation());
+		Camp camp = CivGlobal.getCampChunk(coord);
+		if (camp != null) {
+			if (!camp.hasMember(resident.getName())) {
+				CivMessage.sendError(event.getPlayer(), "You cannot sleep in a bed of a camp you do not belong to.");
+				event.setCancelled(true);
+				return;
+			}
+		}
+		
+		TownChunk town = CivGlobal.getTownChunk(coord);
+		if (town != null) {
+			if (!town.getTown().hasResident(resident.getName())) {
+				CivMessage.sendError(event.getPlayer(), "You cannot sleep in a bed of a town you do not belong to.");
+				event.setCancelled(true);
+				return;
+			}
+		}
 	}
 
 	public static void OnPlayerSwitchEvent(PlayerInteractEvent event) {
-		if (event.getClickedBlock() == null) {
-			return;
-		}
+		if (event.getClickedBlock() == null) return;
 
 		Resident resident = CivGlobal.getResident(event.getPlayer().getName());
 		if (resident == null) {
@@ -1010,16 +1093,21 @@ public class BlockListener implements Listener {
 
 		bcoord.setFromLocation(event.getClickedBlock().getLocation());
 		coord.setFromLocation(event.getClickedBlock().getLocation());
-		TownChunk tc = CivGlobal.getTownChunk(coord);
-
-		if (tc == null) {
-			return;
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null && !resident.isPermOverride()) {
+			if (!cb.getCamp().hasMember(resident.getName())) {
+				CivMessage.sendError(event.getPlayer(), "You cannot interact with a camp you do not belong to.");
+				event.setCancelled(true);
+				return;
+			}
 		}
+		
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		if (tc == null) return;
 
 		if (resident.hasTown()) {
 			if (War.isWarTime()) {
-				if(tc.getTown().getCiv().getDiplomacyManager().atWarWith(resident.getTown().getCiv())) {
-
+				if (tc.getTown().getCiv().getDiplomacyManager().atWarWith(resident.getTown().getCiv())) {
 					switch (event.getClickedBlock().getType()) {
 					case TRAP_DOOR:
 					case IRON_TRAPDOOR:
@@ -1043,12 +1131,9 @@ public class BlockListener implements Listener {
 				}
 			}
 		}
-
-		event.getClickedBlock().getType();
-
-		if(!tc.perms.hasPermission(PlotPermissions.Type.INTERACT, resident)) {
+		
+		if(!tc.perms.hasPermission(PlotPermissions.PlotNodeType.INTERACT, resident)) {
 			event.setCancelled(true);
-
 			if (War.isWarTime() && resident.hasTown() && 
 					resident.getTown().getCiv().getDiplomacyManager().atWarWith(tc.getTown().getCiv())) {
 				WarRegen.destroyThisBlock(event.getClickedBlock(), tc.getTown());
@@ -1056,42 +1141,40 @@ public class BlockListener implements Listener {
 				CivMessage.sendErrorNoRepeat(event.getPlayer(), "You do not have permission to interact with "+event.getClickedBlock().getType().toString()+" here.");
 			}
 		}
-
 		return;
 	}
 
 	private void OnPlayerUseItem(PlayerInteractEvent event) {
 		Location loc = (event.getClickedBlock() == null) ? 
-				event.getPlayer().getLocation() : 
-				event.getClickedBlock().getLocation();
-
+				event.getPlayer().getLocation() : event.getClickedBlock().getLocation();
 		ItemStack stack = event.getItem();
 
 		coord.setFromLocation(event.getPlayer().getLocation());
-		TownChunk tc = CivGlobal.getTownChunk(loc);
-		if (tc == null) {
-			return;
+		Camp camp = CivGlobal.getCampChunk(coord);
+		if (camp != null) {
+			if (!camp.hasMember(event.getPlayer().getName())) {
+				CivMessage.sendError(event.getPlayer(), "You cannot use "+stack.getType().toString()+" in a camp you do not belong to.");
+				event.setCancelled(true);
+				return;
+			}
 		}
+		
+		TownChunk tc = CivGlobal.getTownChunk(loc);
+		if (tc == null) return;
 
 		Resident resident = CivGlobal.getResident(event.getPlayer().getName());
-
-		if (resident == null) {
-			event.setCancelled(true);
-		}
-
-		if(!tc.perms.hasPermission(PlotPermissions.Type.ITEMUSE, resident)) {
+		if (resident == null) event.setCancelled(true);
+		
+		if(!tc.perms.hasPermission(PlotPermissions.PlotNodeType.ITEMUSE, resident)) {
 			event.setCancelled(true);
 			CivMessage.sendErrorNoRepeat(event.getPlayer(), "You do not have permission to use "+stack.getType().toString()+" here.");
 		}
-
 		return;
 	}
 
-	/*
-	* Handles rotating of itemframes
-	*/
+	// Handles rotating of itemframes
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void OnPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
+	public void OnPlayerInteractEntityEvent(PlayerInteractEntityEvent event) throws CivException {
 		Player p = event.getPlayer();
 		Resident resident = CivGlobal.getResident(p.getName());
 		if (resident == null) {
@@ -1102,13 +1185,63 @@ public class BlockListener implements Listener {
 		//XXX Villager Clicking
 		if (event.getRightClicked().getType().equals(EntityType.VILLAGER)) {
 			Villager v = (Villager) event.getRightClicked();
-			event.setCancelled(true);
-			
-			if (v.getCustomName() == null) return;
-			
+			event.setCancelled(true); // Disable non-vanilla villagers
 			String vn = v.getCustomName();
-			Buildable buildable = CivGlobal.getNearestBuildable(p.getLocation());
+			Location ploc = p.getLocation();
 			
+			// If villager is vanilla (or not civcraft related), we will allow it to be used.
+			if (CivGlobal.getVillagerByUUID(v.getUniqueId()) == null) {
+				if (vn == null) {
+					event.setCancelled(false);
+					return;
+				}
+				
+				// For some reason we need to test camps first? THEN we can allow regular villager use.
+				if (vn.contains("Camp")) {
+					Camp camp = CivGlobal.getCampChunk(ploc);
+					if (camp != null) {
+						String vilKey = camp.getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+						if (CivGlobal.getCivVillager(vilKey) != null) {
+							if (vn.contains("Camp Manager")) {
+								camp.openMainMenuGUI(p, camp);
+								return;
+							}
+						}
+					}
+				}
+				event.setCancelled(false);
+				return;
+			}
+			
+			CultureChunk cc = CivGlobal.getCultureChunk(ploc);
+			if (cc == null) {
+				CivMessage.sendError(p, "You are standing in a null culture chunk, cannot use villagers here.");
+				return;
+			}
+			
+			Town town = cc.getTown();
+			if (vn.contains("Bank Teller")) {
+				Bank bank = (Bank) town.getStructureAtLocationByType(ploc, "s_bank");
+				if (bank != null) {
+					bank.openBankSellGUI(p, town); return;
+				} else {
+					CivMessage.sendError(p, "There is not a Bank for the town you are standing in.");
+					return;
+				}
+			}
+			
+//			ArrayList<Buildable> nearest_structures = CivGlobal.getNearestBuildables(p.getLocation(), 16);
+			if (vn.contains("Grinder Manager")) {
+				MobGrinder mg = (MobGrinder) town.getStructureAtLocationByType(ploc, "s_mob_grinder");
+				if (mg != null) {
+					mg.openGrinderMainMenuGUI(p, town); return;
+				} else {
+					CivMessage.sendError(p, "There is not a Mob Grinder for the town you are standing in.");
+					return;
+				}
+			}
+			
+			Buildable buildable = CivGlobal.getNearestBuildable(ploc);
 			// Structures w/out town restrictions here, or have new Buildable.validatePlayerGUI component
 			if (buildable instanceof Market) {
 				Market m = (Market) buildable;
@@ -1117,8 +1250,8 @@ public class BlockListener implements Listener {
 				}
 			}
 			
-			TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
-			if(tc != null && !tc.perms.hasPermission(PlotPermissions.Type.INTERACT, resident)) {
+			TownChunk tc = CivGlobal.getTownChunk(ploc);
+			if(tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.INTERACT, resident)) {
 				CivMessage.sendError(resident, "You do not have permission to access this villager.");
 				return;
 			}
@@ -1136,11 +1269,6 @@ public class BlockListener implements Listener {
 				if (vn.contains("Quest Viewer")) {
 					TownHall th = (TownHall) buildable;
 					th.openTownQuestGUI(p, th.getTown());
-				}
-			} else if (buildable instanceof Bank) {
-				Bank b = (Bank) buildable;
-				if (vn.contains("Bank Teller")) {
-					b.openToolGUI(p, b.getTown());
 				}
 			} else if (buildable instanceof Granary) {
 				Granary g = (Granary) buildable;
@@ -1208,7 +1336,6 @@ public class BlockListener implements Listener {
 
 		ItemStack inHand = p.getInventory().getItemInMainHand();
 			if (inHand != null) {
-
 				boolean denyBreeding = false;
 				switch (event.getRightClicked().getType()) {
 				case COW:
@@ -1255,7 +1382,6 @@ public class BlockListener implements Listener {
 				if (denyBreeding) {
 					ChunkCoord coord = new ChunkCoord(event.getPlayer().getLocation());
 					Pasture pasture = Pasture.pastureChunks.get(coord);
-
 					if (pasture == null) {
 						CivMessage.sendError(p, "You cannot breed mobs in the wild, take them to a pasture.");
 						event.setCancelled(true);
@@ -1280,18 +1406,14 @@ public class BlockListener implements Listener {
 
 		coord.setFromLocation(p.getLocation());
 		TownChunk tc = CivGlobal.getTownChunk(coord);
-		if (tc == null) {
-			return;
-		}
+		if (tc == null) return;
 
-		if(!tc.perms.hasPermission(PlotPermissions.Type.INTERACT, resident)) {
+		if(!tc.perms.hasPermission(PlotPermissions.PlotNodeType.INTERACT, resident)) {
 			event.setCancelled(true);
 			CivMessage.sendErrorNoRepeat(p, "You do not have permission to interact with this painting/itemframe.");
 		}
-
 	}
-
-
+	
 	/*
 	* Handles breaking of paintings and itemframes.
 	*/
@@ -1353,21 +1475,15 @@ public class BlockListener implements Listener {
 				event.setCancelled(true);
 			}
 
-			if (!tc.perms.hasPermission(PlotPermissions.Type.DESTROY, resident)) {
+			if (!tc.perms.hasPermission(PlotPermissions.PlotNodeType.DESTROY, resident)) {
 				event.setCancelled(true);
 				CivMessage.sendErrorNoRepeat(player, "You do not have permission to destroy here.");
 			}
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
-	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onChunkLoadEvent(ChunkLoadEvent event) {
-		MobSpawner.despawnAllHostileInChunk(null, event.getChunk(), false);
 		ChunkCoord coord = new ChunkCoord(event.getChunk());
 		FarmChunk fc = CivGlobal.getFarmChunk(coord);
 		if (fc == null) return;
@@ -1390,57 +1506,90 @@ public class BlockListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDeath(EntityDeathEvent event) {
-		Pasture pasture = Pasture.pastureEntities.get(event.getEntity().getUniqueId());
-		if (pasture != null) {
-			pasture.onEntityDeath(event.getEntity());
-		}
+	public void onEntityDeath(EntityDeathEvent event) throws CivException {
+		LivingEntity ent = event.getEntity();
+		Pasture pasture = Pasture.pastureEntities.get(ent.getUniqueId());
+		if (pasture != null) pasture.onEntityDeath(ent);
 		
-		if (!ConfigTempleSacrifice.isValidEntity(event.getEntityType())) {
-			return;
-		}
-
-		/* Check if we're 'inside' a temple. */
-		bcoord.setFromLocation(event.getEntity().getLocation());
-		HashSet<Buildable> buildables = CivGlobal.getBuildablesAt(bcoord);
-		if (buildables == null) return;
-
-		for (Buildable buildable : buildables) {
-			if (buildable instanceof Temple) {
-				if (buildable.getCorner().getY() <= event.getEntity().getLocation().getBlockY()) {
-					/* We're 'above' the temple. Good enough. */
-					((Temple)buildable).onEntitySacrifice(event.getEntityType());
+		if (!ConfigTempleSacrifice.isValidEntity(ent.getType())) return;
+		// Check if we're 'inside' a temple.
+		bcoord.setFromLocation(ent.getLocation());
+		
+		if (CivGlobal.getBuildablesAt(bcoord) != null)
+			for (Buildable bld : CivGlobal.getBuildablesAt(bcoord)) {
+				if (bld instanceof Temple) {
+					if (bld.getCorner().getY() <= ent.getLocation().getBlockY() &&
+							(((bld.getCenterLoc().getY()-bld.getCorner().getY())*2)+(bld.getCorner().getY()+1)) >= ent.getLocation().getBlockY()) {
+						// We're 'above' the temple. Good enough
+						((Temple)bld).onEntitySacrifice(ent.getType());
+					}
 				}
 			}
-		}
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
-		if (CivSettings.restrictedSpawns.contains(event.getEntity().getType())) {
-			if (event.getSpawnReason() == SpawnReason.NATURAL) {
-				event.setCancelled(true);
-				return;
-			}
+		EntityType type = event.getEntityType();
+		SpawnReason reason = event.getSpawnReason();
+		if (reason == SpawnReason.CUSTOM) {
+			event.setCancelled(false);
+			return;
 		}
 		
-		if (War.isWarTime() && !event.getEntity().getType().equals(EntityType.HORSE)) {
-			if (!event.getSpawnReason().equals(SpawnReason.BREEDING)) {
-				event.setCancelled(true);
-				return;
-			}
-		}
-		
-		if (event.getSpawnReason().equals(SpawnReason.JOCKEY)) {
+		if (CivSettings.restrictedSpawns.contains(event.getEntity().getType()) && reason == SpawnReason.NATURAL) {
 			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.CHICKEN)) {
-			if (event.getSpawnReason().equals(SpawnReason.EGG) || event.getSpawnReason().equals(SpawnReason.DISPENSE_EGG)) {
+		if (CivSettings.vanillaHostileMobs.contains(event.getEntity().getType()) && reason == SpawnReason.NATURAL) {
+			if (event.getLocation().getBlock().getLightFromSky() < 7 && event.getLocation().getBlock().getLightFromBlocks() < 7) {
+				event.setCancelled(false);
+				return;
+			} else {
+				event.setCancelled(true);
+				return;
+			}
+		}
+		
+		if (War.isWarTime() && (type != EntityType.HORSE || reason.equals(SpawnReason.SPAWNER))) {
+			if (reason != SpawnReason.BREEDING) {
+				event.setCancelled(true);
+				return;
+			}
+		}
+		
+		if (reason.equals(SpawnReason.SPAWNER)) {
+			TownChunk tc = CivGlobal.getTownChunk(event.getLocation());
+			if (tc != null && !tc.perms.isSpawnerMobs()) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			if (type == EntityType.VEX) { // Fix for slime spawners not working
+				event.setCancelled(true);
+				CraftWorld world = (CraftWorld) event.getLocation().getWorld(); 
+				Entity ent = (Entity) world.createEntity(event.getLocation(), EntityType.SLIME.getEntityClass());
+				EntitySlime s = (EntitySlime) ent;
+				Random rand = new Random();
+				s.setSize(rand.nextInt(2)+1, true);
+				world.addEntity((Entity) ent, SpawnReason.CUSTOM);
+				return;
+			} else {
+				event.setCancelled(false);
+				return;
+			}
+		}
+		
+		if (reason.equals(SpawnReason.JOCKEY)) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (type == EntityType.CHICKEN) {
+			if (reason == SpawnReason.EGG || reason == SpawnReason.DISPENSE_EGG) {
 				Random rand = new Random();
 				int chance = rand.nextInt(100);
-				if (chance < 20) {
+				if (chance < 25) {
 					event.setCancelled(false);
 					return;
 				} else {
@@ -1456,84 +1605,53 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.IRON_GOLEM) && event.getSpawnReason().equals(SpawnReason.BUILD_IRONGOLEM)) {
+		if (type == EntityType.IRON_GOLEM && reason == SpawnReason.BUILD_IRONGOLEM) {
 			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.SNOWMAN) && event.getSpawnReason().equals(SpawnReason.BUILD_SNOWMAN)) {
+		if (type == EntityType.SNOWMAN && reason == SpawnReason.BUILD_SNOWMAN) {
 			event.setCancelled(true);
 			return;
 		}
 		
-//		if (event.getEntity().getType().equals(EntityType.SILVERFISH) && event.getSpawnReason().equals(SpawnReason.SILVERFISH_BLOCK)) {
+//		if (type == EntityType.SILVERFISH && reason == SpawnReason.SILVERFISH_BLOCK) {
 //			event.setCancelled(true);
 //			return;
 //		}
 		
-		if (event.getEntity().getType().equals(EntityType.PIG_ZOMBIE) && event.getSpawnReason().equals(SpawnReason.NETHER_PORTAL)) {
+		if (type == EntityType.PIG_ZOMBIE && reason == SpawnReason.NETHER_PORTAL) {
 			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getEntity().getType().equals(EntityType.WITHER) && event.getSpawnReason().equals(SpawnReason.BUILD_WITHER)) {
+		if (type == EntityType.WITHER && reason == SpawnReason.BUILD_WITHER) {
 			event.setCancelled(true);
 			return;
 		}
 		
-//		if (event.getEntity().getType().equals(EntityType.ENDERMITE) && event.getSpawnReason().equals(SpawnReason.ENDER_PEARL)) {
-//			event.setCancelled(true);
-//			return;
-//		}
-		
-		//False, we want them to be cute to players
-		if (event.getEntity().getType().equals(EntityType.SLIME) && event.getSpawnReason().equals(SpawnReason.SLIME_SPLIT)) {
-			event.setCancelled(false);
-			return;
-		}
-		
-//		if (event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
-//			event.setCancelled(true);
-//			return;
-//		}
-		
-		if (event.getSpawnReason() == SpawnReason.CUSTOM) {
-			event.setCancelled(false);
-			return;
-		}
-		
-		LivingEntity ent = event.getEntity();
-		if (event.getEntity().getType().equals(EntityType.BAT) ||
-				ent.getType().equals(EntityType.WITCH) ||
-				ent.getType().equals(EntityType.GUARDIAN) ||
-//				ent.getType().equals(EntityType.ZOMBIE) ||
-				ent.getType().equals(EntityType.SKELETON) ||
-				ent.getType().equals(EntityType.CREEPER) ||
-				ent.getType().equals(EntityType.SPIDER) ||
-				ent.getType().equals(EntityType.CAVE_SPIDER) ||
-//				ent.getType().equals(EntityType.SILVERFISH) ||
-				ent.getType().equals(EntityType.ENDERMITE) ||
-				ent.getType().equals(EntityType.ENDERMAN) ||
-				ent.getType().equals(EntityType.WOLF) ||
-				ent.getType().equals(EntityType.OCELOT) ||
-				ent.getType().equals(EntityType.IRON_GOLEM) ||
-				
-				ent.getType().equals(EntityType.SHULKER) ||
-				ent.getType().equals(EntityType.GUARDIAN) ||
-				ent.getType().equals(EntityType.POLAR_BEAR) ||
-				
-				ent.getType().equals(EntityType.PIG_ZOMBIE) ||
-				ent.getType().equals(EntityType.MAGMA_CUBE) ||
-				ent.getType().equals(EntityType.GHAST) ||
-				ent.getType().equals(EntityType.BLAZE)) {
+		if (type == EntityType.ENDERMITE && reason == SpawnReason.ENDER_PEARL) {
 			event.setCancelled(true);
 			return;
 		}
+		
+/*		//False, we want them to be cute to players
+		if (event.getEntity().getType().equals(EntityType.SLIME)) {
+			if (type == SpawnReason.SLIME_SPLIT || reason == SpawnReason.NATURAL) {
+				event.setCancelled(false);
+				return;
+			}
+		}*/
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onEntityBreakDoor(EntityBreakDoorEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation());
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null) {
+			event.setCancelled(true);
+		}
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
 		if (sb != null) {
 			event.setCancelled(true);
@@ -1542,15 +1660,14 @@ public class BlockListener implements Listener {
 
 	public boolean allowPistonAction(Location loc) {
 		bcoord.setFromLocation(loc);
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null) return false;
+		
 		StructureBlock sb = CivGlobal.getStructureBlock(bcoord);
-		if (sb != null) {
-			return false;
-		}
+		if (sb != null) return false;
 
 		RoadBlock rb = CivGlobal.getRoadBlock(bcoord);
-		if (rb != null) {
-			return false;
-		}
+		if (rb != null) return false;
 
 		/* 
 		* If we're next to an attached protected item frame. Disallow 
@@ -1722,6 +1839,21 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL) 
 	public void onBlockRedstoneEvent(BlockRedstoneEvent event) {
 		bcoord.setFromLocation(event.getBlock().getLocation());
+		CampBlock cb = CivGlobal.getCampBlock(bcoord);
+		if (cb != null) {
+			if (ItemManager.getId(event.getBlock()) == CivData.WOOD_DOOR || ItemManager.getId(event.getBlock()) == CivData.IRON_DOOR ||
+				ItemManager.getId(event.getBlock()) == CivData.SPRUCE_DOOR ||ItemManager.getId(event.getBlock()) == CivData.BIRCH_DOOR ||
+				ItemManager.getId(event.getBlock()) == CivData.JUNGLE_DOOR || ItemManager.getId(event.getBlock()) == CivData.ACACIA_DOOR ||
+				ItemManager.getId(event.getBlock()) == CivData.DARK_OAK_DOOR || ItemManager.getId(event.getBlock()) == CivData.OAK_GATE ||
+				ItemManager.getId(event.getBlock()) == CivData.SPRUCE_GATE || ItemManager.getId(event.getBlock()) == CivData.BIRCH_GATE ||
+				ItemManager.getId(event.getBlock()) == CivData.JUNGLE_GATE || ItemManager.getId(event.getBlock()) == CivData.ACACIA_DOOR ||
+				ItemManager.getId(event.getBlock()) == CivData.DARK_OAK_GATE || ItemManager.getId(event.getBlock()) == CivData.TRAPDOOR ||
+				ItemManager.getId(event.getBlock()) == CivData.IRON_TRAPDOOR) {
+				event.setNewCurrent(0);
+				return;
+			}
+		}
+		
 		if (War.isWarTime()) {
 			event.setNewCurrent(0);
 			return;

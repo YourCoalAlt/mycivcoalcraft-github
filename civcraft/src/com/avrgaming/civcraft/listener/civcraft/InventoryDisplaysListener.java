@@ -66,33 +66,34 @@ public class InventoryDisplaysListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		Resident res = CivGlobal.getResident(p);
+		String invName = event.getInventory().getName();
+		
+		if (invName.contains(res.getName()+" Mail Menu [R]")) this.clickResMainMailMenu(p, event);
+		if (invName.contains(res.getName()+" View Mail [R]")) this.clickResViewMailMenu(p, event);
+		if (invName.contains("[RR] Mail ")) this.clickResReadMailMenu(p, event);
+		
 		if (!res.hasTown() || res == null) return;
 		
-		if (event.getInventory().getName().contains(res.getName()+" Mail Menu [R]")) this.clickResMainMailMenu(p, event);
-		if (event.getInventory().getName().contains(res.getName()+" View Mail [R]")) this.clickResViewMailMenu(p, event);
-		if (event.getInventory().getName().contains("[RR] Mail ")) this.clickResReadMailMenu(p, event);
+		if (invName.contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
 		
-		if (event.getInventory().getName().contains("Spy Mission Menu")) this.clickSpyMissionMenu(p, event);
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Quest Viewer")) this.clickTownQuestViewer(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Town Info")) this.clickTownInfoViewer(p, event);
+		if (invName.contains("Stat Information") || invName.contains("Town-Applied Buffs") || invName.contains("Building Support")) this.clickTownStatRegister(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Building Support")) this.clickBuildSupport(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Town Info")) this.clickTownInfoViewer(p, event);
-		if (event.getInventory().getName().contains("Stat Information")  || event.getInventory().getName().contains("Town-Applied Buffs")  ||
-				event.getInventory().getName().contains("Building Support")) this.clickTownStatRegister(p, event);
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Building Support")) this.clickBuildSupport(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) this.clickUnitUpgrade(p, event);
+		if (invName.contains("Repair Master")) this.clickBarracksRepair(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Barracks Unit Upgrade Menu")) this.clickUnitUpgrade(p, event);
-		if (event.getInventory().getName().contains("Repair Master")) this.clickBarracksRepair(p, event);
+		if (invName.contains("Global Market Menu")) this.clickMarketMenu(p, event);
+		if (invName.contains("Market Trade ")) this.clickMarketItem(p, event);
+		if (invName.contains("Grocer Menu")) this.clickGrocerItem(p, event);
 		
-		if (event.getInventory().getName().contains("Global Market Menu")) this.clickMarketMenu(p, event);
-		if (event.getInventory().getName().contains("Market Trade ")) this.clickMarketItem(p, event);
-		if (event.getInventory().getName().contains("Grocer Menu")) this.clickGrocerItem(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Warehouse Guide")) this.clickWarehouseToggle(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Smelter Operator"))	this.clickBlacksmithSmelter(p, event);
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Smelter Operator"))	this.clickBlacksmithSmelter(p, event);
-		
-		if (event.getInventory().getName().contains("Windmill Menu")) this.clickWindmillPlant(p, event);
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Food Storage")) {
+		if (invName.contains("Windmill Menu")) this.clickWindmillPlant(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Food Storage")) {
 			event.setCancelled(true);
 			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 				return;
@@ -133,7 +134,7 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		}
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Granary Tasks")) {
+		if (invName.contains(res.getTown().getName()+"'s Granary Tasks")) {
 			event.setCancelled(true);
 			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 				return;
@@ -179,8 +180,8 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		}
 		
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Mine Tasks"))	this.clickMineTask1(p, event);
-		if (event.getInventory().getName().contains(res.getTown().getName()+"'s Lab Tasks"))	this.clickLabTask1(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Mine Tasks"))	this.clickMineTask1(p, event);
+		if (invName.contains(res.getTown().getName()+"'s Lab Tasks"))	this.clickLabTask1(p, event);
 	}
 	
 	public void clickTownInfoViewer(Player p, InventoryClickEvent event) {
@@ -378,7 +379,7 @@ public class InventoryDisplaysListener implements Listener {
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
 		
 		Resident res = CivGlobal.getResident(p);
-		Market s = (Market) res.getTown().getStructureByType("s_market");
+		Market s = (Market) res.getTown().getStructureAtLocationByType(p.getLocation(), "s_market");
 		if (s == null) { CivMessage.sendError(p, "Your town does not have a market... cannot use one until then!"); event.setCancelled(true); }
 		for (ConfigMarketItem m : CivSettings.marketItems.values()) {
 			if (ItemManager.getId(event.getCurrentItem()) == m.type_id && ItemManager.getData(event.getCurrentItem()) == m.data &&
@@ -392,7 +393,7 @@ public class InventoryDisplaysListener implements Listener {
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
 		
 		Resident res = CivGlobal.getResident(p);
-		Market s = (Market) res.getTown().getStructureByType("s_market");
+		Market s = (Market) res.getTown().getStructureAtLocationByType(p.getLocation(), "s_market");
 		if (s == null) { CivMessage.sendError(p, "Your town does not have a market... cannot use one until then!"); event.setCancelled(true); }
 		
 		ConfigMarketItem m = null;
@@ -447,7 +448,7 @@ public class InventoryDisplaysListener implements Listener {
 		if (event.getCurrentItem().getType() == Material.PAPER && event.getInventory().getItem(0).getType() == Material.PAPER) event.setCancelled(true);
 		
 		Resident res = CivGlobal.getResident(p);
-		Market s = (Market) res.getTown().getStructureByType("s_market");
+		Market s = (Market) res.getTown().getStructureAtLocationByType(p.getLocation(), "s_market");
 		if (s == null) { CivMessage.sendError(p, "Your town does not have a Market... cannot use one until then!"); event.setCancelled(true); }
 		
 		ConfigGrocerLevel g = null;
@@ -860,7 +861,7 @@ public class InventoryDisplaysListener implements Listener {
 		}		
 		
 		//Bank Inv
-		if (inv.getName().contains("'s Bank Desk")) {
+		if (inv.getName().contains("Bank Desk")) {
 			this.sellBankItems(p, inv);
 		}
 		
@@ -978,7 +979,7 @@ public class InventoryDisplaysListener implements Listener {
 				CivMessage.sendError(p, "You need to deposit bread in order to do a granary task!");
 			}
 			
-			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 		}
 	}
 	
@@ -1017,7 +1018,7 @@ public class InventoryDisplaysListener implements Listener {
 				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
-			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 		}
 	}
 	
@@ -1144,7 +1145,7 @@ public class InventoryDisplaysListener implements Listener {
 			CivMessage.sendError(p, "Please insert items in order to store them.");
 		}*/
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	public void checkTownBuildingSupport(Player p, Inventory inv) {
@@ -1205,14 +1206,18 @@ public class InventoryDisplaysListener implements Listener {
 			CivMessage.sendTown(t, "Added "+gravel+" gravel to town, thanks to "+p.getName()+"! We now have a total of "+t.getSupportDeposit()+" blocks stored.");
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	public void sellBankItems(Player p, Inventory inv) {
 		Resident res = CivGlobal.getResident(p);
-		Bank bank = (Bank) res.getTown().getStructureByType("s_bank");
+		CultureChunk cc = CivGlobal.getCultureChunk(p.getLocation());
+		if (cc == null) {
+			CivMessage.sendError(p, "Illegal bank access! Culture borders do not exist where you stand."); p.closeInventory(); return;
+		}
+		Bank bank = (Bank) cc.getTown().getStructureAtLocationByType(p.getLocation(), "s_bank");
 		if (bank == null) {
-			CivMessage.sendError(p, "Bank null? Contact an admin if this is wrong!"); p.closeInventory();
+			CivMessage.sendError(p, "Illegal Bank access! You are not standing inside a Bank."); p.closeInventory(); return;
 		}
 		
 		Town bTown = bank.getTown();
@@ -1259,9 +1264,8 @@ public class InventoryDisplaysListener implements Listener {
 						res.getTreasury().deposit(sold);
 						CivMessage.send(res, CivColor.LightGreen + "Exchanged "+mats.get(g)+" "+name+" for "+sold+ " coins at "+bank.getExchangeRateString()+" rate.");
 					} else { // non-resident must pay the town's non-resident tax
-						int giveToPlayer = (int)(mats.get(g)*(sold));
-						int giveToTown = (int)(giveToPlayer*bank.getNonResidentFee());
-						giveToPlayer -= giveToTown;
+						int giveToTown = (int)(sold*bank.getNonResidentFee());
+						int giveToPlayer = (int) (sold-giveToTown);
 						
 						bTown.deposit(giveToTown);
 						res.getTreasury().deposit(giveToPlayer);
@@ -1272,7 +1276,7 @@ public class InventoryDisplaysListener implements Listener {
 			}
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	
@@ -1363,15 +1367,19 @@ public class InventoryDisplaysListener implements Listener {
 			bs.depositSmelt(p, Material.CACTUS, cactusGiven, 2);
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	
 	public void repairItem(Player p, Inventory inv, InventoryCloseEvent event) {
 		Resident res = CivGlobal.getResident(p);
-		Barracks b = (Barracks) res.getTown().getStructureByType("s_barracks");
+		CultureChunk cc = CivGlobal.getCultureChunk(p.getLocation());
+		if (cc == null) {
+			CivMessage.sendError(p, "Illegal Bank access! Culture borders do not exist where you stand."); p.closeInventory(); return;
+		}
+		Barracks b = (Barracks) cc.getTown().getStructureAtLocationByType(p.getLocation(), "s_barracks");
 		if (b == null) {
-			CivMessage.sendError(p, "Barracks null? Contact an admin if this is wrong!"); p.closeInventory();
+			CivMessage.sendError(p, "Illegal Barracks access! You are not standing inside a Barracks."); p.closeInventory(); return;
 		}
 		
 		boolean addedNotRequiredItems = false;
@@ -1413,7 +1421,7 @@ public class InventoryDisplaysListener implements Listener {
 			CivMessage.sendError(p, "Please insert an item to repair! (If an item did not repair, re-check the requirements of repairing.)");
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	
@@ -1583,7 +1591,7 @@ public class InventoryDisplaysListener implements Listener {
 			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	
@@ -1753,7 +1761,7 @@ public class InventoryDisplaysListener implements Listener {
 			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");
 		}
 		
-		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 	
 	
@@ -1865,7 +1873,7 @@ public class InventoryDisplaysListener implements Listener {
 			}*/
 		}
 		
-//		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.LightGrayItalic+"We dropped non-required items back on the ground.");
+//		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
 	}
 }
 

@@ -21,6 +21,7 @@ package com.avrgaming.civcraft.questions;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.exception.AlreadyRegisteredException;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
@@ -35,7 +36,7 @@ public class JoinTownResponse implements QuestionResponseInterface {
 	@Override
 	public void processResponse(String param) {
 		if (param.equalsIgnoreCase("accept")) {
-			CivMessage.send(sender, CivColor.LightGray+resident.getName()+" accepted our town invitation.");
+			CivMessage.send(sender, CivColor.Gray+resident.getName()+" accepted our town invitation.");
 			
 			try {
 				town.addResident(resident);
@@ -43,11 +44,14 @@ public class JoinTownResponse implements QuestionResponseInterface {
 				CivMessage.sendError(sender, resident.getName()+" is already a town member.");
 				return;
 			}
-
+			CivCraft.playerTagUpdate();
 			CivMessage.sendTown(town, resident.getName()+" has joined the town.");
+			for (Town t : town.getCiv().getTowns()) {
+				t.getCivMemberGroup().addMember(resident);
+			}
 			resident.save();
 		} else {
-			CivMessage.send(sender, CivColor.LightGray+resident.getName()+" denied our town invitation.");
+			CivMessage.send(sender, CivColor.Gray+resident.getName()+" denied our town invitation.");
 		}
 	}
 	

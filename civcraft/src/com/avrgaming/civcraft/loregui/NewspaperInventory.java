@@ -39,7 +39,7 @@ public class NewspaperInventory implements GuiAction {
 			List<String> bnl = new ArrayList<>();
 			for (String line : news.breakingNews.keySet()) {
 				if (news.breakingNews.get("1").contains("noreport")) {
-					bnl.add(CivColor.LightGray+"No Reports ;");
+					bnl.add(CivColor.Gray+"No Reports ;");
 					continue;
 				}
 				String ln = news.breakingNews.get(line)+" ;";
@@ -49,7 +49,7 @@ public class NewspaperInventory implements GuiAction {
 			List<String> gdl = new ArrayList<>();
 			for (String line : news.gamedevNews.keySet()) {
 				if (news.gamedevNews.get("1").contains("noreport")) {
-					bnl.add(CivColor.LightGray+"No Reports ;");
+					bnl.add(CivColor.Gray+"No Reports ;");
 					continue;
 				}
 				String ln = news.gamedevNews.get(line)+" ;";
@@ -59,7 +59,7 @@ public class NewspaperInventory implements GuiAction {
 			List<String> gl = new ArrayList<>();
 			for (String line : news.generalNews.keySet()) {
 				if (news.generalNews.get("1").contains("noreport")) {
-					bnl.add(CivColor.LightGray+"No Reports ;");
+					bnl.add(CivColor.Gray+"No Reports ;");
 					continue;
 				}
 				String ln = news.generalNews.get(line)+" ;";
@@ -87,7 +87,7 @@ public class NewspaperInventory implements GuiAction {
 //			CivMessage.send(p, loreReq.split(";"));
 			
 			ItemStack is;
-			is = LoreGuiItem.build(CivColor.BOLD+news.headline, news.itemId, news.itemData, loreReq.split(";"));
+			is = LoreGuiItem.build(CivColor.Bold+news.headline, news.itemId, news.itemData, loreReq.split(";"));
 			guiInventory.setItem(news.guiData, is);
 		}
 		
@@ -95,7 +95,7 @@ public class NewspaperInventory implements GuiAction {
 		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.guiInventory.getName());
+		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
 		guiInventory.setItem((9*3)-1, backButton);
 		
 		LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);

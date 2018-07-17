@@ -54,6 +54,7 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.Town;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.randomevents.ConfigRandomEvent;
 import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.template.Template;
@@ -90,6 +91,10 @@ public class CivSettings {
 	public static Map<Integer, ConfigTownLevel> townLevels = new HashMap<Integer, ConfigTownLevel>();
 	public static Map<String, ConfigTownUpgrade> townUpgrades = new TreeMap<String, ConfigTownUpgrade>();
 	
+	public static FileConfiguration campConfig; /* camp.yml */
+	public static Map<Integer, ConfigCampLonghouseLevel> longhouseLevels = new HashMap<Integer, ConfigCampLonghouseLevel>();
+	public static Map<String, ConfigCampUpgrade> campUpgrades = new HashMap<String, ConfigCampUpgrade>();
+	
 	public static FileConfiguration civConfig; /* civ.yml */
 	public static Map<String, ConfigEndCondition> endConditions = new HashMap<String, ConfigEndCondition>();
 	
@@ -102,7 +107,7 @@ public class CivSettings {
 	public static Map<String, ConfigEXPMining> resxpMiningBlocks = new HashMap<String, ConfigEXPMining>();
 	
 	public static FileConfiguration mobConfig; /* mobs.yml */
-	public static Map<String, ConfigCustomMobs> customMobs = new HashMap<String, ConfigCustomMobs>();
+	public static Map<String, ConfigMobsCustom> customMobs = new HashMap<String, ConfigMobsCustom>();
 	
 	public static FileConfiguration structureConfig; /* structures.yml */
 	public static Map<String, ConfigBuildableInfo> structures = new HashMap<String, ConfigBuildableInfo>();
@@ -157,6 +162,7 @@ public class CivSettings {
 	public static Map<Material, Integer> restrictedItems = new HashMap<Material, Integer>();
 	public static Map<Material, Integer> blockPlaceExceptions =  new HashMap<Material, Integer>();
 	public static ArrayList<EntityType> restrictedSpawns = new ArrayList<EntityType>();
+	public static ArrayList<EntityType> vanillaHostileMobs = new ArrayList<EntityType>();
 	public static HashSet<EntityType> playerEntityWeapons = new HashSet<EntityType>();
 	public static HashSet<Integer> alwaysCrumble = new HashSet<Integer>();
 	
@@ -225,6 +231,7 @@ public class CivSettings {
 		initRestrictedUndoBlocks();
 		initSwitchItems();
 		initRestrictedSpawns();
+		initVanillaHostileMobs();
 		initBlockPlaceExceptions();
 		initPlayerEntityWeapons();
 		
@@ -283,7 +290,7 @@ public class CivSettings {
 		alwaysCrumble.add(CivData.LAPIS_ORE);
 		alwaysCrumble.add(CivData.GOLD_BLOCK);
 		alwaysCrumble.add(CivData.IRON_BLOCK);
-		alwaysCrumble.add(CivData.SPAWNER);
+		alwaysCrumble.add(CivData.MOB_SPAWNER);
 		alwaysCrumble.add(CivData.DIAMOND_ORE);
 		alwaysCrumble.add(CivData.DIAMOND_BLOCK);
 		alwaysCrumble.add(CivData.REDSTONE_ORE);
@@ -453,7 +460,7 @@ public class CivSettings {
 	public static void reloadMobConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
 		CivSettings.customMobs.clear();
 		mobConfig = loadCivConfig("mobs.yml");
-		ConfigCustomMobs.loadConfig(mobConfig, customMobs);
+		ConfigMobsCustom.loadConfig(mobConfig, customMobs);
 	}
 	
 	public static void reloadNewspaperConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException, InvalidConfiguration {
@@ -526,6 +533,7 @@ public class CivSettings {
 	}
 	
 	private static void loadConfigFiles() throws FileNotFoundException, IOException, InvalidConfigurationException {
+		campConfig = loadCivConfig("camp.yml");
 		civConfig = loadCivConfig("civ.yml");
 		cultureConfig = loadCivConfig("culture.yml");
 		gameConfig = loadCivConfig("game.yml");
@@ -556,7 +564,7 @@ public class CivSettings {
 		ConfigNewspaper.loadConfig(gameConfig, newspapers);
 		ConfigEXPMining.loadConfig(gameConfig, resxpMiningBlocks);
 		
-		ConfigCustomMobs.loadConfig(mobConfig, customMobs);
+		ConfigMobsCustom.loadConfig(mobConfig, customMobs);
 		
 		ConfigMineTask.loadConfig(structuredataConfig, mineTasks);
 		ConfigMineLevel.loadConfig(structuredataConfig, mineLevels);
@@ -575,6 +583,10 @@ public class CivSettings {
 		
 		ConfigTownLevel.loadConfig(townConfig, townLevels);
 		ConfigTownUpgrade.loadConfig(townConfig, townUpgrades);
+		
+		ConfigCampLonghouseLevel.loadConfig(campConfig, longhouseLevels);
+		ConfigCampUpgrade.loadConfig(campConfig, campUpgrades);
+		
 		ConfigCultureLevel.loadConfig(cultureConfig, cultureLevels);
 		ConfigBuildableInfo.loadConfig(structureConfig, "structures", structures, false);
 		ConfigBuildableInfo.loadConfig(wonderConfig, "wonders", wonders, true);
@@ -611,30 +623,32 @@ public class CivSettings {
 		restrictedSpawns.add(EntityType.BAT);
 		restrictedSpawns.add(EntityType.BLAZE);
 		restrictedSpawns.add(EntityType.CAVE_SPIDER);
-		restrictedSpawns.add(EntityType.CREEPER);
 		restrictedSpawns.add(EntityType.ELDER_GUARDIAN);
 		restrictedSpawns.add(EntityType.ENDERMAN);
-		restrictedSpawns.add(EntityType.ENDERMITE);
 		restrictedSpawns.add(EntityType.EVOKER);
 		restrictedSpawns.add(EntityType.EVOKER_FANGS);
 		restrictedSpawns.add(EntityType.GHAST);
-		restrictedSpawns.add(EntityType.GUARDIAN);
-		restrictedSpawns.add(EntityType.HUSK);
 		restrictedSpawns.add(EntityType.ILLUSIONER);
 		restrictedSpawns.add(EntityType.MAGMA_CUBE);
 		restrictedSpawns.add(EntityType.PIG_ZOMBIE);
-		restrictedSpawns.add(EntityType.POLAR_BEAR);
 		restrictedSpawns.add(EntityType.SHULKER);
 		restrictedSpawns.add(EntityType.SILVERFISH);
-		restrictedSpawns.add(EntityType.SKELETON);
-		restrictedSpawns.add(EntityType.SPIDER);
-		restrictedSpawns.add(EntityType.STRAY);
 		restrictedSpawns.add(EntityType.VEX);
 		restrictedSpawns.add(EntityType.VINDICATOR);
 		restrictedSpawns.add(EntityType.WITCH);
 		restrictedSpawns.add(EntityType.WITHER_SKELETON);
-		restrictedSpawns.add(EntityType.ZOMBIE);
-		restrictedSpawns.add(EntityType.ZOMBIE_VILLAGER);
+	}
+	
+	private static void initVanillaHostileMobs() {
+		vanillaHostileMobs.add(EntityType.CREEPER);
+		vanillaHostileMobs.add(EntityType.ENDERMITE);
+		vanillaHostileMobs.add(EntityType.GUARDIAN);
+		vanillaHostileMobs.add(EntityType.HUSK);
+		vanillaHostileMobs.add(EntityType.SKELETON);
+		vanillaHostileMobs.add(EntityType.SPIDER);
+		vanillaHostileMobs.add(EntityType.STRAY);
+		vanillaHostileMobs.add(EntityType.ZOMBIE);
+		vanillaHostileMobs.add(EntityType.ZOMBIE_VILLAGER);
 	}
 	
 	private static void initRestrictedItems() {
@@ -918,6 +932,31 @@ public class CivSettings {
 	public static ConfigTownUpgrade getUpgradeByNameRegexSpecial(Town town, String name) throws CivException {
 		ConfigTownUpgrade returnUpgrade = null;
 		for (ConfigTownUpgrade upgrade : townUpgrades.values()) {
+			if (name.equalsIgnoreCase(upgrade.name)) {
+				return upgrade;
+			}
+			
+			String loweredUpgradeName = upgrade.name.toLowerCase();
+			String loweredName = name.toLowerCase();
+			
+			if (loweredUpgradeName.contains(loweredName)) {
+				if (returnUpgrade == null) {
+					returnUpgrade = upgrade;
+				} else {
+					throw new CivException(name+" is not specific enough to single out only one upgrade.");
+				}
+			}
+		}
+		return returnUpgrade;
+	}
+	
+	public static ConfigCampUpgrade getCampUpgradeByNameRegex(Camp camp, String name) throws CivException {
+		ConfigCampUpgrade returnUpgrade = null;
+		for (ConfigCampUpgrade upgrade : campUpgrades.values()) {
+			if (!upgrade.isAvailable(camp)) {
+				continue;
+			}
+			
 			if (name.equalsIgnoreCase(upgrade.name)) {
 				return upgrade;
 			}

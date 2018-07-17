@@ -24,7 +24,7 @@ public class KillCommand implements CommandExecutor {
 		Resident res = CivGlobal.getResident(player);
 		res.isSuicidal = true;
 		player.setHealth(0);
-		CivMessage.send(sender, CivColor.Yellow+CivColor.BOLD+"You couldn't take it anymore.");
+		CivMessage.send(sender, CivColor.YellowBold+"You couldn't take it anymore.");
 		return true;
 	}
 }

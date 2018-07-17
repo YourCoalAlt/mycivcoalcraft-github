@@ -264,7 +264,7 @@ public class Wall extends Structure {
 		}
 		
 		if (locs.size() <= 1) {
-			CivMessage.send(player, CivColor.LightGray+"First location placed, place another to start building a wall.");
+			CivMessage.send(player, CivColor.Gray+"First location placed, place another to start building a wall.");
 			return;
 		}
 		
@@ -332,7 +332,7 @@ public class Wall extends Structure {
 							
 		TownChunk tc = CivGlobal.getTownChunk(b.getLocation());
 			
-		if (tc != null && !tc.perms.hasPermission(PlotPermissions.Type.DESTROY, CivGlobal.getResident(player))) {
+		if (tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.DESTROY, CivGlobal.getResident(player))) {
 			// Make sure we have permission to destroy any block in this area.
 			throw new CivException("Cannot build here, you need DESTROY permissions to the block at "+b.getX()+","+b.getY()+","+b.getZ());
 		}

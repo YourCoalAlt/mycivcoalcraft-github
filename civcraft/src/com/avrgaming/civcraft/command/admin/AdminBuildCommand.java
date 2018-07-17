@@ -64,7 +64,7 @@ public class AdminBuildCommand extends CommandBase {
 		CivMessage.global("Refreshing PostBuildTask on structures, may cause lag...");
 		for (Buildable b : CivGlobal.getStructures()) {
 			Template tpl = Template.getTemplate(b.getSavedTemplatePath(), null);
-			TaskMaster.syncTask(new PostBuildSyncTask(tpl, b));
+			TaskMaster.syncTask(new PostBuildSyncTask(tpl, b, false));
 		}
 	}
 	
@@ -74,8 +74,8 @@ public class AdminBuildCommand extends CommandBase {
 			if (buildable.getCorner().toString().equalsIgnoreCase(locString)) {
 				for (Integer y : buildable.layerValidPercentages.keySet()) {
 					BuildableLayer layer = buildable.layerValidPercentages.get(y);
-					Double percentage = (double)layer.current / (double)layer.max;
-					CivMessage.send(sender, "y:"+y+" percentage:"+percentage+" ("+layer.current+"/"+layer.max+")");
+					Double percentage = (double)layer.current / (double)layer.total;
+					CivMessage.send(sender, "y:"+y+" percentage:"+percentage+" ("+layer.current+"/"+layer.total+")");
 				}
 			}
 		}
@@ -179,7 +179,7 @@ public class AdminBuildCommand extends CommandBase {
 		if (args.length < 2 || !args[1].equalsIgnoreCase("yes")) {
 			CivMessage.send(player, CivColor.LightGreen+"Are you sure you want to repair the structure "+CivColor.Yellow+nearest.getDisplayName()+
 					CivColor.LightGreen+" at "+CivColor.Yellow+nearest.getCorner()+CivColor.LightGreen+" ?");
-			CivMessage.send(player, CivColor.LightGray+"If yes, use /ad repair yes");
+			CivMessage.send(player, CivColor.Gray+"If yes, use /ad repair yes");
 			return;
 		}
 		

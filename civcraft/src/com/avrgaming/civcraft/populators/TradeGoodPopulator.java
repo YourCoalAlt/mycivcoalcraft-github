@@ -84,20 +84,20 @@ public class TradeGoodPopulator extends BlockPopulator {
 			Hologram hologram = HologramsAPI.createHologram(CivCraft.getPlugin(), loc);
 			if (good.water == true) {
 				hologram.appendItemLine(new ItemStack(good.material, 1, (short)good.material_data));
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Trade Resource: "+CivColor.LightBlue+CivColor.BOLD+CivColor.ITALIC+good.name);
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Value: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good.value+" Coins");
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Culture: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+"Future Addition"
-										+CivColor.Gold+CivColor.BOLD+" | Food: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+"Future Addition");
-//				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Culture: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good.culture
-//										+CivColor.Gold+CivColor.BOLD+" | Food:"+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good.food);
+				hologram.appendTextLine(CivColor.GoldBold+"Trade Resource: "+CivColor.LightBlueBold+CivColor.Italic+good.name);
+				hologram.appendTextLine(CivColor.GoldBold+"Value: "+CivColor.YellowBold+CivColor.Italic+good.value+" Coins");
+				hologram.appendTextLine(CivColor.GoldBold+"Culture: "+CivColor.YellowBold+CivColor.Italic+"Future Addition"
+										+CivColor.GoldBold+" | Food: "+CivColor.YellowBold+CivColor.Italic+"Future Addition");
+//				hologram.appendTextLine(CivColor.GoldBold+"Culture: "+CivColor.YellowBold+CivColor.Italic+good.culture
+//										+CivColor.GoldBold+" | Food:"+CivColor.YellowBold+CivColor.Italic+good.food);
 			} else {
 				hologram.appendItemLine(new ItemStack(good.material, 1, (short)good.material_data));
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Trade Resource: "+CivColor.LightGreen+CivColor.BOLD+CivColor.ITALIC+good.name);
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Value: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good.value+" Coins");
-				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Culture: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+"Future Addition"
-										+CivColor.Gold+CivColor.BOLD+" | Food: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+"Future Addition");
-//				hologram.appendTextLine(CivColor.Gold+CivColor.BOLD+"Culture: "+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good.culture
-//										+CivColor.Gold+CivColor.BOLD+" | Food:"+CivColor.Yellow+CivColor.BOLD+CivColor.ITALIC+good..food);
+				hologram.appendTextLine(CivColor.GoldBold+"Trade Resource: "+CivColor.LightGreenBold+CivColor.Italic+good.name);
+				hologram.appendTextLine(CivColor.GoldBold+"Value: "+CivColor.YellowBold+CivColor.Italic+good.value+" Coins");
+				hologram.appendTextLine(CivColor.GoldBold+"Culture: "+CivColor.YellowBold+CivColor.Italic+"Future Addition"
+										+CivColor.GoldBold+" | Food: "+CivColor.YellowBold+CivColor.Italic+"Future Addition");
+//				hologram.appendTextLine(CivColor.GoldBold+"Culture: "+CivColor.YellowBold+CivColor.Italic+good.culture
+//										+CivColor.GoldBold+" | Food:"+CivColor.YellowBold+CivColor.Italic+good..food);
 			}
 		} else {
 			CivLog.warning("Tried generating A Trade Good Hologram without HolographicDisplays plugin! This is fine, but no holograms can generate.");

@@ -592,9 +592,11 @@ public class MinecraftListener implements Listener {
 					Arrow arw = (Arrow) ec;
 					if (arw.getShooter() instanceof Skeleton) {
 						Skeleton atk = (Skeleton) arw.getShooter();
-						if (atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
+						if (atk.getEquipment().getItemInMainHand() != null && atk.getEquipment().getItemInMainHand().getType() != Material.AIR &&
+								atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
 							event.setDeathMessage(name+" was shot to death by Skeleton using "+atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName());
-						} else if (atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
+						} else if (atk.getEquipment().getItemInOffHand() != null && atk.getEquipment().getItemInOffHand().getType() != Material.AIR &&
+								atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
 							event.setDeathMessage(name+" was shot to death by Skeleton using "+atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName());
 						} else {
 							event.setDeathMessage(name+" was shot to death by Skeleton");
@@ -602,9 +604,11 @@ public class MinecraftListener implements Listener {
 					}
 					if (arw.getShooter() instanceof Stray) {
 						Stray atk = (Stray) arw.getShooter();
-						if (atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
+						if (atk.getEquipment().getItemInMainHand() != null && atk.getEquipment().getItemInMainHand().getType() != Material.AIR &&
+								atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName() != null) {
 							event.setDeathMessage(name+" was shot to death by Stray using "+atk.getEquipment().getItemInMainHand().getItemMeta().getDisplayName());
-						} else if (atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
+						} else if (atk.getEquipment().getItemInOffHand() != null && atk.getEquipment().getItemInOffHand().getType() != Material.AIR &&
+								atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName() != null) {
 							event.setDeathMessage(name+" was shot to death by Stray using "+atk.getEquipment().getItemInOffHand().getItemMeta().getDisplayName());
 						} else {
 							event.setDeathMessage(name+" was shot to death by Stray");
@@ -913,7 +917,7 @@ public class MinecraftListener implements Listener {
 			} else {
 				event.setMaxPlayers(amtPlayers);
 			}
-			String title = CivCraft.server_name+CivColor.LightGrayItalic;
+			String title = CivCraft.server_name+CivColor.GrayItalic;
 			Random rand = new Random();
 			int msg = rand.nextInt(7);
 			if (msg == 0) {

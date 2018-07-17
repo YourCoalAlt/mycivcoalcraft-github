@@ -78,6 +78,7 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.road.RoadBlock;
 import com.avrgaming.civcraft.structure.Buildable;
@@ -109,14 +110,19 @@ public class Resident extends SQLObject {
 	private boolean adminChat = false;
 	
 	private Town town = null;
-	private boolean combatInfo = false;
+	private Camp camp = null;
+	private int townID = 0;
+	private int campID = 0;
 	
-	public boolean anticheat = false;
+	private boolean combatInfo = false;
 	private ArrayList<String> alts = new ArrayList<String>();
 	private Map<String, Inventory> mails = new ConcurrentHashMap<String, Inventory>();
 	public String view_mail; // Has information on current mail open, else null
 	
 	public BossBar warbar;
+	private Integer action_bar_seconds_left = 0;
+	private ArrayList<String> action_bar_queue = new ArrayList<String>();
+	
 	public boolean isSuicidal = false;
 	public boolean isTPing = false;
 	
@@ -128,7 +134,6 @@ public class Resident extends SQLObject {
 	private boolean permOverride = false;
 	private boolean sbperm = false;
 	private boolean controlBlockInstantBreak = false;
-	private int townID = 0;
 	private boolean dontSaveTown = false;
 	private String timezone;
 	public boolean pvptag = false;
@@ -210,9 +215,10 @@ public class Resident extends SQLObject {
 					"`id` int(11) unsigned NOT NULL auto_increment," +
 					"`name` VARCHAR(64) NOT NULL," +
 					"`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN',"+
-					"`town_id` int(11)," + 
+					"`town_id` int(11)," +
+					"`camp_id` int(11)," +
 					"`lastOnline` BIGINT NOT NULL," +
-					"`registered` BIGINT NOT NULL," + 
+					"`registered` BIGINT NOT NULL," +
 					"`pvptag` bool NOT NULL DEFAULT '0',"+
 					"`friends` mediumtext," + 
 					"`debt` double DEFAULT 0," +
@@ -239,6 +245,11 @@ public class Resident extends SQLObject {
 			if (!SQL.hasColumn(TABLE_NAME, "uuid")) {
 				CivLog.info("\tCouldn't find `uuid` for resident.");
 				SQL.addColumn(TABLE_NAME, "`uuid` VARCHAR(256) NOT NULL DEFAULT 'UNKNOWN'");
+			}
+			
+			if (!SQL.hasColumn(TABLE_NAME, "camp_id")) {
+				CivLog.info("\tCouldn't find `camp_id` for resident.");
+				SQL.addColumn(TABLE_NAME, "`camp_id` int(11) default 0");
 			}
 			
 			if (!SQL.hasColumn(TABLE_NAME, "pvptag")) {
@@ -286,6 +297,7 @@ public class Resident extends SQLObject {
 	public void load(ResultSet rs) throws SQLException, InvalidNameException {
 		this.setId(rs.getInt("id"));
 		this.setName(rs.getString("name"));
+		this.campID = rs.getInt("camp_id");
 		this.townID = rs.getInt("town_id");
 		this.lastIP = rs.getString("last_ip");
 		this.debugTown = rs.getString("debug_town");
@@ -330,6 +342,15 @@ public class Resident extends SQLObject {
 			}
 		}
 		
+		if (this.campID != 0) {
+			this.setCamp(CivGlobal.getCampFromId(this.campID));
+			if (this.camp == null) {
+				CivLog.error("COULD NOT FIND CAMP("+this.campID+") FOR RESIDENT("+this.getId()+") Name:"+this.getName());
+			} else {
+				camp.addMember(this);
+			}
+		}
+		
 		if (this.getTown() != null) {
 			try {
 				this.getTown().addResident(this);
@@ -363,8 +384,13 @@ public class Resident extends SQLObject {
 			if (!dontSaveTown) hashmap.put("town_id", null);
 		}
 		
-		hashmap.put("pvptag", this.pvptag);
+		if (this.getCamp() != null) {
+			hashmap.put("camp_id", this.getCamp().getId());
+		} else {
+			hashmap.put("camp_id", null);
+		}
 		
+		hashmap.put("pvptag", this.pvptag);
 		hashmap.put("lastOnline", this.getLastOnline());
 		hashmap.put("registered", this.getRegistered());
 		hashmap.put("debt", this.getTreasury().getDebt());
@@ -468,13 +494,18 @@ public class Resident extends SQLObject {
 	}
 	
 	public String getTownString() {
-		if (town == null) { return "none"; }
+		if (town == null) return "none";
 		return this.getTown().getName();
 	}
 	
 	public String getCivString() {
-		if (town == null) { return "none"; }
+		if (town == null) return "none";
 		return this.getTown().getName();
+	}
+	
+	public String getCampString() {
+		if (camp == null) return "none";
+		return this.getCamp().getName();
 	}
 	
 	public Town getTown() {
@@ -488,7 +519,19 @@ public class Resident extends SQLObject {
 	public boolean hasTown() {
 		return town != null;
 	}
-
+	
+	public Camp getCamp() {
+		return camp;
+	}
+	
+	public void setCamp(Camp camp) {
+		this.camp = camp;
+	}
+	
+	public boolean hasCamp() {
+		return (this.camp != null);
+	}
+	
 	public long getRegistered() {
 		return registered;
 	}
@@ -527,7 +570,7 @@ public class Resident extends SQLObject {
 		try {
 			player = CivGlobal.getPlayer(this);
 			CivMessage.send(player, CivColor.Yellow+"You are in "+this.getTreasury().getDebt()+" coins of debt!");
-			CivMessage.send(player, CivColor.LightGray+"If you do not pay your debt within "+this.daysTilEvict+" days you will be evicted from town.");
+			CivMessage.send(player, CivColor.Gray+"If you do not pay your debt within "+this.daysTilEvict+" days you will be evicted from town.");
 		} catch (CivException e) {
 			//Player is not online.
 		}
@@ -545,7 +588,7 @@ public class Resident extends SQLObject {
 		this.daysTilEvict--;
 		if (this.daysTilEvict == 0) {
 			this.getTown().removeResident(this);
-
+			CivCraft.playerTagUpdate();
 			try {
 				CivMessage.send(CivGlobal.getPlayer(this), CivColor.Yellow+"You have been evicted from town!");
 			} catch (CivException e) {
@@ -1078,8 +1121,8 @@ public class Resident extends SQLObject {
 							return;
 						}
 						
-						CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+"Hey! Your in-game account is not registered! Register it at "+url);
-						CivMessage.send(player, CivColor.Yellow+CivColor.BOLD+"You'll be unable to earn Platinum until you register.");	
+						CivMessage.send(player, CivColor.YellowBold+"Hey! Your in-game account is not registered! Register it at "+url);
+						CivMessage.send(player, CivColor.YellowBold+"You'll be unable to earn Platinum until you register.");	
 						return;
 					}	
 				} catch (CivException e1) {
@@ -1257,7 +1300,7 @@ public class Resident extends SQLObject {
 					ItemStack guiStack = LoreGuiItem.build(resident.getName()+" Confirm", 
 							CivData.WOOL, CivData.DATA_14, 
 							CivColor.LightGreen+"Waiting for "+CivColor.LightBlue+resident.getName(),
-							CivColor.LightGray+"to confirm this trade.");
+							CivColor.Gray+"to confirm this trade.");
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 7) {
 					ItemStack guiStack = LoreGuiItem.build("Coins Offered", 
@@ -1568,40 +1611,41 @@ public class Resident extends SQLObject {
 						}
 					}.runTask(CivCraft.getPlugin());
 					
-					String resetS = CivColor.LightGrayItalic;
+					String resetS = CivColor.DarkGrayItalic;
 					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Are you ready to begin?");
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Are you ready to begin?");
 					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you build a "+CivColor.LightPurpleItalic+"civilization"+resetS+"?");
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Can you build a "+CivColor.LightPurpleItalic+"civilization"+resetS+"?");
 					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.WEATHER_RAIN_ABOVE, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you "+CivColor.LightGreenItalic+"expand"+resetS+
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Can you "+CivColor.LightGreenItalic+"expand"+resetS+
 								" and "+CivColor.GoldItalic+"colonize"+resetS+" the world?");
 					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75f, 0.75f);
 					p.playSound(p.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 0.8f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you survive the "+CivColor.RedItalic+"bloodlust of war"+resetS+"?");
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Can you survive the "+CivColor.RedItalic+"bloodlust of war"+resetS+"?");
 					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.75f, 1f);
 					p.playSound(p.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 0.75f, 1f);
-					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.LightGrayItalic+"Can you become a "+CivColor.LightBlueItalic+"world power"+resetS+"?");
+					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Can you become a "+CivColor.LightBlueItalic+"world power"+resetS+"?");
 					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					
 					
 					res.setRegistered(System.currentTimeMillis());
 					res.setisProtected(true);
 					int mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
+					Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), "minecraft:advancement grant "+p.getName()+" only civcraftgeneral:root");
 					
-					CivMessage.send(res, CivColor.LightGray+"You have a PvP Timer enabled for "+mins+" minutes.");
-					CivMessage.send(res, CivColor.LightGray+"You cannot attack or be attacked until it expires.");
-					CivMessage.send(res, CivColor.LightGray+"To remove it, type "+CivColor.LightGrayItalic+"'/resident pvptimer'");
+					CivMessage.send(res, CivColor.Gray+"You have a PvP Timer enabled for "+mins+" minutes.");
+					CivMessage.send(res, CivColor.Gray+"You cannot attack or be attacked until it expires.");
+					CivMessage.send(res, CivColor.Gray+"To remove it, type "+CivColor.DarkGrayItalic+"'/resident pvptimer'");
 					
 					new BukkitRunnable() {
 						@Override
@@ -1615,7 +1659,7 @@ public class Resident extends SQLObject {
 					}.runTask(CivCraft.getPlugin());
 					
 					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
-					CivMessage.send(res, CivColor.LightGray+"(You are being randomly teleported now in the world to begin your adventure.)");
+					CivMessage.send(res, CivColor.Gray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);
 					TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
 				} catch (InterruptedException | InvalidConfiguration | CivException e) {
@@ -1663,6 +1707,25 @@ public class Resident extends SQLObject {
 	}
 	
 	
+	
+	// Action Bar
+	public ArrayList<String> getActionBarQueue() {
+		return this.action_bar_queue;
+	}
+	
+	public Integer getActionBarSecondsLeft() {
+		return this.action_bar_seconds_left;
+	}
+	
+	public void subActionBarSecondsLeft(int seconds) {
+		this.action_bar_seconds_left -= seconds;
+	}
+	
+	public void addActionBarQueue(String s, int seconds, boolean priority) {
+		this.action_bar_seconds_left = seconds;
+		if (priority) this.action_bar_queue.add(0, s);
+		else this.action_bar_queue.add(s);
+	}
 	
 	// Mail
 	private void loadMails(String string) {
@@ -1752,7 +1815,7 @@ public class Resident extends SQLObject {
 	}
 	
 	public void openViewMailMenu(Player p, Resident res, int pageNumber) {
-		if (!p.isOp()) return;
+//		if (!p.isOp()) return;
 		
 		Inventory inv = Bukkit.createInventory(p, 9*6, res.getName()+" View Mail [R]");
 		if (this.mails == null || this.mails.isEmpty()) {
@@ -1769,7 +1832,7 @@ public class Resident extends SQLObject {
 			ItemMeta meta = is.getItemMeta();
 			meta.setDisplayName(mail_code[0]);
 			List<String> lore = new ArrayList<>();
-			lore.add(CivColor.LightGray+"Mail ID: "+mail_code[1]);
+			lore.add(CivColor.Gray+"Mail ID: "+mail_code[1]);
 			meta.setLore(lore);
 			is.setItemMeta(meta);
 			items.put(add, ItemSerializer.getSerializedItemStack(is));
@@ -1823,12 +1886,12 @@ public class Resident extends SQLObject {
 			}
 		}
 		
-		for (int i = 45; i <= 53; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 45; i <= 53; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(45, LoreGuiItem.build(CivColor.GreenBold+"Information", CivData.PAPER, 0, CivColor.LightGray+"Sent By: "+CivColor.Red+"« In Dev » ", CivColor.LightGray+"Forwarded: « In Dev » "));
-		inv.setItem(46, LoreGuiItem.build(CivColor.GreenBold+"Message", CivData.PAPER, 0, CivColor.LightGray+" « In Dev » ")); //XXX Messages need 10 line limit
-		inv.setItem(49, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.LightGray+" « Click to Collect Materials » "));
-		inv.setItem(51, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.LightGray+" « Click to Send to Another Player » ", CivColor.Red+"« In Dev » "));
+		inv.setItem(45, LoreGuiItem.build(CivColor.GreenBold+"Information", CivData.PAPER, 0, CivColor.Gray+"Sent By: "+CivColor.Red+"« In Dev » ", CivColor.Gray+"Forwarded: « In Dev » "));
+		inv.setItem(46, LoreGuiItem.build(CivColor.GreenBold+"Message", CivData.PAPER, 0, CivColor.RedBold+" « In Dev » ")); //XXX Messages need 10 line limit
+		inv.setItem(49, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.Gray+" « Click to Collect Materials » "));
+		inv.setItem(51, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.Gray+" « Click to Send to Another Player » ", CivColor.Red+"« In Dev » "));
 		
 		p.openInventory(inv);
 	}

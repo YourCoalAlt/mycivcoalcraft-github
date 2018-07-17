@@ -104,9 +104,9 @@ public class PlotPermCommand extends CommandBase {
 	}
 	
 	private void showPermCmdHelp() {
-		CivMessage.send(sender, CivColor.LightGray+"/plot perm set <type> <groupType> [on|off] ");
-		CivMessage.send(sender, CivColor.LightGray+"    types: [build|destroy|interact|itemuse|reset]");
-		CivMessage.send(sender, CivColor.LightGray+"    groupType: [owner|group|others]");
+		CivMessage.send(sender, CivColor.Gray+"/plot perm set <type> <groupType> [on|off] ");
+		CivMessage.send(sender, CivColor.Gray+"    types: [build|destroy|interact|itemuse|reset]");
+		CivMessage.send(sender, CivColor.Gray+"    groupType: [owner|group|others]");
 	}
 
 	@Override

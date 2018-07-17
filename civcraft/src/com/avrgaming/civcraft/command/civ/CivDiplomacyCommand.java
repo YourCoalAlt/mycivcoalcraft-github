@@ -188,7 +188,7 @@ public class CivDiplomacyCommand extends CommandBase {
 				if (relation.getStatus().equals(Status.WAR)) {
 					if (!usedRelations.contains(relation.getPairKey())) {
 						CivMessage.send(sender, 
-								CivColor.LightBlue+CivColor.BOLD+relation.getCiv().getName()+CivColor.Rose+" <-- WAR --> "+CivColor.LightBlue+CivColor.BOLD+relation.getOtherCiv().getName());						
+								CivColor.LightBlueBold+relation.getCiv().getName()+CivColor.Rose+" <-- WAR --> "+CivColor.LightBlueBold+relation.getOtherCiv().getName());						
 						usedRelations.add(relation.getPairKey());
 					}
 				}
@@ -405,7 +405,7 @@ public class CivDiplomacyCommand extends CommandBase {
 		if (warCount != 0) {
 			CivMessage.send(sender, CivColor.Rose+"Your civilization is currently engaged in "+warCount+" wars.");
 		}
-		CivMessage.send(sender, CivColor.LightGray+"Not shown means NEUTRAL.");
+		CivMessage.send(sender, CivColor.Gray+"Not shown means NEUTRAL.");
 	}
 	
 	

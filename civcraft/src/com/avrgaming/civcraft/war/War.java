@@ -41,7 +41,6 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.siege.Cannon;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.war.camp.WarCamp;
 
 public class War {
 	
@@ -157,7 +156,7 @@ public class War {
 			File file = new File("wartime");
 			file.delete();
 		
-			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Ended");
+			CivMessage.globalHeading(CivColor.Bold+"WarTime Has Ended");
 			// display some stats.
 			CivMessage.global("Most Lethal: "+WarStats.getTopKiller());
 			CivMessage.global("Most Death-Prone: "+WarStats.getTopDeathProne());
@@ -185,7 +184,7 @@ public class War {
 			// War time has started.
 			War.setStart(new Date());
 			WarAntiCheat.kickUnvalidatedPlayers();
-			CivMessage.globalHeading(CivColor.BOLD+"WarTime Has Started");
+			CivMessage.globalHeading(CivColor.Bold+"WarTime Has Started");
 			War.repositionPlayers("You've been teleported back to your town hall. WarTime has started and you were in enemy territory.");
 			//War.vassalTownsWithNoTownHalls();
 			War.resetTownClaimFlags();

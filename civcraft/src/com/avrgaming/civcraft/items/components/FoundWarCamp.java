@@ -65,7 +65,7 @@ public class FoundWarCamp extends ItemComponent implements CallbackInterface {
 		/*
 		 * Build a preview for the Capitol structure.
 		 */
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Checking structure position...Please wait.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Checking structure position...Please wait.");
 
 		
 		Buildable.buildVerifyStatic(player, info, player.getLocation(), this);
@@ -132,7 +132,7 @@ public class FoundWarCamp extends ItemComponent implements CallbackInterface {
 		CivMessage.send(player, CivColor.LightGreen+"   -Cannot be rebuilt for at least "+warTimeout+" mins.");
 		CivMessage.send(player, " ");
 		CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"Do you want to place the War Camp here?");
-		CivMessage.send(player, CivColor.LightGray+"(To accept, type 'yes')");
+		CivMessage.send(player, CivColor.Gray+"(To accept, type 'yes')");
 		
 		resident.setInteractiveMode(new InteractiveWarCampFound(info));
 	}

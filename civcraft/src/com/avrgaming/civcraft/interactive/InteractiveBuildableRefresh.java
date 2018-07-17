@@ -32,9 +32,9 @@ public class InteractiveBuildableRefresh implements InteractiveResponse {
 		}
 		
 		CivMessage.sendHeading(player, "Building Refresh");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Are you sure you want to refresh the blocks for your "+buildable.getDisplayName()+"?");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Any blocks inside the structure (or where the structure ought to be) will be replaced with whats inside the template.");
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"You may lose some blocks. If that's ok, please type 'yes'. Type anything else to cancel.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Are you sure you want to refresh the blocks for your "+buildable.getDisplayName()+"?");
+		CivMessage.send(player, CivColor.LightGreenBold+"Any blocks inside the structure (or where the structure ought to be) will be replaced with whats inside the template.");
+		CivMessage.send(player, CivColor.LightGreenBold+"You may lose some blocks. If that's ok, please type 'yes'. Type anything else to cancel.");
 		
 	}
 	
@@ -44,7 +44,7 @@ public class InteractiveBuildableRefresh implements InteractiveResponse {
 		resident.clearInteractiveMode();
 
 		if (!message.equalsIgnoreCase("yes")) {
-			CivMessage.send(resident, CivColor.LightGray+"Refresh cancelled.");
+			CivMessage.send(resident, CivColor.Gray+"Refresh cancelled.");
 			return;
 		}
 		

@@ -15,7 +15,7 @@ public class LoreEnhancementUnitGainProtection extends LoreEnhancement {
 	}
 	
 	public String getLoreString(int level) {
-		return CivColor.LightGray+"  Unit Protection +"+level;
+		return CivColor.Gray+"  Unit Protection +"+level;
 	}
 	
 	@Override

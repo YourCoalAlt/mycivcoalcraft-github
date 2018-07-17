@@ -1,9 +1,10 @@
 package com.avrgaming.civcraft.threading.tasks;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 
+import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivCraft;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 
@@ -24,8 +25,12 @@ public class MailToResidentTask implements Runnable {
 	@Override
 	public void run() {
 		res.addMail(res, mail_name, mail_id, inv);
-		if (Bukkit.getPlayer(res.getUUID()).isOnline()) {
-			CivMessage.send(res, CivCraft.server_name+"You have recieved a package in the mail! Collect it using your Backpack.");
+		try {
+			if (CivGlobal.getOfflinePlayer(res) != null) {
+				CivMessage.send(res, CivCraft.server_name+"You have recieved a package in the mail! Collect it using your Backpack.");
+			}
+		} catch (CivException e) {
+			e.printStackTrace();
 		}
 	}
 }

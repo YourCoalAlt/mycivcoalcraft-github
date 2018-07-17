@@ -181,7 +181,7 @@ public abstract class LoreMaterial {
 		Boolean isShiny = false;
 		if (material instanceof LoreCraftableMaterial) {
 			LoreCraftableMaterial craftMat = (LoreCraftableMaterial)material;
-			attrs.addLore(CivColor.ITALIC+craftMat.getConfigMaterial().category);
+			attrs.addLore(CivColor.Italic+craftMat.getConfigMaterial().category);
 			isShiny = craftMat.getConfigMaterial().shiny;
 		}
 		material.applyAttributes(attrs);

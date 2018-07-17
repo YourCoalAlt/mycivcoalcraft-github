@@ -1,4 +1,4 @@
-package com.avrgaming.civcraft.war.camp;
+package com.avrgaming.civcraft.war;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -50,8 +50,6 @@ import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
-import com.avrgaming.civcraft.war.War;
-import com.avrgaming.civcraft.war.WarRegen;
 
 public class WarCamp extends Buildable implements RespawnLocationHolder {
 
@@ -274,7 +272,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 					ChunkCoord chunkCoord = new ChunkCoord(coord.getLocation());
 					
 					TownChunk tc = CivGlobal.getTownChunk(chunkCoord);
-					if (tc != null && !tc.perms.hasPermission(PlotPermissions.Type.DESTROY, CivGlobal.getResident(player))) {
+					if (tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.DESTROY, CivGlobal.getResident(player))) {
 						// Make sure we have permission to destroy any block in this area.
 						throw new CivException("Cannot build here, you need DESTROY permissions to the block at "+b.getX()+","+b.getY()+","+b.getZ());
 					}
@@ -524,7 +522,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 0.2f, 1);
 		world.playEffect(hit.getCoord().getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
 		
-		CivMessage.send(player, CivColor.LightGray+"Damaged Control Block ("+cp.getHitpoints()+" / "+cp.getMaxHitpoints()+")");
+		CivMessage.send(player, CivColor.Gray+"Damaged Control Block ("+cp.getHitpoints()+" / "+cp.getMaxHitpoints()+")");
 		CivMessage.sendCiv(getCiv(), CivColor.Yellow+"Our War Camp's Control Points are under attack!");
 	}
 

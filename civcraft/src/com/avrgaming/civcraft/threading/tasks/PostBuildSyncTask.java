@@ -21,9 +21,7 @@ package com.avrgaming.civcraft.threading.tasks;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
-import org.bukkit.material.MaterialData;
 
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivData;
@@ -31,6 +29,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.StructureTables;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.structure.ArrowTower;
 import com.avrgaming.civcraft.structure.Blacksmith;
 import com.avrgaming.civcraft.structure.Buildable;
@@ -54,37 +53,41 @@ public class PostBuildSyncTask implements Runnable {
 	
 	Template tpl;
 	Buildable buildable;
+	Boolean forceRefresh;
 	
-	public PostBuildSyncTask(Template tpl, Buildable buildable) {
+	public PostBuildSyncTask(Template tpl, Buildable buildable, boolean forceRefresh) {
 		this.tpl = tpl;
 		this.buildable = buildable;
+		this.forceRefresh = forceRefresh;
 	}
 	
-	public static void start(Template tpl, Buildable buildable) {
-		if (!(buildable instanceof Farm)) {
-			// Resets all structure blocks
-			for (int x = 0; x < tpl.size_x; x++) {
-				for (int y = 0; y < tpl.size_y; y++) {
-					for (int z = 0; z < tpl.size_z; z++) {
-						Block b = buildable.getCorner().getBlock().getRelative(x, y, z);
-						SimpleBlock sb = tpl.blocks[x][y][z];
-						if (sb.getMaterial() == Material.AIR) continue;
-						if (b.getType() != sb.getMaterial()) {
-							if (sb.getMaterial() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST ||
-									sb.getMaterial() == Material.FURNACE || sb.getMaterial() == Material.BURNING_FURNACE) continue;
-							ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
-						}
-						
-						if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
-							Sign s2 = (Sign)b.getState();
-							if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
-								ItemManager.setTypeIdAndData(b, 0, 0, false);
-							} else {
-								s2.setLine(0, tpl.blocks[x][y][z].message[0]);
-								s2.setLine(1, tpl.blocks[x][y][z].message[1]);
-								s2.setLine(2, tpl.blocks[x][y][z].message[2]);
-								s2.setLine(3, tpl.blocks[x][y][z].message[3]);
-								s2.update();
+	public static void start(Template tpl, Buildable buildable, boolean forceRefresh) {
+		if (forceRefresh) {
+			if (!(buildable instanceof Farm)) {
+				// Resets all structure blocks
+				for (int x = 0; x < tpl.size_x; x++) {
+					for (int y = 0; y < tpl.size_y; y++) {
+						for (int z = 0; z < tpl.size_z; z++) {
+							Block b = buildable.getCorner().getBlock().getRelative(x, y, z);
+							SimpleBlock sb = tpl.blocks[x][y][z];
+							if (sb.getMaterial() == Material.AIR) continue;
+							if (b.getType() != sb.getMaterial()) {
+								if (sb.getMaterial() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST ||
+										sb.getMaterial() == Material.FURNACE || sb.getMaterial() == Material.BURNING_FURNACE) continue;
+								ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+							}
+							
+							if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+								Sign s2 = (Sign)b.getState();
+								if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
+									ItemManager.setTypeIdAndData(b, 0, 0, false);
+								} else {
+									s2.setLine(0, tpl.blocks[x][y][z].message[0]);
+									s2.setLine(1, tpl.blocks[x][y][z].message[1]);
+									s2.setLine(2, tpl.blocks[x][y][z].message[2]);
+									s2.setLine(3, tpl.blocks[x][y][z].message[3]);
+									s2.update();
+								}
 							}
 						}
 					}
@@ -147,15 +150,9 @@ public class PostBuildSyncTask implements Runnable {
 				
 				//  Convert sign data to chest data.
 				block = absCoord.getBlock();
-				if (ItemManager.getId(block) != CivData.CHEST) {		
+				if (ItemManager.getId(block) != CivData.CHEST) {
 					byte chestData = CivData.convertSignDataToChestData((byte)sb.getData());
 					ItemManager.setTypeIdAndData(block, CivData.CHEST, chestData, true);
-					
-					Chest chest = (Chest)block.getState();
-					MaterialData data = chest.getData();
-					ItemManager.setData(data, chestData);
-					chest.setData(data);
-					chest.update();
 				}
 				break;
 			case "/sign":
@@ -284,6 +281,11 @@ public class PostBuildSyncTask implements Runnable {
 			techbartask.run();
 		}
 		
+		if (buildable instanceof Camp) {
+			Camp camp = (Camp) buildable;
+			camp.reprocessCommandSigns();
+		}
+		
 	//	if (buildable instanceof Structure) {
 		buildable.updateSignText();
 	//}
@@ -291,7 +293,7 @@ public class PostBuildSyncTask implements Runnable {
 	
 	@Override
 	public void run() {
-		PostBuildSyncTask.start(tpl, buildable);
+		PostBuildSyncTask.start(tpl, buildable, forceRefresh);
 	}
 	
 }

@@ -19,7 +19,7 @@ public class TeleportToPlayerRequest implements QuestionResponseInterface {
 	@Override
 	public void processResponse(String param) {
 		if (param.equalsIgnoreCase("accept")) {
-			CivMessage.send(tper, CivColor.LightGray+tpist.getName()+" accepted our teleport request.");
+			CivMessage.send(tper, CivColor.Gray+tpist.getName()+" accepted our teleport request.");
 			try {
 				Player p = CivGlobal.getPlayer(tpist);
 				
@@ -45,7 +45,7 @@ public class TeleportToPlayerRequest implements QuestionResponseInterface {
 				e.printStackTrace();
 			}
 		} else {
-			CivMessage.send(tper, CivColor.LightGray+tpist.getName()+" denied our teleport request.");
+			CivMessage.send(tper, CivColor.Gray+tpist.getName()+" denied our teleport request.");
 		}
 	}
 	

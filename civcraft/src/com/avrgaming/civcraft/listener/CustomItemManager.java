@@ -87,15 +87,10 @@ public class CustomItemManager implements Listener {
 	// https://www.spigotmc.org/threads/inventoryclickevent-error.240312/ 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onItemClick(InventoryClickEvent event) {
-		if (event.getSlotType() == SlotType.OUTSIDE) {
-			return;
-		} else
-		if (event.getCurrentItem() == null && event.getCursor() == null) {
-			return;
-		} else
-		if (event.getCurrentItem().getType() != Material.ENDER_CHEST && event.getCursor().getType() != Material.ENDER_CHEST) {
-			return;	
-		} else
+		if (event.getSlotType() == SlotType.OUTSIDE) return;
+		if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) && (event.getCursor() == null || event.getCursor().getType() == Material.AIR)) return;
+		if (event.getCurrentItem().getType() != Material.ENDER_CHEST && event.getCursor().getType() != Material.ENDER_CHEST) return;
+		else
 			if (event.getCurrentItem() != null) {
 				if (event.getCurrentItem().hasItemMeta()) {
 					if (event.getCurrentItem().getItemMeta().hasDisplayName()) {
@@ -215,9 +210,7 @@ public class CustomItemManager implements Listener {
 		
 		AttributeUtil attrs = new AttributeUtil(stack);
 		for (LoreEnhancement enhance : attrs.getEnhancements()) {
-			if (enhance.getDisplayName() == "Prospect") {
-				enhance.onBlockClick(event);
-			}
+			if (enhance.getDisplayName() == "Prospect" || enhance.getDisplayName() == "Velocity") enhance.onBlockClick(event);
 		}
 	}
 	
@@ -366,7 +359,7 @@ public class CustomItemManager implements Listener {
 					craftMat.onRangedAttack(event, inHand);
 				}
 			} else if (shooter instanceof Skeleton) {
-				return;
+				event.setDamage(5.0);
 			}
 		} else if (event.getDamager() instanceof Player) {
 			ItemStack inHand = ((Player)event.getDamager()).getInventory().getItemInMainHand();
@@ -468,41 +461,14 @@ public class CustomItemManager implements Listener {
 		return true;
 	}
 	
-	private boolean processArmorDurabilityChanges(PlayerDeathEvent event, ItemStack stack, int i) {
-		LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-		if (craftMat != null) {
-			ItemChangeResult result = craftMat.onDurabilityDeath(event, stack);
-			if (result != null) {
-				if (!result.destroyItem) {
-					replaceItem(event, stack, result.stack);
-				} else {
-					replaceItem(event, stack, new ItemStack(Material.AIR));
-					event.getDrops().remove(stack);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	private void replaceItem(PlayerDeathEvent event, ItemStack item, ItemStack newItem) {
-		if (LoreEnhancement.isHelmet(item)) event.getEntity().getInventory().setHelmet(newItem);
-		else if (LoreEnhancement.isChestplate(item)) event.getEntity().getInventory().setChestplate(newItem);
-		else if (LoreEnhancement.isLeggings(item)) event.getEntity().getInventory().setLeggings(newItem);
-		else if (LoreEnhancement.isBoots(item)) event.getEntity().getInventory().setBoots(newItem);
-		else CivMessage.sendError(event.getEntity(), "Cannot fix item from your armor slot... contact an admin. Material: "+item);
-	}
-	
 	@EventHandler(priority = EventPriority.LOW) 
 	public void onPlayerDeathEvent(PlayerDeathEvent event) {
 		HashMap<Integer, ItemStack> noDrop = new HashMap<Integer, ItemStack>();
-		ItemStack[] armorNoDrop = new ItemStack[4];
 		
-		/* Search and execute any enhancements */
+		// Search and execute any enhancements
 		for (int i = 0; i < event.getEntity().getInventory().getSize(); i++) {
 			ItemStack stack = event.getEntity().getInventory().getItem(i);
 			if (stack == null) continue;
-			
 			// Don't process anymore more enhancements on items after its been destroyed.
 			if (!processDurabilityChanges(event, stack, i)) continue;
 			if (!LoreMaterial.hasEnhancements(stack)) continue;
@@ -510,43 +476,19 @@ public class CustomItemManager implements Listener {
 			AttributeUtil attrs = new AttributeUtil(stack);
 			for (LoreEnhancement enhance : attrs.getEnhancements()) {
 				if (enhance.onDeath(event, stack)) {
-					/* Stack is not going to be dropped on death. */
+					// Stack is not going to be dropped on death.
 					noDrop.put(i, stack);
 				}
 			}
 		}
 		
-		/* Search for armor, apparently it doesnt show up in the normal inventory. */
-		ItemStack[] contents = event.getEntity().getInventory().getArmorContents();
-		for (int i = 0; i < contents.length; i++) {
-			ItemStack stack = contents[i];
-			if (stack == null) continue;
-			
-			// Don't process anymore more enhancements on items after its been destroyed.
-			if (!processArmorDurabilityChanges(event, stack, i)) continue;
-			if (!LoreMaterial.hasEnhancements(stack)) continue;
-			
-			AttributeUtil attrs = new AttributeUtil(stack);
-			for (LoreEnhancement enhance : attrs.getEnhancements()) {
-				if (enhance.onDeath(event, stack)) {
-					/* Stack is not going to be dropped on death. */
-					armorNoDrop[i] = stack;
-				}
-			}
-		}
-
-		
-		//event.getEntity().getInventory().getArmorContents()	
 		class SyncRestoreItemsTask implements Runnable {
 			HashMap<Integer, ItemStack> restore;
 			String playerName;
-			ItemStack[] armorContents;
 			
-			public SyncRestoreItemsTask(HashMap<Integer, ItemStack> restore, 
-					ItemStack[] armorContents, String playerName) {
+			public SyncRestoreItemsTask(HashMap<Integer, ItemStack> restore, String playerName) {
 				this.restore = restore;
 				this.playerName = playerName;
-				this.armorContents = armorContents;
 			}
 			
 			@Override
@@ -557,9 +499,7 @@ public class CustomItemManager implements Listener {
 					for (Integer slot : restore.keySet()) {
 						ItemStack stack = restore.get(slot);
 						inv.setItem(slot, stack);
-					}	
-					
-					inv.setArmorContents(this.armorContents);
+					}
 				} catch (CivException e) {
 					e.printStackTrace();
 					return;
@@ -567,7 +507,7 @@ public class CustomItemManager implements Listener {
 			}
 		}
 		Boolean keepInventory = Boolean.valueOf(Bukkit.getWorld("world").getGameRuleValue("keepInventory"));
-		if (!keepInventory) { TaskMaster.syncTask(new SyncRestoreItemsTask(noDrop, armorNoDrop, event.getEntity().getName())); }
+		if (!keepInventory) TaskMaster.syncTask(new SyncRestoreItemsTask(noDrop, event.getEntity().getName()));
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
@@ -579,9 +519,9 @@ public class CustomItemManager implements Listener {
 			TownChunk tc = CivGlobal.getTownChunk(v.getLocation());
 			if (tc != null && v.getCustomName() != null) {
 				String vilKey = tc.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-				if (CivGlobal.getStructureVillager(vilKey) != null) {
+				if (CivGlobal.getCivVillager(vilKey) != null) {
 					v.setHealth(0); v.remove();
-					CivGlobal.removeStructureVillager(vilKey);
+					CivGlobal.removeCivVillager(vilKey, v);
 					CivLog.warning("Villager removed: "+vilKey);
 				}
 			}

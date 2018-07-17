@@ -474,7 +474,7 @@ structures:
     limit: 1
     cost: 25000.0
     upkeep: 1500.0
-    hammer_cost: 3500
+    hammer_cost: 4000
     points: 250
     max_hitpoints: 300
 #
@@ -501,20 +501,21 @@ structures:
 #    itemId: 267
 #    itemData: 0
 #    position: 17
-#  - id: s_mob_grinder
-#    itemId: 267
-#    itemData: 0
-#    position: 17
-#    template: mob_grinder
-#    template_y_shift: 0
-#    displayName: Mob Grinder
+  - id: s_mob_grinder
+    itemId: 267
+    itemData: 0
+    position: 17
+    template: mob_grinder
+    template_y_shift: 0
+    displayName: Mob Grinder
 #    require_tech: 'tech_donotbuild'
-#    limit: 1
-#    cost: 20000.0
-#    upkeep: 2000.0
-#    hammer_cost: 2500
-#    points: 75
-#    max_hitpoints: 300
+    require_tech:
+    limit: 1
+    cost: 20000.0
+    upkeep: 1750.0
+    hammer_cost: 2500
+    points: 75
+    max_hitpoints: 350
 #
 # Row 3
   - id: ti_mine

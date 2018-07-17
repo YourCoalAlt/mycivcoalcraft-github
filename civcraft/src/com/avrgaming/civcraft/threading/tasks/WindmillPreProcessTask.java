@@ -95,9 +95,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		}
 		
 		// If we've got nothing in the seed basket, nothing to plant!
-		if (breadCount == 0 && carrotCount == 0 && potatoCount == 0 && beetrootCount == 0) {
-			return;
-		}
+		if (breadCount == 0 && carrotCount == 0 && potatoCount == 0 && beetrootCount == 0) return;
 		
 		// Only try to plant as many crops as we have (or the max)
 		plant_max = Math.min((breadCount + carrotCount + potatoCount + beetrootCount), plant_max);
@@ -107,14 +105,13 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		for (ChunkSnapshot snapshot : this.snapshots) {			
 			for (int x = 0; x < 16; x++) {
 				for (int z = 0; z < 16; z++) {
-					for (int y = 0; y < 255; y++) {
-						if (ItemManager.getBlockTypeId(snapshot, x, y, z) == CivData.FARMLAND) {
-							if (ItemManager.getBlockTypeId(snapshot, x, y+1, z) == CivData.AIR) {
-								int blockx = (snapshot.getX()*16) + x;
-								int blocky = y+1;
-								int blockz = (snapshot.getZ()*16) + z;
-								blocks.add(new BlockCoord(this.windmill.getCorner().getWorldname(), blockx, blocky, blockz));
-							}
+					for (int y = 10; y < 192; y++) {
+						if (ItemManager.getBlockTypeId(snapshot, x, y-1, z) == CivData.FARMLAND &&
+								ItemManager.getBlockTypeId(snapshot, x, y, z) == CivData.AIR) {
+							int blockx = (snapshot.getX()*16) + x;
+							int blocky = y;
+							int blockz = (snapshot.getZ()*16) + z;
+							blocks.add(new BlockCoord(this.windmill.getCorner().getWorldname(), blockx, blocky, blockz));
 						}
 					}
 				}
@@ -125,9 +122,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		// Select up to plant_max of these blocks to be planted.
 		Random rand = new Random();
 		for (int i = 0; i < plant_max; i++) {
-			if (blocks.isEmpty()) {
-				break;
-			}
+			if (blocks.isEmpty()) break;
 			BlockCoord coord = blocks.get(rand.nextInt(blocks.size()));
 			blocks.remove(coord);
 			plantBlocks.add(coord);

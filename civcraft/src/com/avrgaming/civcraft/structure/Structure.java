@@ -25,9 +25,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 
 import com.avrgaming.civcraft.components.Component;
 import com.avrgaming.civcraft.config.CivSettings;
@@ -41,8 +44,10 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.road.Road;
 import com.avrgaming.civcraft.template.Template;
+import com.avrgaming.civcraft.template.TemplateStream;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Structure extends Buildable {
 		
@@ -87,11 +92,11 @@ public class Structure extends Buildable {
 				struct = (Structure) new Bank(rs);
 			}
 			break;
-		case "s_trommel":
+		case "ti_lab":
 			if (rs == null) {
-				struct = (Structure) new Trommel(center, id, town);
+				struct = (Structure) new Lab(center, id, town);
 			} else {
-				struct = (Structure) new Trommel(rs);
+				struct = (Structure) new Lab(rs);
 			}
 			break;
 		case "s_lumbermill":
@@ -108,11 +113,11 @@ public class Structure extends Buildable {
 				struct = (Structure) new Mine(rs);
 			}
 			break;
-		case "ti_lab":
+		case "s_mob_grinder":
 			if (rs == null) {
-				struct = (Structure) new Lab(center, id, town);
+				struct = (Structure) new MobGrinder(center, id, town);
 			} else {
-				struct = (Structure) new Lab(rs);
+				struct = (Structure) new MobGrinder(rs);
 			}
 			break;
 		case "s_quarry":
@@ -120,6 +125,13 @@ public class Structure extends Buildable {
 				struct = (Structure) new Quarry(center, id, town);
 			} else {
 				struct = (Structure) new Quarry(rs);
+			}
+			break;
+		case "s_trommel":
+			if (rs == null) {
+				struct = (Structure) new Trommel(center, id, town);
+			} else {
+				struct = (Structure) new Trommel(rs);
 			}
 			break;
 		case "s_warehouse":
@@ -450,7 +462,41 @@ public class Structure extends Buildable {
 				e1.printStackTrace();
 				this.fancyDestroyStructureBlocks();
 			}
-						
+			
+			try {
+				String templateFilepath = this.getSavedTemplatePath();
+				TemplateStream tplStream = new TemplateStream(templateFilepath);
+				List<SimpleBlock> bottomLayer = tplStream.getBlocksForLayer(0);
+				ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+				for (SimpleBlock sb : bottomLayer) {
+					Block block = corner.getBlock().getRelative(sb.x, corner.getY(), sb.z);
+					Chunk chunk = block.getChunk();
+					if (chunks.contains(chunk)) continue;
+					chunks.add(chunk);
+				}
+				
+				for (Chunk c : chunks) {
+					for (Entity ent : c.getEntities()) {
+						if (ent instanceof Villager) {
+							Villager v = (Villager) ent;
+							if (CivGlobal.getVillagerByUUID(v.getUniqueId()) != null) {
+								if (this.getCorner().getY() <= v.getLocation().getBlockY() &&
+										(((this.getCenterLoc().getY()-this.getCorner().getY())*2)+(this.getCorner().getY()+1)) >= v.getLocation().getBlockY()) {
+									if (v.getCustomName() != null) {
+										String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
+										CivGlobal.removeCivVillager(vilKey, v);
+										v.setHealth(0); v.remove();
+										CivLog.warning("Villager removed on structure demolish: "+vilKey);
+									}
+								}
+							}
+						} 
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			CivGlobal.removeStructure(this);
 			this.getTown().removeStructure(this);
 			this.unbindStructureComponents();
@@ -648,7 +694,7 @@ public class Structure extends Buildable {
 			throw new CivException("Town halls and capitols cannot be repaired.");
 		}
 		
-		double cost  = getRepairCost();
+		double cost = getRepairCost();
 		if (!getTown().getTreasury().hasEnough(cost)) {
 			throw new CivException("Your town cannot not afford the "+cost+" coins to build a "+getDisplayName());
 		}

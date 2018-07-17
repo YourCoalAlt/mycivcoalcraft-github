@@ -73,7 +73,7 @@ public class ResidentCommand extends CommandBase {
 		Map<String, String> prevNames = ItemManager.getPlayerPreviousNames(p);
 		CivMessage.sendHeading(sender, "Previous Usernames");
 		for (Entry<String, String> s : prevNames.entrySet()) {
-			CivMessage.send(sender, s.getValue()+CivColor.LightGrayItalic+" (Changed: "+s.getKey()+")");
+			CivMessage.send(sender, s.getValue()+CivColor.DarkGrayItalic+" (Changed: "+s.getKey()+")");
 		}
 	}
 	
@@ -120,8 +120,8 @@ public class ResidentCommand extends CommandBase {
 		TimeZone timezone = TimeZone.getTimeZone(args[1]);
 		
 		if (timezone.getID().equals("GMT") && !args[1].equalsIgnoreCase("GMT")) {
-			CivMessage.send(sender, CivColor.LightGray+"We may not have recognized your timezone \""+args[1]+"\" if so, we'll set it to GMT.");
-			CivMessage.send(sender, CivColor.LightGray+"Type \"/resident timezone list\" to get a list of all available timezones.");
+			CivMessage.send(sender, CivColor.Gray+"We may not have recognized your timezone \""+args[1]+"\" if so, we'll set it to GMT.");
+			CivMessage.send(sender, CivColor.Gray+"Type \"/resident timezone list\" to get a list of all available timezones.");
 		}
 		
 		resident.setTimezone(timezone.getID());
@@ -304,12 +304,12 @@ public class ResidentCommand extends CommandBase {
 		CivMessage.sendHeading(sender, "Resident "+resident.getName());
 		
 		if (sender.isOp()) {
-			CivMessage.send(sender, CivColor.LightGrayBold+" -- OP Debug -- ");
+			CivMessage.send(sender, CivColor.GrayBold+" -- OP Debug -- ");
 			CivMessage.send(sender, "id: "+resident.getId());
 			CivMessage.send(sender, "registered: "+resident.getRegistered());
 			CivMessage.send(sender, "spy exposure: "+resident.getSpyExposure());
 			CivMessage.send(sender, "protected: "+resident.isProtected());
-			CivMessage.send(sender, CivColor.LightGrayBold+" -------------- ");
+			CivMessage.send(sender, CivColor.GrayBold+" -------------- ");
 		}
 		
 		if (CivGlobal.getOfflinePlayer(resident).isOnline()) {
@@ -322,8 +322,13 @@ public class ResidentCommand extends CommandBase {
 		
 		if (resident.hasTown()) {
 			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGreen+resident.getTownString()+", "+resident.getCivString());
-		} else {
-			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGray+" Currently Homeless");
+		} 
+		if (resident.hasCamp()) {
+			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.LightGreen+"Camp "+resident.getCampString());
+		}
+		
+		if (!resident.hasTown() && !resident.hasCamp()) {
+			CivMessage.send(sender, CivColor.Green+"Resides In: "+CivColor.Gray+" Currently Homeless");
 		}
 		
 		if (sender.getName().equalsIgnoreCase(resident.getName()) || sender.isOp()) {
@@ -369,14 +374,14 @@ public class ResidentCommand extends CommandBase {
 		}
 		
 		CivMessage.send(sender, CivColor.LightBlueBold+" -- Previous Usernames -- ");
-		CivMessage.send(sender, CivColor.LightBlueBold+"   Check with "+CivColor.LightGray+"/res prevnames (name)");
+		CivMessage.send(sender, CivColor.LightBlueBold+"   Check with "+CivColor.Gray+"/res prevnames (name)");
 		
 /*		try {
 			OfflinePlayer p = CivGlobal.getOfflinePlayer(resident);
 			if (p.isOnline()) {
 				CivMessage.send(sender, CivColor.LightGreen+"Currently Online and validated.");
 			} else {
-				CivMessage.send(sender, CivColor.LightGray+"Resident is not currently online.");
+				CivMessage.send(sender, CivColor.Gray+"Resident is not currently online.");
 			}
 		} catch (CivException e) {
 			CivMessage.send(sender, CivColor.Rose+"Invalid player...? Contact an admin.");
@@ -388,7 +393,7 @@ public class ResidentCommand extends CommandBase {
 	public void doDefaultAction() throws CivException {
 		showHelp();
 		//info_cmd();
-		//CivMessage.send(sender, CivColor.LightGray+"Subcommands available: See /resident help");
+		//CivMessage.send(sender, CivColor.Gray+"Subcommands available: See /resident help");
 	}
 
 	@Override

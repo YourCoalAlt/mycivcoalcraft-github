@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
@@ -33,11 +34,9 @@ import com.avrgaming.civcraft.util.CivColor;
 public class AnnouncementTimer implements Runnable {
 	
 	List<String> announcements;
-	
 	public AnnouncementTimer(String filename) {
 		File file = new File(filename);
 		announcements = new ArrayList<String>();
-		
 		if (!file.exists()) {
 			CivLog.warning("No "+filename+" to run announcements on.");
 			return;
@@ -64,17 +63,17 @@ public class AnnouncementTimer implements Runnable {
 	@Override
 	public void run() {
 		int t = 0;
-		int o = announcements.size();
 		for (String str : announcements) {
 			t++;
-			CivMessage.sendAll(CivColor.GoldBold+"[Tip "+CivColor.YellowItalic+t+" of "+o+CivColor.GoldBold+"]  "
-								+CivColor.RESET+CivColor.colorize(str));
-			try { // Only send 1 message every 4 minutes
-				Thread.sleep(60*4*1000);
+			if (str.length() < 2) continue;
+			try {
+				Thread.sleep(CivSettings.getIntegerGameConfig("tips.cooldown")*1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return;
 			} 
+			CivMessage.sendAllNoLog(CivColor.GoldBold+"[Tip "+CivColor.YellowItalic+t+"/"+announcements.size()+CivColor.GoldBold+"]  "
+								+CivColor.RESET+CivColor.colorize(str));
 		}
 	}
 }

@@ -71,18 +71,20 @@ public class BuildCommand extends CommandBase {
 			Buildable b = town.build_tasks.get(i).buildable;
 			
 			DecimalFormat df = new DecimalFormat("#.##");
+			double townHammers = b.getTown().getHammers().total;
 			double totalCost = b.getHammerCost();
-			double currentBuilt = b.getBuiltHammers();
-			double builtPercent = (currentBuilt/totalCost)*100;
+			double totalBlocks = b.getTotalBlockCount();
+			double builtHammers = b.getBuiltHammers();
+			double builtPercent = (builtHammers/totalCost)*100;
 			
-			// totalTime still changes and is inconsistant with structures
-//			int  totalTime = (int) (((b.getHammerCost() / town.getHammers().total) - (b.getBuiltHammers() / town.getHammers().total)) * 3600);
-			int totalTime = (int) (((b.getHammerCost() - b.getBuiltHammers()) / b.getBuildSpeed()) * 1000);
-			long endTime = (long)(System.currentTimeMillis() + (1000 * totalTime));
+			double totalTime = ((totalCost/(townHammers+Math.pow(totalBlocks/totalCost, 2.987654321))/1024)*60*60*1000);
+			double totalBuilt = ((builtHammers/(townHammers+Math.pow(totalBlocks/builtHammers, 2.987654321))/1024)*60*60*1000);
+			double timeLeft = -(totalBuilt-totalTime);
+			long endTime = (long)(System.currentTimeMillis() + (1000 * timeLeft));
 			
 			String time = "";
-		    int hours = (int) (totalTime / 3600);
-		    int remainder = (int) (totalTime - (hours * 3600));
+		    int hours = (int) (timeLeft / 3600);
+		    int remainder = (int) (timeLeft - (hours * 3600));
 		    int mins = remainder / 60;
 		    int secs = remainder - (mins * 60);
 		    int days = hours / 24;
@@ -95,10 +97,10 @@ public class BuildCommand extends CommandBase {
 			if (secs > 0) time += secs+" sec";
 			
 			CivMessage.send(sender, CivColor.GoldBold+(i+1)+". "+CivColor.LightGreenBold+b.getDisplayName()+" "+CivColor.Purple+
-						df.format(builtPercent)+"% "+CivColor.LightPurpleItalic+"("+df.format(currentBuilt) + "/"+totalCost+") "+
+						df.format(builtPercent)+"% "+CivColor.LightPurpleItalic+"("+df.format(builtHammers) + "/"+totalCost+") "+
 						CivColor.Gold+" Blocks: "+CivColor.YellowItalic+b.builtBlockCount+"/"+b.getTotalBlockCount());
 			CivMessage.send(sender, CivColor.Green+"  Completion: "+CivColor.LightGreen+sdf.format(endTime)+
-						CivColor.LightGrayItalic+" ["+CivColor.LightBlueItalic+time+CivColor.LightGrayItalic+"]");
+						CivColor.DarkGrayItalic+" ["+CivColor.LightBlueItalic+time+CivColor.DarkGrayItalic+"]");
 		}
 	}
 	
@@ -120,7 +122,7 @@ public class BuildCommand extends CommandBase {
 		}
 		
 		CivMessage.sendSuccess(player, "Running support on "+buildable.getDisplayName()+" at "+buildable.getCenterLocation()+"...");
-		buildable.getTown().buildSupport(buildable, buildable.getCorner());
+		buildable.getTown().buildSupport(buildable);
 	}
 	
 	public void validatenearest_cmd() throws CivException {
@@ -175,7 +177,7 @@ public class BuildCommand extends CommandBase {
 		if (args.length < 2 || !args[1].equalsIgnoreCase("yes")) {
 			CivMessage.send(player, CivColor.LightGreen+"Are you sure you want to repair the structure "+CivColor.Yellow+nearest.getDisplayName()+
 					CivColor.LightGreen+" at "+CivColor.Yellow+nearest.getCorner()+CivColor.LightGreen+" for "+CivColor.Yellow+nearest.getRepairCost()+" coins?");
-			CivMessage.send(player, CivColor.LightGray+"If yes, use /build repairnearest yes");
+			CivMessage.send(player, CivColor.Gray+"If yes, use /build repairnearest yes");
 			return;
 		}
 		
@@ -196,7 +198,7 @@ public class BuildCommand extends CommandBase {
 		if (args.length < 2 || !args[1].equalsIgnoreCase("yes")) {
 			CivMessage.send(player, CivColor.LightGreen+"Are you sure you want to demolish the structure "+CivColor.Yellow+nearest.getDisplayName()+
 					CivColor.LightGreen+" at "+CivColor.Yellow+nearest.getCorner()+CivColor.LightGreen+" ?");
-			CivMessage.send(player, CivColor.LightGray+"If yes, use /build demolishnearest yes");
+			CivMessage.send(player, CivColor.Gray+"If yes, use /build demolishnearest yes");
 						
 			nearest.flashStructureBlocks();
 			return;
@@ -281,7 +283,7 @@ public class BuildCommand extends CommandBase {
 							" Left: "+leftString);
 				} else {
 					Wonder wonder = CivGlobal.getWonderByConfigId(sinfo.id);
-					CivMessage.send(sender, CivColor.LightGray+sinfo.displayName+" Cost: "+sinfo.cost+" - Already built in "+
+					CivMessage.send(sender, CivColor.Gray+sinfo.displayName+" Cost: "+sinfo.cost+" - Already built in "+
 							wonder.getTown().getName()+"("+wonder.getTown().getCiv().getName()+")");
 				}
 			}
@@ -370,7 +372,7 @@ public class BuildCommand extends CommandBase {
 	public void showHelp() {
 		showBasicHelp();		
 		CivMessage.send(sender, CivColor.LightPurple+command+" "+CivColor.Yellow+"[structure name] "+
-				CivColor.LightGray+"builds this structure at your location.");
+				CivColor.Gray+"builds this structure at your location.");
 	}
 
 	@Override

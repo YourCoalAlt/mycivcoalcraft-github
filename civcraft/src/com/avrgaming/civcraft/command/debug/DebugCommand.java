@@ -120,7 +120,9 @@ public class DebugCommand extends CommandBase {
 		
 		commands.put("townchunk", " gets the town chunk you are standing in and prints it.");
 		commands.put("newday", "Runs the new day code, collects taxes ... etc.");
-		
+		commands.put("loadchunk", "[x] [z] - loads this chunk.");
+		commands.put("unloadchunk", "[x] [z] - unloads this chunk.");
+		commands.put("regenthischunk", "regens the chunk you are standing in");
 		
 		commands.put("civ", "[name] prints out civ info.");
 		commands.put("map", "shows a town chunk map of the current area.");
@@ -140,7 +142,6 @@ public class DebugCommand extends CommandBase {
 		commands.put("wall", "wall Info about the chunk you're on.");
 		commands.put("processculture", "forces a culture reprocess");
 		commands.put("givebuff", "[id] gives this id buff to a town.");
-		commands.put("unloadchunk", "[x] [z] - unloads this chunk.");
 		commands.put("setspeed", "[speed] - set your speed to this");
 		commands.put("tradegenerate", "generates trade goods at picked locations");
 		commands.put("createtradegood", "[good_id] - creates a trade goodie here.");
@@ -302,33 +303,39 @@ public class DebugCommand extends CommandBase {
 			Town spawnCapitol = new Town(capitolName, resident, spawnCiv);
 			spawnCapitol.saveNow();
 			
-			PermissionGroup leaders = new PermissionGroup(spawnCiv, "leaders");
+			PermissionGroup leaders = new PermissionGroup(spawnCiv, spawnCiv.getLeaderGroupName());
 			spawnCiv.addGroup(leaders);
 			leaders.addMember(resident);
 			spawnCiv.setLeader(resident);
 			spawnCiv.setLeaderGroup(leaders);
 			leaders.save();
 			
-			PermissionGroup advisers = new PermissionGroup(spawnCiv, "advisers");
+			PermissionGroup advisers = new PermissionGroup(spawnCiv, spawnCiv.getAdvisersGroupName());
 			spawnCiv.addGroup(advisers);
 			spawnCiv.setAdviserGroup(advisers);
 			advisers.save();
 			
-			PermissionGroup mayors = new PermissionGroup(spawnCapitol, "mayors");
+			PermissionGroup mayors = new PermissionGroup(spawnCapitol, spawnCapitol.getMayorGroupName());
 			spawnCapitol.addGroup(mayors);
 			spawnCapitol.setMayorGroup(mayors);
 			mayors.addMember(resident);
 			mayors.save();
 		
-			PermissionGroup assistants = new PermissionGroup(spawnCapitol, "assistants");
+			PermissionGroup assistants = new PermissionGroup(spawnCapitol, spawnCapitol.getAssistantGroupName());
 			spawnCapitol.addGroup(assistants);
 			spawnCapitol.setAssistantGroup(assistants);
-			assistants.save();	
+			assistants.save();
 			
-			PermissionGroup residents = new PermissionGroup(spawnCapitol, "residents");
+			PermissionGroup residents = new PermissionGroup(spawnCapitol, spawnCapitol.getResidentGroupName());
 			spawnCapitol.addGroup(residents);
-			spawnCapitol.setDefaultGroup(residents);
+			spawnCapitol.setResidentGroup(residents);
 			residents.save();
+			
+			PermissionGroup civMembers = new PermissionGroup(spawnCapitol, spawnCapitol.getCivMemberGroupName());
+			spawnCapitol.addGroup(civMembers);
+			spawnCapitol.setMayorGroup(civMembers);
+			civMembers.save();
+			
 			
 			spawnCiv.addTown(spawnCapitol);
 			spawnCiv.setCapitolName(spawnCapitol.getName());
@@ -441,7 +448,7 @@ public class DebugCommand extends CommandBase {
 										Template tplStruct;
 										try {
 											tplStruct = Template.getTemplate(struct.getSavedTemplatePath(), null);
-											TaskMaster.syncTask(new PostBuildSyncTask(tplStruct, struct));
+											TaskMaster.syncTask(new PostBuildSyncTask(tplStruct, struct, false));
 										} catch (IOException e) {
 											e.printStackTrace();
 											throw new CivException("IO Exception.");
@@ -664,7 +671,7 @@ public class DebugCommand extends CommandBase {
 	}
 	
 	public void showinv_cmd() throws CivException, IOException {
-		Backpack.spawnGuiBook(getPlayer(), true);
+		Backpack.openBackpackGUI(getPlayer(), true);
 	}
 	
 	public void biomehere_cmd() throws CivException {
@@ -851,14 +858,19 @@ public class DebugCommand extends CommandBase {
 	
 	public void regenchunk_cmd() {
 		World world = Bukkit.getWorld("world");
-		for(ChunkCoord coord : CivGlobal.preGenerator.goodPicks.keySet()) {
+		for (ChunkCoord coord : CivGlobal.preGenerator.goodPicks.keySet()) {
 			world.regenerateChunk(coord.getX(), coord.getZ());
 			CivMessage.send(sender, "Regened:"+coord);
 		}
 	}
 	
+	public void regenthischunk_cmd() throws CivException {
+		Player p = getPlayer();
+		p.getWorld().regenerateChunk(p.getLocation().getChunk().getX(), p.getLocation().getChunk().getZ());
+		CivMessage.send(sender, "Regened.");
+	}
+	
 	public void restoresigns_cmd() {
-		
 		CivMessage.send(sender, "restoring....");
 		for (StructureSign sign : CivGlobal.getStructureSigns()) {
 			
@@ -958,10 +970,17 @@ public class DebugCommand extends CommandBase {
 		}
 		
 		this.getPlayer().getWorld().unloadChunk(Integer.valueOf(args[1]), Integer.valueOf(args[2]));
-		
-		CivMessage.sendSuccess(sender, "unloaded.");
+		CivMessage.sendSuccess(sender, "Unloaded.");
 	}
 	
+	public void loadchunk_cmd() throws CivException {
+		if (args.length < 3) {
+			throw new CivException("Enter an x and z");
+		}
+		
+		this.getPlayer().getWorld().loadChunk(Integer.valueOf(args[1]), Integer.valueOf(args[2]));
+		CivMessage.sendSuccess(sender, "Loaded.");
+	}
 	
 	public void givebuff_cmd() throws CivException {
 		if (args.length < 2) {

@@ -32,7 +32,7 @@ public class AdminPerkCommand extends CommandBase {
 		for (ConfigPerk perk : CivSettings.perks.values()) {
 			CivMessage.send(sender, CivColor.Green+perk.display_name+CivColor.LightGreen+" id:"+CivColor.Rose+perk.id);
 		}
-		CivMessage.send(sender, CivColor.LightGray+"If list is too long, see perks.yml for all IDs.");
+		CivMessage.send(sender, CivColor.Gray+"If list is too long, see perks.yml for all IDs.");
 	}
 	
 	public void remove_cmd() throws CivException {

@@ -123,7 +123,7 @@ public class Settler extends UnitMaterial implements CallbackInterface {
 		/*
 		 * Build a preview for the Capitol structure.
 		 */
-		CivMessage.send(player, CivColor.LightGreen+CivColor.BOLD+"Checking structure position...Please wait.");
+		CivMessage.send(player, CivColor.LightGreenBold+"Checking structure position...Please wait.");
 		ConfigBuildableInfo info = CivSettings.structures.get("s_townhall");
 		try {
 			Buildable.buildVerifyStatic(player, info, player.getLocation(), this);
@@ -147,7 +147,7 @@ public class Settler extends UnitMaterial implements CallbackInterface {
 		CivMessage.send(player, CivColor.LightGreen+"This looks like a good place to settle!");
 		CivMessage.send(player, " ");
 		CivMessage.send(player, CivColor.LightGreen+ChatColor.BOLD+"What shall your new Town be called?");
-		CivMessage.send(player, CivColor.LightGray+"(To cancel, type 'cancel')");
+		CivMessage.send(player, CivColor.Gray+"(To cancel, type 'cancel')");
 		
 		resident.setInteractiveMode(new InteractiveTownName());
 	}

@@ -35,6 +35,7 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.permission.PlotPermissions;
 import com.avrgaming.civcraft.util.ChunkCoord;
@@ -65,13 +66,13 @@ public class TownChunk extends SQLObject {
 		ChunkCoord coord = new ChunkCoord(location);
 		setTown(newTown);
 		setChunkCord(coord);
-		perms.addGroup(newTown.getDefaultGroup());
+		perms.addGroup(newTown.getResidentGroup());
 	}
 	
 	public TownChunk(Town newTown, ChunkCoord chunkLocation) {
 		setTown(newTown);
 		setChunkCord(chunkLocation);
-		perms.addGroup(newTown.getDefaultGroup());
+		perms.addGroup(newTown.getResidentGroup());
 	}
 
 	public static void init() throws SQLException {
@@ -317,9 +318,15 @@ public class TownChunk extends SQLObject {
 			}
 		}
 		
+		Camp camp = CivGlobal.getCampChunk(coord);
+		if (camp != null) {
+			CivMessage.sendCamp(camp, CivColor.YellowBold+"Our camp's land was claimed by the town of "+town.getName()+" and has been disbaned!");
+			camp.disband();
+		}
+		
 		tc.setOutpost(outpost);
 		tc.save();
-		town.withdraw(cost);			
+		town.withdraw(cost);
 		CivGlobal.addTownChunk(tc);
 		CivGlobal.processCulture();
 		return tc;
@@ -390,12 +397,17 @@ public class TownChunk extends SQLObject {
 		}
 		
 		TownChunk tc = new TownChunk(town, coord);
-		
 		try {
 			town.addTownChunk(tc);
 		} catch (AlreadyRegisteredException e1) {
 			e1.printStackTrace();
 			throw new CivException("Internal Error Occurred.");
+		}
+		
+		Camp camp = CivGlobal.getCampChunk(coord);
+		if (camp != null) {
+			CivMessage.sendCamp(camp, CivColor.YellowBold+"Our camp's land was claimed by the town of "+town.getName()+" and has been disbaned!");
+			camp.disband();
 		}
 		
 		CivGlobal.addTownChunk(tc);
@@ -443,11 +455,11 @@ public class TownChunk extends SQLObject {
 		String out = "";
 		
 		if (this.perms.getOwner() != null) {
-			out += CivColor.LightGray+"[Owned by: "+CivColor.LightGreen+this.perms.getOwner().getName()+CivColor.LightGray+"]";
+			out += CivColor.Gray+"[Owned by: "+CivColor.LightGreen+this.perms.getOwner().getName()+CivColor.Gray+"]";
 		}
 		
 		if (this.perms.getOwner() == null && fromTc != null && fromTc.perms.getOwner() != null) {
-			out += CivColor.LightGray+"[Unowned]";
+			out += CivColor.Gray+"[Unowned]";
 		}
 		
 		if (this.isForSale()) {

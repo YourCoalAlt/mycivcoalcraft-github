@@ -120,11 +120,11 @@ public class CMatCommand extends CommandBase {
 			String info = commands.get(c);
 			
 			info = info.replace("[", CivColor.Yellow+"[");
-			info = info.replace("]", "]"+CivColor.LightGray);
+			info = info.replace("]", "]"+CivColor.Gray);
 			info = info.replace("(", CivColor.Yellow+"(");
-			info = info.replace(")", ")"+CivColor.LightGray);
+			info = info.replace(")", ")"+CivColor.Gray);
 						
-			CivMessage.send(sender, CivColor.LightPurple+command+" "+c+CivColor.LightGray+" "+info);
+			CivMessage.send(sender, CivColor.LightPurple+command+" "+c+CivColor.Gray+" "+info);
 		}
 	}
 

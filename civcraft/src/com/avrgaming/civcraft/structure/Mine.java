@@ -136,7 +136,7 @@ public class Mine extends Structure {
 			break;
 		case UNKNOWN:
 			CivMessage.sendTown(getTown(), CivColor.LightGreen+"Level "+getLevel()+" "+getDisplayName()+" consumption "+
-					CivColor.GrayBold+"UNKNOWN "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
+					CivColor.DarkGrayBold+"UNKNOWN "+CivColor.Green+getConsumeComponent().getCountString()+CivColor.LightGreen+". ");
 			break;
 		default:
 			break;
@@ -209,12 +209,12 @@ public class Mine extends Structure {
 						String[] split = s.split(";");
 						int imat = Integer.valueOf(split[0]);
 						int data = Integer.valueOf(split[1]);
-						loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						loreRequired.add(CivColor.GrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 					}
 				}
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Locked] Task "+m.task);
+				meta.setDisplayName(CivColor.WhiteBold+CivColor.Italic+"[Locked] Task "+m.task);
 				List<String> lore = new ArrayList<>();
 				lore.add(CivColor.Green+"Will Require: ");
 				lore.addAll(loreRequired);
@@ -231,7 +231,7 @@ public class Mine extends Structure {
 							String[] split = s.split(";");
 							int imat = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.GrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 						}
 					}
 					ItemStack item = new ItemStack(Material.LIME_SHULKER_BOX, 1);
@@ -250,12 +250,12 @@ public class Mine extends Structure {
 							String[] split = s.split(";");
 							int imat = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.LightGrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.GrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 						}
 					}
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
 					ItemMeta meta = item.getItemMeta();
-					meta.setDisplayName(CivColor.WhiteBold+CivColor.ITALIC+"[Completed] Task "+m.task);
+					meta.setDisplayName(CivColor.WhiteBold+CivColor.Italic+"[Completed] Task "+m.task);
 					List<String> lore = new ArrayList<>();
 					lore.add(CivColor.Green+"Consumed: ");
 					lore.addAll(loreRequired);
@@ -277,7 +277,7 @@ public class Mine extends Structure {
 				String[] split = s.split(";");
 				int imat = Integer.valueOf(split[0]);
 				int data = Integer.valueOf(split[1]);
-				lr.add(CivColor.LightGrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+				lr.add(CivColor.GrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
 			}
 		}
 		

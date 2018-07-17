@@ -214,7 +214,7 @@ public class DiplomaticRelation extends SQLObject {
 		String expireString = "";
 		if (this.expires != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("M/d/y k:m:s z");
-			expireString = CivColor.LightGray+" (Expires "+sdf.format(expires)+")";
+			expireString = CivColor.Gray+" (Expires "+sdf.format(expires)+")";
 		}
 		return color+out+expireString;
 	}

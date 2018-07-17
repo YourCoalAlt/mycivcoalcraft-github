@@ -15,7 +15,6 @@ import com.avrgaming.civcraft.database.SQLUpdate;
 import com.avrgaming.civcraft.exception.InvalidNameException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.SQLObject;
 
@@ -137,7 +136,6 @@ public class AccountLogger extends SQLObject {
 		if (this.getIPsFromString() != null) {
 			String finalips = "";
 			for (String s : this.getIPsFromString()) {
-				CivMessage.global(s);
 				if (s != null && !finalips.contains(s)) {
 					finalips += s+",";
 				}

@@ -41,7 +41,6 @@ public class _2BuildTechnologyList implements GuiAction {
 				} else if (!res.getCiv().hasTechnology(info.require_techs)) {
 				} else if (res.getCiv().getResearchTech() != null) {
 					is = LoreGuiItem.build(info.name, ItemManager.getId(Material.WATER_BUCKET), 0, CivColor.Rose+"Already researching "+res.getCiv().getResearchTech().name);
-//					is = LoreGuiItem.build(info.name, ItemManager.getId(Material.WATER_BUCKET), 0, CivColor.Rose+"Already researching "+res.getCiv().getResearchTech().name);
 					guiInventory.addItem(is);
 				} else if (!info.isAvailable(res.getCiv())) {
 					is = LoreGuiItem.build(info.name, ItemManager.getId(Material.BARRIER), 0, CivColor.Rose+"Not available");
@@ -49,8 +48,8 @@ public class _2BuildTechnologyList implements GuiAction {
 				} else {
 					is = LoreGuiItem.build(info.name, CivData.HARDENED_CLAY, 0,
 							CivColor.Gold+"<Click To Research>",
-							CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-							CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+							CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+							CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 					is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 					is = LoreGuiItem.setActionData(is, "info", info.id);
 					guiInventory.addItem(is);
@@ -58,80 +57,80 @@ public class _2BuildTechnologyList implements GuiAction {
 						type = ItemManager.getId(Material.HARD_CLAY);
 						is = LoreGuiItem.build(info.name, type, 0,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 2) {
 						is = LoreGuiItem.build(info.name, type, 1,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 3) {
 						is = LoreGuiItem.build(info.name, type, 7,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 4) {
 						is = LoreGuiItem.build(info.name, type, 4,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 5) {
 						is = LoreGuiItem.build(info.name, type, 8,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 6) {
 						is = LoreGuiItem.build(info.name, type, 5,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 7) {
 						is = LoreGuiItem.build(info.name, type, 13,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 8) {
 						is = LoreGuiItem.build(info.name, type, 3,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 9) {
 						is = LoreGuiItem.build(info.name, type, 9,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
 					} else if (info.tier == 10) {
 						is = LoreGuiItem.build(info.name, type, 11,
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
@@ -140,8 +139,8 @@ public class _2BuildTechnologyList implements GuiAction {
 						is = LoreGuiItem.build(info.name, type, 0,
 								CivColor.LightBlueBold+"<VICTORY TECHNOLOGY!!!>",
 								CivColor.Gold+"<Click To Research>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
@@ -149,8 +148,8 @@ public class _2BuildTechnologyList implements GuiAction {
 						type = ItemManager.getId(Material.CHORUS_PLANT);
 						is = LoreGuiItem.build(info.name, type, 0,
 								CivColor.Gold+"<Click To Research>  "+CivColor.LightPurple+"<Wonder Tech>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
@@ -158,8 +157,8 @@ public class _2BuildTechnologyList implements GuiAction {
 						type = ItemManager.getId(Material.DIRT);
 						is = LoreGuiItem.build(info.name, type, 0,
 								CivColor.RoseItalic+"<Click To Research>  "+CivColor.LightPurple+"<Tech W/out Item>",
-								CivColor.LightGray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
-								CivColor.LightGray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
+								CivColor.Gray+"Cost: "+CivColor.Yellow+info.getAdjustedTechCost(res.getCiv())+" Coins",
+								CivColor.Gray+"Science: "+CivColor.Yellow+info.getAdjustedScienceCost(res.getCiv())+" Science");
 						is = LoreGuiItem.setAction(is, "_2ResearchChooseTech");
 						is = LoreGuiItem.setActionData(is, "info", info.id);
 						guiInventory.addItem(is);
@@ -168,21 +167,21 @@ public class _2BuildTechnologyList implements GuiAction {
 			}
 		}
 		
-		if (Backpack.guiInventory != null) {
+		if (Backpack.backpackInventory != null) {
 			/* Add back buttons. */
 			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.guiInventory.getName());
+			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
 			guiInventory.setItem((9*3)-1, backButton);
 		} else {
-			Backpack.spawnGuiBook(player, false);
+			Backpack.openBackpackGUI(player, false);
 			
 			/* Add back buttons. */
 			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.guiInventory.getName());
+			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
 			guiInventory.setItem((9*3)-1, backButton);
 		}
 		

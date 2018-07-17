@@ -135,8 +135,8 @@ public class CivInfoCommand extends CommandBase {
 			}
 			CivMessage.send(sender, CivColor.Green+"War: "+CivColor.LightGreen+df.format(civ.getWarUpkeep()));
 			
-			CivMessage.send(sender, CivColor.LightGray+"Shows upkeep paid for last tick.");
-			CivMessage.send(sender, CivColor.LightGray+"Use /civ info upkeep <town name> to show a breakdown per town.");
+			CivMessage.send(sender, CivColor.Gray+"Shows upkeep paid for last tick.");
+			CivMessage.send(sender, CivColor.Gray+"Use /civ info upkeep <town name> to show a breakdown per town.");
 			
 			return;
 		} else {
@@ -153,7 +153,7 @@ public class CivInfoCommand extends CommandBase {
 			CivMessage.send(sender, CivColor.Green+"Debt: "+CivColor.LightGreen+civ.getUpkeepPaid(town, "debt"));
 			CivMessage.send(sender, CivColor.Green+"Total: "+CivColor.LightGreen+getTownTotalLastTick(town, civ));
 
-			CivMessage.send(sender, CivColor.LightGray+"Shows upkeep paid for last tick.");
+			CivMessage.send(sender, CivColor.Gray+"Shows upkeep paid for last tick.");
 		}
 
 		
@@ -163,7 +163,7 @@ public class CivInfoCommand extends CommandBase {
 	@Override
 	public void doDefaultAction() throws CivException {
 		show_info();
-		CivMessage.send(sender, CivColor.LightGray+"Subcommands available: See /civ info help");
+		CivMessage.send(sender, CivColor.Gray+"Subcommands available: See /civ info help");
 	}
 	
 	public static void show(CommandSender sender, Resident resident, Civilization civ) {
@@ -226,8 +226,8 @@ public class CivInfoCommand extends CommandBase {
 			for (SessionEntry entry : entries) {
 				if (civ == EndGameCondition.getCivFromSessionData(entry.value)) {
 					Integer daysLeft = endCond.getDaysToHold() - endCond.getDaysHeldFromSessionData(entry.value);
-					CivMessage.send(sender, CivColor.LightBlue+CivColor.BOLD+civ.getName()+CivColor.White+" is "+
-					CivColor.Yellow+CivColor.BOLD+daysLeft+CivColor.White+" days away from a "+CivColor.LightPurple+CivColor.BOLD+endCond.getVictoryName()+
+					CivMessage.send(sender, CivColor.LightBlueBold+civ.getName()+CivColor.White+" is "+
+					CivColor.YellowBold+daysLeft+CivColor.White+" days away from a "+CivColor.LightPurpleBold+endCond.getVictoryName()+
 					CivColor.White+" victory!");
 					break;
 				}
@@ -236,15 +236,15 @@ public class CivInfoCommand extends CommandBase {
 		
 		Integer votes = EndConditionDiplomacy.getVotesFor(civ);
 		if (votes > 0) {
-			CivMessage.send(sender, CivColor.LightBlue+CivColor.BOLD+civ.getName()+CivColor.White+" has "+
-					CivColor.LightPurple+CivColor.BOLD+votes+CivColor.White+" diplomatic votes");
+			CivMessage.send(sender, CivColor.LightBlueBold+civ.getName()+CivColor.White+" has "+
+					CivColor.LightPurpleBold+votes+CivColor.White+" diplomatic votes");
 		}
 		
 		Double beakers = EndConditionScience.getBeakersFor(civ);
 		if (beakers > 0) {
 			DecimalFormat df = new DecimalFormat("#.#");
-			CivMessage.send(sender, CivColor.LightBlue+CivColor.BOLD+civ.getName()+CivColor.White+" has "+
-					CivColor.LightPurple+CivColor.BOLD+df.format(beakers)+CivColor.White+" beakers on The Enlightenment.");			
+			CivMessage.send(sender, CivColor.LightBlueBold+civ.getName()+CivColor.White+" has "+
+					CivColor.LightPurpleBold+df.format(beakers)+CivColor.White+" beakers on The Enlightenment.");			
 		}
 		
 		String out = CivColor.Green+"Towns: ";

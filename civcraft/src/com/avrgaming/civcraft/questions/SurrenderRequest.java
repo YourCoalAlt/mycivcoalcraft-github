@@ -34,7 +34,7 @@ public class SurrenderRequest implements QuestionResponseInterface {
 			fromCiv.onDefeat(toCiv);
 			CivMessage.global(fromCiv.getName()+" has surrendered to "+toCiv.getName());
 		} else {
-			CivMessage.sendCiv(fromCiv, CivColor.LightGray+toCiv.getName()+" declined our offer.");
+			CivMessage.sendCiv(fromCiv, CivColor.Gray+toCiv.getName()+" declined our offer.");
 		}
 	}
 

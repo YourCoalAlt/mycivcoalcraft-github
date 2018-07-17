@@ -141,7 +141,7 @@ public abstract class Buildable extends SQLObject {
 	public ArrayList<Component> attachedComponents = new ArrayList<Component>();
 	
 	private boolean valid = true;
-	public static double validPercentRequirement = 0.8;
+	public static double validPercentRequirement = 0.75;
 	public static HashSet<Buildable> invalidBuildables = new HashSet<Buildable>();
 	public HashMap<Integer, BuildableLayer> layerValidPercentages = new HashMap<Integer, BuildableLayer>();
 	public boolean validated = false;
@@ -420,7 +420,7 @@ public abstract class Buildable extends SQLObject {
 				infoRec = LoreGuiItem.build(perk.getDisplayName(), 
 						perk.configPerk.type_id, 
 						perk.configPerk.data, CivColor.Gold+"<Click To Build>",
-						CivColor.Gray+"Provided by: "+CivColor.LightBlue+perk.provider);
+						CivColor.DarkGray+"Provided by: "+CivColor.LightBlue+perk.provider);
 				infoRec = LoreGuiItem.setAction(infoRec, "BuildWithTemplate");
 				infoRec = LoreGuiItem.setActionData(infoRec, "perk", perk.getIdent());
 				inv.addItem(infoRec);
@@ -430,11 +430,11 @@ public abstract class Buildable extends SQLObject {
 				infoRec = LoreGuiItem.build(perk.getDisplayName(), 
 						CivData.BEDROCK, 
 						perk.configPerk.data, CivColor.Gold+"<Click To Bind>",
-						CivColor.Gray+"Unbound Temple",
-						CivColor.Gray+"You own this template.",
-						CivColor.Gray+"The town is missing it.",
-						CivColor.Gray+"Click to bind to town first.",
-						CivColor.Gray+"Then build again.");				
+						CivColor.DarkGray+"Unbound Temple",
+						CivColor.DarkGray+"You own this template.",
+						CivColor.DarkGray+"The town is missing it.",
+						CivColor.DarkGray+"Click to bind to town first.",
+						CivColor.DarkGray+"Then build again.");				
 				infoRec = LoreGuiItem.setAction(infoRec, "ActivatePerk");
 				infoRec = LoreGuiItem.setActionData(infoRec, "perk", perk.getIdent());
 				
@@ -522,7 +522,7 @@ public abstract class Buildable extends SQLObject {
 				infoRec = LoreGuiItem.build(perk.getDisplayName(), 
 						perk.configPerk.type_id, 
 						perk.configPerk.data, CivColor.Gold+"<Click To Build>",
-						CivColor.Gray+"Provided by: "+CivColor.LightBlue+"Yourself :)");
+						CivColor.DarkGray+"Provided by: "+CivColor.LightBlue+"Yourself :)");
 				infoRec = LoreGuiItem.setAction(infoRec, "BuildWithPersonalTemplate");
 				infoRec = LoreGuiItem.setActionData(infoRec, "perk", perk.getIdent());
 				inv.addItem(infoRec);
@@ -634,10 +634,10 @@ public abstract class Buildable extends SQLObject {
 //			// just put the center at 0,0 of this chunk?
 //			loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
 //		} else {
-			if (dir.equalsIgnoreCase("east")) {				
+			if (dir.equalsIgnoreCase("east")) {
 				loc.setZ(loc.getZ() - (z_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
-				loc.setX(loc.getX() + SHIFT_OUT);				
+				loc.setX(loc.getX() + SHIFT_OUT);
 			} else if (dir.equalsIgnoreCase("west")) {
 				loc.setZ(loc.getZ() - (z_size / 2));
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
@@ -651,7 +651,7 @@ public abstract class Buildable extends SQLObject {
 				loc = center.getChunk().getBlock(0, center.getBlockY(), 0).getLocation();
 				loc.setZ(loc.getZ() + SHIFT_OUT);
 			}
-//		}  
+//		}
 		if (this.getTemplateYShift() != 0) {
 			// Y-Shift based on the config, this allows templates to be built underground.
 			loc.setY(loc.getY() + this.getTemplateYShift());
@@ -859,7 +859,7 @@ public abstract class Buildable extends SQLObject {
 						claimCoords.add(new ChunkCoord(b.getLocation()));
 					}
 					
-					if (tc != null && !tc.perms.hasPermission(PlotPermissions.Type.DESTROY, CivGlobal.getResident(player))) {
+					if (tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.DESTROY, CivGlobal.getResident(player))) {
 						// Make sure we have permission to destroy any block in this area.
 						throw new CivException("Cannot build here, you need DESTROY permissions to the block at "+b.getX()+","+b.getY()+","+b.getZ());
 					}
@@ -885,17 +885,21 @@ public abstract class Buildable extends SQLObject {
 					if (CivGlobal.getStructureBlock(coord) != null) {
 						throw new CivException("Cannot build here, structure blocks in the way.");
 					}
-				
+					
 					if (CivGlobal.getFarmChunk(new ChunkCoord(coord.getLocation())) != null) {
 						throw new CivException("Cannot build here, in the same chunk as a farm improvement.");
 					}
-		
+					
 					if (CivGlobal.getWallChunk(chunkCoord) != null) {
 						throw new CivException("Cannot build here, in the same chunk as a wall improvement.");
 					}
 					
 					if (CivGlobal.getBuildablesAt(coord) != null) {
 						throw new CivException("Cannot build here, there is already a structure here.");
+					}
+					
+					if (CivGlobal.getCampBlock(coord) != null) {
+						throw new CivException("Cannot build here, camp blocks in the way.");
 					}
 					
 					RoadBlock rb = CivGlobal.getRoadBlock(coord);
@@ -954,22 +958,22 @@ public abstract class Buildable extends SQLObject {
 			for (int y = 0; y < tpl.size_y; y++) {
 				for (int z = 0; z < tpl.size_z; z++) {
 					Block b = centerBlock.getRelative(x, y, z);
-						//b.setTypeIdAndData(tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
-						if (tpl.blocks[x][y][z].specialType == Type.COMMAND) {
-							ItemManager.setTypeIdAndData(b, CivData.AIR, (byte)0, false);
-						} else {
-							ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
-						}
-						
-						chunkUpdates.put(b.getChunk(), b.getChunk());
-						if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
-							Sign s2 = (Sign)b.getState();
-							s2.setLine(0, tpl.blocks[x][y][z].message[0]);
-							s2.setLine(1, tpl.blocks[x][y][z].message[1]);
-							s2.setLine(2, tpl.blocks[x][y][z].message[2]);
-							s2.setLine(3, tpl.blocks[x][y][z].message[3]);
-							s2.update();
-						}
+					//b.setTypeIdAndData(tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+					if (tpl.blocks[x][y][z].specialType == Type.COMMAND) {
+						ItemManager.setTypeIdAndData(b, CivData.AIR, (byte)0, false);
+					} else {
+						ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+					}
+					
+					chunkUpdates.put(b.getChunk(), b.getChunk());
+					if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+						Sign s2 = (Sign)b.getState();
+						s2.setLine(0, tpl.blocks[x][y][z].message[0]);
+						s2.setLine(1, tpl.blocks[x][y][z].message[1]);
+						s2.setLine(2, tpl.blocks[x][y][z].message[2]);
+						s2.setLine(3, tpl.blocks[x][y][z].message[3]);
+						s2.update();
+					}
 				}
 			}
 		}
@@ -1202,7 +1206,7 @@ public abstract class Buildable extends SQLObject {
 				else if (progress >= 20 && progress < 45) color = BarColor.RED;
 				else if (progress >= 0 && progress < 20) color = BarColor.PINK;
 				else color = BarColor.BLUE;
-				final BossBar bar = Bukkit.createBossBar(CivColor.BOLD+hit.getOwner().getDisplayName()+" ("+hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")", color, BarStyle.SOLID);
+				final BossBar bar = Bukkit.createBossBar(CivColor.Bold+hit.getOwner().getDisplayName()+" ("+hit.getOwner().hitpoints+"/"+hit.getOwner().getMaxHitPoints()+")", color, BarStyle.SOLID);
 				bar.setProgress(progress/100); // Values 0.0 to 1.0, therefore % = Dmg HP / Total HP
 				
 				// For the player destroying a structure
@@ -1279,7 +1283,7 @@ public abstract class Buildable extends SQLObject {
 			e.printStackTrace();
 		}*/
 		
-		CivMessage.send(player, CivColor.LightGray+hit.getOwner().getDisplayName()+" has been damaged "+hit.getOwner().getDamagePercentage()+"%!");
+		CivMessage.send(player, CivColor.Gray+hit.getOwner().getDisplayName()+" has been damaged "+hit.getOwner().getDamagePercentage()+"%!");
 		CivMessage.sendTown(hit.getTown(), CivColor.Yellow+"Our "+hit.getOwner().getDisplayName()+" at ("+hit.getOwner().getCorner()+") is under attack! Damage is "+hit.getOwner().getDamagePercentage()+"%!");	
 	}
 	
@@ -1458,8 +1462,8 @@ public abstract class Buildable extends SQLObject {
 	//	Template tpl = new Template();
 		//tpl.load_template(this.getSavedTemplatePath());
 		Template tpl = Template.getTemplate(this.getSavedTemplatePath(), null);
-		this.buildRepairTemplate(tpl, this.getCorner().getBlock());
-		TaskMaster.syncTask(new PostBuildSyncTask(tpl, this));
+//		this.buildRepairTemplate(tpl, this.getCorner().getBlock());
+		TaskMaster.syncTask(new PostBuildSyncTask(tpl, this, true));
 	}
 	
 	public boolean isTownHall() {
@@ -1508,7 +1512,6 @@ public abstract class Buildable extends SQLObject {
 		}
 		
 		ChunkCoord coord = new ChunkCoord(worldName, chunkX, chunkZ);
-		
 		ChunkSnapshot snapshot = snapshots.get(coord);
 		if (snapshot == null) {
 			throw new CivException("Snapshot for chunk "+chunkX+", "+chunkZ+" in "+worldName+" not found for abs:"+absX+","+absZ);
@@ -1518,15 +1521,13 @@ public abstract class Buildable extends SQLObject {
 	}
 	
 	public static double getReinforcementRequirementForLevel(int level) {
-		if (level > 10) {
-			return Buildable.validPercentRequirement*0.3;
-		}
-		
-		if (level > 40) {
-			return Buildable.validPercentRequirement*0.1;
-		}
-		
-		return Buildable.validPercentRequirement;
+		if (level <= 12) return Buildable.validPercentRequirement*0.1375; // 10%, 12
+		if (level <= 20) return Buildable.validPercentRequirement*0.2675; // 20%, 8
+		if (level <= 27) return Buildable.validPercentRequirement*0.4000; // 30%, 7
+		if (level <= 33) return Buildable.validPercentRequirement*0.5365; // 40%, 6
+		if (level <= 39) return Buildable.validPercentRequirement*0.6667; // 50%, 6
+		if (level <= 45) return Buildable.validPercentRequirement*0.8335; // 62%, 6
+			return Buildable.validPercentRequirement; // 75%
 	}
 	
 	
@@ -1656,7 +1657,9 @@ public abstract class Buildable extends SQLObject {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	public static boolean validatePlayerGUI(Player p, Buildable buildable, boolean hastoBeResidentOfTown, boolean hastoBeResidentOfCiv, boolean hastoBePlotAssigned) {
+	
+	public static boolean validatePlayerGUI(Player p, Buildable buildable, boolean hastoBeResidentOfTown, boolean hastoBeMayorAssistantOfTown,
+				boolean hastoBeResidentOfCiv, boolean hastoBePlotAssigned) {
 /*		ArrayList<Buildable> builtHere = new ArrayList<Buildable>();
 		for (Buildable atloc : CivGlobal.getBuildablesAt(buildable.getCenterLocation())) builtHere.add(atloc);
 		if (!builtHere.contains(buildable)) {
@@ -1677,6 +1680,13 @@ public abstract class Buildable extends SQLObject {
 			}
 		}
 		
+		if (hastoBeMayorAssistantOfTown) {
+			if (!res.getTown().isMayor(res)) {
+				CivMessage.sendError(res, "Cannot access this villager: You are not a mayor of this town.");
+				return false;
+			}
+		}
+		
 		if (hastoBeResidentOfCiv) {
 			if (!res.hasCiv()) {
 				CivMessage.sendError(res, "Cannot access this villager: You are not in a civ.");
@@ -1691,7 +1701,7 @@ public abstract class Buildable extends SQLObject {
 		
 		if (hastoBePlotAssigned) {
 			TownChunk tc = CivGlobal.getTownChunk(p.getLocation());
-			if (tc != null && !tc.perms.hasPermission(PlotPermissions.Type.INTERACT, res)) {
+			if (tc != null && !tc.perms.hasPermission(PlotPermissions.PlotNodeType.INTERACT, res)) {
 				CivMessage.sendError(res, "Cannot access this villager: You do not have permissions to use the plot you are in.");
 				return false;
 			}

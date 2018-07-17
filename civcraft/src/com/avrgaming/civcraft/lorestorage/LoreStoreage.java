@@ -58,11 +58,11 @@ public class LoreStoreage {
 		ItemMeta meta = stack.getItemMeta();
 		ArrayList<String> lore = new ArrayList<String>();
 		
-		lore.add(CivColor.Blue+type);
+		lore.add(CivColor.Aqua+type);
 		
 		for (String key : map.keySet()) {
 			String value = map.get(key);
-			lore.add(CivColor.Gray+key+":"+value);
+			lore.add(CivColor.DarkGray+key+":"+value);
 		}
 		
 		meta.setLore(lore);

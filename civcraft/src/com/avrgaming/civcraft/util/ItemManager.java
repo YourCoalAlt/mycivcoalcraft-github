@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,7 +30,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.avrgaming.civcraft.main.CivData;
+import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.Resident;
 
 
 /*
@@ -183,8 +186,17 @@ public class ItemManager {
 		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
 		SkullMeta meta = (SkullMeta) skull.getItemMeta();
 		meta.setOwningPlayer(p); // TODO Test if this fix from 1.11 to 1.12 works
-//		meta.setOwner(p.getName());
 		meta.setDisplayName(itemDisplayName);
+		skull.setItemMeta(meta);
+		return skull;
+	}
+	
+	public static ItemStack spawnPlayerHead(String name) {		
+		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
+		SkullMeta meta = (SkullMeta) skull.getItemMeta();
+		@SuppressWarnings("deprecation")
+		OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+		meta.setOwningPlayer(op); // TODO Test if this fix from 1.11 to 1.12 works
 		skull.setItemMeta(meta);
 		return skull;
 	}
@@ -200,9 +212,8 @@ public class ItemManager {
 	}
 	
 	// TODO arraylist?
-	public static boolean givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
-		if (name == null || name == "") name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
-		String full = "recieved";
+	public static void givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
+		String full = "picked up";
 		stack.setAmount(1);
 		for (int i = 0; i < amt; i++) {
 			if (p.getInventory().firstEmpty() == -1) {
@@ -214,9 +225,23 @@ public class ItemManager {
 		}
 		
 		if (msg && amt > 0) {
-			CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
+			Resident res = CivGlobal.getResident(p);
+			
+			// Item Pickup Messages
+			if (res.getItemMode().equals("none")) return;
+			if (res.getItemMode().equals("all")) {
+				if (name == null) {
+					name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
+					CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
+				} else {
+					CivMessage.send(p, CivColor.LightGreen+"You've "+full+" up "+CivColor.LightPurple+amt+" "+name);
+				}
+			} else if (name != null && res.getItemMode().equals("rare")) {
+				CivMessage.send(p, CivColor.LightGreen+"You've "+full+" up "+CivColor.LightPurple+amt+" "+name);
+			}
+//			CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
 		}
-		return true;
+		return;
 	}
 	
 	public static boolean dropPlayerEXP(Player p, Location dropLoc, int amt) {

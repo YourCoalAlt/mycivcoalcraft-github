@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 
-import com.avrgaming.civcraft.config.ConfigCustomMobs;
+import com.avrgaming.civcraft.config.ConfigMobsCustom;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -26,7 +26,7 @@ import net.minecraft.server.v1_12_R1.GenericAttributes;
 public abstract class CustomMobListener {
 
 	public static ConcurrentHashMap<UUID, Entity> customMobs = new ConcurrentHashMap<UUID, Entity>();
-	public static ConcurrentHashMap<UUID, ConfigCustomMobs> mobList = new ConcurrentHashMap<UUID, ConfigCustomMobs>();
+	public static ConcurrentHashMap<UUID, ConfigMobsCustom> mobList = new ConcurrentHashMap<UUID, ConfigMobsCustom>();
 	public EntityLiving entity;
 	
 	public static ConcurrentHashMap<String, MobComponent> components = new ConcurrentHashMap<String, MobComponent>();
@@ -62,7 +62,7 @@ public abstract class CustomMobListener {
 	private void checkForTownBorders() {
 		Location loc = getLocation(entity);
 		TownChunk tc = CivGlobal.getTownChunk(loc);
-		if (tc != null && !tc.perms.isMobs()) {
+		if (tc != null && !tc.perms.isCustomSpawnMobs()) {
 			entity.getBukkitEntity().remove();
 		}
 	}

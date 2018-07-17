@@ -30,9 +30,11 @@ import gpl.AttributeUtil;
 
 public class Backpack {
 	
+	private static ItemStack back_head = ItemManager.spawnPlayerHead("MHF_ArrowRight");
+	
 	public static Inventory tutorialInventory = null;
 	public static Inventory craftingHelpInventory = null;
-	public static Inventory guiInventory = null;
+	public static Inventory backpackInventory = null;
 	public static final int MAX_CHEST_SIZE = 6;
 	
 	public static Inventory experienceHelpInv = null;
@@ -43,20 +45,20 @@ public class Backpack {
 		if (experienceHelpInv == null) {
 			experienceHelpInv = Bukkit.getServer().createInventory(player, 9*3, "Experience Categories");
 			
-//			ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, CivColor.LightGray+"« Click for Rates »");
+//			ItemStack mining = LoreGuiItem.build(CivColor.LightBlueBold+"Mining", CivData.WOOD_PICKAXE, 0, CivColor.Gray+"« Click for Rates »");
 //			mining = LoreGuiItem.setAction(mining, "OpenInventory");
 //			mining = LoreGuiItem.setActionData(mining, "invType", "showMiningRates");
 //			experienceHelpInv.addItem(mining);
 			
-			ItemStack fishing = LoreGuiItem.build(CivColor.LightBlueBold+"Fishing", CivData.RAW_FISH, 0, CivColor.LightGray+"« Click for Rates »");
+			ItemStack fishing = LoreGuiItem.build(CivColor.LightBlueBold+"Fishing", CivData.RAW_FISH, 0, CivColor.Gray+"« Click for Rates »");
 			fishing = LoreGuiItem.setAction(fishing, "OpenInventory");
 			fishing = LoreGuiItem.setActionData(fishing, "invType", "showFishingRates");
 			experienceHelpInv.addItem(fishing);
 			
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Main Menu");
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Main Menu");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-			backButton = LoreGuiItem.setActionData(backButton, "invName", guiInventory.getName());
+			backButton = LoreGuiItem.setActionData(backButton, "invName", backpackInventory.getName());
 			experienceHelpInv.setItem((9*3)-1, backButton);
 			
 			LoreGuiItemListener.guiInventories.put(experienceHelpInv.getName(), experienceHelpInv);
@@ -83,7 +85,7 @@ public class Backpack {
 					out += CivColor.Green+CivColor.LightGreen+d.resxp+" Mining EXP";
 //					out += CivColor.Green+"XP Orbs: "+CivColor.LightGreen+((int) (d.exp_min*mod2) / 2)+"-"+((int) (d.exp_max*mod2) / 2)+";";
 //					out += CivColor.Green+"Fishing XP: "+CivColor.LightGreen+Double.valueOf(df.format((d.res_exp*mod2)+0.0));
-					out += ";"+CivColor.LightGray+"Vanilla Item";
+					out += ";"+CivColor.Gray+"Vanilla Item";
 					ItemStack fishing = LoreGuiItem.build(CivColor.White+CivData.getDisplayName(d.id, 0), d.id, 0, out.split(";"));
 					miningRateInv.addItem(fishing);
 				}
@@ -94,7 +96,7 @@ public class Backpack {
 				miningRateInv.addItem(fishing);
 			}
 			
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Experience Menu");
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Experience Menu");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", experienceHelpInv.getName());
@@ -156,7 +158,7 @@ public class Backpack {
 							fishingRateInv.addItem(fishing);
 						}
 					} else {
-						out += ";"+CivColor.LightGray+"Vanilla Item";
+						out += ";"+CivColor.Gray+"Vanilla Item";
 						ItemStack fishing = LoreGuiItem.build(CivColor.White+CivData.getDisplayName(d.type_id, d.type_data), d.type_id, d.type_data, out.split(";"));
 						fishingRateInv.addItem(fishing);
 					}
@@ -168,7 +170,7 @@ public class Backpack {
 				fishingRateInv.addItem(fishing);
 			}
 			
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Experience Menu");
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Experience Menu");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", experienceHelpInv.getName());
@@ -366,7 +368,7 @@ public class Backpack {
 					}
 				}
 				
-				/* Add Information Item */
+				// Add Information Item
 				ItemStack info = LoreGuiItem.build("Information", ItemManager.getId(Material.SHIELD), 0,
 						CivColor.White+"This GUI displays all of the material",
 						CivColor.White+"categories that a person can view",
@@ -375,8 +377,8 @@ public class Backpack {
 						);
 				craftingHelpInventory.setItem((9*5)-2, info);
 				
-				/* Add back buttons. */
-				ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Categories");
+				// Add back buttons.
+				ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Categories");
 				backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 				backButton = LoreGuiItem.setActionData(backButton, "invType", "showCraftingHelp");
 				inv.setItem(LoreGuiItem.MAX_INV_SIZE-1, backButton);
@@ -384,11 +386,11 @@ public class Backpack {
 				LoreGuiItemListener.guiInventories.put(inv.getName(), inv);
 			}
 			
-			/* Add back buttons. */
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Categories");
+			// Add back buttons.
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head,  "Back to Categories");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-			backButton = LoreGuiItem.setActionData(backButton, "invName", guiInventory.getName());
+			backButton = LoreGuiItem.setActionData(backButton, "invName", backpackInventory.getName());
 			craftingHelpInventory.setItem((9*5)-1, backButton);
 			
 			LoreGuiItemListener.guiInventories.put(craftingHelpInventory.getName(), craftingHelpInventory);
@@ -396,10 +398,9 @@ public class Backpack {
 		player.openInventory(craftingHelpInventory);
 	}
 	
-	public static void spawnGuiBook(Player player, boolean openGUI) {
-		guiInventory = null;
-		
-		guiInventory = Bukkit.getServer().createInventory(player, 9*3, "CivCraft Information");
+	public static void openBackpackGUI(Player player, boolean openGUI) {
+		backpackInventory = null;
+		backpackInventory = Bukkit.getServer().createInventory(player, 9*3, "Backpack Menu");
 		//00 01 02 03 04 05 06 07 08
 		//09 10 11 12 13 14 15 16 17
 		//18 19 20 21 22 23 24 25 26
@@ -419,39 +420,39 @@ public class Backpack {
 					CivColor.LightGreen+"Farming Level: "+CivColor.Rose+" (InDev)",
 					CivColor.LightGreen+"Slaughter (Passive) Level: "+CivColor.Rose+" (InDev)",
 					CivColor.LightGreen+"Weapondry (Agressive) Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.WEAPONDRY)+" ("+re.getEXPCount(EXPSlots.WEAPONDRY)+"/"+re.getEXPToNextLevel(EXPSlots.WEAPONDRY)+" XP)",
-					CivColor.LightGray+"« Click for Experience Info »");
+					CivColor.Gray+"« Click for Experience Info »");
 			playerInfo = LoreGuiItem.setAction(playerInfo, "OpenInventory");
 			playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
-			guiInventory.setItem(0, playerInfo);
+			backpackInventory.setItem(0, playerInfo);
 		} else {
 			ItemStack playerInfo = LoreGuiItem.build("Player Info", ItemManager.getId(Material.SKULL_ITEM), 3,
 					CivColor.RoseItalic+"Error, Resident Invalid?");
-			guiInventory.setItem(0, playerInfo);
+			backpackInventory.setItem(0, playerInfo);
 		}
 		
-		ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+		ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
 		resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
 		resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
-		guiInventory.setItem(2, resMail);
+		backpackInventory.setItem(2, resMail);
 		
 		ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
 		craftRec = LoreGuiItem.setAction(craftRec, "OpenInventory");
 		craftRec = LoreGuiItem.setActionData(craftRec, "invType", "showCraftingHelp");
-		guiInventory.setItem(4, craftRec);
+		backpackInventory.setItem(4, craftRec);
 		
 		ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", ItemManager.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
 		gameInfo = LoreGuiItem.setAction(gameInfo, "OpenInventory");
 		gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
-		guiInventory.setItem(8, gameInfo);
+		backpackInventory.setItem(8, gameInfo);
 		
-		ItemStack civMenu = LoreGuiItem.build("Civ Menu", ItemManager.getId(Material.COMMAND), 0, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
+		ItemStack civMenu = LoreGuiItem.build("Civ Menu", ItemManager.getId(Material.COMMAND), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
 //		civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
 //		civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
-		guiInventory.setItem(9, civMenu);
+		backpackInventory.setItem(9, civMenu);
 		
 		ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", ItemManager.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
 		civDip = LoreGuiItem.setAction(civDip, "DiplomaticMenu");
-		guiInventory.setItem(14, civDip);
+		backpackInventory.setItem(14, civDip);
 		
 //		ItemStack perkMenu = LoreGuiItem.build("Perk Menu", ItemManager.getId(Material.BOOK_AND_QUILL), 0, CivColor.Gold+"<Click to View>");
 //		perkMenu = LoreGuiItem.setAction(perkMenu, "ShowPerkPage");
@@ -460,23 +461,24 @@ public class Backpack {
 		ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
 		townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
 		townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
-		guiInventory.setItem(18, townMenu);
+		backpackInventory.setItem(18, townMenu);
 		
 		ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
 		buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
-		guiInventory.setItem(19, buildMenu);
+		backpackInventory.setItem(19, buildMenu);
 		
 		ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
 		newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
-		guiInventory.setItem(25, newsInfo);
+		backpackInventory.setItem(25, newsInfo);
 		
-		ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.LightGray+" « Coming Soon » ");
-//		turorialMenu = LoreGuiItem.setAction(turorialMenu, "BuildTutorialMenu");
-		guiInventory.setItem(26, turorialMenu);
+		ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
+		turorialMenu = LoreGuiItem.setAction(turorialMenu, "OpenInventory");
+		turorialMenu = LoreGuiItem.setActionData(turorialMenu, "tutorialInv", "wiki_mainmenu");
+		backpackInventory.setItem(26, turorialMenu);
 		
-		LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);
+		LoreGuiItemListener.guiInventories.put(backpackInventory.getName(), backpackInventory);
 		if (openGUI) {
-			player.openInventory(guiInventory);
+			player.openInventory(backpackInventory);
 		}
 	}
 	

@@ -260,7 +260,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 				
 
 				/* Register recipe with server. */
-				Bukkit.getServer().addRecipe(recipe);
+				Bukkit.addRecipe(recipe);
 			} else {
 				/* Shapeless Recipe */
 				@SuppressWarnings("deprecation")
@@ -316,7 +316,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 				shapelessKeys.put(key, loreMat);
 				
 				/* Register recipe with server. */
-				Bukkit.getServer().addRecipe(recipe);
+				Bukkit.addRecipe(recipe);
 			}
 		}
 		
@@ -330,7 +330,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 //			stack.setAmount(4);
 //			ShapelessRecipe recipe = new ShapelessRecipe(stack);
 //			recipe.addIngredient(1, ItemManager.getMaterialData(CivData.FISH_RAW, CivData.PUFFERFISH));
-//			Bukkit.getServer().addRecipe(recipe);
+//			Bukkit.addRecipe(recipe);
 //		}
 //		
 //		CivLog.debug("setting mercury bath...");
@@ -340,7 +340,7 @@ public class LoreCraftableMaterial extends LoreMaterial {
 //			ItemStack stack = LoreCraftableMaterial.spawn(mercuryBath);
 //			ShapelessRecipe recipe = new ShapelessRecipe(stack);
 //			recipe.addIngredient(1, ItemManager.getMaterialData(CivData.FISH_RAW, CivData.CLOWNFISH));
-//			Bukkit.getServer().addRecipe(recipe);
+//			Bukkit.addRecipe(recipe);
 //		}
 	}
 	

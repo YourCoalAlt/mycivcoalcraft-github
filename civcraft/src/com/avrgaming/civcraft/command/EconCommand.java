@@ -41,13 +41,13 @@ public class EconCommand extends CommandBase {
 		commands.put("set", "[player] [amount] - set money for this player.");
 		commands.put("sub", "[player] [amount] - subtract money for this player.");
 		
-		commands.put("addt", "[town] [amount] - add money to this town.");
-		commands.put("sett", "[town] [amount] - set money for this town.");
-		commands.put("subt", "[town] [amount] - subtract money for this town.");
+		commands.put("addtown", "[town] [amount] - add money to this town.");
+		commands.put("settown", "[town] [amount] - set money for this town.");
+		commands.put("subtown", "[town] [amount] - subtract money for this town.");
 		
-		commands.put("addc", "[civ] [amount] - add money to this civ.");
-		commands.put("setc", "[civ] [amount] - set money for this civ.");
-		commands.put("subc", "[civ] [amount] - subtract money for this civ.");
+		commands.put("addciv", "[civ] [amount] - add money to this civ.");
+		commands.put("setciv", "[civ] [amount] - set money for this civ.");
+		commands.put("subciv", "[civ] [amount] - subtract money for this civ.");
 		
 		commands.put("setdebt", "[player] [amount] - sets the debt on this player to this amount.");
 		commands.put("setdebttown", "[town] [amount]");
@@ -93,7 +93,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Withdrew "+amt+" to res "+res.getName());
 	}
 	
-	public void addt_cmd() throws CivException {
+	public void addtown_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount.");
@@ -105,7 +105,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Added "+amt+" to town "+t.getName());
 	}
 	
-	public void sett_cmd() throws CivException {
+	public void settown_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount.");
@@ -117,7 +117,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Set "+amt+" to town "+t.getName());
 	}
 	
-	public void subt_cmd() throws CivException {
+	public void subtown_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount");
@@ -129,7 +129,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Withdrew "+amt+" to town "+t.getName());
 	}
 	
-	public void addc_cmd() throws CivException {
+	public void addciv_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount.");
@@ -141,7 +141,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Added "+amt+" to civ "+c.getName());
 	}
 	
-	public void setc_cmd() throws CivException {
+	public void setciv_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount.");
@@ -153,7 +153,7 @@ public class EconCommand extends CommandBase {
 		CivMessage.sendSuccess(sender, "Set "+amt+" to civ "+c.getName());
 	}
 	
-	public void subc_cmd() throws CivException {
+	public void subciv_cmd() throws CivException {
 		validEcon();
 		if (args.length < 3) {
 			throw new CivException("Provide name and amount");

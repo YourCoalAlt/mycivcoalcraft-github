@@ -32,6 +32,7 @@ public class ModeratorCommand extends CommandBase {
 	public void init() {
 		command = "/mod";
 		displayName = "Moderator Controls";
+		commands.put("tool", "Moderator Tag Commands. (Mostly methods of checking players)");
 		
 		commands.put("alert", "Sends a global message alerting players.");
 		commands.put("helpmsg", "Sends a global message for helping players.");
@@ -53,15 +54,42 @@ public class ModeratorCommand extends CommandBase {
 		commands.put("muteip", "[IP] [reason...] Mutes an IP on the server.");
 		commands.put("unmuteip", "[IP] Unmute an IP on the server.");
 		
+		commands.put("clearchat", "[all/player] [ifplayer:name] Clears (spams empty messages) the chat of the specified group.");
 		commands.put("warn", "[player] [points] [reason...] Gives this player warning points.");
 		commands.put("toggleglobal", "Changes whether or not global chat is disabled or not.");
 	}
 	
+	public void tool_cmd() {
+		ModeratorToolCommand cmd = new ModeratorToolCommand();	
+		cmd.onCommand(sender, null, "tool", this.stripArgs(args, 1));
+	}
+	
+	public void clearchat_cmd() throws CivException {
+		valHelperMod();
+		Player p = getPlayer();
+		if (args.length < 2) throw new CivException("To clear a chat, state 'all' or 'player' followed by a player's name.");
+		String group = args[1];
+		if (group.equalsIgnoreCase("all")) {
+			for (Player o : Bukkit.getOnlinePlayers()) {
+				if (CivPerms.isHelper(o)) {
+					CivMessage.send(o, CivColor.GrayBold+"[ "+p.getDisplayName()+CivColor.GrayBold+" has cleared the chat. However, since you are ranked Helper or higher,"+
+										" your chat has not been cleared. ]");
+				} else {
+					for (int i = 0; i < 100; i++) o.sendMessage(" ");
+				}
+				CivMessage.send(o, CivColor.GoldBold+"[ "+p.getDisplayName()+CivColor.GoldBold+" has cleared global chat ]");
+			}
+		} else if (group.equalsIgnoreCase("player")) {
+			if (args.length < 3) throw new CivException("Please state a player's name.");
+			Player c = CivGlobal.getPlayer(args[2]);
+			for (int i = 0; i < 100; i++) c.sendMessage(" ");
+			CivMessage.send(c, CivColor.GoldBold+"[ "+p.getDisplayName()+CivColor.GoldBold+" has cleared your chat ]");
+		}
+	}
+	
 	public void alert_cmd() throws CivException {
 		valMod();
-		if (args.length < 2) {
-			throw new CivException("Please enter your message.");
-		}
+		if (args.length < 2) throw new CivException("Please enter your message.");
 		
 		StringBuilder buffer = new StringBuilder();
 		for(int i = 1; i < args.length; i++) {
@@ -287,13 +315,13 @@ public class ModeratorCommand extends CommandBase {
 			Date date = new Date(al.getMuteLength());
 			String out = CivColor.LightBlueBold+"§« CivilizationCraft §»;"+
 					" ;"+
-					CivColor.RoseBold+"Muted By "+CivColor.GrayBold+"§» "+CivColor.RESET+name+";"+
-					CivColor.RoseBold+"Reason "+CivColor.GrayBold+"§» "+CivColor.RESET+message+";"+
-					CivColor.RoseBold+"Length "+CivColor.GrayBold+"§» "+CivColor.RESET+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+";"+
-					CivColor.RoseBold+"Unmuted At "+CivColor.GrayBold+"§» "+CivColor.RESET+sdf.format(date)+";"+
+					CivColor.RoseBold+"Muted By "+CivColor.DarkGrayBold+"§» "+CivColor.RESET+name+";"+
+					CivColor.RoseBold+"Reason "+CivColor.DarkGrayBold+"§» "+CivColor.RESET+message+";"+
+					CivColor.RoseBold+"Length "+CivColor.DarkGrayBold+"§» "+CivColor.RESET+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+";"+
+					CivColor.RoseBold+"Unmuted At "+CivColor.DarkGrayBold+"§» "+CivColor.RESET+sdf.format(date)+";"+
 					" ;"+
 					" ;"+
-					CivColor.YellowBold+"Appeal at "+CivColor.GrayBold+"§» "+CivColor.GoldBold+"http://coalcivcraft.enjin.com/forum;";
+					CivColor.YellowBold+"Appeal at "+CivColor.DarkGrayBold+"§» "+CivColor.GoldBold+"http://coalcivcraft.enjin.com/forum;";
 			Player p = CivGlobal.getPlayer(res);
 			CivMessage.send(p, out.split(";"));
 		} else {

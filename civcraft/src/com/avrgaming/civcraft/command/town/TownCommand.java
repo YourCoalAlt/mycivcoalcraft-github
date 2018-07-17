@@ -41,6 +41,7 @@ import com.avrgaming.civcraft.config.ConfigCultureLevel;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Civilization;
@@ -206,7 +207,7 @@ public class TownCommand extends CommandBase {
 				ItemStack stack = LoreGuiItem.build(p.configPerk.display_name, 
 						p.configPerk.type_id, 
 						p.configPerk.data, 
-						CivColor.Gray+"Provided by: "+CivColor.LightBlue+p.provider);
+						CivColor.DarkGray+"Provided by: "+CivColor.LightBlue+p.provider);
 				inv.addItem(stack);
 			}
 		}
@@ -489,7 +490,7 @@ public class TownCommand extends CommandBase {
 		
 		if (!residentToKick.isLandOwner()) {
 			town.removeResident(residentToKick);
-
+			CivCraft.playerTagUpdate();
 			try {
 				CivMessage.send(CivGlobal.getPlayer(residentToKick), CivColor.Yellow+"You have been evicted from town!");
 			} catch (CivException e) {
@@ -569,18 +570,19 @@ public class TownCommand extends CommandBase {
 		}
 		
 		town.removeResident(resident);
+		CivCraft.playerTagUpdate();
 		if (resident.isCivChat()) {
 			resident.setCivChat(false);
+			CivMessage.send(sender, CivColor.Gray+"You've been removed from civ chat since you've left the civ.");	
 		}
 		
 		if (resident.isTownChat()) {
 			resident.setTownChat(false);
-			CivMessage.send(sender, CivColor.LightGray+"You've been removed from town chat since you've left the town.");		
+			CivMessage.send(sender, CivColor.Gray+"You've been removed from town chat since you've left the town.");		
 		}
 		
 		CivMessage.sendSuccess(sender, "You left the town of "+town.getName());
 		CivMessage.sendTown(town, resident.getName()+" has left the town.");
-		
 		town.save();
 		resident.save();
 	}
@@ -685,11 +687,21 @@ public class TownCommand extends CommandBase {
 		}
 		
 		if (town.hasResident(newResident)) {
-			throw new CivException(newResident.getName()+" is already a member of town.");
+			throw new CivException(newResident.getName()+" is already a member of the town.");
 		}
 		
 		if (newResident.getTown() != null) {
 			throw new CivException(newResident.getName()+" is already in town "+newResident.getTown().getName());
+		}
+		
+		if (newResident.hasCamp()) {
+			try {
+				Player resPlayer = CivGlobal.getPlayer(newResident);
+				CivMessage.send(resPlayer, CivColor.Yellow+player.getName()+" tried to invite you to the town of "+town.getName()+
+						" but cannot since you are in a camp. Leave camp first using /camp leave");
+			} catch(CivException e) { //player not online
+			}
+			throw new CivException("You cannot invite "+newResident.getName()+" to town since he is part of a camp. Have him leave camp first with /camp leave.");
 		}
 		
 		newResident.validateJoinTown(town);
@@ -700,7 +712,7 @@ public class TownCommand extends CommandBase {
 		join.sender = player;
 		CivGlobal.questionPlayer(player, CivGlobal.getPlayer(newResident), "Would you like to join the town of "+town.getName()+"?", INVITE_TIMEOUT, join);
 		
-		CivMessage.sendSuccess(sender, CivColor.LightGray+"Invited to "+args[1]+" to town "+town.getName());
+		CivMessage.sendSuccess(sender, CivColor.Gray+"Invited to "+args[1]+" to town "+town.getName());
 	}
 	
 	public void info_cmd() throws CivException {
@@ -728,7 +740,7 @@ public class TownCommand extends CommandBase {
 //		CivMessage.send(sender, CivColor.LightGreen+"This looks like a good place to settle!");
 //		CivMessage.send(sender, " ");
 //		CivMessage.send(sender, CivColor.LightGreen+ChatColor.BOLD+"What shall your new Town be called?");
-//		CivMessage.send(sender, CivColor.LightGray+"(To cancel, type 'cancel')");
+//		CivMessage.send(sender, CivColor.Gray+"(To cancel, type 'cancel')");
 //		
 //		resident.setInteractiveMode(new InteractiveTownName());
 //

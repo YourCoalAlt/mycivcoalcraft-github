@@ -27,8 +27,7 @@ public abstract class LoreEnhancement {
 	public HashMap<String, String> variables = new HashMap<String, String>();
 	
 	public static void init() {
-		enhancements.put("LoreEnhancementSharpness", new LoreEnhancementSharpness());
-		enhancements.put("LoreEnhancementProtection", new LoreEnhancementProtection());
+		enhancements.put("LoreEnhancementVelocity", new LoreEnhancementVelocity());
 		
 		enhancements.put("LoreEnhancementUnitGainAttack", new LoreEnhancementUnitGainAttack());
 		enhancements.put("LoreEnhancementUnitGainProtection", new LoreEnhancementUnitGainProtection());
@@ -180,7 +179,7 @@ public abstract class LoreEnhancement {
 		AttributeUtil attrs = new AttributeUtil(stack);
 		// if person died within last 4 seconds, do not take damage to prevent bug.
 		if ((System.currentTimeMillis() - Long.valueOf(attrs.getCivCraftProperty("last_death"))) <= 4*1000) {
-			CivMessage.send(p, CivColor.LightGrayBold+" » "+CivColor.LightGrayItalic+"You died too fast, not deducting durability life.");
+			CivMessage.send(p, CivColor.GrayBold+" » "+CivColor.DarkGrayItalic+"You died too fast, not deducting durability life.");
 			return stack;
 		}
 		
@@ -192,8 +191,8 @@ public abstract class LoreEnhancement {
 		
 		if (lives_left < 0) {
 			attrs.getStack().setType(Material.BEDROCK);
-			if (msg) CivMessage.send(p, CivColor.LightGrayBold+" » "+attrs.getName()+CivColor.LightGrayBold+" has "+
-					CivColor.YellowBold+"ran out of lives"+CivColor.LightGrayBold+" and broke!");
+			if (msg) CivMessage.send(p, CivColor.GrayBold+" » "+attrs.getName()+CivColor.GrayBold+" has "+
+					CivColor.YellowBold+"ran out of lives"+CivColor.GrayBold+" and broke!");
 		} else {
 			String saved = "";
 			for (String l : attrs.getLore()) {
@@ -204,9 +203,11 @@ public abstract class LoreEnhancement {
 				}
 			}
 			attrs.setLore(saved.split(";"));
+			int reduction = (int)(attrs.getStack().getType().getMaxDurability()*percent);
+			attrs.getStack().setDurability((short)(attrs.getStack().getDurability() + reduction));
 			
-			if (msg) CivMessage.send(p, CivColor.LightGrayBold+" » "+attrs.getName()+CivColor.LightGrayBold+" has "+
-					CivColor.YellowBold+lives_left+CivColor.LightGrayBold+" Lives until it breaks!");
+			if (msg) CivMessage.send(p, CivColor.GrayBold+" » "+attrs.getName()+CivColor.GrayBold+" has "+
+					CivColor.YellowBold+lives_left+CivColor.GrayBold+" Lives until it breaks!");
 		}
 		
 		return attrs.getStack();

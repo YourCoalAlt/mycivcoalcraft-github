@@ -36,6 +36,7 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
+import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemManager;
@@ -214,7 +215,7 @@ public class Road extends Structure {
 		}
 		
 		if (locs.size() <= 1) {
-			CivMessage.send(player, CivColor.LightGray+"First location placed, place another to start build a Road.");
+			CivMessage.send(player, CivColor.Gray+"First location placed, place another to start build a Road.");
 			return;
 		}
 	
@@ -333,7 +334,12 @@ public class Road extends Structure {
 		boolean allowedToPlaceHere = true;
 		for (int i = 0; i < Road.HEIGHT; i++) {
 			BlockCoord bcoord = new BlockCoord(startCoord);
+			ChunkCoord coord = new ChunkCoord(bcoord);
 			bcoord.setY(startCoord.getY() + i);
+			
+			if (CivGlobal.getCampChunk(coord) != null) {
+				throw new CivException("Cannot build a road into a chunk which contains a camp.");
+			}
 			
 			if (ItemManager.getId(bcoord.getBlock()) == CivData.CHEST) {
 				throw new CivException("Cannot build a road here. Would destroy a chest at "+bcoord.toString());

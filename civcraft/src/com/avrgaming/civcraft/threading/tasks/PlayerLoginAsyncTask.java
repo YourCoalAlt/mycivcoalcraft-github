@@ -185,7 +185,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 						
 						if (resident.getLastOnline() < War.getStart().getTime()) {
 							resident.teleportHome();
-							CivMessage.send(resident, CivColor.LightGray+"You've been teleported back to your home since you've logged into enemy during WarTime.");
+							CivMessage.send(resident, CivColor.Gray+"You've been teleported back to your home since you've logged into enemy during WarTime.");
 						}
 					}
 					
@@ -235,7 +235,7 @@ public class PlayerLoginAsyncTask implements Runnable {
 				Player p = CivGlobal.getPlayer(resident);
 				ArrayList<SessionEntry> deathEvents = CivGlobal.getSessionDB().lookup("pvplogger:death:"+resident.getName());
 				if (deathEvents.size() != 0) {
-					CivMessage.send(resident, CivColor.Rose+CivColor.BOLD+"You were killed while offline because you logged out while in PvP!");
+					CivMessage.send(resident, CivColor.RoseBold+"You were killed while offline because you logged out while in PvP!");
 					class SyncTask implements Runnable {
 						String playerName; 
 						

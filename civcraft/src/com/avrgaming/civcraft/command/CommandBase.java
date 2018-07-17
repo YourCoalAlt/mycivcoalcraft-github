@@ -40,6 +40,7 @@ import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TownChunk;
+import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.util.CivColor;
 
@@ -167,11 +168,11 @@ public abstract class CommandBase implements CommandExecutor {
 			String info = commands.get(c);
 			
 			info = info.replace("[", CivColor.Yellow+"[");
-			info = info.replace("]", "]"+CivColor.LightGray);
+			info = info.replace("]", "]"+CivColor.Gray);
 			info = info.replace("(", CivColor.Yellow+"(");
-			info = info.replace(")", ")"+CivColor.LightGray);
+			info = info.replace(")", ")"+CivColor.Gray);
 						
-			CivMessage.send(sender, CivColor.LightPurple+command+" "+c+CivColor.LightGray+" "+info);
+			CivMessage.send(sender, CivColor.LightPurple+command+" "+c+CivColor.Gray+" "+info);
 		}
 	}
 	
@@ -370,7 +371,7 @@ public abstract class CommandBase implements CommandExecutor {
 	}
 	
 	protected Player getNamedPlayer(int index) throws CivException {
-		if (args.length < (index+1)) throw new CivException("Enter a resident name.");
+		if (args.length < (index+1)) throw new CivException("Enter a player name.");
 		
 		String name = args[index].toLowerCase();
 		name = name.replace("%", "(\\w*)");
@@ -621,5 +622,65 @@ public abstract class CommandBase implements CommandExecutor {
 		}
 		
 		return grp;
+	}
+	
+	protected void validCampOwner() throws CivException {
+		Resident resident = getResident();
+		if (!resident.hasCamp()) {
+			throw new CivException("You are not currently in a camp.");
+		}
+		
+		if (resident.getCamp().getOwner() != resident) {
+			throw new CivException("Only the owner of the camp ("+resident.getCamp().getOwnerName()+") is allowed to do this.");
+		}
+	}
+	
+	protected Camp getCurrentCamp() throws CivException {
+		Resident resident = getResident();
+		if (!resident.hasCamp()) {
+			throw new CivException("You are not currently in a camp.");
+		}
+		return resident.getCamp();
+	}
+	
+	protected Camp getNamedCamp(int index) throws CivException {
+		if (args.length < (index+1)) {
+			throw new CivException("Enter a camp name.");
+		}
+		
+		String name = args[index].toLowerCase();
+		name = name.replace("%", "(\\w*)");
+		ArrayList<Camp> potentialMatches = new ArrayList<Camp>();
+		for (Camp camp : CivGlobal.getCamps()) {
+			String str = camp.getName().toLowerCase();
+			try {
+				if (str.matches(name)) {
+					potentialMatches.add(camp);
+				}
+			} catch (Exception e) {
+				throw new CivException("Invalid pattern.");
+			}
+			
+			if (potentialMatches.size() > MATCH_LIMIT) {
+				throw new CivException("Too many potential matches. Refine your search.");
+			}
+		}
+		
+		if (potentialMatches.size() == 0) {
+			throw new CivException("No camp matching that name.");
+		}
+		
+		if (potentialMatches.size() != 1) {
+			CivMessage.send(sender, CivColor.LightPurple+ChatColor.UNDERLINE+"Potential Matches");
+			CivMessage.send(sender, " ");
+			String out = "";
+			for (Camp camp : potentialMatches) {
+				out += camp.getName()+", ";
+			}
+			CivMessage.send(sender, CivColor.LightBlue+ChatColor.ITALIC+out);
+			throw new CivException("More than one camp matches, please clarify.");
+		}
+		
+		return potentialMatches.get(0);
 	}
 }

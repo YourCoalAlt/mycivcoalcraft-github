@@ -22,6 +22,7 @@ public class ResidentExperience extends SQLObject {
 	private UUID uid;
 	private Player player;
 	private Map<EXPSlots, Double> exp_slots = new HashMap<EXPSlots, Double>();
+	private Map<EXPSlots, Integer> slots_level = new HashMap<EXPSlots, Integer>();
 	
 	public enum EXPSlots {
 		QUEST,
@@ -47,6 +48,7 @@ public class ResidentExperience extends SQLObject {
 		if (this.exp_slots.keySet().size() != EXPSlots.values().length) {
 			for (EXPSlots s : EXPSlots.values()) {
 				this.exp_slots.put(s, 0.0);
+				this.slots_level.put(s, 0);
 			}
 		}
 	}
@@ -139,7 +141,8 @@ public class ResidentExperience extends SQLObject {
 		for (String keyvalue : keyvalues) {
 			String key = keyvalue.split(":")[0];
 			String value = keyvalue.split(":")[1];
-			exp_slots.put(EXPSlots.valueOf(key), Double.valueOf(value));
+			this.exp_slots.put(EXPSlots.valueOf(key), Double.valueOf(value));
+			this.slots_level.put(EXPSlots.valueOf(key), this.getEXPLevel(EXPSlots.valueOf(key)));
 		}
 	}
 	
@@ -163,7 +166,7 @@ public class ResidentExperience extends SQLObject {
 	}
 	
 	public int getEXPLevel(EXPSlots slot) {
-		int level = 1;
+		int level = 0;
 		if (this.exp_slots.containsKey(slot)) {
 			double exp = this.exp_slots.get(slot);
 			for (int i = level; i < 300; i++) {
@@ -207,7 +210,8 @@ public class ResidentExperience extends SQLObject {
 		if (this.exp_slots.containsKey(slot)) {
 			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + generatedEXP));
 			int checkNewLvl = this.getEXPLevel(slot);
-			if (checkNewLvl != level) {
+			if (checkNewLvl != this.slots_level.get(slot)) {
+				this.slots_level.put(slot, checkNewLvl);
 				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
 			this.exp_slots.put(slot, newTotalEXP);
@@ -225,12 +229,11 @@ public class ResidentExperience extends SQLObject {
 	public void addResEXPviaAdmin(EXPSlots slot, double base_points) throws CivException {
 		player = CivGlobal.getPlayerE(this.getName());
 		DecimalFormat df = new DecimalFormat("#.##");
-		int level = this.getEXPLevel(slot);
-		
 		if (this.exp_slots.containsKey(slot)) {
 			double newTotalEXP = Double.valueOf(df.format(Double.valueOf(this.exp_slots.get(slot)) + base_points));
 			int checkNewLvl = this.getEXPLevel(slot);
-			if (checkNewLvl != level) {
+			if (checkNewLvl != this.slots_level.get(slot)) {
+				this.slots_level.put(slot, checkNewLvl);
 				CivMessage.sendQuestExp(player, "You are now "+this.getSlotString(slot)+" Level "+(checkNewLvl)+"!");
 			}
 			this.exp_slots.put(slot, newTotalEXP);

@@ -1,11 +1,12 @@
 package com.avrgaming.civcraft.threading.timers;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.listener.ActionBar;
-import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.Resident;
@@ -19,8 +20,28 @@ public class ActionBarUpdateTimer implements Runnable {
 	public void run() {
 //		if (CivCraft.isDisable || War.isWarTime()) return;
 		
-		String weather = CivColor.GrayBold+" [";
-		World w = Bukkit.getWorld(CivCraft.worldName);
+		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			Resident res = CivGlobal.getResident(p);
+			ArrayList<String> queue = res.getActionBarQueue();
+			if (queue != null && !queue.isEmpty()) {
+				ActionBar.sendActionbar(p, queue.get(0)); // Send the result
+				if (res.getActionBarSecondsLeft() > 0) res.subActionBarSecondsLeft(1); // Deduct seconds left to show the message
+				else queue.remove(0); // Remove the result when it is completed showing
+			} else {
+				// No stored data, so send this as the result
+				ActionBar.sendActionbar(p, getDefaultBar(p, res)); // Send the result
+			}
+		}
+	}
+	
+	private boolean isDay(World w) {
+	    long time = w.getTime();
+	    return time < 12520 || time > 23020;
+	}
+	
+	private String getWeatherString(Player p) {
+		String weather = CivColor.DarkGrayBold+" [";
+		World w = p.getWorld();
 		int weatherTime = w.getWeatherDuration() / 20;
 		if (weatherTime > (60*20)) {
 			w.setWeatherDuration(((60*20)-1)*20);
@@ -35,57 +56,50 @@ public class ActionBarUpdateTimer implements Runnable {
 		else weatherLength += hours+" h "+mins+" m "+secs+" s";
 		weatherLength.substring(weatherLength.length()-2);
 		if (w.isThundering()) {
-			if (day(w)) weather += CivColor.RedBold+"Storm "+CivColor.RESET+weatherLength;
+			if (isDay(w)) weather += CivColor.RedBold+"Storm "+CivColor.RESET+weatherLength;
 			else weather += CivColor.RedBold+"Night Storm "+CivColor.RESET+weatherLength;
 		}
 		else if (w.hasStorm()) {
-			if (day(w))	weather += CivColor.BlueBold+"Rain "+CivColor.RESET+weatherLength;
-			else weather += CivColor.BlueBold+"Night Rain "+CivColor.RESET+weatherLength;
+			if (isDay(w))	weather += CivColor.AquaBold+"Rain "+CivColor.RESET+weatherLength;
+			else weather += CivColor.AquaBold+"Night Rain "+CivColor.RESET+weatherLength;
 		}
 		else {
-			if (day(w)) weather += CivColor.GoldBold+"Sunny";
-			else weather += CivColor.LightGrayBold+"Moon";
+			if (isDay(w)) weather += CivColor.GoldBold+"Sunny";
+			else weather += CivColor.GrayBold+"Moon";
 		}
-		weather += CivColor.GrayBold+"]";
-		
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			Resident res = CivGlobal.getResident(p);
-			ChunkCoord coord = new ChunkCoord(p.getLocation());
-			TownChunk tc = CivGlobal.getTownChunk(coord);
-			CultureChunk cc = CivGlobal.getCultureChunk(coord);
-			
-			String borders = "";
-			if (cc != null && tc != null) {
-				borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
-						CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName()+weather;
-			} else if (tc == null && cc != null) {
-				borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
-						CivColor.Rose+"near "+CivColor.LightBlue+cc.getTown().getName()+weather;
-			} else if (tc != null && cc == null) {
-				borders = CivColor.Rose+"Wilderness"+CivColor.LightGreen+" - "+
-						CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName()+weather;
-			} else {
-				borders = CivColor.Rose+"[Wilderness]"+weather;
-			}
-			
-			if (res != null) {
-				int exposure = (int) res.getSpyExposure();
-				if (exposure > 0) {
-					String msg = borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.LightGreenItalic+exposure;
-					ActionBar.sendActionbar(p, msg);
-				} else {
-					ActionBar.sendActionbar(p, borders);
-				}
-			} else {
-				String msg = borders+CivColor.GrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.RoseItalic+"null";
-				ActionBar.sendActionbar(p, msg);
-			}
-		}
+		weather += CivColor.DarkGrayBold+"]";
+		return weather;
 	}
 	
-	public boolean day(World w) {
-	    long time = w.getTime();
-	    return time < 12520 || time > 23020;
+	private String getDefaultBar(Player p, Resident res) {
+		ChunkCoord coord = new ChunkCoord(p.getLocation());
+		TownChunk tc = CivGlobal.getTownChunk(coord);
+		CultureChunk cc = CivGlobal.getCultureChunk(coord);
+		
+		String borders = "";
+		if (cc != null && tc != null) {
+			borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
+					CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName();
+		} else if (tc == null && cc != null) {
+			borders = CivColor.LightGreen+"Civ "+CivColor.LightPurple+cc.getCiv().getName()+CivColor.LightGreen+" - "+
+					CivColor.Rose+"near "+CivColor.LightBlue+cc.getTown().getName();
+		} else if (tc != null && cc == null) {
+			borders = CivColor.Rose+"Wilderness"+CivColor.LightGreen+" - "+
+					CivColor.Yellow+"Town "+CivColor.LightBlue+tc.getTown().getName();
+		} else {
+			borders = CivColor.Rose+"[Wilderness]";
+		}
+		
+		if (res != null) {
+			int exposure = (int) res.getSpyExposure();
+			if (exposure > 0) {
+				return borders+CivColor.DarkGrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.LightGreenItalic+exposure;
+			} else {
+				return borders+getWeatherString(p);
+			}
+		} else {
+			return borders+CivColor.DarkGrayBold+" « » "+CivColor.GoldBold+"Spy XP: "+CivColor.RoseItalic+"null";
+		}
 	}
 	
 }

@@ -35,7 +35,7 @@ public class DiplomaticMenu implements GuiAction {
 		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
-		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.guiInventory.getName());
+		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
 		guiInventory.setItem((9*2)-1, backButton);
 		
 		LoreGuiItemListener.guiInventories.put(guiInventory.getName(), guiInventory);

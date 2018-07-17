@@ -146,8 +146,8 @@ public class Bank extends Structure {
 		if (this.getTown().getBuffManager().hasBuff("buff_greed")) {
 			double increase = this.getTown().getBuffManager().getEffectiveDouble("buff_greed");
 			effectiveInterestRate += increase;
-			CivMessage.sendTown(this.getTown(), CivColor.LightGray+"Your goodie buff 'Greed' has increased the interest our town generated."
-					+CivColor.ITALIC+"(With this buff, our interest rate went from "+interestRate+"% to "+effectiveInterestRate+"%.)");
+			CivMessage.sendTown(this.getTown(), CivColor.Gray+"Your goodie buff 'Greed' has increased the interest our town generated."
+					+CivColor.Italic+"(With this buff, our interest rate went from "+interestRate+"% to "+effectiveInterestRate+"%.)");
 		}
 		
 		double newCoins = principal*effectiveInterestRate;
@@ -188,21 +188,22 @@ public class Bank extends Structure {
 		v.teleport(vLoc);
 		v.setAdult();
 		v.setAI(false);
-		v.setCustomName(this.getTown().getName()+"'s Bank Teller");
+		v.setCustomName("Bank Teller");
 		v.setProfession(Profession.LIBRARIAN);
 		
 		String vilKey = this.getTown().getName()+":"+v.getCustomName()+":"+v.getLocation().toString();
-		if (CivGlobal.getStructureVillager(vilKey) != null) {
+		if (CivGlobal.getCivVillager(vilKey) != null) {
 			v.setHealth(0); v.remove();
 		} else {
-			CivGlobal.addStructureVillager(vilKey, v);
+			CivGlobal.addCivVillager(vilKey, v);
 		}
 	}
 	
-	public void openToolGUI(Player p, Town town) {
+	public void openBankSellGUI(Player p, Town town) {
+		if (!Buildable.validatePlayerGUI(p, this, false, false, false, false)) return;
 		Inventory inv = Bukkit.createInventory(null, 9*5, town.getName()+"'s Bank Desk");
-		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
-		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.Gray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
+		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
 		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Bank Menu. You can use it to sell",

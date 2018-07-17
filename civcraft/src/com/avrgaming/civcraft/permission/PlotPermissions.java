@@ -27,7 +27,21 @@ import com.avrgaming.civcraft.object.Town;
 
 public class PlotPermissions {
 	
-	public enum Type {
+	/* XXX Upcoming feature... I think we need to remove PlotNodeType for this to work, however I don't
+	 * want to completely do that. Possibly, we will extend PlotGroupType (TOWN_BUILD, TOWN_DESTROY, etc)
+	 * so that we can still alow individual permissions? Or if we can at all, just check if the GroupType
+	 * is allowed, THEN theck NodeType.
+	 */
+	public enum PlotGroupType {
+		TOWN, // All residents, assistants, and mayors of the town can use the plot.
+		CIV_EXTENDED, // Extends TOWN type, in addition of advisers and leaders can use the plot.
+		GOVERNMENT, // Only assisants and mayors of the town, and advisers and leaders can use the plot.
+		PRIVATE, // Only the owner of this plot can use it. If no owner, will be set as UNUSED.
+		UNUSED, // When a plot lacks any permissions of groups or residents.
+		CUSTOM // Specific access was given to groups or residents.
+	}
+	
+	public enum PlotNodeType {
 		BUILD,
 		DESTROY,
 		INTERACT,
@@ -38,21 +52,16 @@ public class PlotPermissions {
 	public PermissionNode destroy = new PermissionNode("destroy");
 	public PermissionNode interact = new PermissionNode("interact");
 	public PermissionNode itemUse = new PermissionNode("itemUse");
-	private boolean fire, mobs;
-		
-	/*
-	 * Owner of this permission node.
-	 */
+	private boolean fire, spawner_mobs, custom_spawn_mobs;
+	
+	// Owner of this permission node
 	private Resident owner;
 	
-	/*
-	 * Group for this permission node.
-	 */
+	// Group for this permission node
 	//private PermissionGroup group;
 	private ArrayList<PermissionGroup> groups = new ArrayList<PermissionGroup>();
 	
 	public String getSaveString() {
-		
 		String ownerString = "";
 		if (owner != null) {
 			ownerString = owner.getName();
@@ -64,13 +73,12 @@ public class PlotPermissions {
 				groupString += grp.getId()+":";
 			}
 		}
-		
-		return build.getSaveString()+","+destroy.getSaveString()+","+interact.getSaveString()+","+itemUse.getSaveString()+","+ownerString+","+groupString+","+fire+","+mobs;
+		return build.getSaveString()+","+destroy.getSaveString()+","+interact.getSaveString()+","+itemUse.getSaveString()+","+ownerString+","+groupString+","+
+					fire+","+spawner_mobs+","+custom_spawn_mobs;
 	}
 	
 	public void loadFromSaveString(Town town, String src) throws CivException {
 		String[] split = src.split(",");
-		
 		build.loadFromString(split[0]);
 		destroy.loadFromString(split[1]);
 		interact.loadFromString(split[2]);
@@ -90,53 +98,62 @@ public class PlotPermissions {
 		
 		if (split.length > 7) {
 			fire = Boolean.valueOf(split[6]);
-			mobs = Boolean.valueOf(split[7]);
+			spawner_mobs = Boolean.valueOf(split[7]);
+			custom_spawn_mobs = Boolean.valueOf(split[8]);
 		}
 		
 	//	group = CivGlobal.getPermissionGroup(town, Integer.valueOf(split[5]));
 		
 	}
-
+	
 	public boolean isFire() {
 		return fire;
 	}
-
+	
 	public void setFire(boolean fire) {
 		this.fire = fire;
 	}
-
-	public boolean isMobs() {
-		return mobs;
+	
+	public boolean isSpawnerMobs() {
+		return spawner_mobs;
 	}
-
-	public void setMobs(boolean mobs) {
-		this.mobs = mobs;
+	
+	public void setSpawnerMobs(boolean spawner_mobs) {
+		this.spawner_mobs = spawner_mobs;
 	}
-
+	
+	public boolean isCustomSpawnMobs() {
+		return custom_spawn_mobs;
+	}
+	
+	public void setCustomSpawnMobs(boolean custom_spawn_mobs) {
+		this.custom_spawn_mobs = custom_spawn_mobs;
+	}
+	
 	public String getBuildString() {
 		return build.getString();
 	}
-
+	
 	public String getDestroyString() {
 		return destroy.getString();
 	}
-
+	
 	public String getInteractString() {
 		return interact.getString();
 	}
-
+	
 	public String getItemUseString() {
 		return itemUse.getString();
 	}
-
+	
 	public Resident getOwner() {
 		return owner;
 	}
-
+	
 	public void setOwner(Resident owner) {
 		this.owner = owner;
 	}
-
+	
 	private boolean checkPermissionNode(PermissionNode node, Resident resident) {
 		if (node != null) {
 			if (owner == resident && node.isPermitOwner())
@@ -160,7 +177,7 @@ public class PlotPermissions {
 		return false;
 	}
 	
-	public boolean hasPermission(Type type, Resident resident) {
+	public boolean hasPermission(PlotNodeType type, Resident resident) {
 		if (resident.isPermOverride()) {
 			return true;
 		}

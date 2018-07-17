@@ -78,7 +78,7 @@ public class AdminItemCommand extends CommandBase {
 			return;
 		}
 		
-		if (args.length == 2 && args.length < 3) {
+		if (args.length < 3) {
 			throw new CivException("Please enter a number of times to enhance this item.");
 		}
 		
@@ -103,7 +103,7 @@ public class AdminItemCommand extends CommandBase {
 						ItemStack stack = LoreMaterial.addEnhancement(inHand, enh, 1);
 						player.getInventory().setItemInMainHand(stack);
 						CivMessage.sendSuccess(sender, "Enhanced with "+name+" x"+1);
-						CivMessage.send(sender, CivColor.LightGrayItalic+"(Only added once since the max level for this enhancement is 1)");
+						CivMessage.send(sender, CivColor.GrayItalic+"(Only added once since the max level for this enhancement is 1)");
 						return;
 					}
 				} else {

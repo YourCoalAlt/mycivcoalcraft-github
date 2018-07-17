@@ -34,7 +34,7 @@ public class MobComponentDefense extends MobComponent {
 			}
 			
 			if (player != null) {
-				CivMessage.send(player, CivColor.LightGray+"Our attack was ineffective");
+				CivMessage.send(player, CivColor.Gray+"Our attack was ineffective");
 			}
 		}
 		event.setDamage(damage);

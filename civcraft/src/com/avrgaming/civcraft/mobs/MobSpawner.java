@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import com.avrgaming.civcraft.config.CivSettings;
-import com.avrgaming.civcraft.config.ConfigCustomMobs;
+import com.avrgaming.civcraft.config.ConfigMobsCustom;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -27,6 +27,7 @@ import com.avrgaming.civcraft.util.CivColor;
 
 import net.minecraft.server.v1_12_R1.Entity;
 import net.minecraft.server.v1_12_R1.EntityZombie;
+import net.minecraft.server.v1_12_R1.EnumItemSlot;
 
 public class MobSpawner {
 	
@@ -68,7 +69,7 @@ public class MobSpawner {
 							if (c.getEntities().length < 1) continue;
 							for (org.bukkit.entity.Entity e : c.getEntities()) {
 								boolean r = false;
-								if (CivSettings.restrictedSpawns.contains(e.getType())) {
+								if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 									e.remove();
 									countTotal++;
 									r = true;
@@ -89,7 +90,7 @@ public class MobSpawner {
 						if (c.getEntities().length < 1) continue;
 						for (org.bukkit.entity.Entity e : c.getEntities()) {
 							boolean r = false;
-							if (CivSettings.restrictedSpawns.contains(e.getType())) {
+							if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 								e.remove();
 								countTotal++;
 								r = true;
@@ -119,7 +120,7 @@ public class MobSpawner {
 								if (c.getEntities().length < 1) continue;
 								for (org.bukkit.entity.Entity e : c.getEntities()) {
 									boolean r = false;
-									if (CivSettings.restrictedSpawns.contains(e.getType())) {
+									if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 										e.remove();
 										countTotal++;
 										r = true;
@@ -140,7 +141,7 @@ public class MobSpawner {
 							if (c.getEntities().length < 1) continue;
 							for (org.bukkit.entity.Entity e : c.getEntities()) {
 								boolean r = false;
-								if (CivSettings.restrictedSpawns.contains(e.getType())) {
+								if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 									e.remove();
 									countTotal++;
 									r = true;
@@ -171,7 +172,7 @@ public class MobSpawner {
 							continue;
 						}
 						
-						if (CivSettings.restrictedSpawns.contains(e.getType())) {
+						if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 							e.remove();
 							countTotal++;
 						}
@@ -240,7 +241,7 @@ public class MobSpawner {
 				continue;
 			}
 			
-			if (CivSettings.restrictedSpawns.contains(e.getType())) {
+			if (CivSettings.restrictedSpawns.contains(e.getType()) || CivSettings.vanillaHostileMobs.contains(e.getType())) {
 				e.remove();
 				countTotal++;
 			}
@@ -254,30 +255,35 @@ public class MobSpawner {
 		}
 	}
 	
-	public static void spawnCustomMob(ConfigCustomMobs cmob, Location loc) {
+	@SuppressWarnings("deprecation")
+	public static void spawnCustomMob(ConfigMobsCustom cmob, Location loc) {
 		CraftWorld world = (CraftWorld) loc.getWorld(); 
 		world.loadChunk(loc.getChunk());
 		
-		@SuppressWarnings("deprecation")
 		Entity ent = (Entity) world.createEntity(loc, EntityType.fromName(cmob.entity).getEntityClass());
 		cmob.setMaxHealth(ent.getBukkitEntity(), cmob.max_health);
 		cmob.modifySpeed(ent.getBukkitEntity(), cmob.move_speed);
 		cmob.setAttack(ent.getBukkitEntity(), cmob.attack_dmg);
 		cmob.setFollowRange(ent.getBukkitEntity(), cmob.follow_range);
 		cmob.setKnockbackResistance(ent.getBukkitEntity(), cmob.kb_resistance);
-		ent.setCustomName(CivColor.colorize(cmob.name));
+		if (cmob.name != null && cmob.name != "") ent.setCustomName(CivColor.colorize(cmob.name));
 		ent.setCustomNameVisible(cmob.visible);
 		
-		if (cmob.isBaby) {
-			if (ent.getBukkitEntity().getType() == EntityType.ZOMBIE) {
-				EntityZombie z = (EntityZombie) ent;
-				z.setBaby(true);
-			} else if (ent.getBukkitEntity().getType() == EntityType.PIG_ZOMBIE) {
-				EntityZombie z = (EntityZombie) ent;
-				z.setBaby(true);
-			} else {
-				CivLog.warning("Mob "+cmob.id+" cannot spawn baby");
-			}
+		ent.setEquipment(EnumItemSlot.HEAD, null);
+		ent.setEquipment(EnumItemSlot.CHEST, null);
+		ent.setEquipment(EnumItemSlot.LEGS, null);
+		ent.setEquipment(EnumItemSlot.FEET, null);
+		ent.setEquipment(EnumItemSlot.MAINHAND, null);
+		ent.setEquipment(EnumItemSlot.OFFHAND, null);
+		
+		if (ent.getBukkitEntity().getType() == EntityType.ZOMBIE) {
+			EntityZombie z = (EntityZombie) ent;
+			z.setBaby(cmob.isBaby);
+		} else if (ent.getBukkitEntity().getType() == EntityType.PIG_ZOMBIE) {
+			EntityZombie z = (EntityZombie) ent;
+			z.setBaby(cmob.isBaby);
+		} else {
+			CivLog.warning("Custom Mob "+cmob.id+" cannot spawn baby");
 		}
 		
 		world.addEntity((Entity) ent, SpawnReason.CUSTOM);
@@ -286,8 +292,8 @@ public class MobSpawner {
 	}
 	
 	public static void spawnRandomCustomMob(Location loc) {
-		ArrayList<ConfigCustomMobs> validMobs = new ArrayList<ConfigCustomMobs>();
-		for (ConfigCustomMobs cmob : CivSettings.customMobs.values()) {
+		ArrayList<ConfigMobsCustom> validMobs = new ArrayList<ConfigMobsCustom>();
+		for (ConfigMobsCustom cmob : CivSettings.customMobs.values()) {
 			for (String s : cmob.biomes) {
 				if (s.toUpperCase().equals(loc.getBlock().getBiome().toString().toUpperCase())) {
 					validMobs.add(cmob);

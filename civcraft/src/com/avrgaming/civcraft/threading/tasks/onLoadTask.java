@@ -64,7 +64,7 @@ public class onLoadTask implements Runnable {
 				
 				/* Re-run the post build on the command blocks we found. */
 				if (struct.isActive()) {
-					PostBuildSyncTask.start(tpl, struct);
+					PostBuildSyncTask.start(tpl, struct, false);
 				}
 			} catch (Exception e) {
 				CivLog.error("-----ON LOAD EXCEPTION-----");
@@ -94,7 +94,7 @@ public class onLoadTask implements Runnable {
 			
 			if (wonder.isActive()) {
 				/* Re-run the post build on the command blocks we found. */
-				PostBuildSyncTask.start(tpl, wonder);
+				PostBuildSyncTask.start(tpl, wonder, false);
 			}
 			} catch (Exception e) {
 				CivLog.error("-----ON LOAD EXCEPTION-----");

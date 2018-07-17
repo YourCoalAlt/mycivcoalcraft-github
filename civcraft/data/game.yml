@@ -26,6 +26,8 @@ tips:
    # How many lines of tips there is to display.
    # This controls the timer for it, so a wrong value will mess up the display rate for tips.
    amount: 9
+   # How often (in seconds) to send a new tips
+   cooldown: 180
 
 timers:
    # How many seconds to update structures (quarry, trommel, etc)
@@ -152,28 +154,28 @@ diamond_hammers:
 mining_block:
    - type: 'Coal Ore'
      id: 16
-     res_xp: 0.1
+     res_xp: 0.2
    - type: 'Iron Ore'
      id: 15
-     res_xp: 0.2
+     res_xp: 0.4
    - type: 'Gold Ore'
      id: 14
-     res_xp: 0.4
+     res_xp: 0.8
    - type: 'Lapis Ore'
      id: 21
-     res_xp: 0.3
+     res_xp: 0.6
    - type: 'Redstone Ore (Still)'
      id: 73
-     res_xp: 0.3
+     res_xp: 0.6
    - type: 'Redstone Ore (Glowing)'
      id: 74
-     res_xp: 0.3
+     res_xp: 0.6
    - type: 'Diamond Ore'
      id: 56
-     res_xp: 0.6
+     res_xp: 1.2
    - type: 'Emerald Ore'
      id: 129
-     res_xp: 0.75
+     res_xp: 1.5
 
 #
 # Controls the Newspapers in player's backpacks. Can be reloaded anytime in-game with /ad reload newspapers

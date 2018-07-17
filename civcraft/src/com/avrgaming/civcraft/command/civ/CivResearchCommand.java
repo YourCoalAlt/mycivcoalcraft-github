@@ -151,8 +151,8 @@ public class CivResearchCommand extends CommandBase {
 		ArrayList<ConfigTech> techs = ConfigTech.getAvailableTechs(civ);
 		CivMessage.sendHeading(sender, "Available Research");
 		for (ConfigTech tech : techs) {
-			CivMessage.send(sender, tech.name+CivColor.LightGray+" Cost: "+
-					CivColor.Yellow+tech.cost+CivColor.LightGray+" Beakers: "+
+			CivMessage.send(sender, tech.name+CivColor.Gray+" Cost: "+
+					CivColor.Yellow+tech.cost+CivColor.Gray+" Beakers: "+
 					CivColor.Yellow+tech.beaker_cost);
 		}
 	}

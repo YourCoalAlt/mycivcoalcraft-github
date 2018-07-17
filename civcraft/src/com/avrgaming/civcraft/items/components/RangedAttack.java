@@ -28,7 +28,7 @@ public class RangedAttack extends ItemComponent {
 	@Override
 	public void onPrepareCreate(AttributeUtil attrs) {
 		attrs.addLore(" ");
-		attrs.addLore(CivColor.LightGray+"When in main hand:");
+		attrs.addLore(CivColor.Gray+"When in main hand:");
 		attrs.addLore(CivColor.Navy+" +"+this.getDouble("value")+" Ranged Attack Damage");
 	}
 	
@@ -36,7 +36,7 @@ public class RangedAttack extends ItemComponent {
 	public void onHold(PlayerItemHeldEvent event) {	
 		Resident resident = CivGlobal.getResident(event.getPlayer());
 		if (!resident.hasTechForItem(event.getPlayer().getInventory().getItem(event.getNewSlot()))) {		
-			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.LightGray+"You do not have the required technology to use this item. Its attack output will be reduced in half.");
+			CivMessage.send(resident, CivColor.RoseBold+"[Warning] "+CivColor.Gray+"You do not have the required technology to use this item. Its attack output will be reduced in half.");
 		}
 	}
 	
@@ -69,13 +69,11 @@ public class RangedAttack extends ItemComponent {
 				
 				double unitper = 1.0;
 				if (u != null) { 
-					if (u.id.equals("u_warrior")) { dmg *= 0.9; }
-					else if (u != null && u.id.equals("u_archer")) { dmg *= 1.25; }
+					if (u.id.equals("u_warrior")) dmg *= 0.9;
+					else if (u != null && u.id.equals("u_archer")) dmg *= 1.25;
 					// Additional attack dmg always gets added, reguardless of unit type.
 					for (LoreEnhancement enh : a.getEnhancements()) {
-						if (enh instanceof LoreEnhancementUnitGainAttack) {
-							unitper += (enh.getLevel(a)*0.05);
-						}
+						if (enh instanceof LoreEnhancementUnitGainAttack) unitper += (enh.getLevel(a)*0.05);
 					}
 				}
 				
@@ -109,19 +107,17 @@ public class RangedAttack extends ItemComponent {
 		double magnitudeSquared = Math.pow(vel.getX(), 2) + Math.pow(vel.getY(), 2) + Math.pow(vel.getZ(), 2);
 		double percentage = magnitudeSquared / ARROW_MAX_VEL;
 		double totalDmg = percentage * dmg;
-		if (totalDmg > dmg) { totalDmg = dmg; }
+		if (totalDmg > dmg) totalDmg = dmg;
 		
 		if (event.getDamager() instanceof Arrow) {
 			Arrow arrow = (Arrow)event.getDamager();
 			if (arrow.getShooter() instanceof Player) {
 				Resident resident = CivGlobal.getResident(((Player)arrow.getShooter()));
-				if (!resident.hasTechForItem(inHand)) { dmg = dmg/2; }
+				if (!resident.hasTechForItem(inHand)) dmg = dmg/2;
 			}
 		}
 		
-		if (totalDmg < 0.2) {
-			totalDmg = 0.2;
-		}
+		if (totalDmg < 0.2) totalDmg = 0.2;
 		event.setDamage(totalDmg);
 	}
 }
