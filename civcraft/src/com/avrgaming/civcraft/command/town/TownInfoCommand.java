@@ -56,7 +56,7 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class TownInfoCommand extends CommandBase {
 
@@ -439,7 +439,7 @@ public class TownInfoCommand extends CommandBase {
 		out.add(CivColor.Green+"Items Consumed per Hour: ");
 		String itemsTotal = "";
 		for (Integer type : consumed_per_hour.keySet()) {
-			itemsTotal += consumed_per_hour.get(type)+" "+ItemManager.getMaterial(type)+", ";
+			itemsTotal += consumed_per_hour.get(type)+" "+CivItem.getMaterial(type)+", ";
 		}
 		out.add(CivColor.LightGreen+itemsTotal.toLowerCase());
 		CivMessage.send(sender, out);

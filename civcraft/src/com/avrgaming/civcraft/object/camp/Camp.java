@@ -93,7 +93,7 @@ import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
@@ -224,9 +224,9 @@ public class Camp extends Buildable {
 			double gold_nugget_chance = CivSettings.getDouble(CivSettings.campConfig, "camp.sifter_gold_nugget_chance");
 			double iron_ignot_chance = CivSettings.getDouble(CivSettings.campConfig, "camp.sifter_iron_ingot_chance");
 			
-			sifter.addSiftItem(ItemManager.getId(Material.COBBLESTONE), (short) 0, gold_nugget_chance, ItemManager.getId(Material.GOLD_NUGGET), (short)0, 1);
-			sifter.addSiftItem(ItemManager.getId(Material.COBBLESTONE), (short) 0, iron_ignot_chance, ItemManager.getId(Material.IRON_INGOT), (short)0, 1);
-			sifter.addSiftItem(ItemManager.getId(Material.COBBLESTONE), (short) 0, 1.0, ItemManager.getId(Material.GRAVEL), (short)0, 1);
+			sifter.addSiftItem(CivItem.getId(Material.COBBLESTONE), (short) 0, gold_nugget_chance, CivItem.getId(Material.GOLD_NUGGET), (short)0, 1);
+			sifter.addSiftItem(CivItem.getId(Material.COBBLESTONE), (short) 0, iron_ignot_chance, CivItem.getId(Material.IRON_INGOT), (short)0, 1);
+			sifter.addSiftItem(CivItem.getId(Material.COBBLESTONE), (short) 0, 1.0, CivItem.getId(Material.GRAVEL), (short)0, 1);
 			
 			consumeComponent = new ConsumeLevelComponent();
 			consumeComponent.setBuildable(this);
@@ -459,13 +459,13 @@ public class Camp extends Buildable {
 			case "/growth_first":
 				if (this.isFirstGardenEnabled()) {
 					CivGlobal.vanillaGrowthLocations.add(absCoord);
-					if (ItemManager.getId(b) != CivData.FARMLAND) ItemManager.setTypeId(b, CivData.FARMLAND);
+					if (CivItem.getId(b) != CivData.FARMLAND) CivItem.setTypeId(b, CivData.FARMLAND);
 					this.addCampBlock(absCoord, true);
 					this.addCampBlock(new BlockCoord(absCoord.getBlock().getRelative(0, 1, 0)), true);
 				} else {
-					if (ItemManager.getId(b) != CivData.CONCRETE && ItemManager.getData(b) != 12) {
-						ItemManager.setTypeId(b, CivData.CONCRETE);
-						ItemManager.setData(b, 12);
+					if (CivItem.getId(b) != CivData.CONCRETE && CivItem.getData(b) != 12) {
+						CivItem.setTypeId(b, CivData.CONCRETE);
+						CivItem.setData(b, 12);
 					}
 					this.addCampBlock(absCoord, false);
 					this.addCampBlock(new BlockCoord(absCoord.getBlock().getRelative(0, 1, 0)));
@@ -474,27 +474,27 @@ public class Camp extends Buildable {
 			case "/growth_second":
 				if (this.isSecondGardenEnabled()) {
 					CivGlobal.vanillaGrowthLocations.add(absCoord);
-					if (ItemManager.getId(b) != CivData.FARMLAND) ItemManager.setTypeId(b, CivData.FARMLAND);
+					if (CivItem.getId(b) != CivData.FARMLAND) CivItem.setTypeId(b, CivData.FARMLAND);
 					this.addCampBlock(absCoord, true);
 					this.addCampBlock(new BlockCoord(absCoord.getBlock().getRelative(0, 1, 0)), true);
 				} else {
-					if (ItemManager.getId(b) != CivData.CONCRETE && ItemManager.getData(b) != 12) {
-						ItemManager.setTypeId(b, CivData.CONCRETE);
-						ItemManager.setData(b, 12);
+					if (CivItem.getId(b) != CivData.CONCRETE && CivItem.getData(b) != 12) {
+						CivItem.setTypeId(b, CivData.CONCRETE);
+						CivItem.setData(b, 12);
 					}
 					this.addCampBlock(absCoord);
 					this.addCampBlock(new BlockCoord(absCoord.getBlock().getRelative(0, 1, 0)));
 				}
 				break;
 			case "/fire":
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.FIRE));
+				CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.FIRE));
 				break;
 			case "/fuelfurnace":
 				this.fireFurnaceBlocks.add(absCoord);
-				if (ItemManager.getId(b) != CivData.FURNACE && ItemManager.getId(b) != CivData.FURNACE_LIT) {
+				if (CivItem.getId(b) != CivData.FURNACE && CivItem.getId(b) != CivData.FURNACE_LIT) {
 					byte data = CivData.convertSignDataToChestData((byte)sb.getData());
-					ItemManager.setTypeId(b, ItemManager.getId(Material.FURNACE));
-					ItemManager.setData(b, data);
+					CivItem.setTypeId(b, CivItem.getId(Material.FURNACE));
+					CivItem.setData(b, data);
 				}
 				this.addCampBlock(absCoord);
 
@@ -514,14 +514,14 @@ public class Camp extends Buildable {
 				}
 				
 				if (this.sifterEnabled) {
-					if (ItemManager.getId(b) != CivData.CHEST) {
-						ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.CHEST));
+					if (CivItem.getId(b) != CivData.CHEST) {
+						CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.CHEST));
 						byte data2 = CivData.convertSignDataToChestData((byte)sb.getData());
-						ItemManager.setData(absCoord.getBlock(), data2);
+						CivItem.setData(absCoord.getBlock(), data2);
 					}
 				} else {
-					ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.SIGN_POST));
-					ItemManager.setData(absCoord.getBlock(), sb.getData());
+					CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.SIGN_POST));
+					CivItem.setData(absCoord.getBlock(), sb.getData());
 					Sign sign = (Sign)absCoord.getBlock().getState();
 					sign.setLine(0, "Sifter");
 					sign.setLine(1, "Disabled");
@@ -534,14 +534,14 @@ public class Camp extends Buildable {
 			case "/longhouse":
 				if (this.longhouseEnabled) {
 					this.foodDepositPoints.add(absCoord);
-					if (ItemManager.getId(b) != CivData.CHEST) {
-						ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.CHEST));
+					if (CivItem.getId(b) != CivData.CHEST) {
+						CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.CHEST));
 						byte data3 = CivData.convertSignDataToChestData((byte)sb.getData());
-						ItemManager.setData(absCoord.getBlock(), data3);
+						CivItem.setData(absCoord.getBlock(), data3);
 					}
 				} else {
-					ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.SIGN_POST));
-					ItemManager.setData(absCoord.getBlock(), sb.getData());
+					CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.SIGN_POST));
+					CivItem.setData(absCoord.getBlock(), sb.getData());
 					Sign sign = (Sign)absCoord.getBlock().getState();
 					sign.setLine(0, "Longhouse");
 					sign.setLine(1, "Disabled");
@@ -561,8 +561,8 @@ public class Camp extends Buildable {
 				byte doorDirection = CivData.convertSignDataToDoorDirectionData((byte)sb.getData());
 				bottomData |= doorDirection;
 				
-				ItemManager.setTypeIdAndData(doorBlock, ItemManager.getId(Material.WOODEN_DOOR), bottomData, false);
-				ItemManager.setTypeIdAndData(doorBlock2, ItemManager.getId(Material.WOODEN_DOOR), topData, false);
+				CivItem.setTypeIdAndData(doorBlock, CivItem.getId(Material.WOODEN_DOOR), bottomData, false);
+				CivItem.setTypeIdAndData(doorBlock2, CivItem.getId(Material.WOODEN_DOOR), topData, false);
 				this.addCampBlock(new BlockCoord(doorBlock));
 				this.addCampBlock(new BlockCoord(doorBlock2));
 				break;
@@ -571,8 +571,8 @@ public class Camp extends Buildable {
 				break;
 			case "/literal":
 				/* Unrecognized command... treat as a literal sign. */
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
-				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.WALL_SIGN));
+				CivItem.setData(absCoord.getBlock(), sb.getData());
 				Sign sign = (Sign)absCoord.getBlock().getState();
 				sign.setLine(0, sb.message[0]);
 				sign.setLine(1, sb.message[1]);
@@ -724,12 +724,12 @@ public class Camp extends Buildable {
 					}
 					
 					try {
-						if (ItemManager.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
-							ItemManager.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
-							ItemManager.setData(nextBlock, tpl.blocks[x][y][z].getData());
+						if (CivItem.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
+							CivItem.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
+							CivItem.setData(nextBlock, tpl.blocks[x][y][z].getData());
 						}
 						
-						if (ItemManager.getId(nextBlock) != CivData.AIR) {
+						if (CivItem.getId(nextBlock) != CivData.AIR) {
 							this.addCampBlock(new BlockCoord(nextBlock.getLocation()));
 						}
 					} catch (Exception e) {
@@ -800,7 +800,7 @@ public class Camp extends Buildable {
 			for (int y = 0; y < regionY; y++) {
 				for (int z = 0; z < regionZ; z++) {
 					Block b = centerBlock.getRelative(x, y, z);
-					if (ItemManager.getId(b) == CivData.CHEST) {
+					if (CivItem.getId(b) == CivData.CHEST) {
 						throw new CivException("Cannot build here, would destroy chest.");
 					}
 		
@@ -946,25 +946,25 @@ public class Camp extends Buildable {
 		for (BlockCoord coord : this.campBlocks.keySet()) {
 			if (CivGlobal.getStructureChest(coord) != null) continue;
 			if (CivGlobal.getStructureSign(coord) != null) continue;
-			if (ItemManager.getId(coord.getBlock()) == CivData.CHEST) continue;
-			if (ItemManager.getId(coord.getBlock()) == CivData.SIGN) continue;
-			if (ItemManager.getId(coord.getBlock()) == CivData.WALL_SIGN) continue;
+			if (CivItem.getId(coord.getBlock()) == CivData.CHEST) continue;
+			if (CivItem.getId(coord.getBlock()) == CivData.SIGN) continue;
+			if (CivItem.getId(coord.getBlock()) == CivData.WALL_SIGN) continue;
 			
-			if (CivSettings.alwaysCrumble.contains(ItemManager.getId(coord.getBlock()))) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
+			if (CivSettings.alwaysCrumble.contains(CivItem.getId(coord.getBlock()))) {
+				CivItem.setTypeId(coord.getBlock(), CivData.GRAVEL);
 				continue;
 			}
 						
 			Random rand = new Random();
 			// Each block has a 10% chance to turn into gravel
 			if (rand.nextInt(100) <= 10) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
+				CivItem.setTypeId(coord.getBlock(), CivData.GRAVEL);
 				continue;
 			}
 			
 			// Each block has a 50% chance of starting a fire
 			if (rand.nextInt(100) <= 50) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.FIRE);
+				CivItem.setTypeId(coord.getBlock(), CivData.FIRE);
 				continue;
 			}
 			
@@ -988,13 +988,13 @@ public class Camp extends Buildable {
 		
 		// Build the bedrock tower.
 		Block b = centerLoc.getBlock();
-		ItemManager.setTypeId(b, CivData.FENCE); ItemManager.setData(b, 0);
+		CivItem.setTypeId(b, CivData.FENCE); CivItem.setData(b, 0);
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addCampBlock(sb.getCoord());
 		
 		// Build the control block. 
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
-		ItemManager.setTypeId(b, CivData.OBSIDIAN);
+		CivItem.setTypeId(b, CivData.OBSIDIAN);
 		sb = new StructureBlock(new BlockCoord(b), this);
 		this.addCampBlock(sb.getCoord());
 	
@@ -1104,7 +1104,7 @@ public class Camp extends Buildable {
 	}
 	
 	public void onControlBlockDestroy(ControlPoint cp, World world, Player player) {		
-		ItemManager.setTypeId(cp.getCoord().getLocation().getBlock(), CivData.AIR);
+		CivItem.setTypeId(cp.getCoord().getLocation().getBlock(), CivData.AIR);
 		world.playSound(cp.getCoord().getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, -1.0f);
 		world.playSound(cp.getCoord().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.0f);
 		FireworkEffect effect = FireworkEffect.builder().with(org.bukkit.FireworkEffect.Type.BURST).withColor(Color.YELLOW).withColor(Color.RED).withTrail().withFlicker().build();

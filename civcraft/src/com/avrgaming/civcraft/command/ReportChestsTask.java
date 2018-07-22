@@ -41,7 +41,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class ReportChestsTask implements Runnable {
 	public Queue<ChunkCoord> coords = new LinkedList<ChunkCoord>();
@@ -54,7 +54,7 @@ public class ReportChestsTask implements Runnable {
 
 	private int countItem(Inventory inv, int id) {
 		int total = 0;
-		for (ItemStack stack : inv.all(ItemManager.getMaterial(id)).values()) {
+		for (ItemStack stack : inv.all(CivItem.getMaterial(id)).values()) {
 			total += stack.getAmount();
 		}
 		
@@ -87,15 +87,15 @@ public class ReportChestsTask implements Runnable {
 						BlockCoord bcoord = new BlockCoord(coord.getWorldname(), (coord.getX() << 4)+x, 
 								y, (coord.getZ() << 4)+z);
 						
-						int diamondBlocks = countItem(inv, ItemManager.getId(Material.DIAMOND_BLOCK));
-						int diamonds = countItem(inv, ItemManager.getId(Material.DIAMOND));
-						int goldBlocks = countItem(inv, ItemManager.getId(Material.GOLD_BLOCK));
-						int gold = countItem(inv, ItemManager.getId(Material.GOLD_INGOT));
-						int emeraldBlocks = countItem(inv, ItemManager.getId(Material.EMERALD_BLOCK));
-						int emeralds = countItem(inv, ItemManager.getId(Material.EMERALD));
-						int diamondOre = countItem(inv, ItemManager.getId(Material.DIAMOND_ORE));
-						int goldOre = countItem(inv, ItemManager.getId(Material.GOLD_ORE));
-						int emeraldOre = countItem(inv, ItemManager.getId(Material.EMERALD_ORE));
+						int diamondBlocks = countItem(inv, CivItem.getId(Material.DIAMOND_BLOCK));
+						int diamonds = countItem(inv, CivItem.getId(Material.DIAMOND));
+						int goldBlocks = countItem(inv, CivItem.getId(Material.GOLD_BLOCK));
+						int gold = countItem(inv, CivItem.getId(Material.GOLD_INGOT));
+						int emeraldBlocks = countItem(inv, CivItem.getId(Material.EMERALD_BLOCK));
+						int emeralds = countItem(inv, CivItem.getId(Material.EMERALD));
+						int diamondOre = countItem(inv, CivItem.getId(Material.DIAMOND_ORE));
+						int goldOre = countItem(inv, CivItem.getId(Material.GOLD_ORE));
+						int emeraldOre = countItem(inv, CivItem.getId(Material.EMERALD_ORE));
 						
 						String out = block.getType().name()+": "+CivColor.LightPurple+bcoord+CivColor.White+" DB:"+diamondBlocks+" EB:"+emeraldBlocks+" GB:"+goldBlocks+" D:"+
 								diamonds+" E:"+emeralds+" G:"+gold+" DO:"+diamondOre+" EO:"+emeraldOre+" GO:"+goldOre;
@@ -126,15 +126,15 @@ public class ReportChestsTask implements Runnable {
 			if (inv != null) {
 				BlockCoord bcoord = new BlockCoord(e.getLocation());
 				
-				int diamondBlocks = countItem(inv, ItemManager.getId(Material.DIAMOND_BLOCK));
-				int diamonds = countItem(inv, ItemManager.getId(Material.DIAMOND));
-				int goldBlocks = countItem(inv, ItemManager.getId(Material.GOLD_BLOCK));
-				int gold = countItem(inv, ItemManager.getId(Material.GOLD_INGOT));
-				int emeraldBlocks = countItem(inv, ItemManager.getId(Material.EMERALD_BLOCK));
-				int emeralds = countItem(inv, ItemManager.getId(Material.EMERALD));
-				int diamondOre = countItem(inv, ItemManager.getId(Material.DIAMOND_ORE));
-				int goldOre = countItem(inv, ItemManager.getId(Material.GOLD_ORE));
-				int emeraldOre = countItem(inv, ItemManager.getId(Material.EMERALD_ORE));
+				int diamondBlocks = countItem(inv, CivItem.getId(Material.DIAMOND_BLOCK));
+				int diamonds = countItem(inv, CivItem.getId(Material.DIAMOND));
+				int goldBlocks = countItem(inv, CivItem.getId(Material.GOLD_BLOCK));
+				int gold = countItem(inv, CivItem.getId(Material.GOLD_INGOT));
+				int emeraldBlocks = countItem(inv, CivItem.getId(Material.EMERALD_BLOCK));
+				int emeralds = countItem(inv, CivItem.getId(Material.EMERALD));
+				int diamondOre = countItem(inv, CivItem.getId(Material.DIAMOND_ORE));
+				int goldOre = countItem(inv, CivItem.getId(Material.GOLD_ORE));
+				int emeraldOre = countItem(inv, CivItem.getId(Material.EMERALD_ORE));
 				
 				String out =  e.getType().name()+": "+CivColor.LightPurple+bcoord+CivColor.White+" DB:"+diamondBlocks+" EB:"+emeraldBlocks+" GB:"+goldBlocks+" D:"+
 						diamonds+" E:"+emeralds+" G:"+gold+" DO:"+diamondOre+" EO:"+emeraldOre+" GO:"+goldOre;

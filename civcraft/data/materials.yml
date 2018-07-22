@@ -1796,6 +1796,70 @@ materials:
        - "t t"
 #
 
+potions:
+# Stocked Data (r,g,b):
+# https://www.rapidtables.com/convert/color/hex-to-rgb.html
+# Absorption 37,82,165
+# Bad Luck 192,164,77
+# Blindness 31,31,35
+# Fire Resistance 228,154,58
+# Glowing 148,160,97
+# Haste 217,192,67
+# Health Boost 248,125,35
+# Hunger 88,118,83
+# Instant Damage 67,10,9
+# Instant Health 248,36,35
+# Invisibility 127,131,146
+# Jump Boost 34,255,76
+# Levitation 206,255,255
+# Luck 51,153,0
+# Mining Fatigue 74,66,23
+# Nausea 85,29,74
+# Night Vision 31,31,161
+# Poison 78,147,49S
+# Regeneration 205,92,171
+# Resistance 153,69,58
+# Saturation 248,36,35
+# Slowness 90,108,129
+# Speed 124,175,198
+# Strength 147,36,35
+# Water Breathing 46,82,153
+# Weakness 72,77,72
+# Wither 53,42,39
+
+# Checked 25 August 2017
+  - id: 'civpot_speed_regular'
+    name: 'Potion of Speed'
+    required_techs: 'tech_unknown'
+    effects:
+       - effect: SPEED
+         length: 180
+         amplifier: 0
+    color:
+       r: 124
+       g: 175
+       b: 198
+    ingredients:
+       - type_id: SUGAR
+         count: 16
+#
+# Checked 25 August 2017
+  - id: 'civpot_haste_regular'
+    name: 'Potion of Haste'
+    required_not_techs: 'tech_unknown'
+    effect: FAST_DIGGING
+    length: 180
+    amplifier: 0
+    color:
+       - r: 215
+       - g: 192
+       - b: 15
+    ingredients:
+       - type_id: SUGAR
+         custom_id: 'civ_refined_diamond'
+         letter: 't'
+#
+
 #
 # This is a list of removed recpies based on the typeID and 
 # data value of the vanilla item.

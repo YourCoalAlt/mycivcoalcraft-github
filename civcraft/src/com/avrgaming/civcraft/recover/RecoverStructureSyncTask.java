@@ -31,7 +31,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 
 public class RecoverStructureSyncTask implements Runnable {
@@ -77,16 +77,16 @@ public class RecoverStructureSyncTask implements Runnable {
 						continue;
 					}
 					
-					if (ItemManager.getId(nextBlock) != CivData.BEDROCK) {
+					if (CivItem.getId(nextBlock) != CivData.BEDROCK) {
 						if (tpl.blocks[x][y][z].isAir()) {
 							continue;
 						}
 					}
 					
 					try {
-						if (ItemManager.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
-							ItemManager.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
-							ItemManager.setData(nextBlock, tpl.blocks[x][y][z].getData());			
+						if (CivItem.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
+							CivItem.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
+							CivItem.setData(nextBlock, tpl.blocks[x][y][z].getData());			
 						}
 					} catch (Exception e) {
 						CivLog.error(e.getMessage());

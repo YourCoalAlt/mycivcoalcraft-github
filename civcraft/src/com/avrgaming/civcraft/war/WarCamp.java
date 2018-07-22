@@ -47,7 +47,7 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 
@@ -217,12 +217,12 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 			case "/respawn":
 				this.respawnPoints.add(absCoord);
 				BlockCoord coord = new BlockCoord(absCoord);
-				ItemManager.setTypeId(coord.getBlock(), CivData.AIR);
+				CivItem.setTypeId(coord.getBlock(), CivData.AIR);
 				this.addStructureBlock(new BlockCoord(absCoord), false);
 				
 				coord = new BlockCoord(absCoord);
 				coord.setY(absCoord.getY()+1);
-				ItemManager.setTypeId(coord.getBlock(), CivData.AIR);
+				CivItem.setTypeId(coord.getBlock(), CivData.AIR);
 				this.addStructureBlock(coord, false);
 
 				break;
@@ -264,7 +264,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 				for (int z = 0; z < regionZ; z++) {
 					Block b = centerBlock.getRelative(x, y, z);
 					
-					if (ItemManager.getId(b) == CivData.CHEST) {
+					if (CivItem.getId(b) == CivData.CHEST) {
 						throw new CivException("Cannot build here, would destroy chest.");
 					}
 		
@@ -330,14 +330,14 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 					}
 
 					try {
-						if (ItemManager.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
+						if (CivItem.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
 							/* XXX Save it as a war block so it's automatically removed when war time ends. */
 							WarRegen.saveBlock(nextBlock, WarCamp.RESTORE_NAME, false);
-							ItemManager.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
-							ItemManager.setData(nextBlock, tpl.blocks[x][y][z].getData());
+							CivItem.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
+							CivItem.setData(nextBlock, tpl.blocks[x][y][z].getData());
 						}
 						
-						if (ItemManager.getId(nextBlock) != CivData.AIR) {
+						if (CivItem.getId(nextBlock) != CivData.AIR) {
 							this.addStructureBlock(new BlockCoord(nextBlock.getLocation()), true);
 						}
 					} catch (Exception e) {
@@ -415,7 +415,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 		//for (int i = 0; i < 1; i++) {
 		Block b = centerLoc.getBlock();
 		WarRegen.saveBlock(b, WarCamp.RESTORE_NAME, false);
-		ItemManager.setTypeId(b, CivData.FENCE); ItemManager.setData(b, 0);
+		CivItem.setTypeId(b, CivData.FENCE); CivItem.setData(b, 0);
 
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
@@ -424,7 +424,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 		/* Build the control block. */
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
 		WarRegen.saveBlock(b, WarCamp.RESTORE_NAME, false);
-		ItemManager.setTypeId(b, CivData.OBSIDIAN);
+		CivItem.setTypeId(b, CivData.OBSIDIAN);
 
 		sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
@@ -473,7 +473,7 @@ public class WarCamp extends Buildable implements RespawnLocationHolder {
 		//Should always have a resident and a town at this point.
 		Resident attacker = CivGlobal.getResident(player);
 		
-		ItemManager.setTypeId(hit.getCoord().getLocation().getBlock(), CivData.AIR);
+		CivItem.setTypeId(hit.getCoord().getLocation().getBlock(), CivData.AIR);
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, -1.0f);
 		world.playSound(hit.getCoord().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.0f);
 		

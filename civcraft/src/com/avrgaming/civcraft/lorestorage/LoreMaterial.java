@@ -48,7 +48,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
 import com.avrgaming.civcraft.object.BuildableDamageBlock;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -174,7 +174,7 @@ public abstract class LoreMaterial {
 	}
 	
 	public static ItemStack spawn(LoreMaterial material, int amt) {
-		ItemStack stack = ItemManager.createItemStack(material.getTypeID(), amt, material.getDamage());
+		ItemStack stack = CivItem.newStack(material.getTypeID(), amt, material.getDamage());
 		AttributeUtil attrs = new AttributeUtil(stack);
 		setMIDAndName(attrs, material.getId(), material.getName());
 		

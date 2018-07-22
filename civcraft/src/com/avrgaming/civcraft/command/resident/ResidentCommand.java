@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,13 +37,12 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
-import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class ResidentCommand extends CommandBase {
 
@@ -70,7 +70,7 @@ public class ResidentCommand extends CommandBase {
 	public void prevnames_cmd() throws CivException {
 		Resident res = getNamedResident(1);
 		OfflinePlayer p = CivGlobal.getOfflinePlayer(res);
-		Map<String, String> prevNames = ItemManager.getPlayerPreviousNames(p);
+		Map<String, String> prevNames = CivItem.getPlayerPreviousNames(p);
 		CivMessage.sendHeading(sender, "Previous Usernames");
 		for (Entry<String, String> s : prevNames.entrySet()) {
 			CivMessage.send(sender, s.getValue()+CivColor.DarkGrayItalic+" (Changed: "+s.getKey()+")");
@@ -192,23 +192,23 @@ public class ResidentCommand extends CommandBase {
 		
 		type = type.toLowerCase();
 		
-		int exchangeID;
+		Material exchangeType;
 		double rate;
 		switch (type) {
 		case "iron":
-			exchangeID = CivData.IRON_INGOT;
+			exchangeType = Material.IRON_INGOT;
 			rate = CivSettings.iron_rate;
 			break;
 		case "gold":
-			exchangeID = CivData.GOLD_INGOT;
+			exchangeType = Material.GOLD_INGOT;
 			rate = CivSettings.gold_rate;
 			break;
 		case "diamond":
-			exchangeID = CivData.DIAMOND;
+			exchangeType = Material.DIAMOND;
 			rate = CivSettings.diamond_rate;
 			break;
 		case "emerald":
-			exchangeID = CivData.EMERALD;
+			exchangeType = Material.EMERALD;
 			rate = CivSettings.emerald_rate;
 			break;
 		default:
@@ -223,19 +223,14 @@ public class ResidentCommand extends CommandBase {
 			throw new CivException("Internal configuration error!");
 		}
 		
-		ItemStack stack = ItemManager.createItemStack(exchangeID, 1);
+		ItemStack stack = CivItem.newStack(exchangeType);
 		int total = 0;
 		for (int i = 0; i < player.getInventory().getContents().length; i++) {
 			ItemStack is = player.getInventory().getItem(i);
-			if (is == null) {
-				continue;
-			}
+			if (is == null) continue;
+			if (LoreCraftableMaterial.isCustom(is)) continue;
 			
-			if (LoreCraftableMaterial.isCustom(is)) {
-				continue;
-			}
-			
-			if (ItemManager.getId(is) == exchangeID) {
+			if (is.getType() == exchangeType) {
 				total += is.getAmount();
 			}
 		}
@@ -254,7 +249,6 @@ public class ResidentCommand extends CommandBase {
 		
 		resident.getTreasury().deposit(coins);
 		CivMessage.sendSuccess(player, "Exchanged "+amount+" "+type+" for "+coins+" coins.");
-		
 	}
 	
 	public void resetspawn_cmd() throws CivException {

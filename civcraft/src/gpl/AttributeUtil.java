@@ -11,13 +11,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
-import com.avrgaming.civcraft.main.CivData;
-import com.avrgaming.civcraft.util.ItemManager;
-import com.avrgaming.civcraft.util.NBTStaticHelper;
+import com.avrgaming.civcraft.util.CivItem;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -231,6 +230,12 @@ public class AttributeUtil {
 	private NBTTagCompound parent;
 	private NBTTagList attributes;
 	
+//	private final int TAG_LIST = 9;
+	private final int TAG_COMPOUND = 10;
+//	private final int TAG_DOUBLE = 6;
+//	private final int TAG_FLOAT = 5;
+	private final int TAG_STRING = 8;
+	
 	public AttributeUtil(ItemStack stack) {
 		// Create a CraftItemStack (under the hood)
 		this.nmsStack = CraftItemStack.asNMSCopy(stack);
@@ -247,7 +252,7 @@ public class AttributeUtil {
 		
 		// Load attribute list
 		if (parent.hasKey("AttributeModifiers")) {
-			attributes = parent.getList("AttributeModifiers", NBTStaticHelper.TAG_COMPOUND);
+			attributes = parent.getList("AttributeModifiers", TAG_COMPOUND);
 		} else {
 			// No attributes on this item detected.
 			attributes = new NBTTagList();
@@ -259,7 +264,7 @@ public class AttributeUtil {
 	 * @return The modified item stack.
 	 */
 	public ItemStack getStack() {
-		if (nmsStack == null) return ItemManager.createItemStack(CivData.WOOL, 0);
+		if (nmsStack == null) return CivItem.newStack(Material.WOOL, 0);
 		
 		if (nmsStack.getTag() != null) {
 			if (attributes.size() == 0) {
@@ -366,7 +371,7 @@ public class AttributeUtil {
 			displayCompound = new NBTTagCompound();
 		}
 		
-		NBTTagList loreList = displayCompound.getList("Lore", NBTStaticHelper.TAG_STRING);
+		NBTTagList loreList = displayCompound.getList("Lore", TAG_STRING);
 		if (loreList == null) {
 			loreList = new NBTTagList();
 		} 
@@ -383,7 +388,7 @@ public class AttributeUtil {
 		NBTTagCompound displayCompound = nmsStack.getTag().getCompound("display");
 		if (displayCompound == null) return null;
 		
-		NBTTagList loreList = displayCompound.getList("Lore", NBTStaticHelper.TAG_STRING);
+		NBTTagList loreList = displayCompound.getList("Lore", TAG_STRING);
 		if (loreList == null) return null;
 		if (loreList.size() < 1) return null;
 		

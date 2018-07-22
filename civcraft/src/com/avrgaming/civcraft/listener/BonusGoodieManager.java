@@ -64,7 +64,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class BonusGoodieManager implements Listener {
 
@@ -312,7 +312,7 @@ public class BonusGoodieManager implements Listener {
 			/* No goodie item, make sure they dont go into protected frames. */
 			if (frameStore != null) {
 				/* Make sure we're trying to place an item into the frame, test if the frame is empty. */
-				if (frame.getItem() == null || ItemManager.getId(frame.getItem()) == CivData.AIR) {
+				if (frame.getItem() == null || CivItem.getId(frame.getItem()) == CivData.AIR) {
 					CivMessage.sendError(event.getPlayer(), 
 							"You cannot place a non-trade goodie items in a trade goodie item frame.");
 					event.setCancelled(true);
@@ -407,8 +407,8 @@ public class BonusGoodieManager implements Listener {
 		Inventory inv = event.getPlayer().getInventory();
 		
 		for (ConfigTradeGood good : CivSettings.goods.values()) {
-			for (Entry<Integer, ? extends ItemStack> itemEntry : inv.all(ItemManager.getMaterial(good.material)).entrySet()) {
-				if (good.material_data != ItemManager.getData(itemEntry.getValue())) {
+			for (Entry<Integer, ? extends ItemStack> itemEntry : inv.all(CivItem.getMaterial(good.material)).entrySet()) {
+				if (good.material_data != CivItem.getData(itemEntry.getValue())) {
 					continue;
 				}
 				
@@ -443,7 +443,7 @@ public class BonusGoodieManager implements Listener {
 		ItemFrame frame = clickedFrame.getItemFrame();
 		ItemStack stack = frame.getItem();
 		//if goodie in frame, break it out
-		if (stack != null && ItemManager.getId(stack) != CivData.AIR) {
+		if (stack != null && CivItem.getId(stack) != CivData.AIR) {
 			// FYI sometimes the item pops out from the player entity interact event...
 			BonusGoodie goodieInFrame = CivGlobal.getBonusGoodie(frame.getItem());
 			if (goodieInFrame != null) {
@@ -458,7 +458,7 @@ public class BonusGoodieManager implements Listener {
 			}
 			
 			player.getWorld().dropItemNaturally(frame.getLocation(), stack);
-			frame.setItem(ItemManager.createItemStack(CivData.AIR, 1));
+			frame.setItem(CivItem.airStack());
 			CivMessage.send(player, CivColor.Gray+"You unsocket the trade goodie from the frame.");
 		} else if (goodie != null) {
 			//Item frame was empty, add goodie to it.

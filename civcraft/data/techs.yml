@@ -15,6 +15,8 @@ potions:
   - name: 'Fire Resistance (Extended)'
     data: 8259
     require_tech: 'tech_fermentation'
+#
+
 # ------------------------------------------
 # the amount to multiply cottage coins once taxation is researched
 taxation_cottage_buff: 2.0

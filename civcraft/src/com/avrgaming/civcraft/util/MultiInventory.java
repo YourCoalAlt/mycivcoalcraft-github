@@ -59,13 +59,13 @@ public class MultiInventory {
 				return false;
 			}
 		} else {
-			if (ItemManager.getId(stack) != type) {
+			if (CivItem.getId(stack) != type) {
 				return false;
 			}
 			
 			/* Only check item data when max dura == 0. Otherwise item doesnt use data and it's the durability. */
-			if (ItemManager.getMaterial(type).getMaxDurability() == 0) {
-				if (ItemManager.getData(stack) != data) {
+			if (CivItem.getMaterial(type).getMaxDurability() == 0) {
+				if (CivItem.getData(stack) != data) {
 					/* data didn't match, wrong item. */
 					return false;
 				}
@@ -266,7 +266,7 @@ public class MultiInventory {
 			return removeItem(loreMat.getId(), 0, (short)0, item.getAmount());
 		} else {
 			/* Vanilla item. no custom id. */
-			return removeItem(null, ItemManager.getId(item), ItemManager.getData(item), item.getAmount());
+			return removeItem(null, CivItem.getId(item), CivItem.getData(item), item.getAmount());
 		}
 	}
 	
@@ -352,13 +352,13 @@ public class MultiInventory {
 					}
 				} else {
 					/* Vanilla item. */
-					if (ItemManager.getId(item) != type) {
+					if (CivItem.getId(item) != type) {
 						continue;
 					}
 					
 					/* Only check the data if this item doesnt use durability. */
-					if (ItemManager.getMaterial(type).getMaxDurability() == 0) {
-						if (ItemManager.getData(item) != data) {
+					if (CivItem.getMaterial(type).getMaxDurability() == 0) {
+						if (CivItem.getData(item) != data) {
 							continue;
 						}
 					}

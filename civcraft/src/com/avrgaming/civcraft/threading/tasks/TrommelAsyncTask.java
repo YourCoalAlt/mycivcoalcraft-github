@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +25,7 @@ import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.structure.Trommel;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class TrommelAsyncTask extends CivAsyncTask {
@@ -103,7 +104,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
+					ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getStackName(stack).toUpperCase());
 					if (cti != null) {
 						if (process.size() >= ticks) {
 							maxed = true;
@@ -132,10 +133,10 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		ArrayList<ItemStack> dropped = new ArrayList<ItemStack>();
 		for (int i = 0; i < process.size(); i++) {
 			ItemStack stack = process.get(i);
-			ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack)).toUpperCase());
-			if (ItemManager.getId(stack) == cti.item && ItemManager.getData(stack) == cti.item_data && trommel.getLevel() >= cti.level) {
+			ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getStackName(stack).toUpperCase());
+			if (CivItem.getId(stack) == cti.item && CivItem.getData(stack) == cti.item_data && trommel.getLevel() >= cti.level) {
 				try {
-					this.updateInventory(Action.REMOVE, source_inv, ItemManager.createItemStack(cti.item, 1, (byte)cti.item_data));
+					this.updateInventory(Action.REMOVE, source_inv, CivItem.newStack(cti.item, cti.item_data, true));
 				} catch (InterruptedException e) {
 					return;
 				}
@@ -162,11 +163,11 @@ public class TrommelAsyncTask extends CivAsyncTask {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 3) {
-			return ItemManager.createItemStack(CivData.DIRT, 1);
+			return CivItem.newStack(Material.DIRT);
 		} else if (uselessDrop >= 4 && uselessDrop <= 7) {
-			return ItemManager.createItemStack(CivData.GRAVEL, 1);
+			return CivItem.newStack(Material.GRAVEL);
 		} else {
-			return ItemManager.createItemStack(CivData.AIR, 1);
+			return CivItem.airStack();
 		}
 	}
 	
@@ -297,7 +298,7 @@ public class TrommelAsyncTask extends CivAsyncTask {
 						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 						dropped.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
 					} else {
-						dropped.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+						dropped.add(CivItem.newStack(d.type_id, d.amount, d.type_data));
 					}
 				}
 			}

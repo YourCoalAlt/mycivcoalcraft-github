@@ -18,7 +18,7 @@ import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.EntityProximity;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import net.minecraft.server.v1_12_R1.EntityCreature;
 
@@ -78,10 +78,10 @@ public class MobSpawnerTimer implements Runnable {
 					
 					// Dont spawn mobs at invalid blocks
 					Location blockLoc = loc; blockLoc.setY(loc.getY()-Y_SHIFT);
-					if ((ItemManager.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.WATER_STILL) ||
-					    (ItemManager.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.WATER_RUNNING) ||
-						(ItemManager.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.LAVA_STILL) ||
-						(ItemManager.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.LAVA_RUNNING)) {
+					if ((CivItem.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.WATER_STILL) ||
+					    (CivItem.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.WATER_RUNNING) ||
+						(CivItem.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.LAVA_STILL) ||
+						(CivItem.getId(blockLoc.getBlock().getRelative(BlockFace.DOWN)) == CivData.LAVA_RUNNING)) {
 						continue;
 					}
 					

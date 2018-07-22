@@ -53,7 +53,7 @@ import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.war.War;
 
 import net.md_5.bungee.api.ChatColor;
@@ -382,7 +382,7 @@ public class InventoryDisplaysListener implements Listener {
 		Market s = (Market) res.getTown().getStructureAtLocationByType(p.getLocation(), "s_market");
 		if (s == null) { CivMessage.sendError(p, "Your town does not have a market... cannot use one until then!"); event.setCancelled(true); }
 		for (ConfigMarketItem m : CivSettings.marketItems.values()) {
-			if (ItemManager.getId(event.getCurrentItem()) == m.type_id && ItemManager.getData(event.getCurrentItem()) == m.data &&
+			if (CivItem.getId(event.getCurrentItem()) == m.type_id && CivItem.getData(event.getCurrentItem()) == m.data &&
 					event.getInventory().getName().contains("Global Market Menu")) s.openItemGUI(p, m);
 		}
 	}
@@ -398,8 +398,8 @@ public class InventoryDisplaysListener implements Listener {
 		
 		ConfigMarketItem m = null;
 		ItemStack mi = event.getInventory().getItem(1);
-		int id = ItemManager.getId(mi);
-		int data = ItemManager.getData(mi);
+		int id = CivItem.getId(mi);
+		int data = CivItem.getData(mi);
 		for (ConfigMarketItem ma : CivSettings.marketItems.values()) {
 			if (id == ma.type_id && data == ma.data) {
 				m = ma;
@@ -419,7 +419,7 @@ public class InventoryDisplaysListener implements Listener {
 					buyFull += 64;
 					continue;
 				}
-				if (ItemManager.getId(is) == m.type_id && ItemManager.getData(is) == m.data) {
+				if (CivItem.getId(is) == m.type_id && CivItem.getData(is) == m.data) {
 					sellFull += is.getAmount();
 					continue;
 				}
@@ -453,10 +453,10 @@ public class InventoryDisplaysListener implements Listener {
 		
 		ConfigGrocerLevel g = null;
 		ItemStack mi = event.getInventory().getItem(1);
-		int id = ItemManager.getId(mi);
-		int data = ItemManager.getData(mi);
+		int id = CivItem.getId(mi);
+		int data = CivItem.getData(mi);
 		for (ConfigGrocerLevel gl : CivSettings.grocerLevels.values()) {
-			if (id == gl.itemId && data == gl.itemData) {
+			if (id == gl.type_id && data == gl.data) {
 				g = gl;
 			}
 		}
@@ -476,9 +476,9 @@ public class InventoryDisplaysListener implements Listener {
 			}
 			
 			if (c.contains(g.itemName)) {
-				if (ct == ClickType.LEFT) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, 1, g.price);
-				else if (ct == ClickType.SHIFT_LEFT) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, 64, 64*g.price);
-				else if (ct == ClickType.MIDDLE) s.buy_grocer_material(p, g.itemName, g.itemId, (byte)g.itemData, buyFull, buyFull*g.price);
+				if (ct == ClickType.LEFT) s.buy_grocer_material(p, g.itemName, g.type_id, (byte)g.data, 1, g.price);
+				else if (ct == ClickType.SHIFT_LEFT) s.buy_grocer_material(p, g.itemName, g.type_id, (byte)g.data, 64, 64*g.price);
+				else if (ct == ClickType.MIDDLE) s.buy_grocer_material(p, g.itemName, g.type_id, (byte)g.data, buyFull, buyFull*g.price);
 			}
 		}
 		s.openMainGrocerMenu(p);
@@ -947,10 +947,10 @@ public class InventoryDisplaysListener implements Listener {
 				} else if (craftMat != null) { //Allow custom items to be dropped
 					ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 					newMat.setData(stack.getData());
-					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 					addedNotRequiredItems = true;
 				} else if (craftMat == null) { //Drop any vanilla items in the inventory
-					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 					addedNotRequiredItems = true;
 				}
 			}
@@ -964,7 +964,7 @@ public class InventoryDisplaysListener implements Listener {
 				if (breadToDrop > 0) {
 					for (int i = 0; i < breadToDrop; i++) {
 						ItemStack newMat = new ItemStack(Material.BREAD);
-						ItemManager.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
+						CivItem.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
 						addedNotRequiredItems = true;
 					}
 				}
@@ -972,7 +972,7 @@ public class InventoryDisplaysListener implements Listener {
 				CivMessage.sendError(p, "Not enough bread to complete the task! Dropping what you deposited back on the ground.");
 				for (int i = 0; i < breadGiven; i++) {
 					ItemStack newMat = new ItemStack(Material.BREAD);
-					ItemManager.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
+					CivItem.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
 					addedNotRequiredItems = true;
 				}
 			} else if (breadGiven <= 0) {
@@ -1012,10 +1012,10 @@ public class InventoryDisplaysListener implements Listener {
 			if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 			if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
@@ -1034,7 +1034,7 @@ public class InventoryDisplaysListener implements Listener {
 		Town t = granary.getTown();
 		String material = ChatColor.stripColor(inv.getName()).replace(t.getName()+" Storage (" , "").replace(")", "").replaceAll(" ", "_").toLowerCase();
 		if (material.contains("carrot") || material.contains("potato")) material += "_item";
-		Material mat = ItemManager.getMaterial(material.toUpperCase());
+		Material mat = CivItem.getMaterial(material.toUpperCase());
 		boolean addedNotRequiredItems = false;
 		int matGiven = 0;
 		
@@ -1057,10 +1057,10 @@ public class InventoryDisplaysListener implements Listener {
 			} else if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 		}
@@ -1106,7 +1106,7 @@ public class InventoryDisplaysListener implements Listener {
 					if (toDrop > 0) {
 						for (int i = 0; i < toDrop; i++) {
 							ItemStack stack = new ItemStack(mat);
-							ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+							CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 							addedNotRequiredItems = true;
 						}
 					}
@@ -1185,10 +1185,10 @@ public class InventoryDisplaysListener implements Listener {
 			} else if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 		}
@@ -1240,7 +1240,7 @@ public class InventoryDisplaysListener implements Listener {
 			if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			} else { //Drop any vanilla items in the inventory after check
 				if (stack.getType() == Material.IRON_INGOT || stack.getType() == Material.GOLD_INGOT || stack.getType() == Material.DIAMOND || stack.getType() == Material.EMERALD) {
@@ -1248,7 +1248,7 @@ public class InventoryDisplaysListener implements Listener {
 					else mats.put(stack.getType().toString(), stack.getAmount());
 					inv.removeItem(stack);
 				} else {
-					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 					addedNotRequiredItems = true;
 				}
 			}
@@ -1258,7 +1258,7 @@ public class InventoryDisplaysListener implements Listener {
 		for (String g : mats.keySet()) {
 			for (String b : bank.rates.keySet()) {
 				if (b.contains(g)) {
-					String name = CivData.getDisplayName(ItemManager.getId(ItemManager.getMaterial(g)), 0);
+					String name = CivData.getStackName(CivItem.newStack(Material.valueOf(g)));
 					double sold = mats.get(g)*bank.rates.get(b);
 					if (res.getTown() == bTown) { //Resident in this town, no fee
 						res.getTreasury().deposit(sold);
@@ -1291,12 +1291,7 @@ public class InventoryDisplaysListener implements Listener {
 		}
 		
 		boolean addedNotRequiredItems = false;
-		int ioGiven = 0;
-		int goGiven = 0;
-		int loGiven = 0;
-		int roGiven = 0;
-		int sandGiven = 0;
-		int cactusGiven = 0;
+		Map<ItemStack, Integer> toSmelt = new HashMap<ItemStack, Integer>();
 		
 		for (ItemStack stack : inv.getContents().clone()) { //Grab the items the player put in the inventory
 			if (stack == null || stack.getType() == Material.AIR) continue;
@@ -1312,59 +1307,27 @@ public class InventoryDisplaysListener implements Listener {
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
-			if (stack.getType() == Material.IRON_ORE && craftMat == null) { //Collect all iron ore found in the GUI
-				ioGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack.getType() == Material.GOLD_ORE && craftMat == null) { //Collect all gold ore found in the GUI
-				goGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack.getType() == Material.LAPIS_ORE && craftMat == null) { //Collect all lapis ore found in the GUI
-				loGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack.getType() == Material.REDSTONE_ORE && craftMat == null) { //Collect all redstone ore found in the GUI
-				roGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack.getType() == Material.SAND && craftMat == null) { //Collect all redstone ore found in the GUI
-				sandGiven += stack.getAmount();
-				inv.removeItem(stack);
-			} else if (stack.getType() == Material.CACTUS && craftMat == null) { //Collect all redstone ore found in the GUI
-				cactusGiven += stack.getAmount();
+			if (craftMat == null && bs.canSmelt(stack)) { //Collect all smeltables in the GUI
+				ItemStack isTemp = CivItem.newStack(stack.getType(), stack.getDurability(), true);
+				if (toSmelt.containsKey(isTemp)) {
+					toSmelt.put(isTemp, toSmelt.get(isTemp)+stack.getAmount());
+				} else {
+					toSmelt.put(isTemp, stack.getAmount());
+				}
 				inv.removeItem(stack);
 			} else if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			} else { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 		}
 		
-		if (ioGiven > 0) {
-			bs.depositSmelt(p, Material.IRON_ORE, ioGiven, 0);
-		}
-		
-		if (goGiven > 0) {
-			bs.depositSmelt(p, Material.GOLD_ORE, goGiven, 0);
-		}
-		
-		if (loGiven > 0) {
-			int loSmelt = loGiven*4;
-			bs.depositSmelt(p, Material.LAPIS_ORE, loSmelt, 4);
-		}
-		
-		if (roGiven > 0) {
-			int roSmelt = roGiven*4;
-			bs.depositSmelt(p, Material.REDSTONE_ORE, roSmelt, 0);
-		}
-		
-		if (sandGiven > 0) {
-			bs.depositSmelt(p, Material.SAND, sandGiven, 0);
-		}
-		
-		if (cactusGiven > 0) {
-			bs.depositSmelt(p, Material.CACTUS, cactusGiven, 2);
+		for (ItemStack smelts : toSmelt.keySet()) {
+			bs.depositSmelt(p, smelts, toSmelt.get(smelts));
 		}
 		
 		if (addedNotRequiredItems == true) CivMessage.send(p, CivColor.GrayItalic+"We dropped non-required items back on the ground.");
@@ -1406,10 +1369,10 @@ public class InventoryDisplaysListener implements Listener {
 				if (craftMat != null) { // Allow custom items to be dropped
 					ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 					newMat.setData(stack.getData());
-					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 					addedNotRequiredItems = true;
 				} else { // Drop any vanilla items in the inventory
-					ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+					CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 					addedNotRequiredItems = true;
 				}
 			}
@@ -1459,7 +1422,7 @@ public class InventoryDisplaysListener implements Listener {
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 			ArrayList<String> al = new ArrayList<String>();
-			al.add(ItemManager.getId(stack)+";"+stack.getDurability());
+			al.add(CivItem.getId(stack)+";"+stack.getDurability());
 			if (required.containsKey(al) && craftMat == null) {
 				inv.removeItem(stack);
 				int h = given.get(al).intValue();
@@ -1469,11 +1432,11 @@ public class InventoryDisplaysListener implements Listener {
 			} else if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				CivMessage.sendError(p, craftMat.getName()+","+stack.getAmount());
 				addedNotRequiredItems = true;
 			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 		}
@@ -1516,7 +1479,7 @@ public class InventoryDisplaysListener implements Listener {
 		if (canComplete) { // Give Rewards, state rewards
 			for (int i = 0; i < reward; i++) {
 				ItemStack newMat = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
-				ItemManager.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
+				CivItem.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
 			}
 			
 			CivMessage.sendTown(t, p.getName()+" has completed mine task "+task+" and earned "+reward+" hammers!");
@@ -1529,8 +1492,8 @@ public class InventoryDisplaysListener implements Listener {
 					int amt = dropping.get(d).intValue();
 					addedNotRequiredItems = true;
 					for (int i = 0; i < amt; i++) {
-						ItemStack drop = new ItemStack(ItemManager.getMaterial(id), 1, (short) data);
-						ItemManager.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
+						ItemStack drop = new ItemStack(CivItem.getMaterial(id), 1, (short) data);
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
 					}
 				}
 			}
@@ -1554,8 +1517,8 @@ public class InventoryDisplaysListener implements Listener {
 					}
 					
 					for (int i = 0; i < damt; i++) {
-						ItemStack drop = new ItemStack(ItemManager.getMaterial(did), 1, (short) ddata);
-						ItemManager.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
+						ItemStack drop = new ItemStack(CivItem.getMaterial(did), 1, (short) ddata);
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
 					}
 				}
 			}
@@ -1581,11 +1544,11 @@ public class InventoryDisplaysListener implements Listener {
 						}
 					}
 					
-					itemsDropping += missing+" "+CivData.getDisplayName(rid, rdata)+", ";
-					for (int i = 0; i < ramt; i++) {
-						ItemStack miss = new ItemStack(ItemManager.getMaterial(rid), 1, (short) rdata);
-						ItemManager.givePlayerItem(p, miss, p.getEyeLocation(), miss.getItemMeta().getDisplayName(), miss.getAmount(), false);
-					}
+					ItemStack drop = CivItem.newStack(rid, rdata, true);
+					itemsDropping += missing+" "+CivData.getStackName(drop)+", ";
+//					for (int i = 0; i < ramt; i++) {
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), ramt, false);
+//					}
 				}
 			}
 			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");
@@ -1629,7 +1592,7 @@ public class InventoryDisplaysListener implements Listener {
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(stack);
 			ArrayList<String> al = new ArrayList<String>();
-			al.add(ItemManager.getId(stack)+";"+stack.getDurability());
+			al.add(CivItem.getId(stack)+";"+stack.getDurability());
 			if (required.containsKey(al) && craftMat == null) {
 				inv.removeItem(stack);
 				int h = given.get(al).intValue();
@@ -1639,11 +1602,11 @@ public class InventoryDisplaysListener implements Listener {
 			} else if (craftMat != null) { //Allow custom items to be dropped
 				ItemStack newMat = LoreCraftableMaterial.spawn(craftMat, stack.getAmount());
 				newMat.setData(stack.getData());
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				CivMessage.sendError(p, craftMat.getName()+","+stack.getAmount());
 				addedNotRequiredItems = true;
 			} else if (craftMat == null) { //Drop any vanilla items in the inventory
-				ItemManager.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
+				CivItem.givePlayerItem(p, stack, p.getEyeLocation(), stack.getItemMeta().getDisplayName(), stack.getAmount(), false);
 				addedNotRequiredItems = true;
 			}
 		}
@@ -1686,7 +1649,7 @@ public class InventoryDisplaysListener implements Listener {
 		if (canComplete) { // Give Rewards, state rewards
 			for (int i = 0; i < reward; i++) {
 				ItemStack newMat = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_beakers"));
-				ItemManager.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
+				CivItem.givePlayerItem(p, newMat, p.getEyeLocation(), newMat.getItemMeta().getDisplayName(), newMat.getAmount(), false);
 			}
 			
 			CivMessage.sendTown(t, p.getName()+" has completed lab task "+task+" and earned "+reward+" beakers!");
@@ -1699,8 +1662,8 @@ public class InventoryDisplaysListener implements Listener {
 					int amt = dropping.get(d).intValue();
 					addedNotRequiredItems = true;
 					for (int i = 0; i < amt; i++) {
-						ItemStack drop = new ItemStack(ItemManager.getMaterial(id), 1, (short) data);
-						ItemManager.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
+						ItemStack drop = new ItemStack(CivItem.getMaterial(id), 1, (short) data);
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
 					}
 				}
 			}
@@ -1724,8 +1687,8 @@ public class InventoryDisplaysListener implements Listener {
 					}
 					
 					for (int i = 0; i < damt; i++) {
-						ItemStack drop = new ItemStack(ItemManager.getMaterial(did), 1, (short) ddata);
-						ItemManager.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
+						ItemStack drop = new ItemStack(CivItem.getMaterial(did), 1, (short) ddata);
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), drop.getAmount(), false);
 					}
 				}
 			}
@@ -1751,11 +1714,11 @@ public class InventoryDisplaysListener implements Listener {
 						}
 					}
 					
-					itemsDropping += missing+" "+CivData.getDisplayName(rid, rdata)+", ";
-					for (int i = 0; i < ramt; i++) {
-						ItemStack miss = new ItemStack(ItemManager.getMaterial(rid), 1, (short) rdata);
-						ItemManager.givePlayerItem(p, miss, p.getEyeLocation(), miss.getItemMeta().getDisplayName(), miss.getAmount(), false);
-					}
+					ItemStack drop = CivItem.newStack(rid,rdata, true);
+					itemsDropping += missing+" "+CivData.getStackName(drop)+", ";
+//					for (int i = 0; i < ramt; i++) {
+						CivItem.givePlayerItem(p, drop, p.getEyeLocation(), drop.getItemMeta().getDisplayName(), ramt, false);
+//					}
 				}
 			}
 			CivMessage.sendError(p, "Cannot complete task, you were missing the following items: "+itemsDropping+"... Dropping these items back on the ground.");
@@ -1829,7 +1792,7 @@ public class InventoryDisplaysListener implements Listener {
 								(items.getType() == Material.MINECART && items.getItemMeta().getDisplayName().contains("Forward Mail"))) {
 							continue;
 						} else {
-							ItemManager.givePlayerItem(p, items, p.getEyeLocation(), items.getItemMeta().getDisplayName(), items.getAmount(), false);
+							CivItem.givePlayerItem(p, items, p.getEyeLocation(), items.getItemMeta().getDisplayName(), items.getAmount(), false);
 						}
 					}
 					p.closeInventory();

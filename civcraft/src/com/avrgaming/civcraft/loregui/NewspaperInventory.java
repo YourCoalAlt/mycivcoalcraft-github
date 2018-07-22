@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class NewspaperInventory implements GuiAction {
 	
@@ -31,7 +31,7 @@ public class NewspaperInventory implements GuiAction {
 		guiInventory = Bukkit.getServer().createInventory(p,9*3, "Daily News");
 		
 		for (int i = 0; i < 27; i++) {
-			ItemStack is = LoreGuiItem.build("", ItemManager.getId(Material.STAINED_GLASS_PANE), 8);
+			ItemStack is = LoreGuiItem.build("", CivItem.getId(Material.STAINED_GLASS_PANE), 8);
 			guiInventory.setItem(i, is);
 		}
 		
@@ -92,7 +92,7 @@ public class NewspaperInventory implements GuiAction {
 		}
 		
 		/* Add back buttons. */
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Topics");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());

@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -52,7 +52,7 @@ public class LoreEnhancementProspect extends LoreEnhancement {
 				for (int high_y = -high_radius; high_y <= high_radius; high_y++) {
 					for (int high_z = -high_radius; high_z <= high_radius; high_z++) {
 						Location loc = new Location(p.getWorld(), p.getLocation().getX()+high_x, p.getLocation().getY()+high_y, p.getLocation().getZ()+high_z);
-						int b = ItemManager.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
+						int b = CivItem.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
 						if (b == CivData.AIR) continue;
 						found_loc.add(loc);
 						if (b == CivData.COAL_ORE) {
@@ -95,7 +95,7 @@ public class LoreEnhancementProspect extends LoreEnhancement {
 					for (int med_z = -med_radius; med_z <= med_radius; med_z++) {
 						// Do not add medium items that are high
 						Location loc = new Location(p.getWorld(), p.getLocation().getX()+med_x, p.getLocation().getY()+med_y, p.getLocation().getZ()+med_z);
-						int b = ItemManager.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
+						int b = CivItem.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
 						if (b == CivData.AIR) continue;
 						if (found_loc.contains(loc)) continue;
 						found_loc.add(loc);
@@ -139,7 +139,7 @@ public class LoreEnhancementProspect extends LoreEnhancement {
 					for (int sml_z = -sml_radius; sml_z <= sml_radius; sml_z++) {
 						// Do not add small items that are high and medium
 						Location loc = new Location(p.getWorld(), p.getLocation().getX()+sml_x, p.getLocation().getY()+sml_y, p.getLocation().getZ()+sml_z);
-						int b = ItemManager.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
+						int b = CivItem.getId(event.getPlayer().getWorld().getBlockAt(loc).getType());
 						if (b == CivData.AIR) continue;
 						if (found_loc.contains(loc)) continue;
 						if (b == CivData.COAL_ORE || b == CivData.IRON_ORE || b == CivData.GOLD_ORE || b == CivData.LAPIS_ORE || b == CivData.REDSTONE_ORE ||

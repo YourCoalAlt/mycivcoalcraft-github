@@ -213,9 +213,6 @@ public class ModeratorCommand extends CommandBase {
 		
 		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
 		if (al != null) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Banned", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" banned by "+name);
-			}
 			al.setBanned(true);
 			al.setBanMessage(message);
 			al.setBanLength(sec, min, hours);
@@ -247,9 +244,6 @@ public class ModeratorCommand extends CommandBase {
 		
 		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
 		if (al != null && al.isBanned()) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unbanned", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" unbanned by "+name);
-			}
 			al.resetBanLength();
 			al.setBanned(false);
 			al.setBanMessage("null");
@@ -294,10 +288,6 @@ public class ModeratorCommand extends CommandBase {
 		
 		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
 		if (al != null) {
-			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Muted", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" muted by "+name);
-			}
 			al.setMuted(true);
 			al.setMuteMessage(message);
 			al.setMuteLength(sec, min, hours);
@@ -306,6 +296,7 @@ public class ModeratorCommand extends CommandBase {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
 			CivMessage.globalModerator(CivColor.RoseBold+"[Muted] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been muted by "+name+CivColor.RESET+
 					". Length: "+CivColor.LightGreenItalic+hours+" Hours, "+min+" Minutes, "+sec+" Seconds"+CivColor.RESET+". Reason:"+CivColor.LightGreenItalic+message);
 			
@@ -344,13 +335,10 @@ public class ModeratorCommand extends CommandBase {
 		
 		AccountLogger al = CivGlobal.getAccount(CivGlobal.getPlayer(args[1]).getUniqueId().toString());
 		if (al != null && al.isMuted()) {
-			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				CivMessage.sendTitle(p, 15, 50, 15, CivColor.RoseBold+"Player Unmuted", CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" unmuted by "+name);
-			}
 			al.resetMuteLength();
 			al.setMuted(false);
 			al.setMuteMessage("null");
+			CivMessage.sendSound(al.getPlayer(), Sound.BLOCK_ANVIL_DESTROY, 1.0f, 0.2f);
 			CivMessage.globalModerator(CivColor.LightGreenBold+"[Unmute] "+CivColor.RESET+"Player "+CivColor.LightGreenItalic+al.getPlayer().getName()+CivColor.RESET+" has been unmuted by "+name+CivColor.RESET+".");
 			al.saveNow();
 			CivMessage.sendSuccess(sender, "Unmuted "+args[1]+".");

@@ -28,7 +28,7 @@ import org.bukkit.block.Sign;
 
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivLog;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class SyncBuildUpdateTask implements Runnable {
@@ -61,15 +61,15 @@ public class SyncBuildUpdateTask implements Runnable {
 					if (next == null) break;
 					
 					Block block = Bukkit.getWorld(next.worldname).getBlockAt(next.x, next.y, next.z);			
-					ItemManager.setTypeId(block, next.getType());
-					ItemManager.setData(block, next.getData());
+					CivItem.setTypeId(block, next.getType());
+					CivItem.setData(block, next.getData());
 					
 					// Handle Special Blocks
 					Sign s;
 					switch (next.specialType) {
 					case COMMAND:
-						ItemManager.setTypeId(block, CivData.AIR);
-						ItemManager.setData(block, 0);
+						CivItem.setTypeId(block, CivData.AIR);
+						CivItem.setData(block, 0);
 						break;
 					case LITERAL:
 						s = (Sign)block.getState();

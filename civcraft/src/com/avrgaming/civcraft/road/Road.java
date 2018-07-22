@@ -39,7 +39,7 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 
@@ -107,14 +107,14 @@ public class Road extends Structure {
 		for (BlockCoord bcoord : oldBlockData.keySet()) {
 			SimpleBlock sb = oldBlockData.get(bcoord);
 			
-			Material material = ItemManager.getMaterial(sb.getType());
+			Material material = CivItem.getMaterial(sb.getType());
 			if (CivSettings.restrictedUndoBlocks.contains(material)) {
 				continue;
 			}
 			
 			Block block = bcoord.getBlock();
-			ItemManager.setTypeId(block, sb.getType());
-			ItemManager.setData(block, sb.getData());
+			CivItem.setTypeId(block, sb.getType());
+			CivItem.setData(block, sb.getData());
 		}
 		
 		LinkedList<RoadBlock> removed = new LinkedList<RoadBlock>();
@@ -146,8 +146,8 @@ public class Road extends Structure {
 	public void onDemolish() throws CivException {
 		for (RoadBlock rb : roadBlocks.values()) {
 			Block block = rb.getCoord().getBlock();
-			ItemManager.setTypeId(block, rb.getOldType());
-			ItemManager.setData(block, rb.getOldData());		
+			CivItem.setTypeId(block, rb.getOldType());
+			CivItem.setData(block, rb.getOldData());		
 		}
 	}
 	
@@ -280,15 +280,15 @@ public class Road extends Structure {
 			addRoadBlock(bcoord);
 
 			/* Set new block data. */
-			ItemManager.setTypeId(bcoord.getBlock(), sb.getType());
-			ItemManager.setData(bcoord.getBlock(), sb.getData());
+			CivItem.setTypeId(bcoord.getBlock(), sb.getType());
+			CivItem.setData(bcoord.getBlock(), sb.getData());
 			
 			/* Set air blocks above road. */
 			for (int i = 1; i < Road.HEIGHT; i++) {
 				BlockCoord bcoord2 = new BlockCoord(bcoord);
 				bcoord2.setY(sb.y + i);
 				if (!simpleBlocks.containsKey(SimpleBlock.getKeyFromBlockCoord(bcoord2))) {
-					ItemManager.setTypeId(bcoord2.getBlock(), CivData.AIR);
+					CivItem.setTypeId(bcoord2.getBlock(), CivData.AIR);
 				}
 			}
 			
@@ -341,7 +341,7 @@ public class Road extends Structure {
 				throw new CivException("Cannot build a road into a chunk which contains a camp.");
 			}
 			
-			if (ItemManager.getId(bcoord.getBlock()) == CivData.CHEST) {
+			if (CivItem.getId(bcoord.getBlock()) == CivData.CHEST) {
 				throw new CivException("Cannot build a road here. Would destroy a chest at "+bcoord.toString());
 			}
 			
@@ -679,24 +679,24 @@ public class Road extends Structure {
 				continue;
 			}
 			
-			if (ItemManager.getId(coord.getBlock()) == CivData.AIR) {
+			if (CivItem.getId(coord.getBlock()) == CivData.AIR) {
 				continue;
 			}
 			
-			if (ItemManager.getId(coord.getBlock()) == CivData.CHEST) {
+			if (CivItem.getId(coord.getBlock()) == CivData.CHEST) {
 				continue;
 			}
 			
-			if (ItemManager.getId(coord.getBlock()) == CivData.SIGN) {
+			if (CivItem.getId(coord.getBlock()) == CivData.SIGN) {
 				continue;
 			}
 			
-			if (ItemManager.getId(coord.getBlock()) == CivData.WALL_SIGN) {
+			if (CivItem.getId(coord.getBlock()) == CivData.WALL_SIGN) {
 				continue;
 			}
 			
-			if (CivSettings.alwaysCrumble.contains(ItemManager.getId(coord.getBlock()))) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
+			if (CivSettings.alwaysCrumble.contains(CivItem.getId(coord.getBlock()))) {
+				CivItem.setTypeId(coord.getBlock(), CivData.GRAVEL);
 				continue;
 			}
 						
@@ -704,16 +704,16 @@ public class Road extends Structure {
 			
 			// Each block has a 10% chance to turn into gravel
 			if (rand.nextInt(100) <= 10) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.GRAVEL);
+				CivItem.setData(coord.getBlock(), 0, true);
 
 				continue;
 			}
 			
 			// Each block has a 50% chance of starting a fire
 			if (rand.nextInt(100) <= 50) {
-				ItemManager.setTypeId(coord.getBlock(), CivData.FIRE);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.FIRE);
+				CivItem.setData(coord.getBlock(), 0, true);
 				continue;
 			}
 			

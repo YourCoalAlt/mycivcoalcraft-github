@@ -17,7 +17,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.sync.SyncBuildUpdateTask;
 import com.avrgaming.civcraft.threading.timers.ParticleEffectTimer;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.KeyValue;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.TimeTools;
@@ -104,7 +104,7 @@ public class BuildUndoTask implements Runnable {
 				return;
 			}
 			
-			if (CivSettings.restrictedUndoBlocks.contains(ItemManager.getMaterial(sb.getType()))) {
+			if (CivSettings.restrictedUndoBlocks.contains(CivItem.getMaterial(sb.getType()))) {
 				sb.setType(0);
 				sb.x += cornerBlock.getX();
 				sb.y += cornerBlock.getY();

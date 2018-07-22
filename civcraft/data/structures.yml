@@ -184,7 +184,7 @@ stable_horses:
 ################# Road Settings ######################
 road:
     # Speed multiplier for players
-    player_speed: 1.5
+    player_speed: 1.4
 
     # Speed multiplier for players on horses
     horse_speed: 1.2
@@ -193,7 +193,7 @@ road:
     raid_length: 2
 
     # Maximum number of blocks a single road can take.
-    max_segment: 50 
+    max_segment: 50
 
     # Cost of road per segment
     cost_per_segment: 250.0

@@ -99,7 +99,6 @@ import com.avrgaming.civcraft.threading.timers.PlayerLocationCacheUpdate;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarStats;
 import com.codingforcookies.armorequip.ArmorEquipEvent;
@@ -117,7 +116,7 @@ public class PlayerListener implements Listener {
 			// Item Pickup Messages
 			if (res.getItemMode().equals("none")) return;
 			ItemStack is = event.getItem().getItemStack();
-			String name = CivData.getDisplayName(ItemManager.getId(is), is.getDurability());
+			String name = CivData.getStackName(is);
 			if (res.getItemMode().equals("all")) {
 				CivMessage.send(p, CivColor.LightGreen+"You've picked up "+CivColor.LightPurple+is.getAmount()+" "+name);
 			} else if (is.getItemMeta().hasDisplayName() && res.getItemMode().equals("rare")) {
@@ -628,25 +627,33 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW) 
 	public void onConsume(PlayerItemConsumeEvent event) {
-		if (ItemManager.getId(event.getItem()) == CivData.GOLDEN_APPLE) {
-			CivMessage.sendError(event.getPlayer(), "You cannot use golden apples.");
+		Player p = event.getPlayer();
+/*		if (CivItem.getId(event.getItem()) == CivData.GOLDEN_APPLE) {
+			CivMessage.sendError(pl, "You cannot use golden apples.");
 			event.setCancelled(true);
 			return;
-		}
+		}*/
 		
-		if (event.getItem().getType().equals(Material.POTION)) {
-			ConfigTechPotion pot = CivSettings.techPotions.get(Integer.valueOf(event.getItem().getDurability()));
+		ItemStack is = event.getItem();
+		if (is.getType().equals(Material.POTION)) {
+			int effect = event.getItem().getDurability() & 0x000F;
+			if (effect == 0xE) {
+				event.setCancelled(true);
+				CivMessage.sendError(p, "You cannot use invisibility potions for now... Sorry.");
+				return;
+			}
+			
+			ConfigTechPotion pot = CivSettings.techPotions.get(Integer.valueOf(is.getDurability()));
 			if (pot != null) {
-				if (!pot.hasTechnology(event.getPlayer())) {
-					CivMessage.sendError(event.getPlayer(), "You cannot use "+pot.name+" potions. You do not have the technology yet.");
+				if (!pot.hasTechnology(p)) {
+					CivMessage.sendError(p, "You cannot use "+pot.name+" potions. You do not have the technology yet.");
 					event.setCancelled(true);
 					return;
-				}
-				if (pot.hasTechnology(event.getPlayer())) {
+				} else {
 					event.setCancelled(false);
 				}
 			} else {
-				CivMessage.sendError(event.getPlayer(), "You cannot use this type of potion.");
+				CivMessage.sendError(p, "You cannot use this type of potion.");
 				event.setCancelled(true);
 			}
 		}

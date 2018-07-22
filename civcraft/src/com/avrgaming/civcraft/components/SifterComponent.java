@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.exception.CivTaskAbortException;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class SifterComponent extends Component {
@@ -111,7 +111,7 @@ public class SifterComponent extends Component {
 		Random rand = new Random();
 		int i = 0;
 		for (ItemStack stack : source.getContents()) {
-			if (stack == null || ItemManager.getId(stack) == 0) {
+			if (stack == null || CivItem.getId(stack) == 0) {
 				continue;
 			}
 
@@ -123,7 +123,7 @@ public class SifterComponent extends Component {
 					continue;
 				}
 				
-				if (si.source_type != ItemManager.getId(stack)) {
+				if (si.source_type != CivItem.getId(stack)) {
 					continue;
 				}
 				
@@ -147,12 +147,12 @@ public class SifterComponent extends Component {
 			
 			/* Item was successfully generated. Add it to output. */
 			try {
-				task.updateInventory(Action.REMOVE, source, ItemManager.createItemStack(lowestChanceItem.source_type, 1));
+				task.updateInventory(Action.REMOVE, source, CivItem.newStack(lowestChanceItem.source_type));
 			} catch (InterruptedException e) {
 				return;
 			}
 			try {
-				task.updateInventory(Action.ADD, dest, ItemManager.createItemStack(lowestChanceItem.result_type, lowestChanceItem.amount, (short)lowestChanceItem.result_data));
+				task.updateInventory(Action.ADD, dest, CivItem.newStack(lowestChanceItem.result_type, lowestChanceItem.amount, lowestChanceItem.result_data));
 			} catch (InterruptedException e) {
 				return;
 			}

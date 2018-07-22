@@ -32,7 +32,7 @@ import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class WindmillPreProcessTask extends CivAsyncTask {
@@ -76,7 +76,7 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 		for (ItemStack stack : source_inv.getContents()) {
 			if (stack == null) continue;
 			
-			switch (ItemManager.getId(stack)) {
+			switch (CivItem.getId(stack)) {
 			case CivData.WHEAT_SEED:
 				breadCount += stack.getAmount();
 				break;
@@ -106,8 +106,8 @@ public class WindmillPreProcessTask extends CivAsyncTask {
 			for (int x = 0; x < 16; x++) {
 				for (int z = 0; z < 16; z++) {
 					for (int y = 10; y < 192; y++) {
-						if (ItemManager.getBlockTypeId(snapshot, x, y-1, z) == CivData.FARMLAND &&
-								ItemManager.getBlockTypeId(snapshot, x, y, z) == CivData.AIR) {
+						if (CivItem.getBlockTypeId(snapshot, x, y-1, z) == CivData.FARMLAND &&
+								CivItem.getBlockTypeId(snapshot, x, y, z) == CivData.AIR) {
 							int blockx = (snapshot.getX()*16) + x;
 							int blocky = y;
 							int blockz = (snapshot.getZ()*16) + z;

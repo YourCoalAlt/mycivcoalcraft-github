@@ -4,7 +4,7 @@ import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuff;
 import com.avrgaming.civcraft.config.ConfigTradeGood;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -14,8 +14,8 @@ public class TradeResource extends ItemComponent {
 	public void onPrepareCreate(AttributeUtil attrs) {
 		ConfigTradeGood good = null;
 		for (ConfigTradeGood goods : CivSettings.goods.values()) {
-			if (ItemManager.getId(attrs.getStack().getType()) == goods.material &&
-					ItemManager.getData(attrs.getStack().getData()) == goods.material_data) {
+			if (CivItem.getId(attrs.getStack().getType()) == goods.material &&
+					CivItem.getData(attrs.getStack().getData()) == goods.material_data) {
 				good = goods;
 			}
 		}

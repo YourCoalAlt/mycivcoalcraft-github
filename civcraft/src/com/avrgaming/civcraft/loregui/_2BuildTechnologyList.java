@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class _2BuildTechnologyList implements GuiAction {
 
@@ -40,10 +40,10 @@ public class _2BuildTechnologyList implements GuiAction {
 				if (res.getCiv().hasTechnology(info.id)) {
 				} else if (!res.getCiv().hasTechnology(info.require_techs)) {
 				} else if (res.getCiv().getResearchTech() != null) {
-					is = LoreGuiItem.build(info.name, ItemManager.getId(Material.WATER_BUCKET), 0, CivColor.Rose+"Already researching "+res.getCiv().getResearchTech().name);
+					is = LoreGuiItem.build(info.name, CivItem.getId(Material.WATER_BUCKET), 0, CivColor.Rose+"Already researching "+res.getCiv().getResearchTech().name);
 					guiInventory.addItem(is);
 				} else if (!info.isAvailable(res.getCiv())) {
-					is = LoreGuiItem.build(info.name, ItemManager.getId(Material.BARRIER), 0, CivColor.Rose+"Not available");
+					is = LoreGuiItem.build(info.name, CivItem.getId(Material.BARRIER), 0, CivColor.Rose+"Not available");
 					guiInventory.addItem(is);
 				} else {
 					is = LoreGuiItem.build(info.name, CivData.HARDENED_CLAY, 0,
@@ -169,7 +169,7 @@ public class _2BuildTechnologyList implements GuiAction {
 		
 		if (Backpack.backpackInventory != null) {
 			/* Add back buttons. */
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
+			ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Topics");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());
@@ -178,7 +178,7 @@ public class _2BuildTechnologyList implements GuiAction {
 			Backpack.openBackpackGUI(player, false);
 			
 			/* Add back buttons. */
-			ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
+			ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Topics");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());

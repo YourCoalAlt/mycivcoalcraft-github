@@ -26,7 +26,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BookUtil;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -71,7 +71,7 @@ public class Spy extends UnitMaterial {
 		Player p = event.getPlayer();
 		Resident res = CivGlobal.getResident(p);
 		Inventory inv = Bukkit.createInventory(null, 9*4, "Spy Mission Menu");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Spy Unit Mission Menu. All",
 				CivColor.RESET+"available spy missions you can perform will",
 				CivColor.RESET+"be listed in here. Remember, spying can be",
@@ -81,7 +81,7 @@ public class Spy extends UnitMaterial {
 		
 		for (ConfigMission m : CivSettings.missions.values()) {
 			if (!res.hasTown()) {
-				ItemStack is = LoreGuiItem.build(m.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town to spy.");
+				ItemStack is = LoreGuiItem.build(m.name, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town to spy.");
 				inv.setItem(m.position, is);
 			//} else if (UnitMaterial.getOwningTown(event.getItem()).getCiv() != res.getTown().getCiv() || UnitMaterial.getOwningTown(event.getItem()) == null) {
 			//	ItemStack is = LoreGuiItem.build(m.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be spy unit from your civ.");

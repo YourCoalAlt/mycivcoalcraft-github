@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class ConfigRemovedRecipes {
 	
@@ -26,7 +26,7 @@ public class ConfigRemovedRecipes {
 			item.data = (Integer)b.get("data");
 			removedRecipies.put(item.type_id, item);
 			
-			ItemStack is = new ItemStack(ItemManager.getMaterial(item.type_id), 1, (short)item.data);
+			ItemStack is = new ItemStack(CivItem.getMaterial(item.type_id), 1, (short)item.data);
 			List<Recipe> backup = new ArrayList<Recipe>();
 			Iterator<Recipe> it = Bukkit.recipeIterator();
 			while (it.hasNext()) {

@@ -126,7 +126,6 @@ public class ItemFrameStorage {
 	}
 	
 	public void setItem(ItemStack stack) {
-
 		ItemFrame frame = getItemFrame();
 		if (frame != null) {
 			ItemStack newStack = new ItemStack(stack.getType(), 1, stack.getDurability());
@@ -136,32 +135,27 @@ public class ItemFrameStorage {
 		} else {
 			CivLog.warning("Frame:"+this.frameID+" was null when trying to set to "+stack.getType().name());
 		}
-		
 	}
 	
 	public void clearItem() {
-		setItem(ItemManager.createItemStack(0, 1));
+		setItem(CivItem.airStack());
 	}
 	
 	public ItemStack getItem() {
 		ItemFrame frame = getItemFrame();
 		return frame.getItem();
 	}
-
+	
 	public boolean isEmpty() throws CivException {
 		ItemFrame frame = getItemFrame();
-		
 		if (frame == null) {
 			throw new CivException("Bad frame. Could not be found.");
 		}
 		
-		if (frame.getItem() == null || frame.getItem().getType().equals(Material.AIR)) {
-			return true;
-		}
-		
+		if (frame.getItem() == null || frame.getItem().getType().equals(Material.AIR)) return true;
 		return false;
 	}
-
+	
 	public Location getLocation() {
 		return this.location;
 	}

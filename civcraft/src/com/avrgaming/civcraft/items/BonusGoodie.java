@@ -58,7 +58,7 @@ import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.EntityUtil;
 import com.avrgaming.civcraft.util.InventoryHolderStorage;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class BonusGoodie extends LoreItem {
 	/*
@@ -152,7 +152,7 @@ public class BonusGoodie extends LoreItem {
 			throw new CivException("Couldn't find an item frame to construct outpost with.");
 		}
 		
-		ItemStack stack = ItemManager.createItemStack(this.config.material, 1, (short) this.config.material_data);
+		ItemStack stack = CivItem.newStack(this.config.material, this.config.material_data, true);
 		updateLore(stack);
 		
 		outpostFrame.setItem(stack);
@@ -206,8 +206,8 @@ public class BonusGoodie extends LoreItem {
 				return null;
 			}		
 			for (ConfigTradeGood good : CivSettings.goods.values()) {
-				for (Entry<Integer, ? extends ItemStack> itemEntry : holder.getInventory().all(ItemManager.getMaterial(good.material)).entrySet()) {
-					if (ItemManager.getData(itemEntry.getValue()) != good.material_data) {
+				for (Entry<Integer, ? extends ItemStack> itemEntry : holder.getInventory().all(CivItem.getMaterial(good.material)).entrySet()) {
+					if (CivItem.getData(itemEntry.getValue()) != good.material_data) {
 						continue;
 					}
 					ItemStack stack = itemEntry.getValue();
@@ -225,7 +225,7 @@ public class BonusGoodie extends LoreItem {
 				if (frameStore.isEmpty() || !isItemStackOurs(frameStore.getItem())) {
 					CivLog.warning("Found frame, but item was wrong, trying to recover by spawning item.");
 					
-					ItemStack stack = ItemManager.createItemStack(this.config.material, 1, (short) this.config.material_data);
+					ItemStack stack = CivItem.newStack(this.config.material, this.config.material_data, true);
 					updateLore(stack);
 					
 					frameStore.setItem(stack);
@@ -538,8 +538,8 @@ public class BonusGoodie extends LoreItem {
 				Inventory inv = ((Chest)b.getState()).getInventory();
 				
 				for (ConfigTradeGood good : CivSettings.goods.values()) {
-					for (Entry<Integer, ? extends ItemStack> itemEntry : inv.all(ItemManager.getMaterial(good.material)).entrySet()) {
-						if (ItemManager.getData(itemEntry.getValue()) != good.material_data) {
+					for (Entry<Integer, ? extends ItemStack> itemEntry : inv.all(CivItem.getMaterial(good.material)).entrySet()) {
+						if (CivItem.getData(itemEntry.getValue()) != good.material_data) {
 							continue;
 						}
 						ItemStack stack = itemEntry.getValue();

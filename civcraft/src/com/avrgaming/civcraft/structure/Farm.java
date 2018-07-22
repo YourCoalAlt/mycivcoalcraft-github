@@ -36,7 +36,7 @@ import com.avrgaming.civcraft.structure.farm.FarmChunk;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.ChunkCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class Farm extends Structure {
 	
@@ -90,7 +90,7 @@ public class Farm extends Structure {
 	}
 	
 	public static boolean isBlockControlled(Block b) {
-		switch (ItemManager.getId(b)) {
+		switch (CivItem.getId(b)) {
 		case CivData.COCOA_CROP:
 		case CivData.MELON:
 		case CivData.MELON_STEM:

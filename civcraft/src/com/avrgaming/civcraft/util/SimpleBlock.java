@@ -65,8 +65,8 @@ public class SimpleBlock {
 	        this.y = block.getY();
 	        this.z = block.getZ();
 	        this.worldname = block.getWorld().getName();
-	        this.type = ItemManager.getId(block);
-	        this.data = ItemManager.getData(block);
+	        this.type = CivItem.getId(block);
+	        this.data = CivItem.getData(block);
 	        this.specialType = Type.NORMAL;
 	    }
 	    
@@ -86,7 +86,7 @@ public class SimpleBlock {
 	        this.y = y;
 	        this.z = z;
 	        this.worldname = worldName;
-	        this.type = ItemManager.getId(mat);
+	        this.type = CivItem.getId(mat);
 	        this.data = (byte) data;
 	        this.specialType = Type.NORMAL;
 	    }

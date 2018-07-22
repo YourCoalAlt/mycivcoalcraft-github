@@ -29,7 +29,7 @@ import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.Resident;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class GivePlayerStartingKit implements Runnable {
 	
@@ -49,7 +49,7 @@ public class GivePlayerStartingKit implements Runnable {
 					Integer type = Integer.valueOf(split[0]);
 					Integer amount = Integer.valueOf(split[1]);
 					int data = Integer.valueOf(split[2]);
-					stack = ItemManager.createItemStack(type, amount, (short)data);
+					stack = CivItem.newStack(type, amount, data);
 				} catch (NumberFormatException e) {
 					String customMatID = split[0];
 					Integer amount = Integer.valueOf(split[1]);

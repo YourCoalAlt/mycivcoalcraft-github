@@ -15,7 +15,7 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -28,7 +28,7 @@ public class ShowRecipeNull implements GuiAction {
 		String message;
 		ItemStack entryStack;
 		if (ingred.custom_id == null) {
-			name = ItemManager.getMaterialData(ingred.type_id, ingred.data).toString();
+			name = CivItem.getMaterialData(ingred.type_id, ingred.data).toString();
 			message = CivColor.Gray+"Vanilla Item";
 			entryStack = LoreGuiItem.build(name, ingred.type_id, ingred.data, message);
 		} else {
@@ -54,7 +54,7 @@ public class ShowRecipeNull implements GuiAction {
 		int offset = 2;
 		ItemStack stack;
 	
-		stack = LoreGuiItem.build("Craft Table Border", ItemManager.getId(Material.WORKBENCH), 0, "");
+		stack = LoreGuiItem.build("Craft Table Border", CivItem.getId(Material.WORKBENCH), 0, "");
 		
 		for (int y = 0; y <= 4; y++) {
 			for (int x = 0; x <= 4; x++) {
@@ -75,9 +75,9 @@ public class ShowRecipeNull implements GuiAction {
 			if (tech != null) {
 			
 				if (resident.hasTown() && resident.getCiv().hasTechnology(craftMat.getConfigMaterial().required_tech)) {
-					stack = LoreGuiItem.build("Required Technology", ItemManager.getId(Material.EMERALD_BLOCK), 0, tech.name);
+					stack = LoreGuiItem.build("Required Technology", CivItem.getId(Material.EMERALD_BLOCK), 0, tech.name);
 				} else {
-					stack = LoreGuiItem.build("Required Technology", ItemManager.getId(Material.REDSTONE_BLOCK), 0, tech.name);
+					stack = LoreGuiItem.build("Required Technology", CivItem.getId(Material.REDSTONE_BLOCK), 0, tech.name);
 				}
 			}
 			
@@ -87,9 +87,9 @@ public class ShowRecipeNull implements GuiAction {
 		}
 		
 		if (craftMat.isShaped()) {
-			stack = LoreGuiItem.build("Shaped", ItemManager.getId(Material.HOPPER), 0, "");
+			stack = LoreGuiItem.build("Shaped", CivItem.getId(Material.HOPPER), 0, "");
 		} else {
-			stack = LoreGuiItem.build("Unshaped", ItemManager.getId(Material.COAL), 0, "");
+			stack = LoreGuiItem.build("Unshaped", CivItem.getId(Material.COAL), 0, "");
 		}
 		offset += LoreGuiItem.INV_ROW_COUNT;
 		recInv.setItem(offset+0, stack);

@@ -36,7 +36,7 @@ import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 
 public class RecoverStructuresAsyncTask implements Runnable {
@@ -69,7 +69,7 @@ public class RecoverStructuresAsyncTask implements Runnable {
 				for (int z = 0; z < tpl.size_z; z++) {
 					Block nextBlock = cornerBlock.getRelative(x, y, z);
 					
-					if (ignoreBlocks.contains(ItemManager.getId(nextBlock))) {
+					if (ignoreBlocks.contains(CivItem.getId(nextBlock))) {
 						continue;
 					}
 					
@@ -85,7 +85,7 @@ public class RecoverStructuresAsyncTask implements Runnable {
 						continue;
 					}
 					
-					if (ItemManager.getId(nextBlock) != tpl.blocks[x][y][z].getType()) { // ||
+					if (CivItem.getId(nextBlock) != tpl.blocks[x][y][z].getType()) { // ||
 					//	nextBlock.getData() != tpl.blocks[x][y][z].getData()) {
 					//	CivLog.debug("\tBLOCK:"+nextBlock.getTypeId() + " is not "+tpl.blocks[x][y][z].getType());
 						return true;

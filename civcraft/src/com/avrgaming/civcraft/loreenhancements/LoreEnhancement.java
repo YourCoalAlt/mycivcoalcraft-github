@@ -13,7 +13,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.BuildableDamageBlock;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -51,7 +51,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isSword(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.WOOD_SWORD:
 		case CivData.STONE_SWORD:
 		case CivData.IRON_SWORD:
@@ -65,7 +65,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isBow(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.BOW:
 			return true;
 		default:
@@ -83,7 +83,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isHelmet(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.LEATHER_HELMET:
 		case CivData.CHAIN_HELMET:
 		case CivData.GOLD_HELMET:
@@ -98,7 +98,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isChestplate(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.LEATHER_CHESTPLATE:
 		case CivData.CHAIN_CHESTPLATE:
 		case CivData.GOLD_CHESTPLATE:
@@ -112,7 +112,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isLeggings(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.LEATHER_LEGGINGS:
 		case CivData.CHAIN_LEGGINGS:
 		case CivData.GOLD_LEGGINGS:
@@ -126,7 +126,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isBoots(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.LEATHER_BOOTS:
 		case CivData.CHAIN_BOOTS:
 		case CivData.GOLD_BOOTS:
@@ -140,7 +140,7 @@ public abstract class LoreEnhancement {
 	
 	public static boolean isTool(ItemStack item) {
 		if (item == null) return false;
-		switch (ItemManager.getId(item)) {
+		switch (CivItem.getId(item)) {
 		case CivData.WOOD_SHOVEL:
 		case CivData.WOOD_PICKAXE:
 		case CivData.WOOD_AXE:

@@ -37,7 +37,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.FireWorkTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 import com.avrgaming.civcraft.util.TimeTools;
@@ -202,7 +202,7 @@ public class Cannon extends Buildable {
 				for (int z = 0; z < regionZ; z++) {
 					Block b = centerBlock.getRelative(x, y, z);
 					
-					if (ItemManager.getId(b) == CivData.CHEST) {
+					if (CivItem.getId(b) == CivData.CHEST) {
 						throw new CivException("Cannot build here, would destroy chest.");
 					}
 		
@@ -307,7 +307,7 @@ public class Cannon extends Buildable {
 				coord = new BlockCoord(absCoord);
 				this.setFireSignLocation(coord);
 
-				ItemManager.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
+				CivItem.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
 				updateFireSign(coord.getBlock());
 
 				
@@ -317,7 +317,7 @@ public class Cannon extends Buildable {
 				coord = new BlockCoord(absCoord);
 				this.setAngleSignLocation(coord);
 				
-				ItemManager.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
+				CivItem.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
 				updateAngleSign(coord.getBlock());
 				
 				Cannon.angleSignLocations.put(coord, this);
@@ -326,7 +326,7 @@ public class Cannon extends Buildable {
 				coord = new BlockCoord(absCoord);
 				this.setPowerSignLocation(coord);
 
-				ItemManager.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
+				CivItem.setTypeIdAndData(coord.getBlock(), sb.getType(), sb.getData(), false);
 				updatePowerSign(coord.getBlock());
 
 				Cannon.powerSignLocations.put(coord, this);
@@ -445,14 +445,14 @@ public class Cannon extends Buildable {
 					}
 
 					try {
-						if (ItemManager.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
+						if (CivItem.getId(nextBlock) != tpl.blocks[x][y][z].getType()) {
 							/* Save it as a war block so it's automatically removed when war time ends. */
 							WarRegen.saveBlock(nextBlock, Cannon.RESTORE_NAME, false);
-							ItemManager.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
-							ItemManager.setData(nextBlock, tpl.blocks[x][y][z].getData());
+							CivItem.setTypeId(nextBlock, tpl.blocks[x][y][z].getType());
+							CivItem.setData(nextBlock, tpl.blocks[x][y][z].getData());
 						}
 						
-						if (ItemManager.getId(nextBlock) != CivData.AIR) {
+						if (CivItem.getId(nextBlock) != CivData.AIR) {
 							BlockCoord b = new BlockCoord(nextBlock.getLocation());
 							cannonBlocks.put(b, this);
 							blocks.add(b);
@@ -540,8 +540,8 @@ public class Cannon extends Buildable {
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ItemStack stack = event.getPlayer().getItemInHand();
 				if (stack != null) {
-					if (ItemManager.getId(stack) == CivData.TNT) {
-						if (ItemManager.removeItemFromPlayer(event.getPlayer(), Material.TNT, 1)) {
+					if (CivItem.getId(stack) == CivData.TNT) {
+						if (CivItem.removeItemFromPlayer(event.getPlayer(), Material.TNT, 1)) {
 							this.tntLoaded++;
 							CivMessage.sendSuccess(event.getPlayer(), "Added TNT to cannon.");
 							updateFireSign(fireSignLocation.getBlock());
@@ -702,15 +702,15 @@ public class Cannon extends Buildable {
 		for (BlockCoord b : blocks) {
 			launchExplodeFirework(b.getCenteredLocation());
 			if (b.getBlock().getType().equals(Material.COAL_BLOCK)) {
-				ItemManager.setTypeIdAndData(b.getBlock(), CivData.GRAVEL, 0, false);
+				CivItem.setTypeIdAndData(b.getBlock(), CivData.GRAVEL, 0, false);
 			} else {
-				ItemManager.setTypeIdAndData(b.getBlock(), CivData.AIR, 0, false);
+				CivItem.setTypeIdAndData(b.getBlock(), CivData.AIR, 0, false);
 			}
 		}
 		
-		ItemManager.setTypeIdAndData(fireSignLocation.getBlock(), CivData.AIR, 0, false);
-		ItemManager.setTypeIdAndData(angleSignLocation.getBlock(), CivData.AIR, 0, false);
-		ItemManager.setTypeIdAndData(powerSignLocation.getBlock(), CivData.AIR, 0, false);
+		CivItem.setTypeIdAndData(fireSignLocation.getBlock(), CivData.AIR, 0, false);
+		CivItem.setTypeIdAndData(angleSignLocation.getBlock(), CivData.AIR, 0, false);
+		CivItem.setTypeIdAndData(powerSignLocation.getBlock(), CivData.AIR, 0, false);
 		
 		blocks.clear();
 		this.cleanup();

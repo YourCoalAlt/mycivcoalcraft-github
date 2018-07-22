@@ -72,7 +72,7 @@ public class ScoutTower extends Structure {
 			proximityComponent.setCenter(this.getCenterLocation());
 			proximityComponent.setRadius(range);
 			
-			reportSeconds = (int)CivSettings.getDouble(CivSettings.warConfig, "scout_tower.update");
+			reportSeconds = CivSettings.getInteger(CivSettings.warConfig, "scout_tower.update");
 			
 			
 		} catch (InvalidConfiguration e) {

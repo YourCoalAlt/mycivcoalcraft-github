@@ -41,7 +41,7 @@ import org.bukkit.inventory.Inventory;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BukkitObjects;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.ItemSerializer;
 
@@ -55,7 +55,7 @@ public class WarRegen {
 	}
 	
 	private static String blockBasicString(Block blk) {
-		return ItemManager.getId(blk)+":"+ItemManager.getData(blk)+":"+blk.getX()+":"+blk.getY()+":"+blk.getZ()+":"+blk.getWorld().getName();
+		return CivItem.getId(blk)+":"+CivItem.getData(blk)+":"+blk.getX()+":"+blk.getY()+":"+blk.getZ()+":"+blk.getWorld().getName();
 	}
 	
 	public static String blockInventoryString(Inventory inv) {
@@ -145,8 +145,8 @@ public class WarRegen {
 		String world = split[5];
 		
 		Block blk = BukkitObjects.getWorld(world).getBlockAt(x,y,z);
-		ItemManager.setTypeId(blk, type);
-		ItemManager.setData(blk, data, false);
+		CivItem.setTypeId(blk, type);
+		CivItem.setData(blk, data, false);
 
 		// End of basic block info, try to get more now.
 		Inventory inv = null;
@@ -267,8 +267,8 @@ public class WarRegen {
 			break;
 		}
 		
-		ItemManager.setTypeId(blk, CivData.AIR);
-		ItemManager.setData(blk, 0x0, true);
+		CivItem.setTypeId(blk, CivData.AIR);
+		CivItem.setData(blk, 0x0, true);
 	}
 	
 	public static void destroyThisBlock(Block blk, Town town) {
@@ -317,8 +317,8 @@ public class WarRegen {
 			break;
 		}
 		
-		ItemManager.setTypeId(blk, CivData.AIR);
-		ItemManager.setData(blk, 0x0, true);
+		CivItem.setTypeId(blk, CivData.AIR);
+		CivItem.setData(blk, 0x0, true);
 	}
 	
 	public static boolean canPlaceThisBlock(Block blk) {

@@ -1,5 +1,6 @@
 package com.avrgaming.civcraft.threading.tasks;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.Inventory;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -26,7 +27,8 @@ public class MailToResidentTask implements Runnable {
 	public void run() {
 		res.addMail(res, mail_name, mail_id, inv);
 		try {
-			if (CivGlobal.getOfflinePlayer(res) != null) {
+			OfflinePlayer op = CivGlobal.getOfflinePlayer(res);
+			if (op != null && op.isOnline()) {
 				CivMessage.send(res, CivCraft.server_name+"You have recieved a package in the mail! Collect it using your Backpack.");
 			}
 		} catch (CivException e) {

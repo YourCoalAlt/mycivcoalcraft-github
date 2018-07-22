@@ -20,11 +20,12 @@ package com.avrgaming.civcraft.lorestorage;
 
 import java.lang.reflect.Constructor;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.loregui.GuiAction;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -34,7 +35,16 @@ public class LoreGuiItem {
 	public static final int INV_ROW_COUNT = 9;
 
 	public static ItemStack getGUIItem(String title, String[] messages, int type, int data) {
-		ItemStack stack = ItemManager.createItemStack(type, 1, (short)data);
+		ItemStack stack = CivItem.newStack(type, 1, (short)data);
+		AttributeUtil attrs = new AttributeUtil(stack);
+		attrs.setCivCraftProperty("GUI", title);
+		attrs.setName(title);
+		attrs.setLore(messages);
+		return attrs.getStack();
+	}
+	
+	public static ItemStack getGUIItem(String title, String[] messages, Material type, int data) {
+		ItemStack stack = CivItem.newStack(type, data, true);
 		AttributeUtil attrs = new AttributeUtil(stack);
 		attrs.setCivCraftProperty("GUI", title);
 		attrs.setName(title);
@@ -88,13 +98,17 @@ public class LoreGuiItem {
 		return getGUIItem(title, messages, type, data);
 	}
 	
+	public static ItemStack build(String title, Material type, int data, String... messages) {
+		return getGUIItem(title, messages, type, data);
+	}
+	
 	public static ItemStack buildWithStack(String title, ItemStack is, String... messages) {
 		return getGUIItemWithStack(title, messages, is);
 	}
 
 	public static ItemStack asGuiItem(ItemStack stack) {
 		AttributeUtil attrs = new AttributeUtil(stack);
-		attrs.setCivCraftProperty("GUI", ""+ItemManager.getId(stack));
+		attrs.setCivCraftProperty("GUI", ""+CivItem.getId(stack));
 		return attrs.getStack();
 	}
 

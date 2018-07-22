@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.object.DiplomaticRelation;
 import com.avrgaming.civcraft.object.DiplomaticRelation.Status;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class DiplomaticMenuViewGlobal implements GuiAction {
 	
@@ -27,7 +27,7 @@ public class DiplomaticMenuViewGlobal implements GuiAction {
 		guiInventory = Bukkit.getServer().createInventory(p, 9*6, "Global Relations");
 		
 		for (int i = 0; i < 9*6; i++) {
-			ItemStack is = LoreGuiItem.build("", ItemManager.getId(Material.STAINED_GLASS_PANE), 8);
+			ItemStack is = LoreGuiItem.build("", CivItem.getId(Material.STAINED_GLASS_PANE), 8);
 			guiInventory.setItem(i, is);
 		}
 		
@@ -41,7 +41,7 @@ public class DiplomaticMenuViewGlobal implements GuiAction {
 				
 				if (!usedRelations.contains(relation.getPairKey())) {
 					usedRelations.add(relation.getPairKey());
-					ItemStack is = LoreGuiItem.build(DiplomaticRelation.getRelationColor(relation.getStatus())+relation.getStatus().toString(), ItemManager.getId(Material.QUARTZ_BLOCK), 0,
+					ItemStack is = LoreGuiItem.build(DiplomaticRelation.getRelationColor(relation.getStatus())+relation.getStatus().toString(), CivItem.getId(Material.QUARTZ_BLOCK), 0,
 							CivColor.White+relation.getCiv().getName(),
 							CivColor.White+relation.getOtherCiv().getName());
 					guiInventory.setItem(stored, is);
@@ -52,7 +52,7 @@ public class DiplomaticMenuViewGlobal implements GuiAction {
 		
 		
 		/* Add back buttons. */
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Relations Menu");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Relations Menu");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 		backButton = LoreGuiItem.setActionData(backButton, "invName", DiplomaticMenu.guiInventory.getName());

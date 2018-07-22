@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivMessage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class BrewingListener implements Listener {
 	
@@ -41,7 +41,7 @@ public class BrewingListener implements Listener {
 				
 				if (event.getSlot() == 3 && event.getSlotType() == SlotType.FUEL) {
 					if (is == is2) {
-						ItemManager.givePlayerItem(p, is, event.getView().getPlayer().getLocation(), null, (is.getAmount() + is2.getAmount()), true);
+						CivItem.givePlayerItem(p, is, event.getView().getPlayer().getLocation(), null, (is.getAmount() + is2.getAmount()), true);
 						CivMessage.sendError(p, "Sending all items back to inventory...");
 						p.updateInventory();
 						return;

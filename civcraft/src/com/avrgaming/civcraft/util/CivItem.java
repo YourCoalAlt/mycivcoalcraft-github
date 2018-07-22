@@ -34,46 +34,81 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 
-
-/*
- * The ItemManager class is going to be used to wrap itemstack operations that have now
+/* The ItemManager class is going to be used to wrap itemstack operations that have now
  * been deprecated by Bukkit. If bukkit ever actually takes these methods away from us,
  * we'll just have to use NMS or be a little creative. Doing it on spot (here) will be 
  * better than having fragile code scattered everywhere. 
  * 
  * Additionally it gives us an opportunity to unit test certain item operations that we
- * want to use with our new custom item stacks.
- */
+ * want to use with our new custom item stacks. */
 
-public class ItemManager {
-
+public class CivItem {
+	
+	// New
+	
+	public static ItemStack newStack(Material type, int amount, short data) {
+		return new ItemStack(type, amount, data);
+	}
+	
+	public static ItemStack newStack(Material type, int amount, int data) {
+		return new ItemStack(type, amount, (short)data);
+	}
+	
+	public static ItemStack newStack(Material type, int data, boolean tag) {
+		if (tag) return newStack(type, 1, data);
+		else return newStack(type, data, 0);
+	}
+	
+	public static ItemStack newStack(Material type, int amount) {
+		return newStack(type, amount, 0);
+	}
+	
+	public static ItemStack newStack(Material type) {
+		return newStack(type, 1, 0);
+	}
+	
+	public static ItemStack airStack() {
+		return newStack(Material.AIR, 1, 0);
+	}
+	
+	public static Enchantment getEnchantByName(String name) {
+		return Enchantment.getByName(name);
+	}
+	
+	public static String getEnchantName(Enchantment ench) {
+		return ench.getName();
+	}
+	
+	// Temp for this version
+	
 	@SuppressWarnings("deprecation")
-	public static ItemStack createItemStack(int typeId, int amount, short damage) {
-		return new ItemStack(typeId, amount, damage);
+	public static ItemStack newStack(int id, int amount, int data) {
+		return new ItemStack(id, amount, (short)data);
 	}
-
-	public static ItemStack createItemStack(int typeId, int amount) {
-		return createItemStack(typeId, amount, (short)0);
+	
+	public static ItemStack newStack(int id, int data) {
+		return newStack(id, 1, data);
 	}
-
+	
+	public static ItemStack newStack(int id, int data, boolean tag) {
+		if (tag) return newStack(id, 1, data);
+		else return newStack(id, data, 0);
+	}
+	
+	public static ItemStack newStack(int id) {
+		return newStack(id, 1, 0);
+	}
+	
+	// Old
+	
 	@SuppressWarnings("deprecation")
 	public static MaterialData getMaterialData(int type_id, int data) {
 		return new MaterialData(type_id, (byte)data);
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static Enchantment getEnchantById(int id) {
-		return Enchantment.getById(id);
-	}
-	
-	@SuppressWarnings("deprecation")
 	public static int getId(Material material) {
 		return material.getId();
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static int getId(Enchantment e) {
-		return e.getId();
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -183,7 +218,7 @@ public class ItemManager {
 	}
 	
 	public static ItemStack spawnPlayerHead(Player p, String itemDisplayName) {		
-		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
+		ItemStack skull = CivItem.newStack(Material.SKULL_ITEM, 1, 3);
 		SkullMeta meta = (SkullMeta) skull.getItemMeta();
 		meta.setOwningPlayer(p); // TODO Test if this fix from 1.11 to 1.12 works
 		meta.setDisplayName(itemDisplayName);
@@ -191,10 +226,10 @@ public class ItemManager {
 		return skull;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static ItemStack spawnPlayerHead(String name) {		
-		ItemStack skull = ItemManager.createItemStack(ItemManager.getId(Material.SKULL_ITEM), 1, (short)3);
+		ItemStack skull = CivItem.newStack(Material.SKULL_ITEM, 1, 3);
 		SkullMeta meta = (SkullMeta) skull.getItemMeta();
-		@SuppressWarnings("deprecation")
 		OfflinePlayer op = Bukkit.getOfflinePlayer(name);
 		meta.setOwningPlayer(op); // TODO Test if this fix from 1.11 to 1.12 works
 		skull.setItemMeta(meta);
@@ -213,11 +248,11 @@ public class ItemManager {
 	
 	// TODO arraylist?
 	public static void givePlayerItem(Player p, ItemStack stack, Location dropLoc, String name, int amt, boolean msg) {
-		String full = "picked up";
+		String action = "picked up";
 		stack.setAmount(1);
 		for (int i = 0; i < amt; i++) {
 			if (p.getInventory().firstEmpty() == -1) {
-				full = "dropped";
+				action = "dropped";
 				p.getWorld().dropItem(dropLoc, stack);
 			} else {
 				p.getInventory().addItem(stack);
@@ -231,13 +266,13 @@ public class ItemManager {
 			if (res.getItemMode().equals("none")) return;
 			if (res.getItemMode().equals("all")) {
 				if (name == null) {
-					name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
-					CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
+					name = CivData.getStackName(stack);
+					CivMessage.send(p, CivColor.LightGreen+"You've "+action+" "+CivColor.LightPurple+amt+" "+name);
 				} else {
-					CivMessage.send(p, CivColor.LightGreen+"You've "+full+" up "+CivColor.LightPurple+amt+" "+name);
+					CivMessage.send(p, CivColor.LightGreen+"You've "+action+" up "+CivColor.LightPurple+amt+" "+name);
 				}
 			} else if (name != null && res.getItemMode().equals("rare")) {
-				CivMessage.send(p, CivColor.LightGreen+"You've "+full+" up "+CivColor.LightPurple+amt+" "+name);
+				CivMessage.send(p, CivColor.LightGreen+"You've "+action+" up "+CivColor.LightPurple+amt+" "+name);
 			}
 //			CivMessage.send(p, CivColor.LightGreen+"You've "+full+" "+CivColor.LightPurple+amt+" "+name);
 		}

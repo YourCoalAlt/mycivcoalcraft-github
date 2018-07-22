@@ -40,7 +40,7 @@ import com.avrgaming.civcraft.structure.TradeOutpost;
 import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 
@@ -74,13 +74,13 @@ public class PostBuildSyncTask implements Runnable {
 							if (b.getType() != sb.getMaterial()) {
 								if (sb.getMaterial() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST ||
 										sb.getMaterial() == Material.FURNACE || sb.getMaterial() == Material.BURNING_FURNACE) continue;
-								ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+								CivItem.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
 							}
 							
-							if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+							if (CivItem.getId(b) == CivData.WALL_SIGN || CivItem.getId(b) == CivData.SIGN) {
 								Sign s2 = (Sign)b.getState();
 								if (s2.getLine(0) == "" && s2.getLine(1) == "" && s2.getLine(2) == ""  && s2.getLine(3) == "") {
-									ItemManager.setTypeIdAndData(b, 0, 0, false);
+									CivItem.setTypeIdAndData(b, 0, 0, false);
 								} else {
 									s2.setLine(0, tpl.blocks[x][y][z].message[0]);
 									s2.setLine(1, tpl.blocks[x][y][z].message[1]);
@@ -100,11 +100,11 @@ public class PostBuildSyncTask implements Runnable {
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
 
 			Block block = absCoord.getBlock();
-			if (ItemManager.getId(block) != sb.getType()) {
+			if (CivItem.getId(block) != sb.getType()) {
 				if (buildable.getCiv().isAdminCiv()) {
-					ItemManager.setTypeIdAndData(block, CivData.AIR, (byte)0, false);
+					CivItem.setTypeIdAndData(block, CivData.AIR, (byte)0, false);
 				} else {
-					ItemManager.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
+					CivItem.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
 				}
 			}
 		}
@@ -117,8 +117,8 @@ public class PostBuildSyncTask implements Runnable {
 				if (sb.specialType == Type.COMMAND) continue;
 			}
 			
-			if (ItemManager.getId(block) != sb.getType()) {
-				ItemManager.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
+			if (CivItem.getId(block) != sb.getType()) {
+				CivItem.setTypeIdAndData(block, sb.getType(), (byte)sb.getData(), false);
 			}
 		}
 		
@@ -134,7 +134,7 @@ public class PostBuildSyncTask implements Runnable {
 			BlockCoord absCoord = new BlockCoord(buildable.getCorner().getBlock().getRelative(relativeCoord.getX(), relativeCoord.getY(), relativeCoord.getZ()));
 			
 			if (absCoord.getBlock().getType() == Material.WEB || absCoord.getBlock().getType() == Material.SIGN_POST || absCoord.getBlock().getType() == Material.WALL_SIGN) {
-				ItemManager.setTypeIdAndData(absCoord.getBlock(), CivData.AIR, (byte)0, false);
+				CivItem.setTypeIdAndData(absCoord.getBlock(), CivData.AIR, (byte)0, false);
 			}
 			
 			/* Signs and chests should already be handled, look for more exotic things. */
@@ -150,9 +150,9 @@ public class PostBuildSyncTask implements Runnable {
 				
 				//  Convert sign data to chest data.
 				block = absCoord.getBlock();
-				if (ItemManager.getId(block) != CivData.CHEST) {
+				if (CivItem.getId(block) != CivData.CHEST) {
 					byte chestData = CivData.convertSignDataToChestData((byte)sb.getData());
-					ItemManager.setTypeIdAndData(block, CivData.CHEST, chestData, true);
+					CivItem.setTypeIdAndData(block, CivData.CHEST, chestData, true);
 				}
 				break;
 			case "/sign":
@@ -161,9 +161,9 @@ public class PostBuildSyncTask implements Runnable {
 					structSign = new StructureSign(absCoord, buildable);
 				}
 				block = absCoord.getBlock();
-				ItemManager.setTypeIdAndData(block, sb.getType(), sb.getData(), true);
+				CivItem.setTypeIdAndData(block, sb.getType(), sb.getData(), true);
 				
-				structSign.setDirection(ItemManager.getData(block.getState()));
+				structSign.setDirection(CivItem.getData(block.getState()));
 				for (String key : sb.keyvalues.keySet()) {
 					structSign.setType(key);
 					structSign.setAction(sb.keyvalues.get(key));
@@ -269,7 +269,7 @@ public class PostBuildSyncTask implements Runnable {
 				
 				/* Convert sign data to enchanting table.*/
 				block = absCoord.getBlock();
-				ItemManager.setTypeId(block, CivData.END_PORTAL_FRAME);
+				CivItem.setTypeId(block, CivData.END_PORTAL_FRAME);
 				break;
 			}
 			

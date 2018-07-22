@@ -18,7 +18,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.global.perks.Perk;
 
 public class BuildChooseTemplate implements GuiAction {
@@ -45,7 +45,7 @@ public class BuildChooseTemplate implements GuiAction {
 		/* Build an inventory full of templates to select. */
 		Inventory inv = Bukkit.getServer().createInventory(player, 6*9);
 		ItemStack infoRec = LoreGuiItem.build("Default "+struct.getDisplayName(), 
-				ItemManager.getId(Material.WRITTEN_BOOK), 
+				CivItem.getId(Material.WRITTEN_BOOK), 
 				0, CivColor.Gold+"<Click To Build>");
 		infoRec = LoreGuiItem.setAction(infoRec, "BuildWithTemplate");
 		inv.addItem(infoRec);

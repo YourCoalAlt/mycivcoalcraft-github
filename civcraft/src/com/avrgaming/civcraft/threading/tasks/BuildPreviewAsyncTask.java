@@ -31,7 +31,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class BuildPreviewAsyncTask extends CivAsyncTask {
@@ -82,8 +82,8 @@ public class BuildPreviewAsyncTask extends CivAsyncTask {
 							try {
 								if (aborted) return;
 								if (resident.previewUndo.get(new BlockCoord(b.getLocation())) != null && tpl.blocks[x][y][z].isAir()) continue;
-								ItemManager.sendBlockChange(getPlayer(), b.getLocation(), ItemManager.getId(tpl.blocks[x][y][z].getMaterial()), tpl.blocks[x][y][z].getData());
-								resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(ItemManager.getId(b), ItemManager.getData(b)));
+								CivItem.sendBlockChange(getPlayer(), b.getLocation(), CivItem.getId(tpl.blocks[x][y][z].getMaterial()), tpl.blocks[x][y][z].getData());
+								resident.previewUndo.put(new BlockCoord(b.getLocation()), new SimpleBlock(CivItem.getId(b), CivItem.getData(b)));
 								count++;			
 							} finally {
 								lock.unlock();

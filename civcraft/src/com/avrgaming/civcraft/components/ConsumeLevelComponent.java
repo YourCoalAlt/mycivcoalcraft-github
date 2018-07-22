@@ -38,7 +38,7 @@ import com.avrgaming.civcraft.structure.Cottage;
 import com.avrgaming.civcraft.structure.Lab;
 import com.avrgaming.civcraft.structure.Mine;
 import com.avrgaming.civcraft.threading.TaskMaster;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class ConsumeLevelComponent extends Component {
@@ -229,11 +229,11 @@ public class ConsumeLevelComponent extends Component {
 				continue;
 			}
 			
-			boolean isRequire = thisLevelConsumptions.containsKey(ItemManager.getId(stack));
+			boolean isRequire = thisLevelConsumptions.containsKey(CivItem.getId(stack));
 			boolean isEquiv = false;
 			
 			for (ConsumeLevelEquivExchange ee : this.exchanges.values()) {
-				if (ee.altType == ItemManager.getId(stack)) {
+				if (ee.altType == CivItem.getId(stack)) {
 					isEquiv = true;
 					break;
 				}
@@ -244,13 +244,13 @@ public class ConsumeLevelComponent extends Component {
 				continue;
 			}
 			
-			Integer count = foundCounts.get(ItemManager.getId(stack));
+			Integer count = foundCounts.get(CivItem.getId(stack));
 			if (count == null) {
 				count = stack.getAmount();
 			} else {
 				count += stack.getAmount();
 			}
-			foundCounts.put(ItemManager.getId(stack), count);
+			foundCounts.put(CivItem.getId(stack), count);
 		}
 			
 		boolean found = true;
@@ -363,7 +363,7 @@ public class ConsumeLevelComponent extends Component {
 					} else {
 						if (totalBaseConsumed != 0) {
 							/* If the total amount consumed is negative, add it to the inventory. */
-							source.addItem(ItemManager.createItemStack(ee.baseType, (-1*totalBaseConsumed)));
+							source.addItem(CivItem.newStack(ee.baseType, (-1*totalBaseConsumed)));
 						}
 					}
 				}

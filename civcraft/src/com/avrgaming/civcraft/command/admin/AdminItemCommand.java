@@ -16,7 +16,7 @@ import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -64,7 +64,7 @@ public class AdminItemCommand extends CommandBase {
 			enhancements.put(le.getDisplayName().toLowerCase(), le);
 		}
 
-		if (inHand == null || ItemManager.getId(inHand) == CivData.AIR) {
+		if (inHand == null || CivItem.getId(inHand) == CivData.AIR) {
 			throw new CivException("You must have an item in your hand to enhance it.");
 		}
 		

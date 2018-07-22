@@ -51,7 +51,7 @@ import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 
@@ -112,13 +112,13 @@ public class Wall extends Structure {
 		double refund = 0;
 		for (WallBlock wb : wallBlocks.values()) {
 			
-			Material material = ItemManager.getMaterial(wb.getOldId());
+			Material material = CivItem.getMaterial(wb.getOldId());
 			if (CivSettings.restrictedUndoBlocks.contains(material)) {
 				continue;
 			}
 			
-			ItemManager.setTypeId(wb.getCoord().getBlock(), wb.getOldId());
-			ItemManager.setData(wb.getCoord().getBlock(), wb.getOldData());
+			CivItem.setTypeId(wb.getCoord().getBlock(), wb.getOldId());
+			CivItem.setData(wb.getCoord().getBlock(), wb.getOldData());
 			refund += COST_PER_SEGMENT;
 			try {
 				wb.delete();
@@ -176,8 +176,8 @@ public class Wall extends Structure {
 		if (this.nextWallBuilt == null) {
 			for (BlockCoord coord : wallBlocks.keySet()) {
 				WallBlock wb = wallBlocks.get(coord);
-				ItemManager.setTypeId(coord.getBlock(), wb.getOldId());
-				ItemManager.setData(coord.getBlock(), wb.getOldData());
+				CivItem.setTypeId(coord.getBlock(), wb.getOldId());
+				CivItem.setData(coord.getBlock(), wb.getOldData());
 				try {
 					wb.delete();
 				} catch (SQLException e) {
@@ -312,8 +312,8 @@ public class Wall extends Structure {
 		// build the blocks
 		for (SimpleBlock sb : simpleBlocks.values()) {
 			BlockCoord bcoord = new BlockCoord(sb);
-			ItemManager.setTypeId(bcoord.getBlock(), sb.getType());
-			ItemManager.setData(bcoord.getBlock(), sb.getData());
+			CivItem.setTypeId(bcoord.getBlock(), sb.getType());
+			CivItem.setData(bcoord.getBlock(), sb.getData());
 			
 		}
 		
@@ -326,7 +326,7 @@ public class Wall extends Structure {
 	private void validateBlockLocation(Player player, Location loc) throws CivException {
 		Block b = loc.getBlock();
 		
-		if (ItemManager.getId(b) == CivData.CHEST) {
+		if (CivItem.getId(b) == CivData.CHEST) {
 			throw new CivException("Cannot build here, would destroy chest.");
 		}
 							
@@ -467,8 +467,8 @@ public class Wall extends Structure {
 		
 		for (SimpleBlock sb : simpleBlocks.values()) {
 			BlockCoord bcoord = new BlockCoord(sb);
-			int old_id = ItemManager.getId(bcoord.getBlock());
-			int old_data = ItemManager.getData(bcoord.getBlock());
+			int old_id = CivItem.getId(bcoord.getBlock());
+			int old_data = CivItem.getData(bcoord.getBlock());
 			if (!wallBlocks.containsKey(bcoord)) {
 				try {
 					WallBlock wb = new WallBlock(bcoord, this, old_id, old_data, sb.getType(), sb.getData());
@@ -526,8 +526,8 @@ public class Wall extends Structure {
 		
 		for (WallBlock wb : this.wallBlocks.values()) {
 			BlockCoord bcoord = wb.getCoord();
-			ItemManager.setTypeId(bcoord.getBlock(), wb.getTypeId());
-			ItemManager.setData(bcoord.getBlock(), wb.getData());
+			CivItem.setTypeId(bcoord.getBlock(), wb.getTypeId());
+			CivItem.setData(bcoord.getBlock(), wb.getData());
 		}
 		
 		save();

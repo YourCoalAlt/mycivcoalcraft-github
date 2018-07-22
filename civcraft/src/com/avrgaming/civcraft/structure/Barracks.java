@@ -66,7 +66,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.UnitSaveAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 import gpl.AttributeUtil;
@@ -167,7 +167,7 @@ public class Barracks extends Structure {
 			try {
 				Integer type = Integer.valueOf(split[0]);
 				int data = Integer.valueOf(split[1]);
-				if (type == ItemManager.getId(repair) && data == ItemManager.getData(repair)) return true;
+				if (type == CivItem.getId(repair) && data == CivItem.getData(repair)) return true;
 			} catch (NumberFormatException e) {
 				String custMatID = split[0];
 				if (craftMat == null || craftMat.getConfigId() != custMatID) continue;
@@ -270,8 +270,8 @@ public class Barracks extends Structure {
 			spawnUnitUpgradeVillager(absCoord.getLocation(), (byte)sb.getData());
 			break;
 		case "/progress":
-			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-			ItemManager.setData(absCoord.getBlock(), sb.getData());
+			CivItem.setTypeId(absCoord.getBlock(), sb.getType());
+			CivItem.setData(absCoord.getBlock(), sb.getData());
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("");
 			structSign.setDirection(sb.getData());
@@ -471,7 +471,7 @@ public class Barracks extends Structure {
 	
 	public void openUnitTrainGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*6, t.getName()+"'s Barracks Unit Train Menu");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Barracks menu. Here, you can",
 				CivColor.RESET+"use it to create units, ranging from war to",
 				CivColor.RESET+"settlers for new towns.",
@@ -484,16 +484,16 @@ public class Barracks extends Structure {
 			try { @SuppressWarnings("unused")
 			Class<?> ctest = Class.forName(u.class_name);
 			} catch (ClassNotFoundException e) {
-				ItemStack is = LoreGuiItem.build(u.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+" « Coming Soon / Invalid » ");
+				ItemStack is = LoreGuiItem.build(u.name, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+" « Coming Soon / Invalid » ");
 				inv.setItem(u.position, is);
 				continue;
 			}
 			
 			if (!res.hasTown()) {
-				ItemStack is = LoreGuiItem.build(u.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town build a structure.");
+				ItemStack is = LoreGuiItem.build(u.name, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town build a structure.");
 				inv.setItem(u.position, is);
 			} else if (!res.getTown().isMayor(res) && !res.getTown().isAssistant(res)) {
-				ItemStack is = LoreGuiItem.build(u.name, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be town mayor/assistant to build structures.");
+				ItemStack is = LoreGuiItem.build(u.name, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be town mayor/assistant to build structures.");
 				inv.setItem(u.position, is);
 			} else {
 				String out = "";
@@ -634,7 +634,7 @@ public class Barracks extends Structure {
 	
 	public void openUnitUpgradeGUI_DISABLED_UNTIL_CODED(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*1, t.getName()+"'s Barracks Unit Upgrade Menu");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Barracks Unit Upgrade Menu.",
 				CivColor.RESET+"You can use it to upgrade units that you",
 				CivColor.RESET+"have already created. Only certain upgrades",
@@ -642,7 +642,7 @@ public class Barracks extends Structure {
 				CivColor.RESET+"them before you upgrade them!"
 				));
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightPurpleBold+"Help", ItemManager.getId(Material.WORKBENCH), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightPurpleBold+"Help", CivItem.getId(Material.WORKBENCH), 0, 
 				CivColor.RESET+"in the first empty slot, put the upgrade you",
 				CivColor.RESET+"want to use to upgrade the unit with. Once",
 				CivColor.RESET+"done, we will automatically grab the unit out",
@@ -650,7 +650,7 @@ public class Barracks extends Structure {
 				CivColor.RESET+""
 				));
 		
-		inv.setItem(7, LoreGuiItem.build(CivColor.LightGreenBold+"Click to Upgrade", ItemManager.getId(Material.ANVIL), 0));
+		inv.setItem(7, LoreGuiItem.build(CivColor.LightGreenBold+"Click to Upgrade", CivItem.getId(Material.ANVIL), 0));
 		
 		p.openInventory(inv);
 	}

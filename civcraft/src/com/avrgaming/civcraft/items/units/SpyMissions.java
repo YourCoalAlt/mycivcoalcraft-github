@@ -64,7 +64,7 @@ import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.util.BookUtil;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.war.War;
 
 public class SpyMissions extends UnitItemMaterial {
@@ -378,7 +378,7 @@ public class SpyMissions extends UnitItemMaterial {
 		TradeOutpost outpost = (TradeOutpost)tradeoutpost;
 		ItemStack stack = outpost.getItemFrameStore().getItem(); 
 		
-		if (stack == null || ItemManager.getId(stack) == CivData.AIR) {
+		if (stack == null || CivItem.getId(stack) == CivData.AIR) {
 			throw new CivException("No trade goodie item at this location.");
 		}
 		

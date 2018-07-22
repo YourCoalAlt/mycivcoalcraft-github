@@ -156,8 +156,9 @@ public final class CivCraft extends JavaPlugin {
 	public static boolean isRestarting = false;
 	
 	public static String worldName;
+	public static Boolean allow_offhand;
 	public static Integer structure_process;
-	public static final String server_name = CivColor.Gray+"["+CivColor.Red+"Coal"+CivColor.LightBlue+"CivCraft"+CivColor.Gray+"] "+CivColor.RESET;
+	public static final String server_name = CivColor.Gray+"["+CivColor.Rose+"Coal"+CivColor.LightBlue+"CivCraft"+CivColor.Gray+"] "+CivColor.RESET;
 	
 	private void startTimers() {
 		TaskMaster.asyncTask("SQLUpdate", new SQLUpdate(), 0);
@@ -295,6 +296,20 @@ public final class CivCraft extends JavaPlugin {
 			return;
 		}
 		
+		try {
+			worldName = CivSettings.getString(CivSettings.gameConfig, "world.name");
+		} catch (InvalidConfiguration e) {
+			worldName = BukkitObjects.getWorlds().get(0).getName();
+			CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to '"+worldName+"'");
+		}
+		
+		try {
+			allow_offhand = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand"));
+		} catch (InvalidConfiguration e) {
+			allow_offhand = true;
+			CivLog.warning("Cannot find 'inventory.allow_offhand' in fle 'game.yml'. Defaulting to '"+allow_offhand+"'");
+		}
+		
 		// Init commands
 		getCommand("cmat").setExecutor(new CMatCommand());
 		getCommand("backpack").setExecutor(new BackpackCommand());
@@ -337,12 +352,6 @@ public final class CivCraft extends JavaPlugin {
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
 				isStarted = true;
-				try {
-					worldName = CivSettings.getString(CivSettings.gameConfig, "world.name");
-				} catch (InvalidConfiguration e) {
-					worldName = BukkitObjects.getWorlds().get(0).getName();
-					CivLog.warning("Cannot find 'world_name' in fle 'game.yml'. Defaulting to '"+worldName+"'");
-				}
 				
 				if (hasPlugin("HolographicDisplays")) {
 					HolographicDisplaysListener.generateTradeGoodHolograms();
@@ -404,19 +413,19 @@ public final class CivCraft extends JavaPlugin {
 	
 	public static void addFurnaceRecipes() {
 		MaterialData lap_ore = new MaterialData(Material.LAPIS_ORE);
-		FurnaceRecipe recipe1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), lap_ore, 0.85f);
-		Bukkit.addRecipe(recipe1);
-		plugin.getServer().addRecipe(recipe1);
+		FurnaceRecipe fr1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), lap_ore, 0.85f);
+		Bukkit.addRecipe(fr1);
+		plugin.getServer().addRecipe(fr1);
 		
 		MaterialData red_ore = new MaterialData(Material.REDSTONE_ORE);
-		FurnaceRecipe recipe2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), red_ore, 0.7f);
-		Bukkit.addRecipe(recipe2);
-		plugin.getServer().addRecipe(recipe2);
+		FurnaceRecipe fr2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), red_ore, 0.7f);
+		Bukkit.addRecipe(fr2);
+		plugin.getServer().addRecipe(fr2);
 		
 		MaterialData rot_stk = new MaterialData(Material.ROTTEN_FLESH);
-		FurnaceRecipe recipe3 = new FurnaceRecipe(new ItemStack(Material.COOKED_BEEF, 1), rot_stk, 0.35f);
-		Bukkit.addRecipe(recipe3);
-		plugin.getServer().addRecipe(recipe3);
+		FurnaceRecipe fr3 = new FurnaceRecipe(new ItemStack(Material.COOKED_BEEF), rot_stk, 0.35f);
+		Bukkit.addRecipe(fr3);
+		plugin.getServer().addRecipe(fr3);
 		
 //		ItemStack cio = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk"), 1);
 //		MaterialData crushed_iron = new MaterialData(Material.IRON_ORE);

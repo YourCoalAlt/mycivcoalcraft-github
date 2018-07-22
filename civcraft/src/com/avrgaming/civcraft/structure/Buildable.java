@@ -96,7 +96,7 @@ import com.avrgaming.civcraft.util.CallbackInterface;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.util.SimpleBlock.Type;
 import com.avrgaming.civcraft.war.War;
@@ -411,7 +411,7 @@ public abstract class Buildable extends SQLObject {
 			/* Build an inventory full of templates to select. */
 			Inventory inv = Bukkit.getServer().createInventory(player, 6*9);
 			ItemStack infoRec = LoreGuiItem.build("Default "+this.getDisplayName(), 
-					ItemManager.getId(Material.WRITTEN_BOOK), 
+					CivItem.getId(Material.WRITTEN_BOOK), 
 					0, CivColor.Gold+"<Click To Build>");
 			infoRec = LoreGuiItem.setAction(infoRec, "BuildWithTemplate");
 			inv.addItem(infoRec);
@@ -513,7 +513,7 @@ public abstract class Buildable extends SQLObject {
 			/* Build an inventory full of templates to select. */
 			Inventory inv = Bukkit.getServer().createInventory(player, 6*9);
 			ItemStack infoRec = LoreGuiItem.build("Default "+info.displayName, 
-					ItemManager.getId(Material.WRITTEN_BOOK), 
+					CivItem.getId(Material.WRITTEN_BOOK), 
 					0, CivColor.Gold+"<Click To Build>");
 			infoRec = LoreGuiItem.setAction(infoRec, "BuildWithDefaultPersonalTemplate");
 			inv.addItem(infoRec);
@@ -850,7 +850,7 @@ public abstract class Buildable extends SQLObject {
 				for (int z = 0; z < regionZ; z++) {
 					Block b = centerBlock.getRelative(x, y, z);
 					
-					if (ItemManager.getId(b) == CivData.CHEST) {
+					if (CivItem.getId(b) == CivData.CHEST) {
 						throw new CivException("Cannot build here, would destroy chest.");
 					}
 										
@@ -960,13 +960,13 @@ public abstract class Buildable extends SQLObject {
 					Block b = centerBlock.getRelative(x, y, z);
 					//b.setTypeIdAndData(tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
 					if (tpl.blocks[x][y][z].specialType == Type.COMMAND) {
-						ItemManager.setTypeIdAndData(b, CivData.AIR, (byte)0, false);
+						CivItem.setTypeIdAndData(b, CivData.AIR, (byte)0, false);
 					} else {
-						ItemManager.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
+						CivItem.setTypeIdAndData(b, tpl.blocks[x][y][z].getType(), (byte)tpl.blocks[x][y][z].getData(), false);
 					}
 					
 					chunkUpdates.put(b.getChunk(), b.getChunk());
-					if (ItemManager.getId(b) == CivData.WALL_SIGN || ItemManager.getId(b) == CivData.SIGN) {
+					if (CivItem.getId(b) == CivData.WALL_SIGN || CivItem.getId(b) == CivData.SIGN) {
 						Sign s2 = (Sign)b.getState();
 						s2.setLine(0, tpl.blocks[x][y][z].message[0]);
 						s2.setLine(1, tpl.blocks[x][y][z].message[1]);
@@ -1336,39 +1336,39 @@ public abstract class Buildable extends SQLObject {
 						continue;
 					}
 					
-					if (ItemManager.getId(coord.getBlock()) == CivData.AIR) {
+					if (CivItem.getId(coord.getBlock()) == CivData.AIR) {
 						continue;
 					}
 					
-					if (ItemManager.getId(coord.getBlock()) == CivData.CHEST) {
+					if (CivItem.getId(coord.getBlock()) == CivData.CHEST) {
 						continue;
 					}
 					
-					if (ItemManager.getId(coord.getBlock()) == CivData.SIGN) {
+					if (CivItem.getId(coord.getBlock()) == CivData.SIGN) {
 						continue;
 					}
 					
-					if (ItemManager.getId(coord.getBlock()) == CivData.WALL_SIGN) {
+					if (CivItem.getId(coord.getBlock()) == CivData.WALL_SIGN) {
 						continue;
 					}
 					
-					if (CivSettings.alwaysCrumble.contains(ItemManager.getId(coord.getBlock()))) {
-						ItemManager.setTypeId(coord.getBlock(), CivData.SOULSAND);
+					if (CivSettings.alwaysCrumble.contains(CivItem.getId(coord.getBlock()))) {
+						CivItem.setTypeId(coord.getBlock(), CivData.SOULSAND);
 						continue;
 					}
 					
 					Random rand = new Random();
 					// Each block has a 15% chance to turn into gravel
 					if (rand.nextInt(100) < 15) {
-						ItemManager.setTypeId(coord.getBlock(), CivData.GRAVEL);
-						ItemManager.setData(coord.getBlock(), 0, true);
+						CivItem.setTypeId(coord.getBlock(), CivData.GRAVEL);
+						CivItem.setData(coord.getBlock(), 0, true);
 						continue;
 					}
 					
 					// Each block has a 10% chance of starting a fire
 					if (rand.nextInt(100) < 10) {
-						ItemManager.setTypeId(coord.getBlock(), CivData.FIRE);
-						ItemManager.setData(coord.getBlock(), 0, true);
+						CivItem.setTypeId(coord.getBlock(), CivData.FIRE);
+						CivItem.setData(coord.getBlock(), 0, true);
 						continue;
 					}
 					
@@ -1517,7 +1517,7 @@ public abstract class Buildable extends SQLObject {
 			throw new CivException("Snapshot for chunk "+chunkX+", "+chunkZ+" in "+worldName+" not found for abs:"+absX+","+absZ);
 		}
 		
-		return ItemManager.getBlockTypeId(snapshot, blockChunkX, absY, blockChunkZ);
+		return CivItem.getBlockTypeId(snapshot, blockChunkX, absY, blockChunkZ);
 	}
 	
 	public static double getReinforcementRequirementForLevel(int level) {

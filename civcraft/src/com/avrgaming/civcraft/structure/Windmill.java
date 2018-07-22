@@ -47,7 +47,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.WindmillStartSyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Windmill extends Structure {
@@ -116,7 +116,7 @@ public class Windmill extends Structure {
 	public void openPlantSettingsGUI(Player plr, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*1, "Windmill Menu");
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Windmill Settings Menu. You",
 				CivColor.RESET+"can change the amount of what crops to",
 				CivColor.RESET+"plant, for when the windmill ticks.",
@@ -126,7 +126,7 @@ public class Windmill extends Structure {
 		
 		ItemStack w = new ItemStack(Material.SEEDS, 1);
 		ItemMeta wm = w.getItemMeta();
-		wm.setDisplayName(CivData.getDisplayName(295, 0));
+		wm.setDisplayName(CivData.getStackName(w));
 		List<String> wl = new ArrayList<>();
 		wl.add(CivColor.LightGreen+this.wheat_sel);
 		wl.add(CivColor.Gray+" « Left Click +1 » ");
@@ -136,7 +136,7 @@ public class Windmill extends Structure {
 		
 		ItemStack c = new ItemStack(Material.CARROT_ITEM, 1);
 		ItemMeta cm = c.getItemMeta();
-		cm.setDisplayName(CivData.getDisplayName(391, 0));
+		cm.setDisplayName(CivData.getStackName(c));
 		List<String> cl = new ArrayList<>();
 		cl.add(CivColor.LightGreen+this.carrot_sel);
 		cl.add(CivColor.Gray+" « Left Click +1 » ");
@@ -146,7 +146,7 @@ public class Windmill extends Structure {
 		
 		ItemStack p = new ItemStack(Material.POTATO_ITEM, 1);
 		ItemMeta pm = p.getItemMeta();
-		pm.setDisplayName(CivData.getDisplayName(392, 0));
+		pm.setDisplayName(CivData.getStackName(p));
 		List<String> pl = new ArrayList<>();
 		pl.add(CivColor.LightGreen+this.potato_sel);
 		pl.add(CivColor.Gray+" « Left Click +1 » ");
@@ -156,7 +156,7 @@ public class Windmill extends Structure {
 		
 		ItemStack b = new ItemStack(Material.BEETROOT, 1);
 		ItemMeta bm = b.getItemMeta();
-		bm.setDisplayName(CivData.getDisplayName(434, 0));
+		bm.setDisplayName(CivData.getStackName(b));
 		List<String> bl = new ArrayList<>();
 		bl.add(CivColor.LightGreen+this.beetroot_sel);
 		bl.add(CivColor.Gray+" « Left Click +1 » ");

@@ -10,11 +10,10 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 
 public class Tutorial {
 	
-	private static ItemStack back_head = ItemManager.spawnPlayerHead("MHF_ArrowRight");
+	private static ItemStack back_head = Backpack.back_head;
 	
 	public static void wiki_mainmenu(Player p) {
 		Inventory inv = Bukkit.createInventory(null, InventoryType.DISPENSER, "Wiki - Main Menu");

@@ -54,8 +54,8 @@ public class BlockSnapshot {
 		this.setY(y);
 		this.setZ(z);
 		this.setSnapshot(snapshot);
-		this.setTypeId(ItemManager.getBlockTypeId(snapshot, this.x, this.y, this.z));
-		this.setData(ItemManager.getBlockData(snapshot, this.x, this.y, this.z));
+		this.setTypeId(CivItem.getBlockTypeId(snapshot, this.x, this.y, this.z));
+		this.setData(CivItem.getBlockData(snapshot, this.x, this.y, this.z));
 	}
 
 	public BlockSnapshot getRelative(int xOff, int yOff, int zOff) throws InvalidBlockLocation {

@@ -1,6 +1,5 @@
 package com.avrgaming.civcraft.listener.civcraft;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +25,7 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Stray;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Wolf;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,14 +36,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Crops;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigEXPMining;
@@ -61,7 +65,7 @@ import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.wimbli.WorldBorder.BorderData;
 import com.wimbli.WorldBorder.Config;
 
@@ -71,65 +75,107 @@ public class MinecraftListener implements Listener {
 	
 	//XXX Player-Bound Aspect
 	
-	private static HashMap<Material, ArrayList<Integer>> food_values = new HashMap<Material, ArrayList<Integer>>();
+	private static HashMap<ItemStack, ArrayList<Double>> food_values = new HashMap<ItemStack, ArrayList<Double>>();
 	
 	public static void setupFoodValues() {
-		ArrayList<Integer> raw_fish = new ArrayList<Integer>();
-		raw_fish.add(2); raw_fish.add(7); raw_fish.add(0);
-		food_values.put(Material.RAW_FISH, raw_fish);
+		ArrayList<Double> raw_fish = new ArrayList<Double>();
+		raw_fish.add(2.0); raw_fish.add(.35);
+		food_values.put(CivItem.newStack(Material.RAW_FISH), raw_fish);
 		
-		ArrayList<Integer> raw_salmon = new ArrayList<Integer>();
-		raw_salmon.add(2); raw_salmon.add(8); raw_salmon.add(1);
-		food_values.put(Material.RAW_FISH, raw_salmon);
+		ArrayList<Double> raw_salmon = new ArrayList<Double>();
+		raw_salmon.add(3.0); raw_salmon.add(.26667);
+		food_values.put(CivItem.newStack(Material.RAW_FISH, 1, true), raw_salmon);
 		
-		ArrayList<Integer> cooked_fish = new ArrayList<Integer>();
-		cooked_fish.add(5); cooked_fish.add(65);cooked_fish.add(0);
-		food_values.put(Material.COOKED_FISH, cooked_fish);
+		ArrayList<Double> cooked_fish = new ArrayList<Double>();
+		cooked_fish.add(6.0); cooked_fish.add(1.4);
+		food_values.put(CivItem.newStack(Material.COOKED_FISH), cooked_fish);
 		
-		ArrayList<Integer> cooked_salmon = new ArrayList<Integer>();
-		cooked_salmon.add(6); cooked_salmon.add(90); cooked_salmon.add(1);
-		food_values.put(Material.COOKED_FISH, cooked_salmon);
+		ArrayList<Double> cooked_salmon = new ArrayList<Double>();
+		cooked_salmon.add(7.0); cooked_salmon.add(1.5429);
+		food_values.put(CivItem.newStack(Material.COOKED_FISH, 1, true), cooked_salmon);
 		
-		ArrayList<Integer> melon = new ArrayList<Integer>();
-		melon.add(2); melon.add(15); melon.add(0);
-		food_values.put(Material.MELON, melon);
+		ArrayList<Double> melon = new ArrayList<Double>();
+		melon.add(3.0); melon.add(1.0667);
+		food_values.put(CivItem.newStack(Material.MELON), melon);
 		
-		ArrayList<Integer> steak = new ArrayList<Integer>();
-		steak.add(8); steak.add(128); steak.add(0);
-		food_values.put(Material.COOKED_BEEF, steak);
+		ArrayList<Double> beetroot_soup = new ArrayList<Double>();
+		beetroot_soup.add(6.0); beetroot_soup.add(1.6);
+		food_values.put(CivItem.newStack(Material.MELON), beetroot_soup);
 		
-		ArrayList<Integer> gold_carrot = new ArrayList<Integer>();
-		gold_carrot.add(7); gold_carrot.add(164); gold_carrot.add(0);
-		food_values.put(Material.GOLDEN_CARROT, gold_carrot);
+		ArrayList<Double> gold_carrot = new ArrayList<Double>();
+		gold_carrot.add(7.0); gold_carrot.add(2.4);
+		food_values.put(CivItem.newStack(Material.GOLDEN_CARROT), gold_carrot);
+		
+		ArrayList<Double> gold_apple_regular = new ArrayList<Double>();
+		gold_apple_regular.add(4.0); gold_apple_regular.add(4.8);
+		food_values.put(CivItem.newStack(Material.GOLDEN_APPLE), gold_apple_regular);
+		
+		ArrayList<Double> gold_apple_enchanted = new ArrayList<Double>();
+		gold_apple_enchanted.add(8.0); gold_apple_enchanted.add(3.6);
+		food_values.put(CivItem.newStack(Material.GOLDEN_APPLE, 1 , true), gold_apple_enchanted);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerConsumeItem(PlayerItemConsumeEvent event) throws CivException {
-		ItemStack stack = event.getItem();
-		if (food_values.containsKey(stack.getType())) {
-			ArrayList<Integer> food = food_values.get(stack.getType());
-			if (stack.getDurability() != food.get(2)) return;
+		ItemStack is = event.getItem();
+		for (ItemStack foods : food_values.keySet()) {
+			if (foods.getType() != is.getType()) continue;
+			if (foods.getDurability() != is.getDurability()) continue;
 			
+			ArrayList<Double> food = food_values.get(foods);
 			Player p = event.getPlayer();
 			event.setCancelled(true);
 			
-			if (p.getInventory().getItemInMainHand().getType() == stack.getType()) {
-				p.getInventory().getItemInMainHand().setAmount(stack.getAmount()-1);
-			} else if (p.getInventory().getItemInOffHand().getType() == stack.getType()) {
-				p.getInventory().getItemInOffHand().setAmount(stack.getAmount()-1);
+			ItemStack mainHand = p.getInventory().getItemInMainHand();
+			ItemStack offHand = p.getInventory().getItemInOffHand();
+			if (mainHand.getType() == foods.getType() && mainHand.getDurability() == foods.getDurability()) {
+				p.getInventory().getItemInMainHand().setAmount(mainHand.getAmount()-1);
+			} else if (offHand.getType() == foods.getType() && offHand.getDurability() == foods.getDurability()) {
+				p.getInventory().getItemInMainHand().setAmount(offHand.getAmount()-1);
 			} else {
-				CivMessage.send(p, "How do you eat? Like, you broke the game here lad!");
+				CivMessage.send(p, "How do you eat? Like, you broke the game here, lad!");
+				return;
 			}
 			
-			Integer foodAmt = p.getFoodLevel()+food.get(0);
-			float SaturateAmt = (float) (p.getSaturation()+((double)food.get(1)/10));
-			if (foodAmt >= 20) {
-				int toSaturate = foodAmt - 20;
+			double fakeFoodAmt = food.get(0);
+			int foodAmt = (int) fakeFoodAmt;
+			double satRatio = food.get(1)/100;
+			float SaturateAmt = (float) (p.getSaturation()+(foodAmt*satRatio));
+			int pFood = p.getFoodLevel()+foodAmt;
+			if (pFood >= 20) {
+				int toSaturate = pFood - 20;
 				SaturateAmt += toSaturate;
-				foodAmt = 20;
+				pFood = 20;
 			}
-			p.setFoodLevel((int) foodAmt);
+			p.setFoodLevel(pFood);
 			p.setSaturation(SaturateAmt);
+			
+			if (is.getType() == Material.GOLDEN_APPLE) {
+				if (is.getDurability() == 0) {
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*15, 1));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20*120, 0));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20*60, 0));
+						}
+					}.runTask(CivCraft.getPlugin());
+				}
+				if (is.getDurability() == 1) {
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20*5, 0));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20*30, 1));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20*120, 1));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20*90, 2));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*300, 0));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20*300, 0));
+						}
+					}.runTask(CivCraft.getPlugin());
+				}
+			}
+			
 		}
 	}
 	
@@ -146,7 +192,7 @@ public class MinecraftListener implements Listener {
 		int mirrorID4 = (id == CivData.WATER_RUNNING || id == CivData.WATER_STILL ? CivData.LAVA_STILL : CivData.WATER_RUNNING);
 		for (BlockFace face : faces) {
 			Block r = b.getRelative(face, 1);
-			if(ItemManager.getId(r) == mirrorID1 || ItemManager.getId(r) == mirrorID2 || ItemManager.getId(r) == mirrorID3 || ItemManager.getId(r) == mirrorID4) {
+			if(CivItem.getId(r) == mirrorID1 || CivItem.getId(r) == mirrorID2 || CivItem.getId(r) == mirrorID3 || CivItem.getId(r) == mirrorID4) {
 				return new BlockCoord(r);
 			}
 		}
@@ -156,10 +202,10 @@ public class MinecraftListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnBlockFromToEvent(BlockFromToEvent event) {
 		// Disable cobblestone generators
-		int id = ItemManager.getId(event.getBlock());
+		int id = CivItem.getId(event.getBlock());
 		if(id >= CivData.WATER_STILL && id <= CivData.LAVA_STILL) {
 			Block b = event.getToBlock();
-			int toid = ItemManager.getId(b);
+			int toid = CivItem.getId(b);
 			if (toid == CivData.COBBLESTONE || toid == CivData.OBSIDIAN) {
 				BlockCoord other = generatesCobble(id, b);
 				if(other != null && other.getBlock().getType() != Material.AIR) {
@@ -172,8 +218,8 @@ public class MinecraftListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void OnBlockFormEvent(BlockFormEvent event) {
 		// Disable cobblestone generators
-		if (ItemManager.getId(event.getNewState()) == CivData.COBBLESTONE || ItemManager.getId(event.getNewState()) == CivData.OBSIDIAN) {
-			ItemManager.setTypeId(event.getNewState(), CivData.NETHERRACK);
+		if (CivItem.getId(event.getNewState()) == CivData.COBBLESTONE || CivItem.getId(event.getNewState()) == CivData.OBSIDIAN) {
+			CivItem.setTypeId(event.getNewState(), CivData.NETHERRACK);
 			return;
 		}
 	}
@@ -190,12 +236,12 @@ public class MinecraftListener implements Listener {
 		
 		// Quest XP First, then check later for custom drops.
 		for (ConfigEXPMining m : CivSettings.resxpMiningBlocks.values()) {
-			if (ItemManager.getId(event.getBlock().getType()) == m.id) {
+			if (CivItem.getId(event.getBlock().getType()) == m.id) {
 				if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
 				ResidentExperience re = CivGlobal.getResidentE(p);
 				double mod = (re.getEXPLevel(EXPSlots.MINING)+1) / 2;
 				int eEXP = (int) (event.getExpToDrop()*mod) / 2;
-				if (eEXP >= 1) ItemManager.dropPlayerEXP(p, dropLoc, eEXP);
+				if (eEXP >= 1) CivItem.dropPlayerEXP(p, dropLoc, eEXP);
 				re.addResEXP(EXPSlots.MINING, m.resxp);
 			}
 		}
@@ -204,7 +250,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.COAL_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
+			event.setDropItems(false); CivItem.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -220,7 +266,7 @@ public class MinecraftListener implements Listener {
 				if (rand_coal < min_coal) rand_coal = min_coal;
 				
 				ItemStack stack_coal = new ItemStack(Material.COAL);
-				ItemManager.givePlayerItem(p, stack_coal, dropLoc, stack_coal.getItemMeta().getDisplayName(), rand_coal, true);
+				CivItem.givePlayerItem(p, stack_coal, dropLoc, stack_coal.getItemMeta().getDisplayName(), rand_coal, true);
 				
 				// Hammer Drops
 				int min_coalHam = CivSettings.getInteger(CivSettings.gameConfig, "coal_hammers.min_drop");
@@ -235,7 +281,7 @@ public class MinecraftListener implements Listener {
 					if (newRand != 0) rand_ham = 0;
 				
 				ItemStack stack_ham = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
-				ItemManager.givePlayerItem(p, stack_ham, dropLoc, stack_ham.getItemMeta().getDisplayName(), rand_ham, true);
+				CivItem.givePlayerItem(p, stack_ham, dropLoc, stack_ham.getItemMeta().getDisplayName(), rand_ham, true);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -244,7 +290,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.REDSTONE_ORE) || event.getBlock().getType().equals(Material.GLOWING_REDSTONE_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
+			event.setDropItems(false); CivItem.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -260,7 +306,7 @@ public class MinecraftListener implements Listener {
 				if (rand_red < min_red) rand_red = min_red;
 				
 				ItemStack stack_red = new ItemStack(Material.REDSTONE);
-				ItemManager.givePlayerItem(p, stack_red, dropLoc, stack_red.getItemMeta().getDisplayName(), rand_red, true);
+				CivItem.givePlayerItem(p, stack_red, dropLoc, stack_red.getItemMeta().getDisplayName(), rand_red, true);
 				
 				// Hammer Drops
 				int min_redBek = CivSettings.getInteger(CivSettings.gameConfig, "redstone_beakers.min_drop");
@@ -275,7 +321,7 @@ public class MinecraftListener implements Listener {
 					if (newRand != 0) rand_bek = 0;
 				
 				ItemStack stack_bek = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_beakers"));
-				ItemManager.givePlayerItem(p, stack_bek, dropLoc, stack_bek.getItemMeta().getDisplayName(), rand_bek, true);
+				CivItem.givePlayerItem(p, stack_bek, dropLoc, stack_bek.getItemMeta().getDisplayName(), rand_bek, true);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -284,7 +330,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.LAPIS_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
+			event.setDropItems(false); CivItem.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -300,7 +346,7 @@ public class MinecraftListener implements Listener {
 				if (rand_lap < min_lap) rand_lap = min_lap;
 				
 				ItemStack stack_lap = new ItemStack(Material.INK_SACK, 1, (short)4);
-				ItemManager.givePlayerItem(p, stack_lap, dropLoc, stack_lap.getItemMeta().getDisplayName(), rand_lap, true);
+				CivItem.givePlayerItem(p, stack_lap, dropLoc, stack_lap.getItemMeta().getDisplayName(), rand_lap, true);
 				
 				// Beaker Drops
 				int min_lapBek = CivSettings.getInteger(CivSettings.gameConfig, "lapis_beakers.min_drop");
@@ -315,7 +361,7 @@ public class MinecraftListener implements Listener {
 					if (newRand != 0) rand_bek = 0;
 				
 				ItemStack stack_bek = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_beakers"));
-				ItemManager.givePlayerItem(p, stack_bek, dropLoc, stack_bek.getItemMeta().getDisplayName(), rand_bek, true);
+				CivItem.givePlayerItem(p, stack_bek, dropLoc, stack_bek.getItemMeta().getDisplayName(), rand_bek, true);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -324,7 +370,7 @@ public class MinecraftListener implements Listener {
 		
 		if (event.getBlock().getType().equals(Material.DIAMOND_ORE)) {
 			if (event.isCancelled() || p.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
-			event.setDropItems(false); ItemManager.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
+			event.setDropItems(false); CivItem.setTypeIdAndData(event.getBlock(), CivData.AIR, (byte)0, true); reduceItemDurability(p ,p.getInventory().getItemInMainHand());
 			try {
 				int level = 0;
 				Map<Enchantment, Integer> enchants = p.getInventory().getItemInMainHand().getEnchantments();
@@ -340,7 +386,7 @@ public class MinecraftListener implements Listener {
 				if (rand_dia < min_dia) rand_dia = min_dia;
 				
 				ItemStack stack_dia = new ItemStack(Material.DIAMOND);
-				ItemManager.givePlayerItem(p, stack_dia, dropLoc, stack_dia.getItemMeta().getDisplayName(), rand_dia, true);
+				CivItem.givePlayerItem(p, stack_dia, dropLoc, stack_dia.getItemMeta().getDisplayName(), rand_dia, true);
 				
 				// Hammer Drops
 				int min_diaHam = CivSettings.getInteger(CivSettings.gameConfig, "diamond_hammers.min_drop");
@@ -355,7 +401,7 @@ public class MinecraftListener implements Listener {
 					if (newRand != 0) rand_ham = 0;
 				
 				ItemStack stack_ham = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_hammers"));
-				ItemManager.givePlayerItem(p, stack_ham, dropLoc, stack_ham.getItemMeta().getDisplayName(), rand_ham, true);
+				CivItem.givePlayerItem(p, stack_ham, dropLoc, stack_ham.getItemMeta().getDisplayName(), rand_ham, true);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -385,7 +431,7 @@ public class MinecraftListener implements Listener {
 				if (rand_crop < min_crop) rand_crop = min_crop;
 				
 				ItemStack stack_crop = new ItemStack(Material.WHEAT);
-				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+				CivItem.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 				
 				// Seed Drops
 				int min_seed = CivSettings.getInteger(CivSettings.gameConfig, "wheat_seed_hand.min_drop");
@@ -397,7 +443,7 @@ public class MinecraftListener implements Listener {
 				if (rand_seed < min_seed) rand_seed = min_seed;
 				
 				ItemStack stack_seed = new ItemStack(Material.SEEDS);
-				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
+				CivItem.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -425,7 +471,7 @@ public class MinecraftListener implements Listener {
 				if (rand_crop < min_crop) rand_crop = min_crop;
 				
 				ItemStack stack_crop = new ItemStack(Material.BEETROOT);
-				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+				CivItem.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 				
 				// Seed Drops
 				int min_seed = CivSettings.getInteger(CivSettings.gameConfig, "beetroot_seed_hand.min_drop");
@@ -437,7 +483,7 @@ public class MinecraftListener implements Listener {
 				if (rand_seed < min_seed) rand_seed = min_seed;
 				
 				ItemStack stack_seed = new ItemStack(Material.BEETROOT_SEEDS);
-				ItemManager.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
+				CivItem.givePlayerItem(p, stack_seed, dropLoc, stack_seed.getItemMeta().getDisplayName(), rand_seed, false);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -465,7 +511,7 @@ public class MinecraftListener implements Listener {
 				if (rand_crop < min_crop) rand_crop = min_crop;
 				
 				ItemStack stack_crop = new ItemStack(Material.CARROT_ITEM);
-				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+				CivItem.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -493,7 +539,7 @@ public class MinecraftListener implements Listener {
 				if (rand_crop < min_crop) rand_crop = min_crop;
 				
 				ItemStack stack_crop = new ItemStack(Material.POTATO_ITEM);
-				ItemManager.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
+				CivItem.givePlayerItem(p, stack_crop, dropLoc, stack_crop.getItemMeta().getDisplayName(), rand_crop, false);
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
 				return;
@@ -779,125 +825,68 @@ public class MinecraftListener implements Listener {
 	//XXX Mechanical PvP Aspect
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onSwapHandItems(PlayerSwapHandItemsEvent e) {
-		boolean enabled = false;
-		try {
-			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "inventory.allow_offhand"));
-		} catch (InvalidConfiguration e1) {
-			e1.printStackTrace();
-		}
-		
-		if (enabled == false) {
-			CivMessage.sendError(e.getPlayer(), "You cannot switch items to off-hand!");
-			e.setCancelled(true);
-		}
-	}
-	
-/*	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onInventoryClick(InventoryClickEvent e){
-		if (!e.getInventory().getType().equals(InventoryType.CRAFTING)) {
-			return; //Making sure it's a survival player's inventory
-		}
-		
-		if (e.getSlot() != 40) {
-			return; // If they didn't click into the offhand slot, return
-		}
-		
-		if (!e.getCurrentItem().getType().equals(Material.AIR) && e.getCursor().getType().equals(Material.AIR)) {
-			return; // If the slot is not empty, allow taking the item
-		}
-		
-		if(shouldWeCancel(e.getCursor())){
-			e.setResult(Event.Result.DENY);
-			e.setCancelled(true);
+	public void onSwapHandItems(PlayerSwapHandItemsEvent ev) {
+		if (!CivCraft.allow_offhand) {
+			CivMessage.sendError(ev.getPlayer(), "You cannot have items in your off-hand!");
+			ev.setCancelled(true);
 		}
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
-	public void onInventoryDrag(InventoryDragEvent e){
-		if(!e.getInventory().getType().equals(InventoryType.CRAFTING) || !e.getInventorySlots().contains(40)) {
-			return;
+	public void onInventoryClick(InventoryClickEvent ev) {
+		if (!CivCraft.allow_offhand) {
+			// Check if inventory exists
+			if (ev.getClickedInventory() == null) return;
+			
+			// Check if this inventory has offhand
+			if (!(ev.getClickedInventory().getType() == InventoryType.PLAYER) && !(ev.getClickedInventory().getType() == InventoryType.CRAFTING)) return;
+			
+			// Check if offhand slot had interaction
+			if (ev.getSlot() != 40) return;
+			
+			// If the slot is not empty, allow taking the item
+			if (!ev.getCurrentItem().getType().equals(Material.AIR) && ev.getCursor().getType().equals(Material.AIR)) return;
+			
+			// Cancel the offhand
+			CivMessage.sendError(ev.getWhoClicked(), "You cannot have items in your off-hand!");
+			ev.setResult(Event.Result.DENY);
+			ev.setCancelled(true);
 		}
-		
-		if(shouldWeCancel(e.getOldCursor())){
-			e.setResult(Event.Result.DENY);
-			e.setCancelled(true);
-		}
-	}*/
+	}
 	
-	private static ArrayList<Material> mats = new ArrayList<Material>();
-	public boolean shouldWeCancel(ItemStack item) {		
-		Material mat = item.getType();
-		boolean isContained = mats.contains(mat);
-		if(!isContained && !mat.equals(Material.AIR)) {
-			return true;
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onInventoryDrag(InventoryDragEvent ev) {
+		if (!CivCraft.allow_offhand) {
+			// Check if this inventory has offhand
+			if (!(ev.getInventory().getType() == InventoryType.PLAYER) && !(ev.getInventory().getType() == InventoryType.CRAFTING)) return;
+			
+			// Check if offhand slot had interaction
+			if (!ev.getInventorySlots().contains(40)) return;
+			
+			// Cancel the offhand
+			CivMessage.sendError(ev.getWhoClicked(), "You cannot have items in your off-hand!");
+			ev.setResult(Event.Result.DENY);
+			ev.setCancelled(true);
 		}
-		return false;
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerJoinEvent e) {
-		boolean enabled = true;
-		int GAS = 4;
+		double GAS = 4; // default
 		try {
-			GAS = CivSettings.getInteger(CivSettings.gameConfig, "pvp.attack_speed");
-			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled"));
+			GAS = CivSettings.getDouble(CivSettings.gameConfig, "pvp.attack_speed");
 		} catch (InvalidConfiguration e1) {
-			e1.printStackTrace();
+			CivLog.warning("game.yml pvp.attack_speed was not able to be found, setting to Minecraft's default 4.");
 		}
 		
 		Player p = e.getPlayer();
-		AttributeInstance attribute = p.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-		double baseValue = attribute.getBaseValue();
-
-		if (enabled == false) {
-			GAS = 4; //If module is disabled, set attack speed to 1.9 default
-			CivLog.debug("[Player Join] game.yml-pvp.attack_speed set to 4");
-		}
+		AttributeInstance atrb = p.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+		double attrValue = atrb.getBaseValue();
 		
-		if (baseValue != GAS) {
-			attribute.setBaseValue(GAS);
-			CivLog.debug("[Player Join] game.yml-pvp.attack_speed set to "+GAS);
+		if (attrValue != GAS) {
+			CivLog.debug("[Player Join] game.yml-pvp.attack_speed set from "+attrValue+" to "+GAS);
+			atrb.setBaseValue(GAS);
 			p.saveData();
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerQuit(PlayerQuitEvent e){
-		Player player = e.getPlayer();
-		AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-		double baseValue = attribute.getBaseValue();
-		if (baseValue != 4){ //If basevalue is not 1.9 default, set it back
-			attribute.setBaseValue(4);
-			CivLog.debug("[Player Leave] game.yml-pvp.attack_speed set to 4");
-			player.saveData();
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onWorldChange(PlayerChangedWorldEvent e) {
-		Player player = e.getPlayer();
-		boolean enabled = true;
-		int GAS = 4;
-		try {
-			GAS = CivSettings.getInteger(CivSettings.gameConfig, "pvp.attack_speed");
-			enabled = Boolean.valueOf(CivSettings.getString(CivSettings.gameConfig, "pvp.attack_cooldown_enabled"));
-		} catch (InvalidConfiguration e1) {
-			e1.printStackTrace();
-		}
-		
-		AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-		double baseValue = attribute.getBaseValue();
-		
-		if (enabled == false) {
-			GAS = 4; //If module is disabled, set attack speed to 1.9 default
-			CivLog.debug("[Player World Change] game.yml-pvp.attack_speed set to 4");
-		}
-		
-		if (baseValue!=GAS){
-			attribute.setBaseValue(GAS);
-			CivLog.debug("[Player World Change] game.yml-pvp.attack_speed set to "+GAS);
-			player.saveData();
 		}
 	}
 	
@@ -906,37 +895,23 @@ public class MinecraftListener implements Listener {
 	// https://hub.spigotmc.org/javadocs/spigot/index.html?overview-summary.html
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onServerListRefresh(ServerListPingEvent event) throws IllegalArgumentException, UnsupportedOperationException, Exception {
-		event.setServerIcon(Bukkit.loadServerIcon(new File("mcdiamondsword1.png")));
 		if (CivCraft.isRestarting) {
 			event.setMaxPlayers(0);
 			event.setMotd(CivCraft.server_name+" -- Server Rebooting!");
 		} else {
-			int amtPlayers = (int) ((event.getNumPlayers()*2.5)+2);
-			if (amtPlayers > CivGlobal.maxPlayers) {
-				event.setMaxPlayers(CivGlobal.maxPlayers);
-			} else {
-				event.setMaxPlayers(amtPlayers);
-			}
-			String title = CivCraft.server_name+CivColor.GrayItalic;
+			ArrayList<String> motd = new ArrayList<String>();
+			motd.add("Speak softly and carry a big stick; you will go far -Roosevelt");
+			motd.add("The two most powerful warriors are patience and time -Tolstoy");
+			motd.add("Sometimes by losing a battle you find a new way to win the war -Trump");
+			motd.add("We are going to have peace even if we have to fight for it -Eisenhower");
+			motd.add("To be prepared for war is the most effective means of peace -Washington");
+			motd.add("You mustn't fight too often with an enemy; you'll teach him your art of war -Bonaparte");
+			motd.add("Why play with friends when you can play with communities? -YourCoal");
+			
 			Random rand = new Random();
-			int msg = rand.nextInt(7);
-			if (msg == 0) {
-				event.setMotd(title+"Speak softly and carry a big stick; you will go far -Roosevelt");
-			} else if (msg == 1) {
-				event.setMotd(title+"The two most powerful warriors are patience and time -Tolstoy");
-			} else if (msg == 2) {
-				event.setMotd(title+"Sometimes by losing a battle you find a new way to win the war -Trump");
-			} else if (msg == 3) {
-				event.setMotd(title+"We are going to have peace even if we have to fight for it -Eisenhower");
-			} else if (msg == 4) {
-				event.setMotd(title+"To be prepared for war is the most effective means of peace -Washington");
-			} else if (msg == 5) {
-				event.setMotd(title+"You mustn't fight too often with an enemy; you'll teach him your art of war -Bonaparte");
-			} else {
-				event.setMotd(title+"Why play with friends when you can play with communities? -YourCoal");
-			}
+			int msg = rand.nextInt(motd.size());
+			event.setMotd(CivCraft.server_name+CivColor.GrayItalic+motd.get(msg));
 		}
-		
 	}
 	
 }

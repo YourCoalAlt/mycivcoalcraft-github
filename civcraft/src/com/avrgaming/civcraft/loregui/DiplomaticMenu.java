@@ -11,7 +11,7 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItem;
 import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class DiplomaticMenu implements GuiAction {
 	
@@ -22,17 +22,17 @@ public class DiplomaticMenu implements GuiAction {
 		guiInventory = Bukkit.getServer().createInventory(p, 9*2, "Diplomatic Relations");
 		
 		for (int i = 0; i < 9*2; i++) {
-			ItemStack is = LoreGuiItem.build("", ItemManager.getId(Material.STAINED_GLASS_PANE), 8);
+			ItemStack is = LoreGuiItem.build("", CivItem.getId(Material.STAINED_GLASS_PANE), 8);
 			guiInventory.setItem(i, is);
 		}
 		
-		ItemStack global = LoreGuiItem.build("Global Relations", ItemManager.getId(Material.MAP), 0, CivColor.Gold+"<Click to View>");
+		ItemStack global = LoreGuiItem.build("Global Relations", CivItem.getId(Material.MAP), 0, CivColor.Gold+"<Click to View>");
 		global = LoreGuiItem.setAction(global, "DiplomaticMenuViewGlobal");
 		guiInventory.setItem(0, global);
 		
 		
 		/* Add back buttons. */
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Topics");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Topics");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 		backButton = LoreGuiItem.setActionData(backButton, "invName", Backpack.backpackInventory.getName());

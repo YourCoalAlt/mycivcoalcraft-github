@@ -91,7 +91,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
@@ -3703,7 +3703,7 @@ public class Town extends SQLObject {
 						int absX = corner.getX() + sb.x;
 						int absZ = corner.getZ() + sb.z;
 						int type = Buildable.getBlockIDFromSnapshotMap(chunks, absX, y, absZ, corner.getWorldname());
-						if (type == CivData.AIR || CivSettings.restrictedUndoBlocks.contains(ItemManager.getMaterial(type))) {
+						if (type == CivData.AIR || CivSettings.restrictedUndoBlocks.contains(CivItem.getMaterial(type))) {
 							if (canSupport > 0) {
 								// Set block
 								Bukkit.getWorld(corner.getWorldname()).getBlockAt(absX, y, absZ).setType(Material.DIRT);

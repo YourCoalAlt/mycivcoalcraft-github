@@ -27,7 +27,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Market extends Structure {
@@ -114,7 +114,7 @@ public class Market extends Structure {
 	public void openMainMarketMenu(Player p) {
 		if (!Buildable.validatePlayerGUI(p, this, false, false, false, false)) return;
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Global Market Menu");
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Global Market menu. You can buy",
 				CivColor.RESET+"and sell various types of blocks within this",
 				CivColor.RESET+"GUI.",
@@ -124,13 +124,14 @@ public class Market extends Structure {
 		
 		for (ConfigMarketItem mat : CivSettings.marketItems.values()) {
 			if (mat.custom_id == null) {
-				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(mat.type_id, mat.data), mat.type_id, mat.data, CivColor.Gray+" « Click for More » ");
-				inv.addItem(is);
-			} else {
-				String cid = mat.custom_id.replace("mat_", "").replaceAll("_", " ");
-				ItemStack is = LoreGuiItem.build(cid, 7, 0, CivColor.Gray+" « Click for More » ");
-				inv.addItem(is);
+				ItemStack is = CivItem.newStack(mat.type_id, 1, mat.data);
+				ItemStack iis = LoreGuiItem.buildWithStack(CivData.getStackName(is), is, CivColor.Gray+" « Click for More » ");
+				inv.addItem(iis);
+				continue;
 			}
+			String cid = mat.custom_id.replace("mat_", "").replaceAll("_", " ");
+			ItemStack iis = LoreGuiItem.build(cid, 7, 0, CivColor.Gray+" « Click for More » ");
+			inv.addItem(iis);
 		}
 		p.openInventory(inv);
 	}
@@ -144,11 +145,11 @@ public class Market extends Structure {
 	}
 	
 	public void openItemGUI(Player p, ConfigMarketItem m) {
-		String name = CivData.getDisplayName(m.type_id, m.data);
+		String name = CivData.getStackName(m.type_id, m.data);
 		if (m.custom_id != null) name = m.custom_id.replace("mat_", "").replaceAll("_", " ");
 		
 		Inventory inv = Bukkit.createInventory(null, 9*1, "Market Trade "+name);
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"Prices may change if you keep this",
 				CivColor.RESET+"inventory opened for too long!",
 				CivColor.RESET+" ",
@@ -162,12 +163,13 @@ public class Market extends Structure {
 	}
 	
 	public Inventory getMarketItemOpened(Player p, Inventory inv, ConfigMarketItem m) {
-		String name = CivData.getDisplayName(m.type_id, m.data);
+		String name = CivData.getStackName(m.type_id, m.data);
 		if (m.custom_id != null) name = m.custom_id.replace("mat_", "").replaceAll("_", " ");
 		
 		if (m.custom_id == null) {
-			ItemStack is = LoreGuiItem.build(CivData.getDisplayName(m.type_id, m.data), m.type_id, m.data, "» » »");
-			inv.setItem(1, is);
+			ItemStack is = CivItem.newStack(m.type_id, 1, m.data);
+			ItemStack iis = LoreGuiItem.buildWithStack(CivData.getStackName(is), is, CivColor.Gray+" « Click for More » ");
+			inv.setItem(1, iis);
 		} else {
 			ItemStack is = LoreGuiItem.build(name, 7, 0, CivColor.LightPurpleBold+"» » »");
 			inv.setItem(1, is);
@@ -181,7 +183,7 @@ public class Market extends Structure {
 				buyFull += 64;
 				continue;
 			}
-			if (ItemManager.getId(is) == m.type_id && ItemManager.getData(is) == m.data) {
+			if (CivItem.getId(is) == m.type_id && CivItem.getData(is) == m.data) {
 				sellFull += is.getAmount();
 				continue;
 			}
@@ -205,7 +207,7 @@ public class Market extends Structure {
 				CivColor.Gray+" « Middle Click for Inventory ("+buyFull+") » ");
 		inv.setItem(5, buy);
 		
-		ItemStack back = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Market Menu");
+		ItemStack back = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Market Menu");
 		inv.setItem(8, back);
 		
 		return inv;
@@ -228,7 +230,7 @@ public class Market extends Structure {
 	
 	public void openMainGrocerMenu(Player p) {
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Grocer Menu");
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Grocer menu. You can buy food",
 				CivColor.RESET+"items inside of this GUI.",
 				CivColor.RESET+" ",
@@ -247,7 +249,8 @@ public class Market extends Structure {
 		
 		for (ConfigGrocerLevel gl : CivSettings.grocerLevels.values()) {
 			if (gl.level <= this.getGrocerLevel()) {
-				ItemStack is = LoreGuiItem.build(CivData.getDisplayName(gl.itemId, gl.itemData), gl.itemId, gl.itemData,
+				ItemStack is = CivItem.newStack(gl.type_id, 1, gl.data);
+				ItemStack iis = LoreGuiItem.buildWithStack(CivData.getStackName(is), is,
 						CivColor.Gray+"1 for "+CivColor.Yellow+(gl.price)+CivColor.Gray+" Coins",
 						CivColor.Gray+"64 for "+CivColor.Yellow+(gl.price*64)+CivColor.Gray+" Coins",
 						CivColor.Gray+"Inventory ("+buyFull+") for "+CivColor.Yellow+(gl.price*buyFull)+CivColor.Gray+" Coins",
@@ -255,9 +258,9 @@ public class Market extends Structure {
 						CivColor.Gray+" « Shift + Left Click for 64 » ",
 						CivColor.Gray+" « Middle Click for Inventory ("+buyFull+") » ",
 						getNonResidentFeeString());
-				inv.addItem(is);
+				inv.addItem(iis);
 			} else {
-				ItemStack is = LoreGuiItem.build("Locked", 7, 0,
+				ItemStack is = LoreGuiItem.build("Locked", Material.BEDROCK, 0,
 						CivColor.Gray+" « Requires Level "+gl.level+" » ",
 						CivColor.Gray+" « Currently Level "+this.getGrocerLevel()+" » ");
 				inv.addItem(is);

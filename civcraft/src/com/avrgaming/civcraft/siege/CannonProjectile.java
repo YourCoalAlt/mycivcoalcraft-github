@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.threading.tasks.FireWorkTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.EntityProximity;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.war.WarRegen;
 
 import net.minecraft.server.v1_12_R1.EntityPlayer;
@@ -62,7 +62,7 @@ public class CannonProjectile {
 	
 	private void explodeBlock(Block b) {
 		WarRegen.saveBlock(b, Cannon.RESTORE_NAME, false);
-		ItemManager.setTypeId(b, CivData.AIR);
+		CivItem.setTypeId(b, CivData.AIR);
 		launchExplodeFirework(b.getLocation());
 	}
 	
@@ -78,7 +78,7 @@ public class CannonProjectile {
 				for (int y = -radius; y < radius; y++) {
 					
 					Block b = loc.getBlock().getRelative(x, y, z);
-					if (ItemManager.getId(b) == CivData.BEDROCK) {
+					if (CivItem.getId(b) == CivData.BEDROCK) {
 						continue;
 					}
 			
@@ -179,7 +179,7 @@ public class CannonProjectile {
 		loc.add(dir.multiply(speed));
 		loc.getWorld().createExplosion(loc, 0.0f, false);
 		
-		if (ItemManager.getId(loc.getBlock()) != CivData.AIR) {
+		if (CivItem.getId(loc.getBlock()) != CivData.AIR) {
 			return true;
 		}
 		

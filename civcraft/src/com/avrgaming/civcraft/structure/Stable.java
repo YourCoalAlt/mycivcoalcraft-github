@@ -49,7 +49,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 import gpl.HorseModifier;
@@ -232,7 +232,7 @@ public class Stable extends Structure {
 					paid = cost;
 				}
 
-				HashMap<Integer, ItemStack> leftovers = player.getInventory().addItem(ItemManager.createItemStack(item_id, 1));
+				HashMap<Integer, ItemStack> leftovers = player.getInventory().addItem(CivItem.newStack(item_id));
 				if (leftovers.size() > 0) {
 					for (ItemStack stack : leftovers.values()) {
 						player.getWorld().dropItem(player.getLocation(), stack);
@@ -301,8 +301,8 @@ public class Stable extends Structure {
 		
 		switch (sb.command) {
 		case "/prev":
-			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-			ItemManager.setData(absCoord.getBlock(), sb.getData());
+			CivItem.setTypeId(absCoord.getBlock(), sb.getType());
+			CivItem.setData(absCoord.getBlock(), sb.getData());
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Prev");
 			structSign.setDirection(sb.getData());
@@ -313,8 +313,8 @@ public class Stable extends Structure {
 			CivGlobal.addStructureSign(structSign);			
 			break;
 		case "/item":
-			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-			ItemManager.setData(absCoord.getBlock(), sb.getData());
+			CivItem.setTypeId(absCoord.getBlock(), sb.getType());
+			CivItem.setData(absCoord.getBlock(), sb.getData());
 
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("");
@@ -337,8 +337,8 @@ public class Stable extends Structure {
 			
 			break;
 		case "/next":
-			ItemManager.setTypeId(absCoord.getBlock(), sb.getType());
-			ItemManager.setData(absCoord.getBlock(), sb.getData());
+			CivItem.setTypeId(absCoord.getBlock(), sb.getType());
+			CivItem.setData(absCoord.getBlock(), sb.getData());
 
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Next");

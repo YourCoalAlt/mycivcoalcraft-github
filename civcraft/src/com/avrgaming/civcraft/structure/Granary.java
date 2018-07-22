@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Granary extends Structure {
@@ -60,7 +60,7 @@ public class Granary extends Structure {
 		this.level = getTown().saved_structures_default_level;
 		
 		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
-			Material m = ItemManager.getMaterial(f.food);
+			Material m = CivItem.getMaterial(f.food);
 			String key = getStorageKey(this, m.toString().toLowerCase());
 			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 			if (entry != null && !entry.isEmpty()) {
@@ -111,7 +111,7 @@ public class Granary extends Structure {
 	public void openStorageGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Food Storage");
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Granary Storage Menu. You can use",
 				CivColor.RESET+"it to increase the food needed to feed the",
 				CivColor.RESET+"cottages within the town. If there is no food",
@@ -121,7 +121,7 @@ public class Granary extends Structure {
 		
 		ConfigGranaryLevel gl = CivSettings.granaryLevels.get(this.getLevel());
 		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
-			Material m = ItemManager.getMaterial(f.food);
+			Material m = CivItem.getMaterial(f.food);
 			String key = getStorageKey(this, m.toString().toLowerCase());
 			ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 			if (entry != null && !entry.isEmpty()) {
@@ -164,7 +164,7 @@ public class Granary extends Structure {
 		
 		String dismat = mat.toString().substring(0, 1).toUpperCase()+mat.toString().substring(1).toLowerCase();
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Storage ("+mat+")");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.LightGreen+"Currently Storing: "+CivColor.Yellow+amt+" "+dismat
 				));
 		p.openInventory(inv);
@@ -192,7 +192,7 @@ public class Granary extends Structure {
 	public void openTaskGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Granary Tasks");
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Granary Quest Menu. You can use",
 				CivColor.RESET+"it to complete tasks to level your town up",
 				CivColor.RESET+"with culture. You can get more tasks by having",
@@ -243,7 +243,7 @@ public class Granary extends Structure {
 	public void openTaskCompleterGUI(Player p, Town town, int task) {
 		ConfigGranaryTask gtasks = CivSettings.granaryTasks.get(task);
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Granary Task "+task);
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", CivItem.getId(Material.PAPER), 0, 
 				CivColor.LightGreen+"Requires: "+CivColor.Yellow+gtasks.required+" Bread",
 				CivColor.LightGreen+"Rewards: "+CivColor.Yellow+gtasks.reward+" Culture"
 				));

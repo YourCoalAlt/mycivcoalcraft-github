@@ -38,7 +38,7 @@ import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.structure.Structure;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class MarkerPlacementManager implements Listener {
 
@@ -48,14 +48,14 @@ public class MarkerPlacementManager implements Listener {
 	
 	public static void addToPlacementMode(Player player, Structure structure, String markerName) throws CivException {
 
-		if (player.getInventory().getItemInMainHand() != null && ItemManager.getId(player.getInventory().getItemInMainHand()) != CivData.AIR) {
+		if (player.getInventory().getItemInMainHand() != null && CivItem.getId(player.getInventory().getItemInMainHand()) != CivData.AIR) {
 			throw new CivException("You must not be holding anything to enter placement mode.");
 		}
 		
 		playersInPlacementMode.put(player.getName(), structure);
 		markers.put(player.getName(), new ArrayList<Location>());
 		
-		ItemStack stack = ItemManager.createItemStack(CivData.REDSTONE_TORCH_OFF, 2);
+		ItemStack stack = CivItem.newStack(CivData.REDSTONE_TORCH_OFF, 2);
 		ItemMeta meta = stack.getItemMeta();
 		if (markerName != null) {
 			meta.setDisplayName(markerName);
@@ -76,7 +76,7 @@ public class MarkerPlacementManager implements Listener {
 		}
 		playersInPlacementMode.remove(player.getName());
 		markers.remove(player.getName());
-		player.getInventory().setItemInMainHand(ItemManager.createItemStack(CivData.AIR, 1));
+		player.getInventory().setItemInMainHand(CivItem.airStack());
 		CivMessage.send(player, "You're no longer in placement mode.");
 	}
 	

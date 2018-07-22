@@ -73,9 +73,9 @@ public class AABB {
 	public void showDebugBlocks(int mat, int mat2) {
 		try {
 			Player dbgplayer = CivGlobal.getPlayer("netizen539");
-			ItemManager.sendBlockChange(dbgplayer, new Location(Bukkit.getWorld("world"),
+			CivItem.sendBlockChange(dbgplayer, new Location(Bukkit.getWorld("world"),
 					this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ()), mat, 0);
-			ItemManager.sendBlockChange(dbgplayer, new Location(Bukkit.getWorld("world"), 
+			CivItem.sendBlockChange(dbgplayer, new Location(Bukkit.getWorld("world"), 
 					this.getPosition().getX() + this.getExtents().getX(),
 					this.getPosition().getY() + this.getExtents().getY(), 
 					this.getPosition().getZ() + this.getExtents().getZ()),

@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 // Original serializer by Phil2812 (https://forums.bukkit.org/threads/serialize-inventory-to-single-string-and-vice-versa.92094/)
 
@@ -21,7 +21,7 @@ public class ItemSerializer {
 	public static String getSerializedItemStack(ItemStack is) {
 		String serializedItemStack = new String();
 		
-		String isType = String.valueOf(ItemManager.getId(is.getType()));
+		String isType = String.valueOf(CivItem.getId(is.getType()));
 		serializedItemStack += "t@" + isType;
 		
 		if (is.getDurability() != 0) {
@@ -37,7 +37,7 @@ public class ItemSerializer {
 		Map<Enchantment,Integer> isEnch = is.getEnchantments();
 		if (isEnch.size() > 0) {
 			for (Entry<Enchantment,Integer> ench : isEnch.entrySet()) {
-				serializedItemStack += "&e@" + ItemManager.getId(ench.getKey()) + "@" + ench.getValue();
+				serializedItemStack += "&e@" + CivItem.getEnchantName(ench.getKey()) + "@" + ench.getValue();
 			}
 		}
 		
@@ -82,14 +82,14 @@ public class ItemSerializer {
 		for (String itemInfo : serializedItemStack) {
 			String[] itemAttribute = itemInfo.split("@");
 			if (itemAttribute[0].equals("t")) {
-				is = ItemManager.createItemStack(Integer.valueOf(itemAttribute[1]), 1);
+				is = CivItem.newStack(Integer.valueOf(itemAttribute[1]));
 				createdItemStack = true;
 			} else if (itemAttribute[0].equals("d") && createdItemStack) {
 				is.setDurability(Short.valueOf(itemAttribute[1]));
 			} else if (itemAttribute[0].equals("a") && createdItemStack) {
 				is.setAmount(Integer.valueOf(itemAttribute[1]));
 			} else if (itemAttribute[0].equals("e") && createdItemStack) {
-				is.addEnchantment(ItemManager.getEnchantById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+				is.addEnchantment(CivItem.getEnchantByName(String.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
 			} else if (itemAttribute[0].equals("l") && createdItemStack) {
 				byte[] decode = Base64Coder.decode(itemAttribute[1]);
 				String decodedString = new String(decode);					
@@ -141,14 +141,14 @@ public class ItemSerializer {
 		for (String itemInfo : serializedItemStack) {
 			String[] itemAttribute = itemInfo.split("@");
 			if (itemAttribute[0].equals("t")) {
-				is = ItemManager.createItemStack(Integer.valueOf(itemAttribute[1]), 1);
+				is = CivItem.newStack(Integer.valueOf(itemAttribute[1]));
 				createdItemStack = true;
 			} else if (itemAttribute[0].equals("d") && createdItemStack) {
 				is.setDurability(Short.valueOf(itemAttribute[1]));
 			} else if (itemAttribute[0].equals("a") && createdItemStack) {
 				is.setAmount(Integer.valueOf(itemAttribute[1]));
 			} else if (itemAttribute[0].equals("e") && createdItemStack) {
-				is.addEnchantment(ItemManager.getEnchantById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+				is.addEnchantment(CivItem.getEnchantByName(String.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
 			} else if (itemAttribute[0].equals("l") && createdItemStack) {
 				byte[] decode = Base64Coder.decode(itemAttribute[1]);
 				String decodedString = new String(decode);					

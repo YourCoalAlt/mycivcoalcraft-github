@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.exception.InvalidConfiguration;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivData;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public abstract class Unit {
 	
@@ -278,36 +278,36 @@ public abstract class Unit {
 	
 	public static Double speedWearingAnyChain(Player p, double mod) {
 		double total = 0.0;
-		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.CHAIN_BOOTS) total += mod;
-		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.CHAIN_LEGGINGS) total += mod;
-		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.CHAIN_CHESTPLATE) total += mod;
-		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.CHAIN_HELMET) total += mod;
+		if (p.getEquipment().getBoots() != null && CivItem.getId(p.getEquipment().getBoots()) == CivData.CHAIN_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && CivItem.getId(p.getEquipment().getLeggings()) == CivData.CHAIN_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && CivItem.getId(p.getEquipment().getChestplate()) == CivData.CHAIN_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && CivItem.getId(p.getEquipment().getHelmet()) == CivData.CHAIN_HELMET) total += mod;
 		return total;
 	}
 	
 	public static Double speedWearingAnyIron(Player p, double mod) {
 		double total = 0.0;
-		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.IRON_BOOTS) total += mod;
-		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.IRON_LEGGINGS) total += mod;
-		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.IRON_CHESTPLATE) total += mod;
-		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.IRON_HELMET) total += mod;
+		if (p.getEquipment().getBoots() != null && CivItem.getId(p.getEquipment().getBoots()) == CivData.IRON_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && CivItem.getId(p.getEquipment().getLeggings()) == CivData.IRON_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && CivItem.getId(p.getEquipment().getChestplate()) == CivData.IRON_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && CivItem.getId(p.getEquipment().getHelmet()) == CivData.IRON_HELMET) total += mod;
 		return total;
 	}
 	
 	public static Double speedWearingAnyGold(Player p, double mod) {
 		double total = 0.0;
-		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.GOLD_BOOTS) total += mod;
-		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.GOLD_LEGGINGS) total += mod;
-		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.GOLD_CHESTPLATE) total += mod;
-		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.GOLD_HELMET) total += mod;
+		if (p.getEquipment().getBoots() != null && CivItem.getId(p.getEquipment().getBoots()) == CivData.GOLD_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && CivItem.getId(p.getEquipment().getLeggings()) == CivData.GOLD_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && CivItem.getId(p.getEquipment().getChestplate()) == CivData.GOLD_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && CivItem.getId(p.getEquipment().getHelmet()) == CivData.GOLD_HELMET) total += mod;
 		return total;
 	}
 	public static Double speedWearingAnyDiamond(Player p, double mod) {
 		double total = 0.0;
-		if (p.getEquipment().getBoots() != null && ItemManager.getId(p.getEquipment().getBoots()) == CivData.DIAMOND_BOOTS) total += mod;
-		if (p.getEquipment().getLeggings() != null && ItemManager.getId(p.getEquipment().getLeggings()) == CivData.DIAMOND_LEGGINGS) total += mod;
-		if (p.getEquipment().getChestplate() != null && ItemManager.getId(p.getEquipment().getChestplate()) == CivData.DIAMOND_CHESTPLATE) total += mod;
-		if (p.getEquipment().getHelmet() != null && ItemManager.getId(p.getEquipment().getHelmet()) == CivData.DIAMOND_HELMET) total += mod;
+		if (p.getEquipment().getBoots() != null && CivItem.getId(p.getEquipment().getBoots()) == CivData.DIAMOND_BOOTS) total += mod;
+		if (p.getEquipment().getLeggings() != null && CivItem.getId(p.getEquipment().getLeggings()) == CivData.DIAMOND_LEGGINGS) total += mod;
+		if (p.getEquipment().getChestplate() != null && CivItem.getId(p.getEquipment().getChestplate()) == CivData.DIAMOND_CHESTPLATE) total += mod;
+		if (p.getEquipment().getHelmet() != null && CivItem.getId(p.getEquipment().getHelmet()) == CivData.DIAMOND_HELMET) total += mod;
 		return total;
 	}
 }

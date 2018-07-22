@@ -90,7 +90,7 @@ import com.avrgaming.civcraft.threading.tasks.GivePlayerStartingKit;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CallbackInterface;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.Paginator;
 import com.avrgaming.civcraft.util.PlayerBlockChangeUtil;
 import com.avrgaming.civcraft.util.SimpleBlock;
@@ -1304,7 +1304,7 @@ public class Resident extends SQLObject {
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 7) {
 					ItemStack guiStack = LoreGuiItem.build("Coins Offered", 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							CivItem.getId(Material.NETHER_BRICK_ITEM), 0, 
 							CivColor.Yellow+"0 Coins");
 					inv.setItem(i, guiStack);
 				} else {
@@ -1322,19 +1322,19 @@ public class Resident extends SQLObject {
 					
 				} else if ((i-start) == 0){ 
 					ItemStack guiStack = LoreGuiItem.build("Remove Coins", 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							CivItem.getId(Material.NETHER_BRICK_ITEM), 0, 
 							CivColor.Gold+"Click to Remove 100 coins.",
 							CivColor.Gold+"Shift-Click to Remove 1000 coins.");
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 1) {
 					ItemStack guiStack = LoreGuiItem.build("Add Coins", 
-							ItemManager.getId(Material.GOLD_INGOT), 0, 
+							CivItem.getId(Material.GOLD_INGOT), 0, 
 							CivColor.Gold+"Click to Add 100 coins.",
 							CivColor.Gold+"Shift-Click to Add 1000 coins.");
 					inv.setItem(i, guiStack);
 				} else if ((i-start) == 7) {
 					ItemStack guiStack = LoreGuiItem.build("Coins Offered", 
-							ItemManager.getId(Material.NETHER_BRICK_ITEM), 0, 
+							CivItem.getId(Material.NETHER_BRICK_ITEM), 0, 
 							CivColor.Yellow+"0 Coins");
 					inv.setItem(i, guiStack);
 				}
@@ -1552,14 +1552,14 @@ public class Resident extends SQLObject {
 		}
 		
 		if (paginator.hasPrevPage) {
-			ItemStack stack = LoreGuiItem.build("Prev Page", ItemManager.getId(Material.PAPER), 0, "");
+			ItemStack stack = LoreGuiItem.build("Prev Page", CivItem.getId(Material.PAPER), 0, "");
 			stack = LoreGuiItem.setAction(stack, "ShowPerkPage");
 			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber-1));
 			inv.setItem(9*5, stack);
 		}
 		
 		if (paginator.hasNextPage) {
-			ItemStack stack = LoreGuiItem.build("Next Page", ItemManager.getId(Material.PAPER), 0, "");
+			ItemStack stack = LoreGuiItem.build("Next Page", CivItem.getId(Material.PAPER), 0, "");
 			stack = LoreGuiItem.setAction(stack, "ShowPerkPage");
 			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber+1));
 			inv.setItem((9*6)-1, stack);
@@ -1611,6 +1611,7 @@ public class Resident extends SQLObject {
 						}
 					}.runTask(CivCraft.getPlugin());
 					
+					Thread.sleep(1000*4); if (!p2.isOnline()) return;
 					String resetS = CivColor.DarkGrayItalic;
 					p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.75f, 1f);
 					CivMessage.sendTitle(res, CivColor.LightGreenBold+"CivCraft", CivColor.DarkGrayItalic+"Are you ready to begin?");
@@ -1641,8 +1642,6 @@ public class Resident extends SQLObject {
 					res.setRegistered(System.currentTimeMillis());
 					res.setisProtected(true);
 					int mins = CivSettings.getInteger(CivSettings.civConfig, "global.pvp_timer");
-					Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), "minecraft:advancement grant "+p.getName()+" only civcraftgeneral:root");
-					
 					CivMessage.send(res, CivColor.Gray+"You have a PvP Timer enabled for "+mins+" minutes.");
 					CivMessage.send(res, CivColor.Gray+"You cannot attack or be attacked until it expires.");
 					CivMessage.send(res, CivColor.Gray+"To remove it, type "+CivColor.DarkGrayItalic+"'/resident pvptimer'");
@@ -1655,16 +1654,18 @@ public class Resident extends SQLObject {
 							p2.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, time, 0));
 							p2.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, time, 0));
 							p2.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, time, 0));
+							CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
 						}
 					}.runTask(CivCraft.getPlugin());
 					
-					CivMessage.send(res, CivColor.Yellow+"You have been given a free 5 minutes of: Regeneration I, Resistance I, Haste I, Speed I.");
+					TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
+					CivMessage.send(res, CivColor.Yellow+"You have recieved a starting kit to begin your adventures.");
+					
 					CivMessage.send(res, CivColor.Gray+"(You are being randomly teleported now in the world to begin your adventure.)");
 					MinecraftListener.randomTeleport(p);
-					TaskMaster.syncTask(new GivePlayerStartingKit(res.getName()));
 				} catch (InterruptedException | InvalidConfiguration | CivException e) {
 					res.setChatEnabled(true);
-					p2.setInvulnerable(false);
+					if (p2.isOnline()) p2.setInvulnerable(false);
 					e.printStackTrace();
 				}
 				res.setChatEnabled(true);
@@ -1793,7 +1794,7 @@ public class Resident extends SQLObject {
 			inv_mainmail = Bukkit.getServer().createInventory(p, 9*3, res.getName()+" Mail Menu [R]");
 		}
 		
-		inv_mainmail.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv_mainmail.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is Mail Menu. You can use this to",
 				CivColor.RESET+"send messages to players, as well as to",
 				CivColor.RESET+"collect items/recieve notices from your",
@@ -1839,7 +1840,7 @@ public class Resident extends SQLObject {
 		}
 		
 		// Add Back Button
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Mail Menu");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Mail Menu");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "openResMail");
 		inv.setItem((9*6)-1, backButton);
@@ -1854,14 +1855,14 @@ public class Resident extends SQLObject {
 		}
 		
 		if (paginator.hasPrevPage) {
-			ItemStack stack = LoreGuiItem.build("Prev Page", ItemManager.getId(Material.PAPER), 0, "");
+			ItemStack stack = LoreGuiItem.build("Prev Page", CivItem.getId(Material.PAPER), 0, "");
 			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
 			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber-1));
 			inv.setItem(9*5, stack);
 		}
 		
 		if (paginator.hasNextPage) {
-			ItemStack stack = LoreGuiItem.build("Next Page", ItemManager.getId(Material.PAPER), 0, "");
+			ItemStack stack = LoreGuiItem.build("Next Page", CivItem.getId(Material.PAPER), 0, "");
 			stack = LoreGuiItem.setAction(stack, "ShowResMailPage");
 			stack = LoreGuiItem.setActionData(stack, "page", ""+(pageNumber+1));
 			inv.setItem((9*6)-2, stack);

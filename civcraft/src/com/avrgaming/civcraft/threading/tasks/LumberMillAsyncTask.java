@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,6 @@ import com.avrgaming.civcraft.exception.CivTaskAbortException;
 import com.avrgaming.civcraft.lorestorage.LoreCraftableMaterial;
 import com.avrgaming.civcraft.lorestorage.LoreMaterial;
 import com.avrgaming.civcraft.main.CivCraft;
-import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.object.StructureChest;
 import com.avrgaming.civcraft.object.Town;
@@ -25,7 +25,7 @@ import com.avrgaming.civcraft.structure.LumberMill;
 import com.avrgaming.civcraft.structure.Structure;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class LumberMillAsyncTask extends CivAsyncTask {
@@ -77,7 +77,7 @@ public class LumberMillAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigLumberMillItem cli = CivSettings.lumbermillItems.get(ItemManager.getId(stack));
+					ConfigLumberMillItem cli = CivSettings.lumbermillItems.get(CivItem.getId(stack));
 					if (cli == null) continue;
 					else {
 						source_inv.addInventory(tmp);
@@ -129,12 +129,12 @@ public class LumberMillAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigLumberMillItem cqi = CivSettings.lumbermillItems.get(ItemManager.getId(stack));
+					ConfigLumberMillItem cqi = CivSettings.lumbermillItems.get(CivItem.getId(stack));
 					if (cqi == null) continue;
 					
-					if (ItemManager.getId(stack) == cqi.item && mill.getLevel() >= cqi.level) {
+					if (CivItem.getId(stack) == cqi.item && mill.getLevel() >= cqi.level) {
 						try {
-							short damage = ItemManager.getData(stack);
+							short damage = CivItem.getData(stack);
 							if (damage > cqi.max_dura) {
 								this.updateInventory(Action.REMOVE, source_inv, stack);
 							} else {
@@ -155,7 +155,7 @@ public class LumberMillAsyncTask extends CivAsyncTask {
 									LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 									newItem.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
 								} else {
-									newItem.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+									newItem.add(CivItem.newStack(d.type_id, d.amount, d.type_data));
 								}
 							}
 						}
@@ -212,9 +212,9 @@ public class LumberMillAsyncTask extends CivAsyncTask {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 1) {
-			return ItemManager.createItemStack(CivData.DIRT, 1);
+			return CivItem.newStack(Material.DIRT);
 		} else if (uselessDrop >= 2 && uselessDrop <= 3) {
-			return ItemManager.createItemStack(CivData.GRAVEL, 1);
+			return CivItem.newStack(Material.GRAVEL);
 		} else {
 			return getStoneDrop();
 		}
@@ -225,20 +225,20 @@ public class LumberMillAsyncTask extends CivAsyncTask {
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 4) {
 			if (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) < 4) {
-				return ItemManager.createItemStack(CivData.LOG, 1, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()));
+				return CivItem.newStack(Material.LOG, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()), true);
 			} else {
-				return ItemManager.createItemStack(CivData.LOG2, 1, (short) (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) - 4));
+				return CivItem.newStack(Material.LOG_2, (short) (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) - 4), true);
 			}
 		} else if (uselessDrop == 5) {
 			if (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) < 4) {
-				return ItemManager.createItemStack(CivData.LEAF, 1, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()));
+				return CivItem.newStack(Material.LEAVES, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()), true);
 			} else {
-				return ItemManager.createItemStack(CivData.LEAF2, 1, (short) (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) - 4));
+				return CivItem.newStack(Material.LEAVES_2, (short) (getBiomeData(mill.getCenterLocation().getBlock().getBiome()) - 4), true);
 			}
 		} else if (uselessDrop == 6) {
-			return ItemManager.createItemStack(CivData.SAPLING, 1, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()));
+			return CivItem.newStack(Material.SAPLING, (short)getBiomeData(mill.getCenterLocation().getBlock().getBiome()), true);
 		} else {
-			return ItemManager.createItemStack(CivData.AIR, 1);
+			return CivItem.airStack();
 		}
 	}
 	

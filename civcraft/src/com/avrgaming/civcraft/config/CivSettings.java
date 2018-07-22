@@ -210,7 +210,6 @@ public class CivSettings {
 	
 	public static boolean hasHolographicDisplays = false;
 	public static boolean hasNametagEdit = false;
-	public static boolean hasTitleAPI = false;
 	public static boolean hasVanishNoPacket = false;
 	public static boolean hasWorldBorder = false;
 	
@@ -321,12 +320,6 @@ public class CivSettings {
 			hasNametagEdit = true;
 		} else {
 			CivLog.warning("We could not detect the plugin NametagEdit. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
-		
-		if (CivSettings.plugin.hasPlugin("TitleAPI")) {
-			hasTitleAPI = true;
-		} else {
-			CivLog.warning("We could not detect the plugin TitleAPI. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
 		}
 		
 		if (CivSettings.plugin.hasPlugin("VanishNoPacket")) {
@@ -843,45 +836,35 @@ public class CivSettings {
 		if (!cfg.contains(path)) {
 			throw new InvalidConfiguration("Could not get configuration integer "+path);
 		}
-		
-		int data = cfg.getInt(path);
-		return data;
-	}
-
-	public static String getString(FileConfiguration cfg, String path) throws InvalidConfiguration {
-		String data = cfg.getString(path);
-		if (data == null) {
-			throw new InvalidConfiguration("Could not get configuration string "+path);
-		}
-		return data;
+		return cfg.getInt(path);
 	}
 	
 	public static double getDouble(FileConfiguration cfg, String path) throws InvalidConfiguration {
 		if (!cfg.contains(path)) {
 			throw new InvalidConfiguration("Could not get configuration double "+path);
 		}
-		
-		double data = cfg.getDouble(path);
-		return data;
+		return cfg.getDouble(path);
 	}
-
+	
+	public static String getString(FileConfiguration cfg, String path) throws InvalidConfiguration {
+		if (!cfg.contains(path)) {
+			throw new InvalidConfiguration("Could not get configuration string "+path);
+		}
+		return cfg.getString(path);
+	}
+	
+	public static boolean getBoolean(FileConfiguration cfg, String path) throws InvalidConfiguration {
+		if (!cfg.contains(path)) {
+			throw new InvalidConfiguration("Could not get configuration boolean "+path);
+		}
+		return cfg.getBoolean(path);
+	}
+	
 	public static int getMaxNameLength() {
 		// TODO make this configurable?
 		return 32;
 	}
-
-	public static String getNameCheckRegex() throws InvalidConfiguration {
-		return getStringBase("regex.name_check_regex");
-	}
-
-	public static String getNameFilterRegex() throws InvalidConfiguration {
-		return getStringBase("regex.name_filter_regex");
-	}
-
-	public static String getNameRemoveRegex() throws InvalidConfiguration {
-		return getStringBase("regex.name_remove_regex");
-	}
-
+	
 	public static ConfigTownUpgrade getUpgradeByName(String name) {
 		for (ConfigTownUpgrade upgrade : townUpgrades.values()) {
 			if (upgrade.name.equalsIgnoreCase(name)) {
@@ -890,7 +873,7 @@ public class CivSettings {
 		}
 		return null;
 	}
-
+	
 	public static ConfigHappinessState getHappinessState(int amount) {
 		ConfigHappinessState closestState = happinessStates.get(0);
 		

@@ -37,7 +37,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class TradeBoat extends TradeOutpost {
 
@@ -114,7 +114,7 @@ public class TradeBoat extends TradeOutpost {
 		/* Build the bedrock tower. */
 		for (int i = 0; i < 3; i++) {
 			Block b = centerLoc.getBlock().getRelative(0, i, 0);
-			ItemManager.setTypeId(b, CivData.BEDROCK); ItemManager.setData(b, 0);
+			CivItem.setTypeId(b, CivData.BEDROCK); CivItem.setData(b, 0);
 			
 			StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 			this.addStructureBlock(sb.getCoord(), false);
@@ -123,8 +123,8 @@ public class TradeBoat extends TradeOutpost {
 		
 		/* Place the sign. */
 		Block b = centerLoc.getBlock().getRelative(1, 2, 0);
-		ItemManager.setTypeId(b, CivData.WALL_SIGN); 
-		ItemManager.setData(b, CivData.DATA_SIGN_EAST);
+		CivItem.setTypeId(b, CivData.WALL_SIGN); 
+		CivItem.setData(b, CivData.DATA_SIGN_EAST);
 		Sign s = (Sign)b.getState();
 		s.setLine(0, good.getInfo().name);
 		s.update();

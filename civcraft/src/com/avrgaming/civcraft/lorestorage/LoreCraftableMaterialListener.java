@@ -13,10 +13,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 import com.avrgaming.civcraft.items.components.Tagged;
 import com.avrgaming.civcraft.loreenhancements.LoreEnhancement;
-import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -110,12 +109,12 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					event.getInventory().setResult(CivItem.airStack());
 					return;
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					event.getInventory().setResult(CivItem.airStack());
 					return;
 				}
 				
@@ -125,7 +124,7 @@ public class LoreCraftableMaterialListener implements Listener {
 					/* Result is not custom, but recipie is. Set to blank. */
 					if (!loreMat.isVanilla()) {
 						if (!LoreEnhancement.isTool(event.getRecipe().getResult())) {
-							event.getInventory().setResult(new ItemStack(Material.AIR));
+							event.getInventory().setResult(CivItem.airStack());
 							return;
 						}
 					}
@@ -145,7 +144,7 @@ public class LoreCraftableMaterialListener implements Listener {
 				loreMat.applyAttributes(attrs);
 				newStack.setAmount(loreMat.getCraftAmount());
 			} else {
-				newStack = ItemManager.createItemStack(loreMat.getTypeID(), loreMat.getCraftAmount());
+				newStack = CivItem.newStack(loreMat.getTypeID(), loreMat.getCraftAmount(), loreMat.getDamage());
 			}
 			event.getInventory().setResult(newStack);
 			
@@ -156,12 +155,12 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (loreMat == null) {
 				if(LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is custom, but we have found no custom recipie. Set to blank. */
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					event.getInventory().setResult(CivItem.airStack());
 					return;
 				}
 				
 				if (matrixContainsCustom(event.getInventory().getMatrix())) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					event.getInventory().setResult(CivItem.airStack());
 					return;
 				}
 				
@@ -170,13 +169,13 @@ public class LoreCraftableMaterialListener implements Listener {
 				if(!LoreCraftableMaterial.isCustom(event.getRecipe().getResult())) {
 					/* Result is not custom, but recipie is. Set to blank. */
 					if (!loreMat.isVanilla()) {
-						event.getInventory().setResult(new ItemStack(Material.AIR));
+						event.getInventory().setResult(CivItem.airStack());
 						return;
 					}
 				}
 			}
 			
-			String matName =loreMat.getId(); 
+			String matName =loreMat.getId();
 			if (matName.contains("_alt")) {
 				String id = matName.replaceAll("_alt(.*)", "");
 				loreMat = LoreCraftableMaterial.getCraftMaterialFromId(id);
@@ -189,9 +188,8 @@ public class LoreCraftableMaterialListener implements Listener {
 				loreMat.applyAttributes(attrs);
 				newStack.setAmount(loreMat.getCraftAmount());
 			} else {
-				newStack = ItemManager.createItemStack(loreMat.getTypeID(), loreMat.getCraftAmount());
+				newStack = CivItem.newStack(loreMat.getTypeID(), loreMat.getCraftAmount(), loreMat.getDamage());
 			}
-			
 			event.getInventory().setResult(newStack);
 		}
 		
@@ -201,7 +199,7 @@ public class LoreCraftableMaterialListener implements Listener {
 			if (craftMat.hasComponent("Tagged")) {
 				String tag = Tagged.matrixHasSameTag(event.getInventory().getMatrix());
 				if (tag == null) {
-					event.getInventory().setResult(ItemManager.createItemStack(CivData.AIR, 1));
+					event.getInventory().setResult(CivItem.airStack());
 					return;
 				}
 				
@@ -213,6 +211,6 @@ public class LoreCraftableMaterialListener implements Listener {
 				event.getInventory().setResult(stack);
 			}
 		}
-		
-	}	
+	}
+	
 }

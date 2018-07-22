@@ -75,7 +75,7 @@ import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.TownChunk;
 import com.avrgaming.civcraft.threading.TaskMaster;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
@@ -87,7 +87,7 @@ public class CustomItemManager implements Listener {
 	// https://www.spigotmc.org/threads/inventoryclickevent-error.240312/ 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onItemClick(InventoryClickEvent event) {
-		if (event.getSlotType() == SlotType.OUTSIDE) return;
+		if (event.getSlotType() == SlotType.OUTSIDE || event.getSlotType() == null) return;
 		if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) && (event.getCursor() == null || event.getCursor().getType() == Material.AIR)) return;
 		if (event.getCurrentItem().getType() != Material.ENDER_CHEST && event.getCursor().getType() != Material.ENDER_CHEST) return;
 		else
@@ -250,7 +250,7 @@ public class CustomItemManager implements Listener {
 	}
 	
 	private static String isCustomDrop(ItemStack stack) {
-		if (stack == null || ItemManager.getId(stack) != 166) { return null; }
+		if (stack == null || CivItem.getId(stack) != 166) { return null; }
 		if (LoreGuiItem.isGUIItem(stack)) { return null; }
 		return stack.getItemMeta().getDisplayName();
 	}
@@ -530,7 +530,7 @@ public class CustomItemManager implements Listener {
 		/* Remove any vanilla item IDs that can't be crafted from vanilla drops. */
 		LinkedList<ItemStack> removed = new LinkedList<ItemStack>();
 		for (ItemStack stack : event.getDrops()) {
-			Integer key = ItemManager.getId(stack);
+			Integer key = CivItem.getId(stack);
 			
 			if (CivSettings.removedRecipies.containsKey(key)) {
 				if (!LoreMaterial.isCustom(stack)) {
@@ -595,7 +595,7 @@ public class CustomItemManager implements Listener {
 	
 	/* Called when we click on an object, used for conversion to fix up reverse compat problems. */
 	public void convertLegacyItem(InventoryClickEvent event) {
-		boolean currentEmpty = (event.getCurrentItem() == null) || (ItemManager.getId(event.getCurrentItem()) == CivData.AIR);
+		boolean currentEmpty = (event.getCurrentItem() == null) || (CivItem.getId(event.getCurrentItem()) == CivData.AIR);
 
 		if (currentEmpty) {
 			return;
@@ -644,8 +644,8 @@ public class CustomItemManager implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST) 
 	public void OnInventoryClick(InventoryClickEvent event) {
-		boolean currentEmpty = (event.getCurrentItem() == null) || (ItemManager.getId(event.getCurrentItem()) == CivData.AIR);
-		boolean cursorEmpty = (event.getCursor() == null) || (ItemManager.getId(event.getCursor()) == CivData.AIR);
+		boolean currentEmpty = (event.getCurrentItem() == null) || (CivItem.getId(event.getCurrentItem()) == CivData.AIR);
+		boolean cursorEmpty = (event.getCursor() == null) || (CivItem.getId(event.getCursor()) == CivData.AIR);
 		
 		if (currentEmpty && cursorEmpty) {
 			return;
@@ -781,7 +781,7 @@ public class CustomItemManager implements Listener {
 		if (craftMat != null) { return false; }
 		if(LoreGuiItem.isGUIItem(stack)) { return false; }
 		
-		ConfigRemovedRecipes removed = CivSettings.removedRecipies.get(ItemManager.getId(stack));
+		ConfigRemovedRecipes removed = CivSettings.removedRecipies.get(CivItem.getId(stack));
 		if (removed == null && !stack.getType().equals(Material.ENCHANTED_BOOK)) { return false; }
 		return true;
 	}

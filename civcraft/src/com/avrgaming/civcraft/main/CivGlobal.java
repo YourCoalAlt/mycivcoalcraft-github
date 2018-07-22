@@ -110,7 +110,7 @@ import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarCamp;
 import com.avrgaming.civcraft.war.WarRegen;
@@ -806,29 +806,25 @@ public class CivGlobal {
 	
 	public static Player getPlayer(Resident resident) throws CivException {
 		Player player = Bukkit.getPlayer(resident.getUUID());
-		if (player == null)
-			throw new CivException("No player named "+resident.getName());
+		if (player == null) throw new CivException("No player named "+resident.getName());
 		return player;
 	}
 	
 	public static OfflinePlayer getOfflinePlayer(Player p) throws CivException {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(p.getUniqueId());
-		if (player == null)
-			throw new CivException("No offline player named "+p.getName());
+		if (player == null)	throw new CivException("No offline player named "+p.getName());
 		return player;
 	}
 	
 	public static OfflinePlayer getOfflinePlayer(Resident resident) throws CivException {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(resident.getUUID());
-		if (player == null)
-			throw new CivException("No offline player named "+resident.getName());
+		if (player == null) throw new CivException("No offline player named "+resident.getName());
 		return player;
 	}
 	
 	public static Player getPlayerE(ResidentExperience re) throws CivException {
 		Player player = Bukkit.getPlayer(re.getUUID());
-		if (player == null)
-			throw new CivException("No player (experience) named "+re.getName());
+		if (player == null) throw new CivException("No player (experience) named "+re.getName());
 		return player;
 	}
 	
@@ -1444,7 +1440,7 @@ public class CivGlobal {
 			return null;
 		}
 		
-		if (ItemManager.getId(item) == CivData.AIR) {
+		if (CivItem.getId(item) == CivData.AIR) {
 			return null;
 		}
 		
@@ -1520,7 +1516,7 @@ public class CivGlobal {
 		
 		try {
 			if (!frame.isEmpty()) {
-				droppedItems.put(ItemManager.getId(frame.getItem()), true);
+				droppedItems.put(CivItem.getId(frame.getItem()), true);
 			}
 		} catch (CivException e1) {
 			e1.printStackTrace();
@@ -1546,9 +1542,9 @@ public class CivGlobal {
 					boolean eFrameEmpty = (eFrame.getItem() == null || eFrame.getItem().getType().equals(Material.AIR));
 				
 					if (!eFrameEmpty) {
-						Boolean droppedAlready = droppedItems.get(ItemManager.getId(eFrame.getItem()));
+						Boolean droppedAlready = droppedItems.get(CivItem.getId(eFrame.getItem()));
 						if (droppedAlready == null || droppedAlready == false) {
-							droppedItems.put(ItemManager.getId(eFrame.getItem()), true);
+							droppedItems.put(CivItem.getId(eFrame.getItem()), true);
 							eFrame.getLocation().getWorld().dropItemNaturally(eFrame.getLocation(), eFrame.getItem());
 						}
 					}

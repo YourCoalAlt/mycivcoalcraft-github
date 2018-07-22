@@ -24,13 +24,13 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
 public class Backpack {
 	
-	private static ItemStack back_head = ItemManager.spawnPlayerHead("MHF_ArrowRight");
+	public static ItemStack back_head = CivItem.spawnPlayerHead("MHF_ArrowRight");
 	
 	public static Inventory tutorialInventory = null;
 	public static Inventory craftingHelpInventory = null;
@@ -144,22 +144,24 @@ public class Backpack {
 					out += CivColor.Green+"XP Orbs: "+CivColor.LightGreen+((int) (d.exp_min*mod2) / 2)+"-"+((int) (d.exp_max*mod2) / 2)+";";
 					out += CivColor.Green+"Fishing XP: "+CivColor.LightGreen+Double.valueOf(df.format((d.res_exp*mod2)+0.0));
 					
+					ItemStack stack;
 					if (d.custom_id != null) {
 						LoreCraftableMaterial cmat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 						out += ";Custom Material";
 						if (cmat.isCraftable()) {
 							//out += ";"+CivColor.LightGreen+"Click For Recipe";
-							ItemStack stack = getInfoBookForItem(cmat.getConfigId(), out);
+							stack = getInfoBookForItem(cmat.getConfigId(), out);
 							stack = LoreGuiItem.setAction(stack, "ShowRecipeNull");
 							fishingRateInv.addItem(LoreGuiItem.asGuiItem(stack));
 						} else {
 							out += ";"+CivColor.Rose+"Not Craftable";
-							ItemStack fishing = LoreGuiItem.build(CivColor.White+cmat.getName(), cmat.getTypeID(), cmat.getDamage(), out.split(";"));
-							fishingRateInv.addItem(fishing);
+							stack = CivItem.newStack(cmat.getTypeID(), 1, cmat.getDamage());
+							fishingRateInv.addItem(LoreGuiItem.buildWithStack(CivColor.White+cmat.getName(), stack, out.split(";")));
 						}
 					} else {
 						out += ";"+CivColor.Gray+"Vanilla Item";
-						ItemStack fishing = LoreGuiItem.build(CivColor.White+CivData.getDisplayName(d.type_id, d.type_data), d.type_id, d.type_data, out.split(";"));
+						stack = CivItem.newStack(d.type_id, 1, d.type_data);
+						ItemStack fishing = LoreGuiItem.buildWithStack(CivColor.White+CivData.getStackName(stack), stack, out.split(";"));
 						fishingRateInv.addItem(fishing);
 					}
 				}
@@ -200,7 +202,7 @@ public class Backpack {
 		if (tutorialInventory == null) {
 			tutorialInventory = Bukkit.getServer().createInventory(player, 9*3, "CivCraft Tutorial");
 			
-			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"What is CivCraft?", ItemManager.getId(Material.WORKBENCH), 0, 
+			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"What is CivCraft?", CivItem.getId(Material.WORKBENCH), 0, 
 				CivColor.RESET+"CivCraft is a game about building civilizations set in a large,",
 				CivColor.RESET+"persistent world filled with players.",
 				CivColor.RESET+"Players start out as nomads, gathering",
@@ -209,7 +211,7 @@ public class Backpack {
 				CivColor.RESET+CivColor.LightGreen+"Research technology! Build structures! Conquer the world!"
 				));
 		
-			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Explore", ItemManager.getId(Material.COMPASS), 0, 
+			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Explore", CivItem.getId(Material.COMPASS), 0, 
 					CivColor.RESET+"Venture outward from spawn into the wild",
 					CivColor.RESET+"and find a spot to settle. You may encounter",
 					CivColor.RESET+"trade resources, and other player towns which",
@@ -217,7 +219,7 @@ public class Backpack {
 					CivColor.RESET+"Different biomes generate different resources."
 					));
 			
-			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Resources and Materials", ItemManager.getId(Material.DIAMOND_ORE), 0, 
+			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Resources and Materials", CivItem.getId(Material.DIAMOND_ORE), 0, 
 					CivColor.RESET+"CivCraft contains many new custom items.",
 					CivColor.RESET+"These items are crafted using a crafting bench",
 					CivColor.RESET+"and combining many more normal Minecraft items",
@@ -226,7 +228,7 @@ public class Backpack {
 					CivColor.RESET+"structures. Coins can be traded for materials at the "+CivColor.Yellow+"Market"
 					));
 			
-			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Towns", ItemManager.getId(Material.FENCE), 0, 
+			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Towns", CivItem.getId(Material.FENCE), 0, 
 					CivColor.RESET+"Towns can be created by players to protect",
 					CivColor.RESET+"areas from outsiders. Inside a town the owners are",
 					CivColor.RESET+"free to build creatively without interference from griefers",
@@ -236,7 +238,7 @@ public class Backpack {
 					CivColor.RESET+"inside of a civilization."
 					));
 			
-			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Civilizations", ItemManager.getId(Material.GOLD_HELMET), 0, 
+			tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Civilizations", CivItem.getId(Material.GOLD_HELMET), 0, 
 					CivColor.RESET+"Civilizations are collections of towns",
 					CivColor.RESET+"All towns inside of the civilization share technology",
 					CivColor.RESET+"which is researched by the civ. Many items and structures",
@@ -247,7 +249,7 @@ public class Backpack {
 					));
 			
 			if (CivGlobal.isCasualMode()) {
-				tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Casual War!", ItemManager.getId(Material.FIREWORK), 0, 
+				tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Casual War!", CivItem.getId(Material.FIREWORK), 0, 
 						CivColor.RESET+"War allows civilizations to settle their differences.",
 						CivColor.RESET+"In casual mode, Civs have to the option to request war from",
 						CivColor.RESET+"each other. The winner of a war is awarded a trophy which can be",
@@ -255,7 +257,7 @@ public class Backpack {
 						CivColor.RESET+"After a civilization is defeated in war, war must be requested again."
 						));
 			} else {
-				tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"War!", ItemManager.getId(Material.IRON_SWORD), 0, 
+				tutorialInventory.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"War!", CivItem.getId(Material.IRON_SWORD), 0, 
 						CivColor.RESET+"War allows civilizations to settle their differences.",
 						CivColor.RESET+"Normally, all structures inside a civilization are protected",
 						CivColor.RESET+"from damage. However civs have to the option to declare war on",
@@ -265,14 +267,14 @@ public class Backpack {
 						));
 			}
 			
-			tutorialInventory.setItem(8, LoreGuiItem.build(CivColor.LightBlueBold+"More Info?", ItemManager.getId(Material.BOOK_AND_QUILL), 0, 
+			tutorialInventory.setItem(8, LoreGuiItem.build(CivColor.LightBlueBold+"More Info?", CivItem.getId(Material.BOOK_AND_QUILL), 0, 
 					CivColor.RESET+"There is much more information you will require for your",
 					CivColor.RESET+"journey into CivCraft. Please visit the wiki at ",
 					CivColor.RESET+CivColor.LightGreenBold+"http://civcraft.net/wiki",
 					CivColor.RESET+"For more detailed information about CivCraft and it's features."
 					));
 			
-			tutorialInventory.setItem(9, LoreGuiItem.build(CivColor.LightBlueBold+"QUEST: Build a Camp", ItemManager.getId(Material.BOOK_AND_QUILL), 0, 
+			tutorialInventory.setItem(9, LoreGuiItem.build(CivColor.LightBlueBold+"QUEST: Build a Camp", CivItem.getId(Material.BOOK_AND_QUILL), 0, 
 					CivColor.RESET+"First things first, in order to start your journey",
 					CivColor.RESET+"you must first build a camp. Camps allow you to store",
 					CivColor.RESET+"your materials safely, and allow you to obtain leadership",
@@ -281,7 +283,7 @@ public class Backpack {
 			
 			//tutorialInventory.setItem(18,getInfoBookForItem("civ_found_camp"));
 			
-			tutorialInventory.setItem(10, LoreGuiItem.build(CivColor.LightBlueBold+"QUEST: Found a Civ", ItemManager.getId(Material.BOOK_AND_QUILL), 0, 
+			tutorialInventory.setItem(10, LoreGuiItem.build(CivColor.LightBlueBold+"QUEST: Found a Civ", CivItem.getId(Material.BOOK_AND_QUILL), 0, 
 					CivColor.RESET+"Next, you'll want to start a civilization.",
 					CivColor.RESET+"To do this, you must first obtain leadership tokens",
 					CivColor.RESET+"by feeding bread to your camp's longhouse.",
@@ -291,7 +293,7 @@ public class Backpack {
 			
 			//tutorialInventory.setItem(19,getInfoBookForItem("civ_found_civ"));
 			
-			tutorialInventory.setItem(11, LoreGuiItem.build(CivColor.LightBlueBold+"Need to know a recipe?", ItemManager.getId(Material.WORKBENCH), 0, 
+			tutorialInventory.setItem(11, LoreGuiItem.build(CivColor.LightBlueBold+"Need to know a recipe?", CivItem.getId(Material.WORKBENCH), 0, 
 					CivColor.RESET+"Type /res book to obtain the tutorial book",
 					CivColor.RESET+"and then click on 'Crafting Recipies'",
 					CivColor.RESET+"Every new item in CivCraft is listed here",
@@ -350,7 +352,7 @@ public class Backpack {
 					continue;
 				}
 				
-				ItemStack infoRec = LoreGuiItem.build(cat.name, ItemManager.getId(Material.WRITTEN_BOOK), 0, 
+				ItemStack infoRec = LoreGuiItem.build(cat.name, CivItem.getId(Material.WRITTEN_BOOK), 0, 
 						CivColor.LightBlue+cat.materials.size()+" Items", CivColor.Gold+"<Click To Open>");
 						infoRec = LoreGuiItem.setAction(infoRec, "OpenInventory");
 						infoRec = LoreGuiItem.setActionData(infoRec, "invType", "showGuiInv");
@@ -369,7 +371,7 @@ public class Backpack {
 				}
 				
 				// Add Information Item
-				ItemStack info = LoreGuiItem.build("Information", ItemManager.getId(Material.SHIELD), 0,
+				ItemStack info = LoreGuiItem.build("Information", CivItem.getId(Material.SHIELD), 0,
 						CivColor.White+"This GUI displays all of the material",
 						CivColor.White+"categories that a person can view",
 						CivColor.White+"for crafting. Clicking a category",
@@ -411,7 +413,7 @@ public class Backpack {
 			String town = "None"; if (res.hasTown()) town = res.getTown().getName();
 			String civ = "None"; if (res.hasCiv()) civ = res.getCiv().getName();
 			
-			ItemStack playerInfo = LoreGuiItem.buildWithStack(CivColor.WhiteBold+player.getName(), ItemManager.spawnPlayerHead(player, CivColor.WhiteBold+player.getName()),
+			ItemStack playerInfo = LoreGuiItem.buildWithStack(CivColor.WhiteBold+player.getName(), CivItem.spawnPlayerHead(player, CivColor.WhiteBold+player.getName()),
 					CivColor.LightGreen+"Coins: "+CivColor.Yellow+res.getTreasury().getBalance(),
 					CivColor.LightGreen+"Town, Civ: "+CivColor.Yellow+town+", "+civ,
 					CivColor.LightGreen+"Quest Level: "+CivColor.Yellow+re.getEXPLevel(EXPSlots.QUEST)+" ("+re.getEXPCount(EXPSlots.QUEST)+"/"+re.getEXPToNextLevel(EXPSlots.QUEST)+" XP)",
@@ -425,32 +427,32 @@ public class Backpack {
 			playerInfo = LoreGuiItem.setActionData(playerInfo, "invType", "showExperienceHelp");
 			backpackInventory.setItem(0, playerInfo);
 		} else {
-			ItemStack playerInfo = LoreGuiItem.build("Player Info", ItemManager.getId(Material.SKULL_ITEM), 3,
+			ItemStack playerInfo = LoreGuiItem.build("Player Info", CivItem.getId(Material.SKULL_ITEM), 3,
 					CivColor.RoseItalic+"Error, Resident Invalid?");
 			backpackInventory.setItem(0, playerInfo);
 		}
 		
-		ItemStack resMail = LoreGuiItem.build("Resident Mail", ItemManager.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
+		ItemStack resMail = LoreGuiItem.build("Resident Mail", CivItem.getId(Material.STORAGE_MINECART), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
 		resMail = LoreGuiItem.setAction(resMail, "OpenInventory");
 		resMail = LoreGuiItem.setActionData(resMail, "invType", "openResMail");
 		backpackInventory.setItem(2, resMail);
 		
-		ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", ItemManager.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
+		ItemStack craftRec = LoreGuiItem.build("Crafting Recipes", CivItem.getId(Material.WORKBENCH), 0, CivColor.Gold+"<Click To View>");
 		craftRec = LoreGuiItem.setAction(craftRec, "OpenInventory");
 		craftRec = LoreGuiItem.setActionData(craftRec, "invType", "showCraftingHelp");
 		backpackInventory.setItem(4, craftRec);
 		
-		ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", ItemManager.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
+		ItemStack gameInfo = LoreGuiItem.build("CivCraft Overview", CivItem.getId(Material.WRITTEN_BOOK), 0, CivColor.Gold+"<Click To View>");
 		gameInfo = LoreGuiItem.setAction(gameInfo, "OpenInventory");
 		gameInfo = LoreGuiItem.setActionData(gameInfo, "invType", "showTutorialInventory");
 		backpackInventory.setItem(8, gameInfo);
 		
-		ItemStack civMenu = LoreGuiItem.build("Civ Menu", ItemManager.getId(Material.COMMAND), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
+		ItemStack civMenu = LoreGuiItem.build("Civ Menu", CivItem.getId(Material.COMMAND), 0, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
 //		civMenu = LoreGuiItem.setAction(civMenu, "OpenInventory");
 //		civMenu = LoreGuiItem.setActionData(civMenu, "invType", "showCivMenu");
 		backpackInventory.setItem(9, civMenu);
 		
-		ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", ItemManager.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
+		ItemStack civDip = LoreGuiItem.build("Diplomatic Relations", CivItem.getId(Material.NAME_TAG), 0, CivColor.Gold+"<Click to View>");
 		civDip = LoreGuiItem.setAction(civDip, "DiplomaticMenu");
 		backpackInventory.setItem(14, civDip);
 		
@@ -458,20 +460,20 @@ public class Backpack {
 //		perkMenu = LoreGuiItem.setAction(perkMenu, "ShowPerkPage");
 //		guiInventory.setItem(15, perkMenu);
 		
-		ItemStack townMenu = LoreGuiItem.build("Town Menu", ItemManager.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
+		ItemStack townMenu = LoreGuiItem.build("Town Menu", CivItem.getId(Material.IRON_DOOR), 0, CivColor.Gold+"<Click to View>");
 		townMenu = LoreGuiItem.setAction(townMenu, "OpenInventory");
 		townMenu = LoreGuiItem.setActionData(townMenu, "invType", "showTownMenu");
 		backpackInventory.setItem(18, townMenu);
 		
-		ItemStack buildMenu = LoreGuiItem.build("Building Menu", ItemManager.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
+		ItemStack buildMenu = LoreGuiItem.build("Building Menu", CivItem.getId(Material.SLIME_BLOCK), 0, CivColor.Gold+"<Click to View>");
 		buildMenu = LoreGuiItem.setAction(buildMenu, "_BuildingInventory");
 		backpackInventory.setItem(19, buildMenu);
 		
-		ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", ItemManager.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
+		ItemStack newsInfo = LoreGuiItem.build("CivCraft Daily News", CivItem.getId(Material.PAPER), 0, CivColor.Gold+"<Click To View>");
 		newsInfo = LoreGuiItem.setAction(newsInfo, "NewspaperInventory");
 		backpackInventory.setItem(25, newsInfo);
 		
-		ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", ItemManager.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
+		ItemStack turorialMenu = LoreGuiItem.build("In-Game Wiki", CivItem.getId(Material.RED_ROSE), 1, CivColor.Red+"<Click to View>", CivColor.Gray+" « Coming Soon » ");
 		turorialMenu = LoreGuiItem.setAction(turorialMenu, "OpenInventory");
 		turorialMenu = LoreGuiItem.setActionData(turorialMenu, "tutorialInv", "wiki_mainmenu");
 		backpackInventory.setItem(26, turorialMenu);

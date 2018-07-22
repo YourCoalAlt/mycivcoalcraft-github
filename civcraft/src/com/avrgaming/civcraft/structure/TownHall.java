@@ -72,7 +72,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarStats;
@@ -217,8 +217,8 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		}
 		
 		Block itemFrameBlock = absCoord.getBlock();
-		if (ItemManager.getId(itemFrameBlock) != CivData.AIR) {
-			ItemManager.setTypeId(itemFrameBlock, CivData.AIR);
+		if (CivItem.getId(itemFrameBlock) != CivData.AIR) {
+			CivItem.setTypeId(itemFrameBlock, CivData.AIR);
 		}
 		
 		ItemFrameStorage itemStore;
@@ -307,13 +307,13 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		
 		/* Build the bedrock tower. */
 		Block b = centerLoc.getBlock();
-		ItemManager.setTypeId(b, CivData.FENCE); ItemManager.setData(b, 0);
+		CivItem.setTypeId(b, CivData.FENCE); CivItem.setData(b, 0);
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
 		
 		/* Build the control block. */
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
-		ItemManager.setTypeId(b, CivData.OBSIDIAN);
+		CivItem.setTypeId(b, CivData.OBSIDIAN);
 		sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
 		
@@ -332,7 +332,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 		//Should always have a resident and a town at this point.
 		Resident attacker = CivGlobal.getResident(player);
 		
-		ItemManager.setTypeId(hit.getCoord().getLocation().getBlock(), CivData.AIR);
+		CivItem.setTypeId(hit.getCoord().getLocation().getBlock(), CivData.AIR);
 		world.playSound(hit.getCoord().getLocation(), Sound.BLOCK_ANVIL_BREAK, 0.5F, 0.5F);
 		world.playSound(hit.getCoord().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 0.75F);
 		world.playSound(hit.getCoord().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 0.75F);
@@ -428,7 +428,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	
 	public void regenControlBlocks() {
 		for (BlockCoord coord : this.controlPoints.keySet()) { 
-			ItemManager.setTypeId(coord.getBlock(), CivData.OBSIDIAN);
+			CivItem.setTypeId(coord.getBlock(), CivData.OBSIDIAN);
 			ControlPoint cp = this.controlPoints.get(coord);
 			cp.setHitpoints(cp.getMaxHitpoints());
 		}
@@ -706,7 +706,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.Green+"Growth Amount: "+CivColor.LightGreen+t.getGrowth().total,
 				CivColor.Green+"   Growth Rate: "+CivColor.LightGreen+(t.getGrowthRate().total*100)+"%"));
 		
-		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem(8, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
@@ -724,7 +724,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.Green+"Hammer Amount: "+CivColor.LightGreen+t.getHammers().total,
 				CivColor.Green+"   Hammer Rate: "+CivColor.LightGreen+(t.getHammerRate().total*100)+"%"));
 		
-		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem(8, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
@@ -742,7 +742,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.Green+"Beaker Amount: "+CivColor.LightGreen+t.getBeakers().total,
 				CivColor.Green+"   Beaker Rate: "+CivColor.LightGreen+(t.getBeakerRate().total*100)+"%"));
 		
-		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem(8, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
@@ -760,7 +760,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 				CivColor.Green+"Culture Amount: "+CivColor.LightGreen+t.getCulture().total+"/hr",
 				CivColor.Green+"   Culture Rate: "+CivColor.LightGreen+(t.getCultureRate().total*100)+"%"));
 		
-		inv.setItem(8, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem(8, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
@@ -770,14 +770,14 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 			inv.addItem(LoreGuiItem.build(CivColor.GreenBold+b.getDisplayName(), CivData.IRON_NUGGET, 0, 
 					CivColor.colorize(CivColor.RESET+b.getDescription())));
 		}
-		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem((9*6)-1, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
 	public void openSupportDepositGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*6, t.getName()+"'s Building Support");
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Support Deposit menu. You can add",
 				CivColor.RESET+"dirt or gravel into this GUI, and the blocks will",
 				CivColor.RESET+"be virtually saved. When you begin to build a",
@@ -790,7 +790,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 					CivColor.Gray+"« Click to Add »"));
 		}
 		
-		inv.setItem((9*6)-1, LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Info Menu"));
+		inv.setItem((9*6)-1, LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Info Menu"));
 		p.openInventory(inv);
 	}
 	
@@ -814,7 +814,7 @@ public class TownHall extends Structure implements RespawnLocationHolder {
 	
 	public void openTownQuestGUI(Player p, Town t) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, t.getName()+"'s Quest Viewer");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+" ",
 				CivColor.RESET+" ",
 				CivColor.RESET+" ",

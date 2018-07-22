@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.avrgaming.civcraft.backpack.Backpack;
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigIngredient;
 import com.avrgaming.civcraft.config.ConfigMaterialCategory;
@@ -16,21 +17,20 @@ import com.avrgaming.civcraft.lorestorage.LoreGuiItemListener;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import gpl.AttributeUtil;
 
 public class ShowRecipe implements GuiAction {
 
 	public static final int START_OFFSET = LoreGuiItem.INV_ROW_COUNT + 3;
-	private static ItemStack back_head = ItemManager.spawnPlayerHead("MHF_ArrowRight");
 	
 	public ItemStack getIngredItem(ConfigIngredient ingred, Inventory recInv) {
 		String name;
 		String message;
 		ItemStack entryStack;
 		if (ingred.custom_id == null) {
-			name = ItemManager.getMaterialData(ingred.type_id, ingred.data).toString();
+			name = CivItem.getMaterialData(ingred.type_id, ingred.data).toString();
 			message = CivColor.Gray+"Vanilla Item";
 			entryStack = LoreGuiItem.build(name, ingred.type_id, ingred.data, message);
 		} else {
@@ -56,7 +56,7 @@ public class ShowRecipe implements GuiAction {
 		int offset = 2;
 		ItemStack stack;
 	
-		stack = LoreGuiItem.build("Craft Table Border", ItemManager.getId(Material.WORKBENCH), 0, "");
+		stack = LoreGuiItem.build("Craft Table Border", CivItem.getId(Material.WORKBENCH), 0, "");
 		
 		for (int y = 0; y <= 4; y++) {
 			for (int x = 0; x <= 4; x++) {
@@ -77,9 +77,9 @@ public class ShowRecipe implements GuiAction {
 			if (tech != null) {
 			
 				if (resident.hasTown() && resident.getCiv().hasTechnology(craftMat.getConfigMaterial().required_tech)) {
-					stack = LoreGuiItem.build("Required Technology", ItemManager.getId(Material.EMERALD_BLOCK), 0, tech.name);
+					stack = LoreGuiItem.build("Required Technology", CivItem.getId(Material.EMERALD_BLOCK), 0, tech.name);
 				} else {
-					stack = LoreGuiItem.build("Required Technology", ItemManager.getId(Material.REDSTONE_BLOCK), 0, tech.name);
+					stack = LoreGuiItem.build("Required Technology", CivItem.getId(Material.REDSTONE_BLOCK), 0, tech.name);
 				}
 			}
 			
@@ -89,9 +89,9 @@ public class ShowRecipe implements GuiAction {
 		}
 		
 		if (craftMat.isShaped()) {
-			stack = LoreGuiItem.build("Shaped", ItemManager.getId(Material.HOPPER), 0, "");
+			stack = LoreGuiItem.build("Shaped", CivItem.getId(Material.HOPPER), 0, "");
 		} else {
-			stack = LoreGuiItem.build("Unshaped", ItemManager.getId(Material.COAL), 0, "");
+			stack = LoreGuiItem.build("Unshaped", CivItem.getId(Material.COAL), 0, "");
 		}
 		offset += LoreGuiItem.INV_ROW_COUNT;
 		recInv.setItem(offset+0, stack);
@@ -152,7 +152,7 @@ public class ShowRecipe implements GuiAction {
 		String backInventory = LoreGuiItem.getActionData(stack, "backInventory");
 		if (backInventory != null) {
 			Inventory inv = LoreGuiItemListener.guiInventories.get(backInventory);
-			ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back");
+			ItemStack backButton = LoreGuiItem.buildWithStack("Back", Backpack.back_head, "Back");
 			backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 			backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 			backButton = LoreGuiItem.setActionData(backButton, "invName", inv.getName());
@@ -160,7 +160,7 @@ public class ShowRecipe implements GuiAction {
 		} else {
 			ConfigMaterialCategory cat = ConfigMaterialCategory.getCategory(craftMat.getConfigMaterial().categoryCivColorStripped); 
 			if (cat != null) {					
-				ItemStack backButton = LoreGuiItem.buildWithStack("Back", back_head, "Back to Category "+cat.name);
+				ItemStack backButton = LoreGuiItem.buildWithStack("Back", Backpack.back_head, "Back to Category "+cat.name);
 				backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 				backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 				backButton = LoreGuiItem.setActionData(backButton, "invName", cat.name+" Recipes");

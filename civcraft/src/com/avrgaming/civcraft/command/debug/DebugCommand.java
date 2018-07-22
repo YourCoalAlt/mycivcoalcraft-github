@@ -105,7 +105,7 @@ import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.FireworkEffectPlayer;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.global.perks.Perk;
 
@@ -248,7 +248,7 @@ public class DebugCommand extends CommandBase {
 		Player playerNamed = CivGlobal.getPlayer(playerName);
 		String message = getNamedString(2, "Enter a title.");
 		
-		ItemStack skull = ItemManager.spawnPlayerHead(playerNamed, message);
+		ItemStack skull = CivItem.spawnPlayerHead(playerNamed, message);
 		player.getInventory().addItem(skull);
 		CivMessage.sendSuccess(player, "Added skull item.");
 	}
@@ -416,7 +416,7 @@ public class DebugCommand extends CommandBase {
 										if (info == null) {
 											try {
 											Block block = next.getBlock();
-											ItemManager.setTypeIdAndData(block, CivData.AIR, 0, false);
+											CivItem.setTypeIdAndData(block, CivData.AIR, 0, false);
 											continue;
 											} catch (Exception e) {
 												e.printStackTrace();
@@ -460,7 +460,7 @@ public class DebugCommand extends CommandBase {
 									} else if (sb.specialType.equals(SimpleBlock.Type.LITERAL)) {
 										try {
 										Block block = next.getBlock();
-										ItemManager.setTypeIdAndData(block, sb.getType(), sb.getData(), false);
+										CivItem.setTypeIdAndData(block, sb.getType(), sb.getData(), false);
 										
 										Sign s = (Sign)block.getState();
 										for (int j = 0; j < 4; j++) {
@@ -474,7 +474,7 @@ public class DebugCommand extends CommandBase {
 									} else {
 										try {
 										Block block = next.getBlock();
-										ItemManager.setTypeIdAndData(block, sb.getType(), sb.getData(), false);
+										CivItem.setTypeIdAndData(block, sb.getType(), sb.getData(), false);
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
@@ -561,7 +561,7 @@ public class DebugCommand extends CommandBase {
 		long value = Long.decode(hex);
 		
 		ItemStack inHand = player.getInventory().getItemInMainHand();
-		if (inHand == null || ItemManager.getId(inHand) == CivData.AIR) {
+		if (inHand == null || CivItem.getId(inHand) == CivData.AIR) {
 			throw new CivException("please have an item in your hand.");
 		}
 		
@@ -584,7 +584,7 @@ public class DebugCommand extends CommandBase {
 		
 		for (SimpleBlock sb : simpleBlocks.values()) {
 			Block block = player.getWorld().getBlockAt(sb.x, sb.y, sb.z);
-			ItemManager.setTypeId(block, sb.getType());
+			CivItem.setTypeId(block, sb.getType());
 		}
 		
 		CivMessage.sendSuccess(player, "Built a circle at your feet.");
@@ -876,8 +876,8 @@ public class DebugCommand extends CommandBase {
 			
 			BlockCoord bcoord = sign.getCoord();
 			Block block = bcoord.getBlock();
-			ItemManager.setTypeId(block, CivData.WALL_SIGN);
-			ItemManager.setData(block, sign.getDirection());
+			CivItem.setTypeId(block, CivData.WALL_SIGN);
+			CivItem.setData(block, sign.getDirection());
 			
 			Sign s = (Sign)block.getState();
 			String[] lines = sign.getText().split("\n");
@@ -1121,7 +1121,7 @@ public class DebugCommand extends CommandBase {
 	
 	public void dupe_cmd() throws CivException {
 		Player player = getPlayer();
-		if (player.getInventory().getItemInMainHand() == null || ItemManager.getId(player.getInventory().getItemInMainHand()) == 0) {
+		if (player.getInventory().getItemInMainHand() == null || CivItem.getId(player.getInventory().getItemInMainHand()) == 0) {
 			throw new CivException("No item in hand.");
 		}
 		

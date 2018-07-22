@@ -25,7 +25,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class FishingListener implements Listener {
 	
@@ -101,8 +101,8 @@ public class FishingListener implements Listener {
 			int exp = 0;
 			double res_exp = 0;
 			if (dropped.size() == 0) {
-				ItemStack fish = ItemManager.createItemStack(ItemManager.getId(Material.RAW_FISH), 1);
-				ItemManager.givePlayerItem(p, fish, p.getLocation(), null, fish.getAmount(), false);
+				ItemStack fish = CivItem.newStack(Material.RAW_FISH);
+				CivItem.givePlayerItem(p, fish, p.getLocation(), null, fish.getAmount(), false);
 				CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+"Raw Fish");
 				
 				try {
@@ -121,12 +121,12 @@ public class FishingListener implements Listener {
 					if (d.custom_id != null) {
 						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 						ItemStack cust = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()));
-						ItemManager.givePlayerItem(p, cust, p.getLocation(), null, cust.getAmount(), false);
+						CivItem.givePlayerItem(p, cust, p.getLocation(), null, cust.getAmount(), false);
 						CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+craftMat.getName());
 					} else {
-						ItemStack reg = ItemManager.createItemStack(d.type_id, 1, (short)d.type_data);
-						ItemManager.givePlayerItem(p, reg, p.getLocation(), null, reg.getAmount(), false);
-						CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+CivData.getDisplayName(d.type_id, d.type_data));
+						ItemStack stack = CivItem.newStack(d.type_id, d.type_data, true);
+						CivItem.givePlayerItem(p, stack, p.getLocation(), null, stack.getAmount(), false);
+						CivMessage.send(p, CivColor.YellowItalic+"You've fished up a "+CivColor.LightPurple+CivData.getStackName(stack));
 					}
 				}
 			}

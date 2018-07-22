@@ -32,7 +32,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.ResidentExperience.EXPSlots;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 import net.minecraft.server.v1_12_R1.Entity;
 
@@ -221,7 +221,7 @@ public class MobListener implements Listener {
 								ItemStack item = LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), dropAmt);
 								event.getDrops().add(item);
 							} else {
-								ItemStack item = ItemManager.createItemStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
+								ItemStack item = CivItem.newStack(Integer.valueOf(mat), dropAmt, Short.valueOf(drops[1]));
 							//	CivMessage.global(item.getType().toString());
 								event.getDrops().add(item);
 							}

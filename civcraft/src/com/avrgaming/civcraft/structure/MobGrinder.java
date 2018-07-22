@@ -28,7 +28,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class MobGrinder extends Structure {
@@ -90,10 +90,10 @@ public class MobGrinder extends Structure {
 			Integer id = Integer.valueOf(cmdBlock.keyvalues.get("id"));
 			if (id <= this.mob_grinder_spawners.size() && this.mob_grinder_spawners.get(id) != null) {
 				this.addStructureBlock(absCoord, false);
-				ItemManager.setTypeId(absCoord.getBlock(), CivData.MOB_SPAWNER);
+				CivItem.setTypeId(absCoord.getBlock(), CivData.MOB_SPAWNER);
 				this.setSpawner(absCoord.getBlock(), this.mob_grinder_spawners.get(id));
 			} else {
-				ItemManager.setTypeId(absCoord.getBlock(), CivData.BEDROCK);
+				CivItem.setTypeId(absCoord.getBlock(), CivData.BEDROCK);
 				CivMessage.sendTown(getTown(), "Mob Spawner "+(id+1)+" does not have a mob set!");
 			}
 			break;

@@ -69,7 +69,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.threading.tasks.PlayerModerationKick;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class AdminCommand extends CommandBase {
 	
@@ -176,7 +176,7 @@ public class AdminCommand extends CommandBase {
 		}
 		
 		if (good != null) {
-			ItemStack stack = ItemManager.createItemStack(good.material, 1, (byte)good.material_data);
+			ItemStack stack = CivItem.newStack(good.material, good.material_data, true);
 			ItemMeta meta = stack.getItemMeta();
 			meta.setDisplayName(good.name);
 			
@@ -322,7 +322,7 @@ public class AdminCommand extends CommandBase {
 			/* Build the Category Inventory. */
 			for (ConfigMaterialCategory cat : ConfigMaterialCategory.getCategories()) {
 				ItemStack infoRec = LoreGuiItem.build(cat.name, 
-						ItemManager.getId(Material.WRITTEN_BOOK), 
+						CivItem.getId(Material.WRITTEN_BOOK), 
 						0, 
 						CivColor.LightBlue+cat.materials.size()+" Items",
 						CivColor.Gold+"<Click To Open>");

@@ -26,7 +26,7 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Buff;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class Cottage extends Structure {
@@ -140,7 +140,7 @@ public class Cottage extends Structure {
 		Map<Integer, Integer> stored = new HashMap<Integer, Integer>();
 		for (ConfigGranaryFood f : CivSettings.granaryFood.values()) {
 			if (required.containsKey(f.food)) { // Only add required items
-				Material m = ItemManager.getMaterial(f.food);
+				Material m = CivItem.getMaterial(f.food);
 				String key = granary.getStorageKey(granary, m.toString().toLowerCase());
 				ArrayList<SessionEntry> entry = CivGlobal.getSessionDB().lookup(key);
 				if (entry != null && !entry.isEmpty()) {
@@ -179,7 +179,7 @@ public class Cottage extends Structure {
 		// NOTE It will only change database values if there is a success, otherwise the multiInv will de-count the cottage.
 		if (canGrow) {
 			for (Integer r : required.keySet()) {
-				Material mat = ItemManager.getMaterial(r);
+				Material mat = CivItem.getMaterial(r);
 				ItemStack is = new ItemStack(mat, required.get(r));
 				temp_inv.addItem(is);
 				for (Integer s : stored.keySet()) {

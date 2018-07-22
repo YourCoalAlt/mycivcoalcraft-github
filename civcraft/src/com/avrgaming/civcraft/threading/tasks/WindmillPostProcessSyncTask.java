@@ -25,7 +25,7 @@ import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivData;
 import com.avrgaming.civcraft.structure.Windmill;
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class WindmillPostProcessSyncTask implements Runnable {
@@ -62,8 +62,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 						e.printStackTrace();
 					}
 					breadCount--;
-					ItemManager.setTypeId(coord.getBlock(), CivData.WHEAT_CROP);
-					ItemManager.setData(coord.getBlock(), 0, true);
+					CivItem.setTypeId(coord.getBlock(), CivData.WHEAT_CROP);
+					CivItem.setData(coord.getBlock(), 0, true);
 					continue;
 				}
 			case 1:
@@ -74,8 +74,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 						e.printStackTrace();
 					}
 					carrotCount--;
-					ItemManager.setTypeId(coord.getBlock(), CivData.CARROT_CROP);
-					ItemManager.setData(coord.getBlock(), 0, true);
+					CivItem.setTypeId(coord.getBlock(), CivData.CARROT_CROP);
+					CivItem.setData(coord.getBlock(), 0, true);
 					continue;
 				}
 				break;
@@ -87,8 +87,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 						e.printStackTrace();
 					}
 					potatoCount--;
-					ItemManager.setTypeId(coord.getBlock(), CivData.POTATO_CROP);
-					ItemManager.setData(coord.getBlock(), 0, true);
+					CivItem.setTypeId(coord.getBlock(), CivData.POTATO_CROP);
+					CivItem.setData(coord.getBlock(), 0, true);
 					continue;
 				}
 			case 3: 
@@ -99,8 +99,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 						e.printStackTrace();
 					}
 					beetrootCount--;
-					ItemManager.setTypeId(coord.getBlock(), CivData.BEETROOT_CROP);
-					ItemManager.setData(coord.getBlock(), 0, true);
+					CivItem.setTypeId(coord.getBlock(), CivData.BEETROOT_CROP);
+					CivItem.setData(coord.getBlock(), 0, true);
 					continue;
 				}
 			}	
@@ -113,8 +113,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 					e.printStackTrace();
 				}
 				breadCount--;
-				ItemManager.setTypeId(coord.getBlock(), CivData.WHEAT_CROP);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.WHEAT_CROP);
+				CivItem.setData(coord.getBlock(), 0, true);
 				continue;
 			}
 			if (carrotCount > 0) {
@@ -124,8 +124,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 					e.printStackTrace();
 				}
 				carrotCount--;
-				ItemManager.setTypeId(coord.getBlock(), CivData.CARROT_CROP);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.CARROT_CROP);
+				CivItem.setData(coord.getBlock(), 0, true);
 				continue;
 			}
 			if (potatoCount > 0) {
@@ -135,8 +135,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 					e.printStackTrace();
 				}
 				potatoCount--;
-				ItemManager.setTypeId(coord.getBlock(), CivData.POTATO_CROP);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.POTATO_CROP);
+				CivItem.setData(coord.getBlock(), 0, true);
 				continue;
 			}
 			if (beetrootCount > 0) {
@@ -146,8 +146,8 @@ public class WindmillPostProcessSyncTask implements Runnable {
 					e.printStackTrace();
 				}
 				beetrootCount--;
-				ItemManager.setTypeId(coord.getBlock(), CivData.BEETROOT_CROP);
-				ItemManager.setData(coord.getBlock(), 0, true);
+				CivItem.setTypeId(coord.getBlock(), CivData.BEETROOT_CROP);
+				CivItem.setData(coord.getBlock(), 0, true);
 				continue;
 			}
 		}

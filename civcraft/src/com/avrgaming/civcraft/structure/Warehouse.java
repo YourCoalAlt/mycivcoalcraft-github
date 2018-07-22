@@ -24,7 +24,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Warehouse extends Structure {
@@ -158,7 +158,7 @@ public class Warehouse extends Structure {
 	public void openToggleGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Warehouse Guide");
 		
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Warehouse Guide Menu. You can use",
 				CivColor.RESET+"it to toggle whether structures will send their",
 				CivColor.RESET+"goods here or, by default, to their own chests.",

@@ -48,7 +48,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Library extends Structure {
@@ -346,7 +346,7 @@ public class Library extends Structure {
 	public void openEnchantGUI(Player p, Town t) {
 		Resident res = CivGlobal.getResident(p);
 		Inventory inv = Bukkit.createInventory(null, 9*3, t.getName()+"'s Library Enchanter");
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Library enchanting menu. You can,",
 				CivColor.RESET+"click on an enchantment to add to the item of",
 				CivColor.RESET+"your choice, and then a new GUI will display to",

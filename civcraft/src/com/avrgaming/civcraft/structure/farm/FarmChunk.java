@@ -42,7 +42,7 @@ import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BlockSnapshot;
 import com.avrgaming.civcraft.util.ChunkCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class FarmChunk {
 	private Town town;
@@ -98,8 +98,8 @@ public class FarmChunk {
 		Block beneath = block.getRelative(0, -1, 0);
 				
 		if (beneath != null) {
-			if (ItemManager.getId(beneath) == CivData.FARMLAND) {
-				if (ItemManager.getData(beneath) != 0x0)
+			if (CivItem.getId(beneath) == CivData.FARMLAND) {
+				if (CivItem.getData(beneath) != 0x0)
 					return true;
 			}
 		}
@@ -386,7 +386,7 @@ public class FarmChunk {
 					for (int y = 10; y < 192; y++) {					
 						
 						BlockCoord below = new BlockCoord(snapshot.getWorldName(), (snapshot.getX() << 4) + x, y-1, (snapshot.getZ() << 4) + z);
-						if (ItemManager.getId(below.getBlock().getType()) != CivData.FARMLAND) continue;
+						if (CivItem.getId(below.getBlock().getType()) != CivData.FARMLAND) continue;
 						
 						//Block nextBlock = this.struct.getCorner().getBlock().getChunk().getBlock(x, y, z);
 						//BlockCoord bcoord = new BlockCoord(nextBlock);

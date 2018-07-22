@@ -31,7 +31,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.object.Civilization;
 import com.avrgaming.civcraft.object.Resident;
@@ -39,7 +38,6 @@ import com.avrgaming.civcraft.object.ResidentExperience;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.util.CivColor;
-import com.connorlinfoot.titleapi.TitleAPI;
 
 public class CivMessage {
 	
@@ -64,24 +62,22 @@ public class CivMessage {
 			if (hashcode != null && hashcode == line.hashCode()) return;
 			lastMessageHashCode.put(res.getName(), line.hashCode());
 		}
-		send(sender, line);
+		sendError(sender, line);
 	}
 	
 	public static void send(Object sender, String line) {
 		if ((sender instanceof Player)) {
-			((Player) sender).sendMessage(line);
+			((Player)sender).sendMessage(line);
 		} else if (sender instanceof CommandSender) {
-			((CommandSender) sender).sendMessage(line);
+			((CommandSender)sender).sendMessage(line);
 		} else if (sender instanceof ResidentExperience) {
 			try {
 				CivGlobal.getPlayerE(((ResidentExperience) sender)).sendMessage(line);
-			} catch (CivException e) { // No player online
-			}
+			} catch (CivException e) {} // No player online
 		} else if (sender instanceof Resident) {
 			try {
 				CivGlobal.getPlayer(((Resident) sender)).sendMessage(line);
-			} catch (CivException e) { // No player online
-			}
+			} catch (CivException e) {} // No player online
 		} else if (sender == null) return;
 		else {
 			CivLog.warning("Could not send message to '"+sender+"' with message: '"+line+"'");
@@ -148,53 +144,35 @@ public class CivMessage {
 		CivLog.info(line);	
 	}
 	
-	public static void sendTitle(Object sender, int fadeIn, int show, int fadeOut, String title, String subTitle) {
-		if (CivSettings.hasTitleAPI) {
-			Player player = null;
-			Resident resident = null;
-			if ((sender instanceof Player)) {
-				player = (Player) sender;
-				resident = CivGlobal.getResident(player);
-			} else if (sender instanceof Resident) {
-				try {
-					resident = (Resident)sender;
-					player = CivGlobal.getPlayer(resident);
-				} catch (CivException e) { // Not online
-				}
-			}
-			if (player != null && resident != null) {
-				TitleAPI.sendTitle(player, fadeIn, show, fadeOut, title, subTitle);
-			} else {
-				CivLog.debug("Could not send PCN Title to player "+player+" {title: "+title+"}, {subtitle: "+subTitle+"}");
-			}
+	public static void sendTitle(Object sender, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+		Player player = null;
+		if ((sender instanceof Player)) {
+			player = (Player) sender;
+		} else if (sender instanceof Resident) {
+			try {
+				player = CivGlobal.getPlayer((Resident) sender);
+			} catch (CivException e) {} // Not online
+		}
+		if (player != null) {
+			player.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
 		} else {
-			send(sender, title);
-			if (subTitle != "") {
-				send(sender, subTitle);
-			}
+			CivLog.debug("Could not send PCN Title to player "+player+" {title: "+title+"}, {subtitle: "+subTitle+"}");
 		}
 	}
 	
 	public static void sendTitle(Object sender, String title, String subTitle) {
-		sendTitle(sender, 10, 60, 10, title, subTitle);
+		sendTitle(sender, title, subTitle, 10, 60, 10);
 	}
 	
-	public static void globalTitle(int fadeIn, int show, int fadeOut, String title, String subTitle) {
+	public static void globalTitle(String title, String subTitle, int fadeIn, int show, int fadeOut) {
 		CivLog.info("[GlobalTitle] "+title+" - "+subTitle);
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (CivSettings.hasTitleAPI) {
-				CivMessage.sendTitle(player, fadeIn, show, fadeOut, title, subTitle);
-			} else {
-				send(player, buildTitle(title));
-				if (subTitle != "") {
-					send(player, subTitle);
-				}
-			}
+			CivMessage.sendTitle(player, title, subTitle, fadeIn, show, fadeOut);
 		}
 	}
 	
 	public static void globalTitle(String title, String subTitle) {
-		globalTitle(10, 60, 10, title, subTitle);
+		globalTitle(title, subTitle, 10, 60, 10);
 	}
 	
 	public static String buildTitle(String title) {

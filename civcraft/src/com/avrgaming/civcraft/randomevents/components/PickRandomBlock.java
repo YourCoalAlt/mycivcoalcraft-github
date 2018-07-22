@@ -13,7 +13,7 @@ import com.avrgaming.civcraft.randomevents.RandomEventComponent;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class PickRandomBlock extends RandomEventComponent {
 	
@@ -59,7 +59,7 @@ public class PickRandomBlock extends RandomEventComponent {
 								Block block = coord.getChunk().getBlock(x, y, z);
 								//CivLog.debug("checking a block:"+block.toString());
 								
-								if (ItemManager.getId(block) == CivData.STONE) {
+								if (CivItem.getId(block) == CivData.STONE) {
 									bcoord = new BlockCoord(block);
 									break;
 								}

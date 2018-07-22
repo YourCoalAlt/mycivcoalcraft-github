@@ -27,7 +27,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class Bank extends Structure {
@@ -205,7 +205,7 @@ public class Bank extends Structure {
 		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Bank Menu. You can use it to sell",
 				CivColor.RESET+"different items for a set amount of price as",
 				CivColor.RESET+"listed in the GUI. If upgraded, you can earn",
@@ -213,7 +213,7 @@ public class Bank extends Structure {
 				CivColor.RESET+""
 				));
 		
-		inv.setItem(2, LoreGuiItem.build(CivColor.LightBlueBold+"Sell Values", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(2, LoreGuiItem.build(CivColor.LightBlueBold+"Sell Values", CivItem.getId(Material.PAPER), 0, 
 				CivColor.LightGreen+"Bank Rate: "+CivColor.Yellow+getExchangeRateString(),
 				CivColor.LightGreen+"Non-Resident Fee: "+CivColor.Yellow+getNonResidentFeeString(),
 				CivColor.Yellow+(this.IRON_INGOT_RATE*getExchangeRate())+CivColor.LightGreen+" Coins per Iron Ingot",

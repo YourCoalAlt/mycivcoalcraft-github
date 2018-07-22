@@ -59,16 +59,16 @@ import com.avrgaming.civcraft.threading.tasks.NotificationTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.TimeTools;
 
 import gpl.AttributeUtil;
 
 public class Blacksmith extends Structure {
 	
-	private static final long COOLDOWN = 1;
+	private final long COOLDOWN = 2;
 	//private static final double BASE_CHANCE = 0.8;
-	public static double SMELT_TIME_SECONDS_PER_ITEM = 4.0; // set to 4 for debug purposes, reset to 8 when done.
+	public static double SMELT_TIME_SECONDS_PER_ITEM = 2.0; // set to 5 for debug purposes, reset to 10 when done.
 	public static double YIELD_RATE = 1.25;
 	
 	private Date lastUse = new Date();
@@ -115,18 +115,15 @@ public class Blacksmith extends Structure {
 	@Override
 	public void processSignAction(Player player, StructureSign sign, PlayerInteractEvent event) throws CivException {
 		int special_id = Integer.valueOf(sign.getAction());
-		
 		Date now = new Date();
-		
 		long diff = now.getTime() - lastUse.getTime();
 		diff /= 1000;
 		
-		if (diff < Blacksmith.COOLDOWN) {
-			throw new CivException("Blacksmith is on cooldown. Please wait another "+(Blacksmith.COOLDOWN - diff)+" seconds.");
+		if (diff < COOLDOWN) {
+			throw new CivException("Blacksmith is on cooldown. Please wait another "+(COOLDOWN - diff)+" seconds.");
 		}
 		
 		lastUse = now;
-		
 		switch (special_id) {
 		case 0:
 			this.deposit_forge(player);
@@ -273,9 +270,9 @@ public class Blacksmith extends Structure {
 	}
 	
 	public void saveItem(ItemStack item, String key) {
-		String value = ""+ItemManager.getId(item)+":";
-		for (Enchantment e : item.getEnchantments().keySet()) {
-			value += ItemManager.getId(e)+","+item.getEnchantmentLevel(e);
+		String value = ""+CivItem.getId(item)+":";
+		for (Enchantment ench : item.getEnchantments().keySet()) {
+			value += CivItem.getEnchantName(ench)+","+item.getEnchantmentLevel(ench);
 			value += ":";
 		}
 		
@@ -287,37 +284,75 @@ public class Blacksmith extends Structure {
 		sessionAdd(key, value);
 	}
 	
-	public static boolean canSmelt(int blockid) {
-		switch (blockid) {
-		case CivData.GOLD_ORE:
-		case CivData.IRON_ORE:
+	public boolean canSmelt(ItemStack is) {
+		int data = is.getDurability();
+		switch (is.getType()) {
+		case IRON_ORE:
+		case GOLD_ORE:
+		case LAPIS_ORE:
+		case REDSTONE_ORE:
+		case DIAMOND_ORE:
+		case EMERALD_ORE:
+		case SAND:
+		case CACTUS:
 			return true;
+		case INK_SACK:
+			if (data == 2 || data == 4) return true;
+		default:
+			break;
 		}
 		return false;
 	}
-		
-	// Converts the ore id's into the ingot id's
-	public static int convertType(int blockid) {
-		switch(blockid) {
-		case CivData.IRON_ORE:
-			return CivData.IRON_INGOT;
-		case CivData.GOLD_ORE:
-			return CivData.GOLD_INGOT;
-		case CivData.LAPIS_ORE:
-			return CivData.DYE;
-		case CivData.REDSTONE_ORE:
-			return CivData.REDSTONE_DUST;
-		case CivData.SAND:
-			return CivData.GLASS;
-		case CivData.CACTUS:
-			return CivData.DYE;
+	
+	public ItemStack convertTypeToStack(ItemStack is) {
+		switch (is.getType()) {
+		case IRON_ORE:
+			return CivItem.newStack(Material.IRON_INGOT);
+		case GOLD_ORE:
+			return CivItem.newStack(Material.GOLD_INGOT);
+		case LAPIS_ORE:
+			return CivItem.newStack(Material.INK_SACK, 4, true);
+		case REDSTONE_ORE:
+			return CivItem.newStack(Material.REDSTONE);
+		case DIAMOND_ORE:
+			return CivItem.newStack(Material.DIAMOND);
+		case EMERALD_ORE:
+			return CivItem.newStack(Material.EMERALD);
+		case SAND:
+			return CivItem.newStack(Material.GLASS);
+		case CACTUS:
+			return CivItem.newStack(Material.INK_SACK, 2, true);
+		default:
+			break;
 		}
-//		return -1;
-		return CivData.STONE;
+		return null;
 	}
 	
-	/*
-	 * Deposit forge will take the current item in the player's hand
+	public static String convertTypeToString(ItemStack is) {
+		switch (is.getType()) {
+		case IRON_ORE:
+			return "IRON_INGOT:0";
+		case GOLD_ORE:
+			return "GOLD_INGOT:0";
+		case LAPIS_ORE:
+			return "INK_SACK:4";
+		case REDSTONE_ORE:
+			return "REDSTONE:0";
+		case DIAMOND_ORE:
+			return "DIAMOND:0";
+		case EMERALD_ORE:
+			return "EMERALD:0";
+		case SAND:
+			return "GLASS:0";
+		case CACTUS:
+			return "INK_SACK:2";
+		default:
+			break;
+		}
+		return null;
+	}
+	
+	/* Deposit forge will take the current item in the player's hand
 	 * and deposit its information into the sessionDB. It will store the 
 	 * item's id, data, and damage.
 	 */
@@ -454,7 +489,7 @@ public class Blacksmith extends Structure {
 			 * There is a one in third chance that our item will break.
 			 * Sucks, but this is what happened here.
 			 */
-			player.getInventory().setItemInMainHand(ItemManager.createItemStack(CivData.AIR, 1));
+			player.getInventory().setItemInMainHand(CivItem.airStack());
 			CivMessage.sendError(player, "Enhancement failed. Item has broken.");
 			return;
 		} else {
@@ -488,7 +523,7 @@ public class Blacksmith extends Structure {
 		for (int i = 0; i <= 8; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		for (int i = 36; i <= 44; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.setItem(0, LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Blacksmith Smelter Menu. You can",
 				CivColor.RESET+"use it to smelt different types of ores to",
 				CivColor.RESET+"get a better yield than furnances. The more",
@@ -515,7 +550,7 @@ public class Blacksmith extends Structure {
 		// Only members can use the smelter
 		Resident res = CivGlobal.getResident(player.getName());
 		if (!res.hasTown() || this.getTown() != res.getTown()) {
-			checks.add("Can't use this smelter, you are not a town member!");
+			checks.add("You must be a resident to view this smelter!");
 			return checks;
 		}
 		
@@ -530,41 +565,40 @@ public class Blacksmith extends Structure {
 		
 		for (SessionEntry se : entries) {
 			String split[] = se.value.split(":");
-			int itemId = Integer.valueOf(split[0]);
-			int amount = Integer.valueOf(split[1]);
-			int data = Integer.valueOf(split[2]);
+			Material type = Material.valueOf(String.valueOf(split[0]));
+			int data = Integer.valueOf(split[1]);
+			int amount = Integer.valueOf(split[2]);
 			long now = System.currentTimeMillis();
 			int secondsBetween = CivGlobal.getSecondsBetween(se.time, now);
-			
+			ItemStack stack = CivItem.newStack(type, amount, data);
 			if (secondsBetween < (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amount)) {
 				DecimalFormat df1 = new DecimalFormat("0.#");
 				double timeLeft = ((double)(Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amount) - (double)secondsBetween) / (double)60;
-				checks.add(CivColor.Yellow+amount+" "+CivData.getDisplayName(itemId, data)+" will be finished in "+df1.format(timeLeft)+" minutes.");
+				checks.add(CivColor.Yellow+amount+" "+CivData.getStackName(stack)+" will be finished in "+df1.format(timeLeft)+" minutes.");
 				continue;
 			} else {
-				checks.add(CivColor.LightGreen+amount+" "+CivData.getDisplayName(itemId, data)+" is finished.");
+				checks.add(CivColor.LightGreen+amount+" "+CivData.getStackName(stack)+" is finished.");
 				continue;
 			}
 		}	
 		return checks;
 	}
 	
-	public void depositSmelt(Player player, Material mat, int amt, int data) {
-		int iid = ItemManager.getId(mat);
-		int amtYield = (int) (amt*Blacksmith.YIELD_RATE);
-		String value = convertType(iid)+":"+amtYield+":"+data;
+	public void depositSmelt(Player player, ItemStack is, int amount) {
+		int amountYield = (int) (amount*Blacksmith.YIELD_RATE);
+		ItemStack convertType = convertTypeToStack(is);
+		String value = convertTypeToString(is)+":"+amountYield; // TODO Fix value, 0 is now Material not int, amountYield is now 2 not 1, data is now 1 not 2!
 		String key = getKey(player, this, "smelt");
 		sessionAdd(key, value);
 		
 		// Schedule a message to notify the player when the smelting is finished.
 		BukkitObjects.scheduleAsyncDelayedTask(new NotificationTask(player.getName(), 
-				CivColor.LightGreen+" Your stack of "+amtYield+" "+CivData.getDisplayName(iid, data)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
-		
+				CivColor.LightGreen+" Your stack of "+amountYield+" "+CivData.getStackName(convertType)+" has finished smelting."), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amount)));
 		
 		
 		Resident res = CivGlobal.getResident(player);
 		int full = 0; int partial = 0;
-		for (int stackRefine = amtYield; stackRefine > 0; stackRefine -= 64) {
+		for (int stackRefine = amountYield; stackRefine > 0; stackRefine -= 64) {
 			if (stackRefine < 0) {
 				int fix = stackRefine + 64;
 				partial = fix;
@@ -574,18 +608,21 @@ public class Blacksmith extends Structure {
 		
 		Inventory inv = Bukkit.createInventory(null, 9*5);
 		for (int i = 0; i < full; i++) {
-			inv.addItem(new ItemStack(ItemManager.getMaterial(convertType(iid)), 64, (short) data));
+			convertType.setAmount(64);
+			inv.addItem(convertType);
 		}
 		if (partial > 0) {
-			inv.addItem(new ItemStack(ItemManager.getMaterial(convertType(iid)), partial, (short) data));
+			convertType.setAmount(partial);
+			inv.addItem(convertType);
 		}
 //		res.addMail(res, "blacksmith_forge", System.currentTimeMillis(), inv);
-		BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(res, "blacksmith_forge", System.currentTimeMillis(), inv), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amt)));
+		BukkitObjects.scheduleAsyncDelayedTask(new MailToResidentTask(res, "blacksmith_forge", System.currentTimeMillis(), inv), TimeTools.toTicks((long) (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amount)));
 		
 		// TODO Fix w/ new mail system
 //		res.addMailData("Blacksmith Smelter", inv);
 		
-		CivMessage.send(player,CivColor.LightGreen+ "Deposited "+amt+" "+CivData.getDisplayName(iid, data)+".");
+		CivMessage.send(player, CivColor.LightGreen+ "Deposited "+amount+" "+CivData.getStackName(is)+". We will notify you when your "+amountYield+" "+CivData.getStackName(convertType)
+								+" finishes smelting.");
 	}
 	
 	public void withdrawSmelts(Player p) {
@@ -609,21 +646,21 @@ public class Blacksmith extends Structure {
 		
 		for (SessionEntry se : entries) {
 			String split[] = se.value.split(":");
-			int itemId = Integer.valueOf(split[0]);
-			int amount = Integer.valueOf(split[1]);
-			int data = Integer.valueOf(split[2]);
+			Material type = Material.valueOf(String.valueOf(split[0]));
+			int data = Integer.valueOf(split[1]);
+			int amount = Integer.valueOf(split[2]);
 			long now = System.currentTimeMillis();
 			int secondsBetween = CivGlobal.getSecondsBetween(se.time, now);
 			
 			// First determine the time between two events.
 			if (secondsBetween > (Blacksmith.SMELT_TIME_SECONDS_PER_ITEM*amount)) {
-				ItemStack stack = new ItemStack(ItemManager.getMaterial(itemId), amount, (short)data);
+				ItemStack stack = CivItem.newStack(type, amount, data);
 				if (stack != null) leftovers = inv.addItem(stack);
 				
 				// If this stack was successfully withdrawn, delete it from the DB.
 				if (leftovers.size() == 0) {
 					CivGlobal.getSessionDB().delete(se.request_id, se.key);
-					CivMessage.send(p, CivColor.LightGreen+"Withdrew "+amount+" "+CivData.getDisplayName(itemId, data));
+					CivMessage.send(p, CivColor.LightGreen+"Withdrew "+amount+" "+CivData.getStackName(stack));
 					break;
 				} else {
 					// We do not have space in our inventory, inform the player.
@@ -632,16 +669,15 @@ public class Blacksmith extends Structure {
 					// If the leftover size is the same as the size we are trying to withdraw, do nothing.
 					int leftoverAmount = CivGlobal.getLeftoverSize(leftovers);
 					
-					if (leftoverAmount == amount) {
-						continue;
-					}
+					if (leftoverAmount == amount) continue;
 					
 					if (leftoverAmount <= 0) {
 						CivGlobal.getSessionDB().delete(se.request_id, se.key);
 					} else {							
 						// Some of the items were deposited into the players inventory but the sessionDB 
 						// still has the full amount stored, update the db to only contain the leftovers.
-						String newValue = itemId+":"+leftoverAmount+":"+data;			
+						stack.setAmount(leftoverAmount);
+						String newValue = convertTypeToString(stack)+":"+amount;			
 						CivGlobal.getSessionDB().update(se.request_id, se.key, newValue);
 					}
 				}

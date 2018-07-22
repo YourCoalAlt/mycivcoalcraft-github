@@ -30,7 +30,7 @@ import com.avrgaming.civcraft.structure.Farm;
 import com.avrgaming.civcraft.structure.farm.FarmChunk;
 import com.avrgaming.civcraft.structure.farm.GrowBlock;
 import com.avrgaming.civcraft.threading.sync.request.GrowRequest;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class SyncGrowTask implements Runnable {
 	
@@ -64,15 +64,15 @@ public class SyncGrowTask implements Runnable {
 							case CivData.CARROT_CROP:
 							case CivData.POTATO_CROP:
 							case CivData.BEETROOT_CROP:
-								if ((growBlock.data-1) != ItemManager.getData(growBlock.bcoord.getBlock())) continue; // Replanted?
+								if ((growBlock.data-1) != CivItem.getData(growBlock.bcoord.getBlock())) continue; // Replanted?
 								break;
 							}
 							
-							if (!growBlock.spawn && ItemManager.getId(growBlock.bcoord.getBlock()) != growBlock.typeId) continue;
+							if (!growBlock.spawn && CivItem.getId(growBlock.bcoord.getBlock()) != growBlock.typeId) continue;
 							else {
 								// Only allow block to change its type if its marked as spawnable.
-								if (growBlock.spawn) ItemManager.setTypeId(growBlock.bcoord.getBlock(), growBlock.typeId);
-								ItemManager.setData(growBlock.bcoord.getBlock(), growBlock.data);
+								if (growBlock.spawn) CivItem.setTypeId(growBlock.bcoord.getBlock(), growBlock.typeId);
+								CivItem.setData(growBlock.bcoord.getBlock(), growBlock.data);
 								request.result = true;
 							}
 						}

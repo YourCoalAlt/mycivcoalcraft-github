@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,7 +28,7 @@ import com.avrgaming.civcraft.structure.Trommel;
 import com.avrgaming.civcraft.structure.Warehouse;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.threading.sync.request.UpdateInventoryRequest.Action;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 
 public class QuarryAsyncTask extends CivAsyncTask {
@@ -77,7 +78,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigQuarryItem cqi = CivSettings.quarryItems.get(ItemManager.getId(stack));
+					ConfigQuarryItem cqi = CivSettings.quarryItems.get(CivItem.getId(stack));
 					if (cqi == null) continue;
 					else {
 						source_inv.addInventory(tmp);
@@ -158,12 +159,12 @@ public class QuarryAsyncTask extends CivAsyncTask {
 					ItemStack stack = iter.next();
 					if (stack == null) continue;
 					
-					ConfigQuarryItem cqi = CivSettings.quarryItems.get(ItemManager.getId(stack));
+					ConfigQuarryItem cqi = CivSettings.quarryItems.get(CivItem.getId(stack));
 					if (cqi == null) continue;
 					
-					if (ItemManager.getId(stack) == cqi.item && quarry.getLevel() >= cqi.level) {
+					if (CivItem.getId(stack) == cqi.item && quarry.getLevel() >= cqi.level) {
 						try {
-							short damage = ItemManager.getData(stack);
+							short damage = CivItem.getData(stack);
 							if (damage > cqi.max_dura) {
 								this.updateInventory(Action.REMOVE, source_inv, stack);
 							} else {
@@ -184,7 +185,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 								debug(quarry, "Updating inventory: "+ni);
 								if (dest_inv_other != null) {
 									if (trommel) {
-										ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getDisplayName(ItemManager.getId(ni), ItemManager.getData(ni)).toUpperCase());
+										ConfigTrommelItem cti = CivSettings.trommelItems.get(CivData.getStackName(ni).toUpperCase());
 										// Checks to make sure item is trommel level, AND town has upgraded level to consume so it does not waste space.
 										if (cti != null && quarry.getTown().saved_trommel_level >= cti.level) {
 											this.updateInventory(Action.ADD, dest_inv_other, ni);
@@ -214,9 +215,9 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 2) {
-			return ItemManager.createItemStack(CivData.DIRT, 1);
+			return CivItem.newStack(Material.DIRT);
 		} else if (uselessDrop >= 3 && uselessDrop <= 5) {
-			return ItemManager.createItemStack(CivData.GRAVEL, 1);
+			return CivItem.newStack(Material.GRAVEL);
 		} else {
 			return getStoneDrop();
 		}
@@ -226,17 +227,17 @@ public class QuarryAsyncTask extends CivAsyncTask {
 		Random rand = new Random();
 		int uselessDrop = rand.nextInt(10);
 		if (uselessDrop >= 0 && uselessDrop <= 2) {
-			return ItemManager.createItemStack(CivData.COBBLESTONE, 1);
+			return CivItem.newStack(Material.COBBLESTONE, 1);
 		} else if (uselessDrop == 3) {
-			return ItemManager.createItemStack(CivData.STONE, 1);
+			return CivItem.newStack(Material.STONE, 1);
 		} else if (uselessDrop == 4) {
-			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.GRANITE);
+			return CivItem.newStack(Material.STONE, 1, true);
 		} else if (uselessDrop == 5) {
-			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.DIORITE);
+			return CivItem.newStack(Material.STONE, 3, true);
 		} else if (uselessDrop == 6) {
-			return ItemManager.createItemStack(CivData.STONE, 1, (byte)CivData.ANDESITE);
+			return CivItem.newStack(Material.STONE, 5, true);
 		} else {
-			return ItemManager.createItemStack(CivData.AIR, 1);
+			return CivItem.airStack();
 		}
 	}
 	
@@ -367,7 +368,7 @@ public class QuarryAsyncTask extends CivAsyncTask {
 						LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterialFromId(d.custom_id);
 						dropped.add(LoreMaterial.spawn(LoreMaterial.materialMap.get(craftMat.getConfigId()), d.amount));
 					} else {
-						dropped.add(ItemManager.createItemStack(d.type_id, d.amount, (short)d.type_data));
+						dropped.add(CivItem.newStack(d.type_id, d.amount, d.type_data));
 					}
 				}
 			}

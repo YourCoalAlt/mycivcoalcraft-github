@@ -17,7 +17,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.threading.TaskMaster;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class _BuildingStructureBuildInventory implements GuiAction {
 	
@@ -30,16 +30,16 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 		guiInventory = Bukkit.getServer().createInventory(p,9*6, "Global Structure Info");
 		
 		for (int i = 0; i < 9*6; i++) {
-			ItemStack is = LoreGuiItem.build("", ItemManager.getId(Material.STAINED_GLASS_PANE), 8);
+			ItemStack is = LoreGuiItem.build("", CivItem.getId(Material.STAINED_GLASS_PANE), 8);
 			guiInventory.setItem(i, is);
 		}
 		
 		for (ConfigBuildableInfo b : CivSettings.structures.values()) {
 			if (!res.hasTown()) {
-				ItemStack is = LoreGuiItem.build(b.displayName, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town build a structure.");
+				ItemStack is = LoreGuiItem.build(b.displayName, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town build a structure.");
 				guiInventory.setItem(b.position, is);
 			} else if (!res.getTown().isMayor(res) && !res.getTown().isAssistant(res)) {
-				ItemStack is = LoreGuiItem.build(b.displayName, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be town mayor/assistant to build structures.");
+				ItemStack is = LoreGuiItem.build(b.displayName, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be town mayor/assistant to build structures.");
 				guiInventory.setItem(b.position, is);
 			} else {
 				String out = "";
@@ -86,7 +86,7 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 		}
 		
 		/* Add back buttons. */
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Build Menu");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Build Menu");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 		backButton = LoreGuiItem.setActionData(backButton, "invName", _BuildingInventory.guiInventory.getName());
@@ -145,7 +145,7 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 		Inventory guiInventory = Bukkit.getServer().createInventory(player,9*6, "Build a Structure");
 		
 		for (ConfigBuildableInfo info : CivSettings.structures.values()) {
-			int type = ItemManager.getId(Material.ANVIL);
+			int type = CivItem.getId(Material.ANVIL);
 			int data = info.itemData;
 			if (info.itemId != 0) {
 				type = info.itemId;
@@ -153,10 +153,10 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 			
 			ItemStack is;
 			if (!res.hasTown()) {
-				is = LoreGuiItem.build(info.displayName, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town to view structure info.");
+				is = LoreGuiItem.build(info.displayName, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must belong to a town to view structure info.");
 				guiInventory.addItem(is);
 			} else if (!res.getTown().isMayor(res) && !res.getTown().isAssistant(res)) {
-				is = LoreGuiItem.build(info.displayName, ItemManager.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be a town mayor or assistant build structures.");
+				is = LoreGuiItem.build(info.displayName, CivItem.getId(Material.BEDROCK), 0, CivColor.Rose+"Must be a town mayor or assistant build structures.");
 				guiInventory.setItem(info.position, is);
 			} else {
 				String out = "";
@@ -199,7 +199,7 @@ public class _BuildingStructureBuildInventory implements GuiAction {
 		}
 		
 		/* Add back buttons. */
-		ItemStack backButton = LoreGuiItem.build("Back", ItemManager.getId(Material.MAP), 0, "Back to Build Menu");
+		ItemStack backButton = LoreGuiItem.build("Back", CivItem.getId(Material.MAP), 0, "Back to Build Menu");
 		backButton = LoreGuiItem.setAction(backButton, "OpenInventory");
 		backButton = LoreGuiItem.setActionData(backButton, "invType", "showGuiInv");
 		backButton = LoreGuiItem.setActionData(backButton, "invName", _BuildingInventory.guiInventory.getName());

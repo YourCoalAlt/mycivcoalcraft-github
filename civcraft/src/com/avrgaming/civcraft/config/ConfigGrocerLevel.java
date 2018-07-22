@@ -28,8 +28,8 @@ import com.avrgaming.civcraft.main.CivLog;
 public class ConfigGrocerLevel {
 	public int level;
 	public String itemName;
-	public int itemId;
-	public int itemData;
+	public int type_id;
+	public int data;
 	public int amount;
 	public double price;
 	
@@ -40,8 +40,8 @@ public class ConfigGrocerLevel {
 			ConfigGrocerLevel grocer_level = new ConfigGrocerLevel();
 			grocer_level.level = (Integer)level.get("level");
 			grocer_level.itemName = (String)level.get("itemName");
-			grocer_level.itemId = (Integer)level.get("itemId");
-			grocer_level.itemData = (Integer)level.get("itemData");
+			grocer_level.type_id = (Integer)level.get("itemId");
+			grocer_level.data = (Integer)level.get("itemData");
 			grocer_level.amount = (Integer)level.get("amount");
 			grocer_level.price = (Double)level.get("price");
 			

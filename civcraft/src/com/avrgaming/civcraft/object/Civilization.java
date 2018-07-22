@@ -65,7 +65,7 @@ import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
 import com.avrgaming.civcraft.util.DateUtil;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.war.WarCamp;
 
 public class Civilization extends SQLObject {
@@ -1909,7 +1909,7 @@ public class Civilization extends SQLObject {
 		if (resident != null) {
 			try {
 				Player p = CivGlobal.getPlayer(resident);
-				stack = ItemManager.spawnPlayerHead(p, message+" ("+resident.getName()+")");
+				stack = CivItem.spawnPlayerHead(p, message+" ("+resident.getName()+")");
 			} catch (CivException e) {
 				stack = new ItemStack(Material.DIRT);
 				e.printStackTrace();

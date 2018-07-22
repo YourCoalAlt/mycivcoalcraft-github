@@ -36,7 +36,7 @@ import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.threading.CivAsyncTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.MultiInventory;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
@@ -84,8 +84,8 @@ public class Lab extends Structure {
 			Integer id = Integer.valueOf(sb.keyvalues.get("id"));
 			int rid = id+1;
 			if (this.getLevel() >= rid) {
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
-				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.WALL_SIGN));
+				CivItem.setData(absCoord.getBlock(), sb.getData());
 				Sign sign = (Sign)absCoord.getBlock().getState();
 				sign.setLine(0, "");
 				sign.setLine(1, "Lab "+rid);
@@ -93,8 +93,8 @@ public class Lab extends Structure {
 				sign.setLine(3, "");
 				sign.update();
 			} else {
-				ItemManager.setTypeId(absCoord.getBlock(), ItemManager.getId(Material.WALL_SIGN));
-				ItemManager.setData(absCoord.getBlock(), sb.getData());
+				CivItem.setTypeId(absCoord.getBlock(), CivItem.getId(Material.WALL_SIGN));
+				CivItem.setData(absCoord.getBlock(), sb.getData());
 				Sign sign = (Sign)absCoord.getBlock().getState();
 				sign.setLine(0, "");
 				sign.setLine(1, "Lab "+rid);
@@ -237,7 +237,7 @@ public class Lab extends Structure {
 	
 	public void openToolGUI(Player p, Town town) {
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+"'s Lab Tasks");
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Information", CivItem.getId(Material.PAPER), 0, 
 				CivColor.RESET+"This is the Lab Quest Chest. You can use it",
 				CivColor.RESET+"to complete tasks to recieve beakers (items)",
 				CivColor.RESET+"for upgrading. You can get more tasks by having",
@@ -251,9 +251,9 @@ public class Lab extends Structure {
 				for (ArrayList<String> item : m.required.keySet()) {
 					for (String s : item) {
 						String[] split = s.split(";");
-						int imat = Integer.valueOf(split[0]);
+						int id = Integer.valueOf(split[0]);
 						int data = Integer.valueOf(split[1]);
-						loreRequired.add(CivColor.GrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+						loreRequired.add(CivColor.GrayBold+" » "+CivColor.Rose+m.required.get(item).intValue()+" "+CivData.getStackName(CivItem.newStack(id, 1, data)));
 					}
 				}
 				ItemStack item = new ItemStack(Material.BLACK_SHULKER_BOX, 1);
@@ -273,9 +273,9 @@ public class Lab extends Structure {
 					for (ArrayList<String> item : m.required.keySet()) {
 						for (String s : item) {
 							String[] split = s.split(";");
-							int imat = Integer.valueOf(split[0]);
+							int id = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.GrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.GrayBold+" » "+CivColor.LightGreen+m.required.get(item).intValue()+" "+CivData.getStackName(CivItem.newStack(id, 1, data)));
 						}
 					}
 					ItemStack item = new ItemStack(Material.LIME_SHULKER_BOX, 1);
@@ -292,9 +292,9 @@ public class Lab extends Structure {
 					for (ArrayList<String> item : m.required.keySet()) {
 						for (String s : item) {
 							String[] split = s.split(";");
-							int imat = Integer.valueOf(split[0]);
+							int id = Integer.valueOf(split[0]);
 							int data = Integer.valueOf(split[1]);
-							loreRequired.add(CivColor.GrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+							loreRequired.add(CivColor.GrayBold+" » "+CivColor.Yellow+m.required.get(item).intValue()+" "+CivData.getStackName(CivItem.newStack(id, 1, data)));
 						}
 					}
 					ItemStack item = new ItemStack(Material.RED_SHULKER_BOX, 1);
@@ -319,9 +319,9 @@ public class Lab extends Structure {
 		for (ArrayList<String> item : mtask.required.keySet()) {
 			for (String s : item) {
 				String[] split = s.split(";");
-				int imat = Integer.valueOf(split[0]);
+				int id = Integer.valueOf(split[0]);
 				int data = Integer.valueOf(split[1]);
-				lr.add(CivColor.GrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getDisplayName(imat, data));
+				lr.add(CivColor.GrayBold+" » "+CivColor.LightGreen+mtask.required.get(item).intValue()+" "+CivData.getStackName(CivItem.newStack(id, 1, data)));
 			}
 		}
 		
@@ -330,7 +330,7 @@ public class Lab extends Structure {
 		loreReq += CivColor.Green+"Rewards: "+CivColor.Yellow+mtask.reward+" Beakers";
 		
 		Inventory inv = Bukkit.createInventory(null, 9*3, town.getName()+" Lab Task "+task);
-		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", ItemManager.getId(Material.PAPER), 0, 
+		inv.addItem(LoreGuiItem.build(CivColor.LightBlueBold+"Requirements", CivItem.getId(Material.PAPER), 0, 
 				loreReq.split(";")
 				));
 		p.openInventory(inv);

@@ -12,7 +12,6 @@ import com.avrgaming.civcraft.main.CivMessage;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.structure.Barracks;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
 
 import gpl.AttributeUtil;
 
@@ -40,7 +39,7 @@ public class InteractiveRepairItem implements InteractiveResponse {
 		if (stack.getItemMeta().hasDisplayName()) {
 			name = stack.getItemMeta().getDisplayName();
 		} else {
-			name = CivData.getDisplayName(ItemManager.getId(stack), ItemManager.getData(stack));
+			name = CivData.getStackName(stack);
 		}
 		
 		CivMessage.sendHeading(player, "Repair!");

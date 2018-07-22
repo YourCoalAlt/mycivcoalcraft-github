@@ -46,7 +46,7 @@ import com.avrgaming.civcraft.object.StructureSign;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 
@@ -173,8 +173,8 @@ public class Capitol extends TownHall {
 				arrowTowers.put(towerID, arrowTower);
 			}
 		} else if (commandBlock.command.equals("/next")) {
-			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
-			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
+			CivItem.setTypeId(absCoord.getBlock(), commandBlock.getType());
+			CivItem.setData(absCoord.getBlock(), commandBlock.getData());
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Next\nLocation");
 			structSign.setDirection(commandBlock.getData());
@@ -183,8 +183,8 @@ public class Capitol extends TownHall {
 			this.addStructureSign(structSign);
 			CivGlobal.addStructureSign(structSign);
 		} else if (commandBlock.command.equals("/prev")) {
-			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
-			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
+			CivItem.setTypeId(absCoord.getBlock(), commandBlock.getType());
+			CivItem.setData(absCoord.getBlock(), commandBlock.getData());
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("\n"+ChatColor.BOLD+ChatColor.UNDERLINE+"Prevous\nLocation");
 			structSign.setDirection(commandBlock.getData());
@@ -193,8 +193,8 @@ public class Capitol extends TownHall {
 			this.addStructureSign(structSign);
 			CivGlobal.addStructureSign(structSign);
 		} else if (commandBlock.command.equals("/respawndata")) {
-			ItemManager.setTypeId(absCoord.getBlock(), commandBlock.getType());
-			ItemManager.setData(absCoord.getBlock(), commandBlock.getData());
+			CivItem.setTypeId(absCoord.getBlock(), commandBlock.getType());
+			CivItem.setData(absCoord.getBlock(), commandBlock.getData());
 			structSign = new StructureSign(absCoord, this);
 			structSign.setText("Capitol");
 			structSign.setDirection(commandBlock.getData());
@@ -213,13 +213,13 @@ public class Capitol extends TownHall {
 		/* Build the bedrock tower. */
 		Block b = centerLoc.getBlock();
 		
-		ItemManager.setTypeId(b, ItemManager.getId(Material.SANDSTONE)); ItemManager.setData(b, 0);
+		CivItem.setTypeId(b, CivItem.getId(Material.SANDSTONE)); CivItem.setData(b, 0);
 		StructureBlock sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
 		
 		/* Build the control block. */
 		b = centerLoc.getBlock().getRelative(0, 1, 0);
-		ItemManager.setTypeId(b, CivData.OBSIDIAN);
+		CivItem.setTypeId(b, CivData.OBSIDIAN);
 		sb = new StructureBlock(new BlockCoord(b), this);
 		this.addStructureBlock(sb.getCoord(), true);
 		

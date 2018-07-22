@@ -35,7 +35,7 @@ import com.avrgaming.civcraft.threading.tasks.FireWorkTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class WarListener implements Listener {
 	
@@ -132,7 +132,7 @@ public class WarListener implements Listener {
 		
 		if (allowed_placeables.contains(event.getBlock().getType()) && falling_blocks.contains(event.getBlock().getType())) {
 			if (event.getBlock().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR) return;
-			event.getBlock().getWorld().spawnFallingBlock(event.getBlock().getLocation(), event.getBlock().getType(), ItemManager.getData(event.getBlock()));
+			event.getBlock().getWorld().spawnFallingBlock(event.getBlock().getLocation(), event.getBlock().getType(), CivItem.getData(event.getBlock()));
 			event.getBlock().setType(Material.AIR);
 			return;
 		}

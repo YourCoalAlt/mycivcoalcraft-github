@@ -19,10 +19,11 @@
 package com.avrgaming.civcraft.main;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import com.avrgaming.civcraft.exception.InvalidBlockLocation;
 import com.avrgaming.civcraft.util.BlockSnapshot;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class CivData {
 	
@@ -426,272 +427,21 @@ public class CivData {
 	public static final short THICK_POTION_DATA = 32;
 	public static final short AKWARD_POTION_DATA = 16;
 	
-	public static String getDisplayName(int id, int data) {
-		if (id == AIR) return "Air";
-		if (id == STONE && data == DATA_0) return "Stone";
-		if (id == STONE && data == GRANITE) return "Granite";
-		if (id == STONE && data == POLISHED_GRANITE) return "Polished Granite";
-		if (id == STONE && data == DIORITE) return "Diorite";
-		if (id == STONE && data == POLISHED_DIORITE) return "Polished Diorite";
-		if (id == STONE && data == ANDESITE) return "Andesite";
-		if (id == STONE && data == POLISHED_ANDESITE) return "Polished Andesite";
-		if (id == GRASS) return "Grass Block";
-		if (id == DIRT && data == DATA_0) return "Dirt";
-		if (id == DIRT && data == COARSE_DIRT) return "Coarse Dirt";
-		if (id == DIRT && data == PODZOL) return "Podzol";
-		if (id == COBBLESTONE) return "Cobblestone";
-		if (id == PLANK && data == DATA_0) return "Oak Plank";
-		if (id == PLANK && data == DATA_1) return "Spruce Plank";
-		if (id == PLANK && data == DATA_2) return "Birch Plank";
-		if (id == PLANK && data == DATA_3) return "Jungle Plank";
-		if (id == PLANK && data == DATA_4) return "Acacia Plank";
-		if (id == PLANK && data == DATA_5) return "Dark Oak Plank";
-		if (id == SAPLING && data == DATA_0) return "Oak Sapling";
-		if (id == SAPLING && data == DATA_1) return "Spruce Sapling";
-		if (id == SAPLING && data == DATA_2) return "Birch Sapling";
-		if (id == SAPLING && data == DATA_3) return "Jungle Sapling";
-		if (id == SAPLING && data == DATA_4) return "Acacia Sapling";
-		if (id == SAPLING && data == DATA_5) return "Dark Oak Sapling";
-		if (id == BEDROCK) return "Bedrock";
-		if (id == WATER_RUNNING) return "Flowing Water";
-		if (id == WATER_STILL) return "Water";
-		if (id == LAVA_RUNNING) return "Flowing Lava";
-		if (id == LAVA_STILL) return "Lava";
-		if (id == SAND && data == DATA_0) return "Sand";
-		if (id == SAND && data == DATA_1) return "Red Sand";
-		if (id == GRAVEL) return "Gravel";
-		if (id == GOLD_ORE) return "Gold Ore";
-		if (id == IRON_ORE) return "Iron Ore";
-		if (id == COAL_ORE) return "Coal Ore";
-		if (id == LOG && data == DATA_0) return "Oak Log";
-		if (id == LOG && data == DATA_1) return "Spruce Log";
-		if (id == LOG && data == DATA_2) return "Birch Log";
-		if (id == LOG && data == DATA_3) return "Jungle Log";
-		if (id == LEAF && data == DATA_0) return "Oak Leaves";
-		if (id == LEAF && data == DATA_1) return "Spruce Leaves";
-		if (id == LEAF && data == DATA_2) return "Birch Leaves";
-		if (id == LEAF && data == DATA_3) return "Jungle Leaves";
-		if (id == SPONGE && data == DATA_0) return "Dry Sponge";
-		if (id == SPONGE && data == DATA_1) return "Wet Sponge";
-		if (id == GLASS) return "Glass";
-		if (id == LAPIS_ORE) return "Lapis Ore";
-		if (id == LAPIS_BLOCK) return "Lapis Block";
-		if (id == DISPENSER) return "Dispenser";
-		if (id == SANDSTONE && data == DATA_0) return "Sandstone";
-		if (id == SANDSTONE && data == DATA_1) return "Chiseled Sandstone";
-		if (id == SANDSTONE && data == DATA_2) return "Smooth Sandstone";
-		if (id == NOTEBLOCK) return "Note Block";
-		
-		if (id == RAIL_POWERED) return "Powered Rail";
-		if (id == RAIL_DETECTOR) return "Detector Rail";
-		if (id == STICKY_PISTON) return "Sticky Piston";
-		if (id == COBWEB) return "Cobweb";
-		if (id == TALL_GRASS && data == DATA_0) return "Shrub";
-		if (id == TALL_GRASS && data == DATA_1) return "Grass";
-		if (id == TALL_GRASS && data == DATA_2) return "Fern";
-		if (id == DEAD_BUSH) return "Dead Bush";
-		if (id == PISTON) return "Piston";
-		
-		if (id == WOOL && data == DATA_0) return "White Wool";
-		if (id == WOOL && data == DATA_1) return "Orange Wool";
-		if (id == WOOL && data == DATA_2) return "Magenta Wool";
-		if (id == WOOL && data == DATA_3) return "Light Blue Wool";
-		if (id == WOOL && data == DATA_4) return "Yellow Wool";
-		if (id == WOOL && data == DATA_5) return "Lime Wool";
-		if (id == WOOL && data == DATA_6) return "Pink Wool";
-		if (id == WOOL && data == DATA_7) return "Gray Wool";
-		if (id == WOOL && data == DATA_8) return "Light Gray Wool";
-		if (id == WOOL && data == DATA_9) return "Cyan Wool";
-		if (id == WOOL && data == DATA_10) return "Purple Wool";
-		if (id == WOOL && data == DATA_11) return "Blue Wool";
-		if (id == WOOL && data == DATA_12) return "Brown Wool";
-		if (id == WOOL && data == DATA_13) return "Green Wool";
-		if (id == WOOL && data == DATA_14) return "Red Wool";
-		if (id == WOOL && data == DATA_15) return "Black Wool";
-		
-		if (id == DANDELION) return "Dandelion";
-		if (id == OTHER_FLOWERS) {
-			if (data == DATA_0) return "Poppy";
-			else if (data == DATA_1) return "Blue Orchid";
-			else if (data == DATA_2) return "Allium";
-			else if (data == DATA_3) return "Azure Bluet";
-			else if (data == DATA_4) return "Red Tulip";
-			else if (data == DATA_5) return "Orange Tulip";
-			else if (data == DATA_6) return "White Tulip";
-			else if (data == DATA_7) return "Pink Tulip";
-			else if (data == DATA_8) return "Oxeye Daisy";
-			else return "UNKNOWN OTHER FLOWERS";
+	public static String getStackName(int id, int data) {
+		return getStackName(CivItem.newStack(id, data, true));
+	}
+	
+	public static String getStackName(ItemStack is) {
+		int data = is.getDurability();
+		switch (is.getType()) {
+		case INK_SACK:
+			if (data == 2) return "CACTUS GREEN";
+			else if (data == 4) return "LAPIS LAZULI";
+			else break;
+		default:
+			break;
 		}
-		if (id == BROWN_MUSHROOM) return "Brown Mushroom";
-		if (id == RED_MUSHROOM) return "Red Mushroom";
-		if (id == GOLD_BLOCK) return "Gold Block";
-		if (id == IRON_BLOCK) return "Iron Block";
-		if (id == SLAB) {
-			if (data == DATA_0) return "Stone Slab";
-			else if (data == DATA_1) return "Sandstone Slab";
-			else if (data == DATA_2) return "Wooden Slab";
-			else if (data == DATA_3) return "Cobblestone Slab";
-			else if (data == DATA_4) return "Brick Slab";
-			else if (data == DATA_5) return "Stone Brick Slab";
-			else if (data == DATA_6) return "Nether Brick Slab";
-			else if (data == DATA_7) return "Quartz Slab";
-			else return "UNKNOWN Slab";
-		}
-		if (id == BOOKSHELF) return "Bookshelf";
-		if (id == MOSS_STONE) return "Moss Stone";
-		if (id == OBSIDIAN) return "Obsidian";
-		if (id == TORCH) return "Torch";
-		
-		if (id == MOB_SPAWNER) return "Spawner (byte"+data+")";
-		if (id == OAK_STAIRS) return "Oak Stair";
-		if (id == CHEST) return "Chest";
-		if (id == DIAMOND_ORE) return "Diamond Ore";
-		if (id == DIAMOND_BLOCK) return "Diamond Block";
-		if (id == WORKBENCH) return "Crafting Table";
-		
-		if (id == FARMLAND) return "Farmland";
-		if (id == FURNACE) return "Furnace";
-		
-		if (id == LADDER) return "Ladder";
-		if (id == RAIL) return "Rail";
-		if (id == COBBLESTONE_STAIRS) return "Cobblestone Stairs";
-		
-		if (id == LEVER) return "Lever";
-		if (id == STONE_PLATE) return "Stone Pressure Plate";
-		if (id == WOOD_PLATE) return "Wood Pressure Plate";
-		if (id == REDSTONE_ORE) return "Redstone Ore";
-		if (id == STONE_BUTTON) return "Stone Button";
-		if (id == ICE) return "Ice";
-		if (id == SNOW_BLOCK) return "Snow Block";
-		if (id == CACTUS) return "Cactus";
-		if (id == CLAY_BLOCK) return "Clay Block";
-		if (id == FENCE) return "Oak Fence";
-		if (id == PUMPKIN) return "Pumpkin";
-		if (id == NETHERRACK) return "Netherrack";
-		
-		if (id == STAINED_GLASS && data == DATA_0) return "White Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_1) return "Orange Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_2) return "Magenta Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_3) return "Light Blue Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_4) return "Yellow Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_5) return "Lime Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_6) return "Pink Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_7) return "Gray Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_8) return "Light Gray Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_9) return "Cyan Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_10) return "Purple Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_11) return "Blue Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_12) return "Brown Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_13) return "Green Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_14) return "Red Stained Glass";
-		if (id == STAINED_GLASS && data == DATA_15) return "Black Stained Glass";
-		
-		if (id == STAINED_CLAY && data == DATA_0) return "White Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_1) return "Orange Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_2) return "Magenta Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_3) return "Light Blue Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_4) return "Yellow Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_5) return "Lime Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_6) return "Pink Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_7) return "Gray Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_8) return "Light Gray Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_9) return "Cyan Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_10) return "Purple Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_11) return "Blue Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_12) return "Brown Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_13) return "Green Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_14) return "Red Hardened Clay";
-		if (id == STAINED_CLAY && data == DATA_15) return "Black Hardened Clay";
-		
-		if (id == FLINT_AND_STEEL) return "Flint and Steel";
-		if (id == APPLE) return "Apple";
-		if (id == BOW) return "Minecraft Bow";
-		if (id == ARROW) return "Arrow";
-		if (id == COAL && data == DATA_0) return "Coal";
-		if (id == COAL && data == DATA_1) return "Charcoal";
-		if (id == DIAMOND) return "Diamond";
-		if (id == IRON_INGOT) return "Iron Ingot";
-		if (id == GOLD_INGOT) return "Gold Ingot";
-		
-		if (id == STICK) return "Stick";
-		if (id == BOWL) return "Bowl";
-		
-		if (id == STRING) return "String";
-		if (id == FEATHER) return "Feather";
-		if (id == GUNPOWDER) return "Gunpowder";
-		
-		if (id == WHEAT_SEED) return "Wheat Seed";
-		if (id == WHEAT_ITEM) return "Wheat";
-		if (id == BREAD) return "Bread";
-		
-		if (id == REDSTONE_DUST) return "Redstone Dust";
-		
-		if (id == LEATHER) return "Leather";
-		
-		if (id == CLAY) return "Clay";
-		if (id == SUGARCANE) return "Sugar Cane";
-		if (id == PAPER) return "Paper";
-		
-		if (id == SLIMEBALL) return "Slimeball";
-		
-		if (id == RAW_FISH && data == DATA_0) return "Raw Fish";
-		if (id == RAW_FISH && data == DATA_1) return "Raw Salmon";
-		if (id == RAW_FISH && data == DATA_2) return "Clownfish";
-		if (id == RAW_FISH && data == DATA_3) return "Pufferfish";
-		
-		if (id == COOKED_FISH && data == DATA_0) return "Cooked Fish";
-		if (id == COOKED_FISH && data == DATA_1) return "Cooked Salmon";
-		
-		if (id == DYE) {
-			if (data == DATA_0) return "Ink Sack";
-			else if (data == DATA_1) return "Red Dye";
-			else if (data == DATA_2) return "Green Dye";
-			else if (data == DATA_3) return "Cocoa Bean";
-			else if (data == DATA_4) return "Lapis Lazuli";
-			else if (data == DATA_5) return "Purple Dye";
-			else if (data == DATA_6) return "Cyan Dye";
-			else if (data == DATA_7) return "Light Gray Dye";
-			else if (data == DATA_8) return "Gray Dye";
-			else if (data == DATA_9) return "Pink Dye";
-			else if (data == DATA_10) return "Lime Dye";
-			else if (data == DATA_11) return "Yellow Dye";
-			else if (data == DATA_12) return "Light Blue Dye";
-			else if (data == DATA_13) return "Magenta Dye";
-			else if (data == DATA_14) return "Orange Dye";
-			else if (data == DATA_15) return "Bone Meal";
-			else return "UNKNOWN Dye";
-		}
-		if (id == BONE) return "Bone";
-		if (id == SUGAR) return "Sugar";
-		
-		if (id == MELON_SLICE) return "Melon Slice";
-		if (id == PUMPKIN_SEEDS) return "Pumpkin Seeds";
-		if (id == MELON_SEEDS) return "Melon Seeds";
-		if (id == RAW_BEEF) return "Raw Beef";
-		if (id == COOKED_BEEF) return "Cooked Beef";
-		if (id == RAW_CHICKEN) return "Raw Chicken";
-		if (id == COOKED_CHICKEN) return "Cooked Chicken";
-		if (id == ROTTEN_FLESH) return "Rotten Flesh";
-		if (id == ENDER_PEARL) return "Ender Pearl";
-		if (id == BLAZE_ROD) return "Blaze Rod";
-		if (id == GHAST_TEAR) return "Ghast Tear";
-		if (id == GOLD_NUGGET) return "Gold Nugget";
-		if (id == NETHERWART_ITEM) return "Netherwart";
-		
-		if (id == EMPTY_BOTTLE) return "Empty Bottle";
-		
-		if (id == EMERALD) return "Emerald";
-		
-		if (id == CARROT_ITEM) return "Carrot";
-		if (id == POTATO_ITEM) return "Potato";
-		
-		if (id == BEETROOT_ITEM) return "Beetroot";
-		if (id == BEETROOT_SEED) return "Beetroot Seed";
-		
-		//		if (id == ) return "";
-		
-		Material m = ItemManager.getMaterial(id);
-		return "["+id+","+data+" - "+m.name()+"]";
+		return is.getType().toString().replaceAll("_", " ");
 	}
 	
 	public static String getNumeral(int i) {

@@ -40,7 +40,7 @@ import com.avrgaming.civcraft.object.TradeGood;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
@@ -57,8 +57,8 @@ public class TradeGoodPopulator extends BlockPopulator {
 		//clear any stack goodies
 		for (int y = coord.getY(); y < 256; y++) {
 			top = world.getBlockAt(coord.getX(), y, coord.getZ());
-			if (ItemManager.getId(top) == CivData.EMERALD) {
-				ItemManager.setTypeId(top, CivData.AIR);
+			if (CivItem.getId(top) == CivData.EMERALD) {
+				CivItem.setTypeId(top, CivData.AIR);
 			}
 		}
 		
@@ -147,9 +147,9 @@ public class TradeGoodPopulator extends BlockPopulator {
 			
 			// Determine if we should be a water good.
 			ConfigTradeGood good;
-			if (ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_STILL || 
-					ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_RUNNING || 
-					ItemManager.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.ICE) {
+			if (CivItem.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_STILL || 
+					CivItem.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.WATER_RUNNING || 
+					CivItem.getBlockTypeIdAt(world, cX, centerY-1, cZ) == CivData.ICE) {
 /*					if (!coord2.getLocation().getBlock().getBiome().equals(Biome.OCEAN) &&
 							!coord2.getLocation().getBlock().getBiome().equals(Biome.DEEP_OCEAN) &&
 							!coord2.getLocation().getBlock().getBiome().equals(Biome.FROZEN_OCEAN)) {

@@ -29,7 +29,7 @@ import java.util.List;
 import org.bukkit.Location;
 
 import com.avrgaming.civcraft.util.BlockCoord;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 
 public class TemplateStream {
@@ -169,7 +169,7 @@ public class TemplateStream {
 			bcoord.setX(bcoord.getX() + block.x);
 			bcoord.setY(bcoord.getY() + block.y);
 			bcoord.setZ(bcoord.getZ() + block.z);
-			ItemManager.setTypeIdAndData(bcoord.getBlock(), block.getType(), block.getData(), false);
+			CivItem.setTypeIdAndData(bcoord.getBlock(), block.getType(), block.getData(), false);
 		}
 		
 	}

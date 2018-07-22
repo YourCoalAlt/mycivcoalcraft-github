@@ -39,7 +39,7 @@ import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.object.Town;
 import com.avrgaming.civcraft.structure.TownHall;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemManager;
+import com.avrgaming.civcraft.util.CivItem;
 
 public class CivResearchCommand extends CommandBase {
 
@@ -128,7 +128,7 @@ public class CivResearchCommand extends CommandBase {
 			}
 		}
 		
-		ItemStack techMenu = LoreGuiItem.build("Research Technology", ItemManager.getId(Material.POTION), 8267, CivColor.Gold+"<Click to View>");
+		ItemStack techMenu = LoreGuiItem.build("Research Technology", CivItem.getId(Material.POTION), 8267, CivColor.Gold+"<Click to View>");
 		techMenu = LoreGuiItem.setAction(techMenu, "_2BuildTechnologyList");
 		LoreGuiItem.processAction("_2BuildTechnologyList", techMenu, getPlayer());
 	}
