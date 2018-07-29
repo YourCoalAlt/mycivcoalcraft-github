@@ -31,6 +31,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.avrgaming.civcraft.exception.CivException;
@@ -44,7 +45,7 @@ import com.avrgaming.civcraft.object.camp.Camp;
 import com.avrgaming.civcraft.permission.PermissionGroup;
 import com.avrgaming.civcraft.util.CivColor;
 
-public abstract class CommandBase implements CommandExecutor {
+public abstract class CommandBase implements CommandExecutor,TabExecutor {
 	
 	private static final int MATCH_LIMIT = 10;
 
@@ -150,16 +151,26 @@ public abstract class CommandBase implements CommandExecutor {
 		return false;
 	}
 	
-	
-	public void doLogging() {	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		init();
+		List<String> subCmds = new ArrayList<String>();
+		if (args.length == 1 && args[0] != "") {
+			for (String cmds : commands.keySet()) {
+				if (cmds.startsWith(args[0])) {
+					subCmds.add(cmds);
+				}
+			}
+		} else {
+			for (String cmds : commands.keySet()) {
+				subCmds.add(cmds);
+			}
+		}
+		
+		return subCmds;
 	}
 	
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> al = new ArrayList<String>();
-		al.add("sub1");
-		al.add("barg");
-		al.add("borg");
-		return al;
+	public void doLogging() {	
 	}
 
 	public void showBasicHelp() {

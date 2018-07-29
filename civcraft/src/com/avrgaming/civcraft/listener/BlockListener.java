@@ -464,7 +464,7 @@ public class BlockListener implements Listener {
 				return;
 			}
 			
-			CivLog.warning("Canceling horse spawn reason:"+event.getSpawnReason().name());
+			CivLog.warning("Canceling horse spawn reason: "+event.getSpawnReason().name());
 			event.setCancelled(true);
 		}
 
@@ -1516,7 +1516,13 @@ public class BlockListener implements Listener {
 		}
 		
 		if (CivSettings.vanillaHostileMobs.contains(event.getEntity().getType()) && reason == SpawnReason.NATURAL) {
-			if (event.getLocation().getBlock().getLightFromSky() < 7 && event.getLocation().getBlock().getLightFromBlocks() < 7) {
+			TownChunk tc = CivGlobal.getTownChunk(coord);
+			if (tc != null) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			if (event.getLocation().getBlock().getLightFromSky() <= 0 && event.getLocation().getBlock().getLightFromBlocks() < 7) {
 				event.setCancelled(false);
 				return;
 			} else {
@@ -1525,8 +1531,8 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		if (War.isWarTime() && (type != EntityType.HORSE || reason.equals(SpawnReason.SPAWNER))) {
-			if (reason != SpawnReason.BREEDING) {
+		if (War.isWarTime() && type != EntityType.HORSE) {
+			if (reason != SpawnReason.BREEDING && reason != SpawnReason.SPAWNER) {
 				event.setCancelled(true);
 				return;
 			}

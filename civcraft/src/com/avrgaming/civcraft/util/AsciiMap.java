@@ -25,70 +25,69 @@ import org.bukkit.Location;
 
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivMessage;
+import com.avrgaming.civcraft.object.CultureChunk;
 import com.avrgaming.civcraft.object.TownChunk;
 
 public class AsciiMap {
 
 	private static final int width = 10;
-	private static final int height = 36;	
+	private static final int height = 24;
 	
 	public static List<String> getMapAsString(Location center) {
 		ArrayList<String> out = new ArrayList<String>();
 		
-	//	ChunkCoord[][] chunkmap = new ChunkCoord[width][height]; 
+	//	ChunkCoord[][] chunkmap = new ChunkCoord[width][height];
 		ChunkCoord centerChunk = new ChunkCoord(center);
 		
 		/* Use the center to build a starting point. */
-		ChunkCoord currentChunk = new ChunkCoord(center.getWorld().getName(),
-											(centerChunk.getX() - (width/2)),
-											(centerChunk.getZ() - (height/2)));
-		
+		ChunkCoord currentChunk = new ChunkCoord(center.getWorld().getName(), (centerChunk.getX() - (width/2)), (centerChunk.getZ() - (height/2)));
 		int startX = currentChunk.getX();
 		int startZ = currentChunk.getZ();
 	
-		out.add(CivMessage.buildTitle("Map"));
+		out.add(CivMessage.buildHeading("Map ("+center.getChunk().getX()+", "+center.getChunk().getZ()+")"));
+		out.add("You: "+CivColor.DarkGrayBold+"-"+CivColor.RESET+", Wilderness: -, Culture: "+CivColor.LightPurple+"-");
+		out.add("Plot [Unowned]: "+CivColor.Yellow+"-"+CivColor.RESET+", Plot [Owned]: "+CivColor.Gold+"-");
+		out.add("Plot [For Sale]: "+CivColor.Yellow+"$"+CivColor.RESET+"/"+CivColor.Gold+"$"+CivColor.RESET+", "+
+				"Outpost: "+CivColor.Yellow+"+"+CivColor.RESET+"/"+CivColor.Gold+"+");
 		
-		//ChunkCoord currentChunk = new ChunkCoord(center);
 		for (int x = 0; x < width; x++) {
-			String outRow = new String("          ");
+			String outRow = "        ";
 			for (int z = 0; z < height; z++) {
+				currentChunk = new ChunkCoord(center.getWorld().getName(), startX+x, startZ+z);
 				String color = CivColor.White;
-								
-				currentChunk = new ChunkCoord(center.getWorld().getName(), 
-						startX+x, startZ+z);
+				String sym = "-";
 				
-				if (currentChunk.equals(centerChunk)) {
-					color = CivColor.Yellow;
-				}
-				
-				/* Try to see if there is a town chunk here.. */
-				TownChunk tc = CivGlobal.getTownChunk(currentChunk);
-				if (tc != null) {
-					
-					if (color.equals(CivColor.White)) {
+				// Try to see if there is a town chunk here.
+				CultureChunk cc = CivGlobal.getCultureChunk(currentChunk);
+				if (cc != null) {
+					color = CivColor.LightPurple;
+					TownChunk tc = CivGlobal.getTownChunk(currentChunk);
+					if (tc != null) {
 						if (tc.perms.getOwner() != null) {
-							color = CivColor.LightGreen;
+							color = CivColor.Gold;
 						} else {
-							color = CivColor.Rose;
+							color = CivColor.Yellow;
+						}
+						
+						if (tc.isForSale()) {
+							sym = "$";
+						} else if (tc.isOutpost()) { 
+							sym = "+";
+						} else {
+							sym = "-";
 						}
 					}
-					
-					if (tc.isForSale()) {
-						outRow += CivColor.Yellow+"$";
-					} else if (tc.isOutpost()) { 
-						outRow += CivColor.Yellow+"O";
-					} else {
-						outRow += color+"T";
-					}
-				} else {
-					outRow += color+"-";
 				}
+				
+				if (currentChunk.equals(centerChunk)) {
+					color = CivColor.DarkGrayBold;
+				}
+				
+				outRow += color+sym;
 			}
 			out.add(outRow);
 		}
 		
-		
 		return out;
 	}
-	
 }

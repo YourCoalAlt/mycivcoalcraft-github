@@ -297,10 +297,10 @@ public class BuildCommand extends CommandBase {
 	
 	@Override
 	public void doDefaultAction() throws CivException {
-		if (args.length == 0) {		
-			showHelp();
-			return;
-		}
+//		if (args.length == 0) {		
+//			showHelp();
+//			return;
+//		}
 		
 		String fullArgs = "";
 		for (String arg : args) {

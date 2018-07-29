@@ -103,14 +103,13 @@ import com.avrgaming.civcraft.threading.tasks.CivLeaderQuestionTask;
 import com.avrgaming.civcraft.threading.tasks.CivQuestionTask;
 import com.avrgaming.civcraft.threading.tasks.CultureProcessAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.PlayerQuestionTask;
-import com.avrgaming.civcraft.threading.tasks.UpdateTagBetweenCivsTask;
 import com.avrgaming.civcraft.threading.tasks.onLoadTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.BukkitObjects;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
-import com.avrgaming.civcraft.util.ItemFrameStorage;
 import com.avrgaming.civcraft.util.CivItem;
+import com.avrgaming.civcraft.util.ItemFrameStorage;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.civcraft.war.WarCamp;
 import com.avrgaming.civcraft.war.WarRegen;
@@ -166,8 +165,10 @@ public class CivGlobal {
 	public static Map<Integer, Boolean> CivColorInUse = new ConcurrentHashMap<Integer, Boolean>();
 	public static TradeGoodPreGenerate preGenerator = new TradeGoodPreGenerate();
 	
-	public static TreeMap<Integer, Civilization> civilizationScores = new TreeMap<Integer, Civilization>();
+	public static TreeMap<Integer, Civilization> civScores = new TreeMap<Integer, Civilization>();
+	public static TreeMap<String, Integer> civScoresTied = new TreeMap<String, Integer>();
 	public static TreeMap<Integer, Town> townScores = new TreeMap<Integer, Town>();
+	public static TreeMap<String, Integer> townScoresTied = new TreeMap<String, Integer>();
 	
 	public static HashSet<String> banWords = new HashSet<String>();
 	
@@ -1669,40 +1670,36 @@ public class CivGlobal {
 	}
 	
 	public static void setRelation(Civilization civ, Civilization otherCiv, Status status) {
-		if (civ.getId() == otherCiv.getId()) {
-			return;
-		}
+		if (civ.getId() == otherCiv.getId()) return;
 		
 		civ.getDiplomacyManager().setRelation(otherCiv, status, null);
 		otherCiv.getDiplomacyManager().setRelation(civ, status, null);
 		
-		String out = civ.getName()+" is now ";
+		String out = civ.getName();
+		String passive = " negotiated ";
+		String aggressive = " declared ";
 		switch (status) {
 		case NEUTRAL:
-			out += "NEUTRAL with ";
+			out += "is now NEUTRAL with ";
 			break;
 		case HOSTILE:
-			out += CivColor.Yellow+"HOSTILE"+CivColor.White+" towards ";
+			out += aggressive+CivColor.Yellow+"HOSTILE"+CivColor.White+" towards ";
 			break;
 		case WAR:
-			out += "at "+CivColor.Rose+"WAR"+CivColor.White+" with ";
+			out += aggressive+CivColor.Rose+"WAR"+CivColor.White+" with ";
 			break;
 		case PEACE:
-			out += "at PEACE with ";
+			out += passive+CivColor.LightBlue+"PEACE"+CivColor.White+" with ";
 			break;
 		case ALLY:
-			out += CivColor.LightGreen+" ALLIED "+CivColor.White+" with ";
+			out += passive+"an "+CivColor.LightGreen+" ALLIANCE "+CivColor.White+" with ";
 			break;
 		default:
 			break;
 		}
+		CivCraft.playerTagUpdate();
 		out += otherCiv.getName();
 		CivMessage.global(out);
-		CivGlobal.updateTagsBetween(civ, otherCiv);
-	}
-	
-	private static void updateTagsBetween(Civilization civ, Civilization otherCiv) {
-		TaskMaster.asyncTask(new UpdateTagBetweenCivsTask(civ, otherCiv), 0);
 	}
 
 	public static void requestRelation(Civilization fromCiv, Civilization toCiv, String question, 
@@ -1771,24 +1768,20 @@ public class CivGlobal {
 	public static String updateTag(Player namedPlayer, Player player) {
 		Resident namedRes = CivGlobal.getResident(namedPlayer);
 		Resident playerRes = CivGlobal.getResident(player);
-
+		
+		if (namedRes == null) return namedPlayer.getName();
+		if (playerRes == null) return namedPlayer.getName();
+		
 		if (CivGlobal.isMutualOutlaw(namedRes, playerRes)) {
 			return CivColor.Gold+namedPlayer.getName();
 		}
 		
-		if (namedRes == null || !namedRes.hasTown()) {
-			return namedPlayer.getName();
-		}
+		if (!namedRes.hasTown()) return namedPlayer.getName();
+		if (!playerRes.hasTown()) return namedPlayer.getName();
 		
-		if (playerRes == null || !playerRes.hasTown()) {
-			return namedPlayer.getName();
-		}
-		
-		//ChatColor color = ChatColor.WHITE;
-		//ChatColor style = ChatColor.RESET;
 		String color = CivColor.White;
 		if (namedRes.getTown().getCiv() == playerRes.getTown().getCiv()) {
-			color = CivColor.LightPurple;
+			color = CivColor.Green;
 		} else {
 			DiplomaticRelation.Status status = playerRes.getTown().getCiv().getDiplomacyManager().getRelationStatus(namedRes.getTown().getCiv());
 			switch (status) {
@@ -1807,9 +1800,9 @@ public class CivGlobal {
 			default:
 				break;
 			}
-		}	
+		}
 		
-		return color+namedPlayer.getName();		
+		return color+namedPlayer.getName();
 	}
 
 	public static boolean tradeGoodTooCloseToAnother(Location goodLoc, double radius) {
@@ -1945,7 +1938,7 @@ public class CivGlobal {
 	}
 	
 	public static Integer getScoreForCiv(Civilization civ) {
-		for (Entry<Integer,Civilization> entry : civilizationScores.entrySet()) {
+		for (Entry<Integer, Civilization> entry : civScores.entrySet()) {
 			if (civ == entry.getValue()) {
 				return entry.getKey();
 			}

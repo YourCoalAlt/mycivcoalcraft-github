@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Player;
 
-import com.avrgaming.civcraft.config.CivSettings;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.BlockCoord;
@@ -59,7 +59,7 @@ public class PlayerLocationCache {
 		pc.setDead(player.isDead());
 		pc.setVanished(false);
 		
-		if (CivSettings.hasVanishNoPacket) {
+		if (CivCraft.softdependVanishNoPacket) {
 			pc.setVanished(VanishNoPacketUtil.isVanished(player));
 		}
 		cache.put(pc.getName(), pc);
@@ -84,7 +84,7 @@ public class PlayerLocationCache {
 			resident.onRoadTest(pc.getCoord(), player);
 		}
 		
-		if (CivSettings.hasVanishNoPacket) {
+		if (CivCraft.softdependVanishNoPacket) {
 			pc.setVanished(VanishNoPacketUtil.isVanished(player));
 		} else {
 			pc.setVanished(false);

@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
@@ -24,7 +23,7 @@ public class HolographicDisplaysListener {
 	private final static Plugin cp = CivCraft.getPlugin();
 	
 	public static void generateTradeGoodHolograms() {
-		if (!CivSettings.hasHolographicDisplays) {
+		if (!CivCraft.softdependHolographicDisplays) {
 			CivLog.warning("Tried generating Trade Good Holograms without HolographicDisplays plugin! This is fine, but no holograms can generate.");
 			return;
 		}
@@ -60,7 +59,7 @@ public class HolographicDisplaysListener {
 	
 	private static Map<Location, Hologram> barracks_training_holos = new HashMap<Location, Hologram>();
 	public static void updateBarracksHolo(Location loc, String title, String per) {
-		if (!CivSettings.hasHolographicDisplays) return;
+		if (!CivCraft.softdependHolographicDisplays) return;
 		if (barracks_training_holos.containsKey(loc)) {
 			Hologram hg = barracks_training_holos.get(loc);
 			double pr = Double.valueOf(per.replace("%", ""));

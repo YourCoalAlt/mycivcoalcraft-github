@@ -171,7 +171,7 @@ public class TownInfoCommand extends CommandBase {
 		CivMessage.sendHeading(sender, "Happiness Info");
 		ArrayList<String> out = new ArrayList<String>();
 
-		out.add(CivMessage.buildSmallTitle("Happiness Sources"));
+		out.add(CivMessage.buildSubheading("Happiness Sources"));
 		AttrSource happySources = town.getAverageHappiness();
 
 		DecimalFormat df = new DecimalFormat();
@@ -183,7 +183,7 @@ public class TownInfoCommand extends CommandBase {
 		out.add(CivColor.LightPurple+"Total: "+CivColor.LightGreen+df.format(happySources.total));
 
 		
-		out.add(CivMessage.buildSmallTitle("Unhappiness Sources"));
+		out.add(CivMessage.buildSubheading("Unhappiness Sources"));
 		AttrSource unhappySources = town.getAverageUnhappiness();
 		for (String source : unhappySources.sources.keySet()) {
 			Double value = unhappySources.sources.get(source);
@@ -191,7 +191,7 @@ public class TownInfoCommand extends CommandBase {
 		}
 		out.add(CivColor.LightPurple+"Total: "+CivColor.LightGreen+df.format(unhappySources.total));
 
-		out.add(CivMessage.buildSmallTitle("Total"));
+		out.add(CivMessage.buildSubheading("Total"));
 		ConfigHappinessState state = town.getHappinessState();
 		out.add(CivColor.LightGreen+df.format(town.getHappiness())+CivColor.Green+" Happiness. State: "+CivColor.valueOf(state.color)+state.name);
 		CivMessage.send(sender, out);	

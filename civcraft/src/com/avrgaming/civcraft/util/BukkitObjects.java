@@ -33,7 +33,6 @@ public class BukkitObjects {
 	private static Server server = null;
 	
 	public static void initialize(CivCraft plugin) {
-
 		BukkitObjects.plugin = plugin;
 		BukkitObjects.server = plugin.getServer();
 	}

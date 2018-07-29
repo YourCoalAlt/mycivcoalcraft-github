@@ -175,52 +175,44 @@ public class CivMessage {
 		globalTitle(title, subTitle, 10, 60, 10);
 	}
 	
-	public static String buildTitle(String title) {
-		String line =   "------------------------------------------------";
-		String titleBracket = "[ "+CivColor.Yellow+title+CivColor.LightBlue+" ]";
+	public static String buildHeading(String title) {
+		String line = "================================================";
+		String titleBracket = "[ "+CivColor.YellowBold+title+CivColor.LightBlue+" ]";
 		
 		if (titleBracket.length() > line.length()) {
-			return CivColor.LightBlue+"-"+titleBracket+"-";
+			return CivColor.LightBlue+"=[ "+titleBracket+" ]=";
 		}
 		
 		int min = (line.length() / 2) - titleBracket.length() / 2;
 		int max = (line.length() / 2) + titleBracket.length() / 2;
 		
-		String out = CivColor.LightBlue + line.substring(0, Math.max(0, min));
+		String out = CivColor.LightBlue+line.substring(0, Math.max(0, min));
 		out += titleBracket + line.substring(max);
 		return out;
 	}
 	
-	public static String buildSmallTitle(String title) {
-		String line =   CivColor.LightBlue+"--------------------------------";
-		String titleBracket = "[ "+title+" ]";
+	public static String buildSubheading(String title) {
+		String line = "--------------------------------";
+		String titleBracket = "[ "+CivColor.Yellow+title+CivColor.LightBlue+" ]";
+		
+		if (titleBracket.length() > line.length()) {
+			return CivColor.LightBlue+"-[ "+titleBracket+" ]-";
+		}
 		
 		int min = (line.length() / 2) - titleBracket.length() / 2;
 		int max = (line.length() / 2) + titleBracket.length() / 2;
 		
-		String out = CivColor.LightBlue + line.substring(0, Math.max(0, min));
-		out += titleBracket + line.substring(max);
-		return out;
-	}
-	
-	public static String buildServerTitle(String title) {
-		String line =   CivColor.LightBlue+"------------------------------------------------";
-		String titleBracket = "[ "+title+" ]";
-		
-		int min = (line.length() / 2) - titleBracket.length() / 2;
-		int max = (line.length() / 2) + titleBracket.length() / 2;
-		
-		String out = CivColor.LightBlue + line.substring(0, Math.max(0, min));
+		String out = CivColor.LightBlue+line.substring(0, Math.max(0, min));
 		out += titleBracket + line.substring(max);
 		return out;
 	}
 	
 	public static void sendHeading(Object sender, String title) {
-		send(sender, buildTitle(title));
+		send(sender, buildHeading(title));
 	}
 	
 	public static void sendSubHeading(Object sender, String title) {
-		send(sender, buildSmallTitle(title));
+		send(sender, buildSubheading(title));
 	}
 	
 	public static void sendAll(String str) {
@@ -253,7 +245,7 @@ public class CivMessage {
 	public static void globalHeading(String string) {
 		CivLog.info("[GlobalHeading] "+string);
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			send(player, buildTitle(string));
+			send(player, buildHeading(string));
 		}
 	}
 	
@@ -284,22 +276,6 @@ public class CivMessage {
 					}
 				} catch (CivException e) { // Not online, skip.
 				}
-			}
-		}
-	}
-	
-	public static void sen1dTownCottage(Town town, String string) {
-		CivLog.info("[Town-Cottage:"+town.getName()+"] "+string);
-		for (Resident resident : town.getResidents()) {
-			if (!resident.isShowTown()) continue;
-			
-			Player player;
-			try {
-				player = CivGlobal.getPlayer(resident);
-				if (player != null) {
-					CivMessage.send(player, CivColor.Gold+"[Town] "+CivColor.Aqua+"[Cottage] "+CivColor.White+string);
-				}
-			} catch (CivException e) {
 			}
 		}
 	}

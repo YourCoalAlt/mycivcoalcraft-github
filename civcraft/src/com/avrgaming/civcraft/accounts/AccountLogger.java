@@ -46,7 +46,6 @@ public class AccountLogger extends SQLObject {
 	}
 
 	public static void init() throws SQLException {
-		System.out.println("================ ACCOUNT_LOGGER INIT ================");
 		if (!SQL.hasTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + TABLE_NAME+" (" +
 					"`id` int(11) unsigned NOT NULL auto_increment," +
@@ -103,8 +102,7 @@ public class AccountLogger extends SQLObject {
 			}
 			
 			CivLog.info(TABLE_NAME+" table OK!");
-		}		
-		System.out.println("=====================================================");
+		}
 	}
 	
 	@Override

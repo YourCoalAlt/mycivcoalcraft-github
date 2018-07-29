@@ -31,6 +31,7 @@ import com.avrgaming.civcraft.database.session.SessionEntry;
 import com.avrgaming.civcraft.endgame.EndGameCondition;
 import com.avrgaming.civcraft.event.EventTimer;
 import com.avrgaming.civcraft.exception.InvalidConfiguration;
+import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.main.CivLog;
 import com.avrgaming.civcraft.main.CivMessage;
@@ -141,7 +142,9 @@ public class War {
 	 * @param warTime the warTime to set
 	 */
 	public static void setWarTime(boolean warTime) {
-		if (warTime == false) { // War time has ended.
+		War.warTime = warTime;
+		CivCraft.playerTagUpdate();
+		if (!warTime) { // War time has ended.
 			War.setStart(null);
 			War.setEnd(null);
 			War.restoreAllTowns();
@@ -183,8 +186,17 @@ public class War {
 		} else {
 			// War time has started.
 			War.setStart(new Date());
+			try {
+				int mins = CivSettings.getInteger(CivSettings.warConfig, "war.time_length");
+				Calendar endCal = Calendar.getInstance();
+				endCal.add(Calendar.MINUTE, mins);
+				War.setEnd(endCal.getTime());
+			} catch (InvalidConfiguration e) {
+				e.printStackTrace();
+			}
+			
 			WarAntiCheat.kickUnvalidatedPlayers();
-			CivMessage.globalHeading(CivColor.Bold+"WarTime Has Started");
+			CivMessage.globalHeading("WarTime Has Started");
 			War.repositionPlayers("You've been teleported back to your town hall. WarTime has started and you were in enemy territory.");
 			//War.vassalTownsWithNoTownHalls();
 			War.resetTownClaimFlags();
@@ -200,18 +212,7 @@ public class War {
 			CivGlobal.growthEnabled = false;
 			CivGlobal.trommelsEnabled = false;
 			CivGlobal.tradeEnabled = false;
-			
-			try {
-				int mins = CivSettings.getInteger(CivSettings.warConfig, "war.time_length");
-				Calendar endCal = Calendar.getInstance();
-				endCal.add(Calendar.MINUTE, mins);
-
-				War.setEnd(endCal.getTime());
-			} catch (InvalidConfiguration e) {
-				e.printStackTrace();
-			}
 		}
-		War.warTime = warTime;
 	}
 
 	/* When a civ conqueres a town, then has its capitol conquered,

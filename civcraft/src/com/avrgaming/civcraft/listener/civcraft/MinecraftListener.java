@@ -792,7 +792,7 @@ public class MinecraftListener implements Listener {
 			return;
 		}
 		
-		if (CivSettings.hasWorldBorder) {
+		if (CivCraft.softdependWorldBorder) {
 			BorderData border = Config.Border(CivCraft.worldName);
 			if (border != null) {
 				if(!border.insideBorder(tpLoc.getX(), tpLoc.getZ(), Config.ShapeRound())) {

@@ -52,10 +52,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-import org.bukkit.scoreboard.Team.Option;
-import org.bukkit.scoreboard.Team.OptionStatus;
 
 import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigBuildableInfo;
@@ -1675,7 +1671,7 @@ public class Resident extends SQLObject {
 	}
 	
 	
-	private Scoreboard scoreboard;
+/*	private Scoreboard scoreboard;
 	@SuppressWarnings("deprecation")
 	public void changePlayerName(Player p, String suffix) {
 		scoreboard = p.getScoreboard();
@@ -1698,14 +1694,13 @@ public class Resident extends SQLObject {
 				team.addPlayer(p);
 			}
 		} catch (CivException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	private static String Color(String input) {
 		return ChatColor.translateAlternateColorCodes('&', input);
-	}
+	}*/
 	
 	
 	

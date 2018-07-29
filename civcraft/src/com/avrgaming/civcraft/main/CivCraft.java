@@ -45,7 +45,6 @@ import com.avrgaming.civcraft.command.EconCommand;
 import com.avrgaming.civcraft.command.HereCommand;
 import com.avrgaming.civcraft.command.KillCommand;
 import com.avrgaming.civcraft.command.PayCommand;
-import com.avrgaming.civcraft.command.RebootCommand;
 import com.avrgaming.civcraft.command.ReportCommand;
 import com.avrgaming.civcraft.command.SelectCommand;
 import com.avrgaming.civcraft.command.VoteCommand;
@@ -211,7 +210,7 @@ public final class CivCraft extends JavaPlugin {
 		TaskMaster.asyncTimer("FarmGrowthTimer", new FarmGrowthSyncTask(), TimeTools.toTicks(Farm.GROW_TICK_RATE));
 		
 		TaskMaster.asyncTimer("ChangeGovernmentTimer", new ChangeGovernmentTimer(), TimeTools.toTicks(60));
-		TaskMaster.asyncTimer("CalculateScoreTimer", new CalculateScoreTimer(), 0, TimeTools.toTicks(60));
+		TaskMaster.asyncTimer("CalculateScoreTimer", new CalculateScoreTimer(), 0, TimeTools.toTicks(15));
 		
 		TaskMaster.asyncTimer(PlayerProximityComponentTimer.class.getName(), new PlayerProximityComponentTimer(), TimeTools.toTicks(1));
 		
@@ -258,9 +257,7 @@ public final class CivCraft extends JavaPlugin {
 		pluginManager.registerEvents(new AdminGUICommand(), this);
 		pluginManager.registerEvents(new AdminTestCommand(), this);
 		
-		if (hasPlugin("TagAPI")) {
-			pluginManager.registerEvents(new TagAPIListener(), this);
-		}
+		pluginManager.registerEvents(new TagAPIListener(), this);
 		
 		if (hasPlugin("HeroChat")) {
 			pluginManager.registerEvents(new HeroChatListener(), this);
@@ -271,12 +268,72 @@ public final class CivCraft extends JavaPlugin {
 		NoCheatPlusSurvialFlyHandler.init();
 	}
 	
+	// Depends
+	public static boolean dependTagAPI = false;
+	public static boolean dependProtocolLib = false;
+	public static boolean dependArmorEquipEvent = false;
+	
+	// Soft depends
+	public static boolean softdependHolographicDisplays = false;
+	public static boolean softdependVanishNoPacket = false;
+	public static boolean softdependWorldBorder = false;
+	public static boolean softdependDynmap = false;
+	
+	private void processRequiredPlugins() {
+		// Depends
+		String depends = "";
+		
+		if (!hasPlugin("TagAPI")) depends += "TagAPI, ";
+			else dependTagAPI = true;
+		if (!hasPlugin("ProtocolLib")) depends += "ProtocolLib, ";
+			else dependProtocolLib = true;
+		if (!hasPlugin("ArmorEquipEvent")) depends += "ArmorEquipEvent, ";
+			else dependArmorEquipEvent = true;
+		
+		if (depends != null && depends != "") {
+			CivLog.headingLine();
+			CivLog.error("CivCraft is being disabled for your safety.");
+			CivLog.error("We could not detect the following plugins: "+depends.substring(0, depends.length()-2)+".");
+			CivLog.error("CivCraft cannot run until you install it!");
+			CivLog.error(CivMessage.buildHeading("Shutting Down World..."));
+			CivLog.error("For the sake of the server and world, we will now shut down the server.");
+			CivLog.headingLine();
+			Bukkit.getServer().shutdown();
+			return;
+		}
+		
+		// Soft Depends
+		String softDepends = "";
+		
+		if (!hasPlugin("HolographicDisplays")) softDepends += "HolographicDisplays, ";
+			else softdependHolographicDisplays = true;
+		if (!hasPlugin("VanishNoPacket")) softDepends += "VanishNoPacket, ";
+			else softdependVanishNoPacket = true;
+		if (!hasPlugin("WorldBorder")) softDepends += "WorldBorder, ";
+			else softdependWorldBorder = true;
+		if (!hasPlugin("dynmap")) softDepends += "dynmap, ";
+			else softdependDynmap = true;
+		
+		if (softDepends != null && softDepends != "") {
+			CivLog.headingLine();
+			CivLog.error("CivCraft could not find some plugins to run fully.");
+			CivLog.error("We could not detect the following plugins: "+softDepends.substring(0, softDepends.length()-2)+".");
+			CivLog.error("CivCraft can continue to run, but these plugins may help it run better.");
+			CivLog.error("(The game should work regularly, and you do not have to download these plugins)");
+			CivLog.headingLine();
+			return;
+		}
+	}
+	
 	@Override
 	public void onEnable() {
+		setPlugin(this);
 		CivLog.init(this);
 		isDisable = false; isStarted = false; isRestarting = false;
-		setPlugin(this);
 		this.saveDefaultConfig();
+		
+		// Check if we have the plugins needed to continue
+		processRequiredPlugins();
 		
 		BukkitObjects.initialize(this);
 		worldName = BukkitObjects.getWorlds().get(0).getName();
@@ -334,7 +391,7 @@ public final class CivCraft extends JavaPlugin {
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("kill").setExecutor(new KillCommand());
-		getCommand("reboot").setExecutor(new RebootCommand());
+//		getCommand("reboot").setExecutor(new RebootCommand());
 	
 		registerEvents();
 		acManager = new AC_Manager(this);
@@ -353,7 +410,7 @@ public final class CivCraft extends JavaPlugin {
 			public void run() {
 				isStarted = true;
 				
-				if (hasPlugin("HolographicDisplays")) {
+				if (softdependHolographicDisplays) {
 					HolographicDisplaysListener.generateTradeGoodHolograms();
 				} else {
 					CivLog.warning("HolographicDisplays not found, not registering listener. It is fine if you're not using Holographic Displays.");
@@ -412,26 +469,17 @@ public final class CivCraft extends JavaPlugin {
 	}
 	
 	public static void addFurnaceRecipes() {
-		MaterialData lap_ore = new MaterialData(Material.LAPIS_ORE);
-		FurnaceRecipe fr1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), lap_ore, 0.85f);
-		Bukkit.addRecipe(fr1);
-		plugin.getServer().addRecipe(fr1);
+		FurnaceRecipe fr1 = new FurnaceRecipe(new ItemStack(Material.INK_SACK, 4, (short) 4), new MaterialData(Material.LAPIS_ORE), 0.85f);
+		Bukkit.getServer().addRecipe(fr1);
 		
-		MaterialData red_ore = new MaterialData(Material.REDSTONE_ORE);
-		FurnaceRecipe fr2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), red_ore, 0.7f);
-		Bukkit.addRecipe(fr2);
-		plugin.getServer().addRecipe(fr2);
+		FurnaceRecipe fr2 = new FurnaceRecipe(new ItemStack(Material.REDSTONE, 4), new MaterialData(Material.REDSTONE_ORE), 0.7f);
+		Bukkit.getServer().addRecipe(fr2);
 		
-		MaterialData rot_stk = new MaterialData(Material.ROTTEN_FLESH);
-		FurnaceRecipe fr3 = new FurnaceRecipe(new ItemStack(Material.COOKED_BEEF), rot_stk, 0.35f);
-		Bukkit.addRecipe(fr3);
-		plugin.getServer().addRecipe(fr3);
+		FurnaceRecipe fr3 = new FurnaceRecipe(new ItemStack(Material.COOKED_BEEF), new MaterialData(Material.ROTTEN_FLESH), 0.35f);
+		Bukkit.getServer().addRecipe(fr3);
 		
-//		ItemStack cio = LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk"), 1);
-//		MaterialData crushed_iron = new MaterialData(Material.IRON_ORE);
-//		FurnaceRecipe recipe4 = new FurnaceRecipe(cio, crushed_iron, 0.5f);
-//		Bukkit.addRecipe(recipe4);
-//		plugin.getServer().addRecipe(recipe4);
+//		FurnaceRecipe fr4 = new FurnaceRecipe(LoreMaterial.spawn(LoreMaterial.materialMap.get("civ_crushed_iron_chunk")), new MaterialData(Material.IRON_ORE), 0.5f);
+//		Bukkit..getServer()addRecipe(fr4);
 	}
 	
 	public static void updateStructureArrays() {
@@ -443,15 +491,15 @@ public final class CivCraft extends JavaPlugin {
 		while (iter.hasNext()) {
 			Structure s = iter.next().getValue();
 			if (s instanceof Cottage) {
-				CivGlobal.cottages.add((Cottage) s);
+				CivGlobal.cottages.add((Cottage)s);
 				continue;
 			}
 			if (s instanceof Mine) {
-				CivGlobal.mines.add((Mine) s);
+				CivGlobal.mines.add((Mine)s);
 				continue;
 			}
 			if (s instanceof Lab) {
-				CivGlobal.labs.add((Lab) s);
+				CivGlobal.labs.add((Lab)s);
 				continue;
 			}
 		}

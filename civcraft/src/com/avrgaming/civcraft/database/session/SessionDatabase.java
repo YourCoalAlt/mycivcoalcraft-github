@@ -51,7 +51,6 @@ public class SessionDatabase {
 	public static String TABLE_NAME = "SESSIONS";
 	public static String GLOBAL_TABLE_NAME = "GLOBAL_SESSIONS";
 	public static void init() throws SQLException {
-		System.out.println("================= SESSION DB INIT ======================");
 		// Check/Build SessionDB tables				
 		if (!SQL.hasTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + SQL.tb_prefix + TABLE_NAME+" (" + 
@@ -68,10 +67,8 @@ public class SessionDatabase {
 			CivLog.info("Created "+TABLE_NAME+" table");
 		} else {
 			CivLog.info(TABLE_NAME+" table OK!");
-		}			
-		System.out.println("==================================================");
+		}
 		
-		System.out.println("================= GLOBAL SESSION DB INIT ======================");
 		// Check/Build SessionDB tables				
 		if (!SQL.hasGlobalTable(GLOBAL_TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + GLOBAL_TABLE_NAME+" (" + 
@@ -89,7 +86,6 @@ public class SessionDatabase {
 		} else {
 			CivLog.info(GLOBAL_TABLE_NAME+" table OK!");
 		}			
-		System.out.println("==================================================");
 	}
 	
 	public boolean add(String key, String value, int civ_id, int town_id, int struct_id) {

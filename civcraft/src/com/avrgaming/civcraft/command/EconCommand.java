@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 import org.bukkit.entity.Player;
 
+import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.exception.CivException;
 import com.avrgaming.civcraft.main.CivGlobal;
@@ -171,6 +172,7 @@ public class EconCommand extends CommandBase {
 		
 		for (Civilization civ : CivGlobal.getCivs()) {
 			civ.getTreasury().setDebt(0);
+			civ.setDaysInDebt(0);
 			try {
 				civ.saveNow();
 			} catch (SQLException e) {
@@ -180,6 +182,7 @@ public class EconCommand extends CommandBase {
 		
 		for (Town town : CivGlobal.getTowns()) {
 			town.getTreasury().setDebt(0);
+			town.setDaysInDebt(0);
 			try {
 				town.saveNow();
 			} catch (SQLException e) {
@@ -189,6 +192,7 @@ public class EconCommand extends CommandBase {
 		
 		for (Resident res : CivGlobal.getResidents()) {
 			res.getTreasury().setDebt(0);
+			res.setDaysTilEvict(CivSettings.GRACE_DAYS);
 			try {
 				res.saveNow();
 			} catch (SQLException e) {
@@ -196,7 +200,7 @@ public class EconCommand extends CommandBase {
 			}
 		}
 		
-		CivMessage.send(sender, "Cleared all debt.");
+		CivMessage.sendSuccess(sender, "Cleared all debt.");
 	}
 	
 	public void setdebtciv_cmd() throws CivException {

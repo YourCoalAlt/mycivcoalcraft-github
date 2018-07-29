@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 import org.bukkit.Bukkit;
@@ -84,7 +85,7 @@ public class TownCommand extends CommandBase {
 		commands.put("evict", "[name] - evicts the resident named from town");
 		commands.put("list", "shows a list of all towns in the world.");
 		commands.put("reset", "Resets certain structures, action depends on structure.");
-		commands.put("top5", "Shows the top 5 towns in the world.");
+		commands.put("top10", "Shows the top 5 towns in the world.");
 		commands.put("disbandtown", "Disbands this town, requres leader to type disbandtown as well.");
 		commands.put("outlaw", "Manage town outlaws.");
 		commands.put("leavegroup", "[town] [group] - Leaves the group in [town] named [group]");
@@ -431,28 +432,26 @@ public class TownCommand extends CommandBase {
 		CivMessage.send(sender, "Waiting on leader to type /civ disbandtown");
 	}
 	
-	public void top5_cmd() {	
-		CivMessage.sendHeading(sender, "Top 5 Towns");
-//		TreeMap<Integer, Town> scores = new TreeMap<Integer, Town>();
-//		
-//		for (Town town : CivGlobal.getTowns()) {
-//			if (town.getCiv().isAdminCiv()) {
-//				continue;
-//			}
-//			scores.put(town.getScore(), town);
-//		}
+	public void top10_cmd() {	
+		CivMessage.sendHeading(sender, "Top 10 Towns");
+		int i = 0;
 		
 		synchronized(CivGlobal.townScores) {
-			int i = 1;
 			for (Integer score : CivGlobal.townScores.descendingKeySet()) {
-				CivMessage.send(sender, i+") "+CivColor.Gold+CivGlobal.townScores.get(score).getName()+CivColor.White+" - "+score+" points");
 				i++;
-				if (i > 5) {
-					break;
+				Town town = CivGlobal.townScores.get(score);
+				CivMessage.send(sender, i+") "+CivColor.Gold+town.getName()+CivColor.White+" - "+score+" points");
+				if (CivGlobal.townScoresTied.containsValue(score)) {
+					for (Entry<String, Integer> tied : CivGlobal.townScoresTied.entrySet()) {
+						Town tiedTown = CivGlobal.getTown(tied.getKey());
+						if (score == tied.getValue().intValue()) {
+							CivMessage.send(sender, i+") "+CivColor.Gold+tiedTown.getName()+CivColor.White+" - "+score+" points");
+						}
+					}
 				}
+				if (i > 10) break;
 			}
 		}
-		
 	}
 	
 	public void list_cmd() {

@@ -34,6 +34,12 @@ public class CivLog {
 		}
 	}
 	
+	public static void headingLine() {
+		String line = "================================================";
+		printWriter(line);
+		civLogger.info(line);
+	}
+	
 	public static void heading(String title) {
 		title = "======== "+title+" ========";
 		printWriter(title);

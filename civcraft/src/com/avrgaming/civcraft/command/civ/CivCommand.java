@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.bukkit.ChatColor;
@@ -268,8 +269,8 @@ public class CivCommand extends CommandBase {
 	}
 	
 	public void top10_cmd() {	
-		CivMessage.sendHeading(sender, "Top 10 Civilizations");
-		int i = 1; int v = 0;
+		CivMessage.sendHeading(sender, "Top 10 Civs");
+		int i = 0; int v = 0;
 		
 		ArrayList<SessionEntry> entries = CivGlobal.getSessionDB().lookup("endgame:winningCiv");
 		if (entries.size() != 0) {
@@ -279,13 +280,21 @@ public class CivCommand extends CommandBase {
 				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+civ.getScore()+" points  --  "+CivColor.LightGreenBold+" VICTORY");
 				i++; v++;
 			}
-			return;
 		}
 		
-		synchronized(CivGlobal.civilizationScores) {
-			for (Integer score : CivGlobal.civilizationScores.descendingKeySet()) {
-				CivMessage.send(sender, i+") "+CivColor.Gold+CivGlobal.civilizationScores.get(score).getName()+CivColor.White+" - "+score+" points");
+		synchronized(CivGlobal.civScores) {
+			for (Integer score : CivGlobal.civScores.descendingKeySet()) {
 				i++;
+				Civilization civ = CivGlobal.civScores.get(score);
+				CivMessage.send(sender, i+") "+CivColor.Gold+civ.getName()+CivColor.White+" - "+score+" points");
+				if (CivGlobal.civScoresTied.containsValue(score)) {
+					for (Entry<String, Integer> tied : CivGlobal.civScoresTied.entrySet()) {
+						Civilization tiedCiv = CivGlobal.getCiv(tied.getKey());
+						if (score == tied.getValue().intValue()) {
+							CivMessage.send(sender, i+") "+CivColor.Gold+tiedCiv.getName()+CivColor.White+" - "+score+" points");
+						}
+					}
+				}
 				if (i > 10+v) break;
 			}
 		}

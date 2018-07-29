@@ -22,13 +22,11 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -46,9 +44,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
@@ -149,82 +145,6 @@ public class PlayerListener implements Listener {
 				CivMessage.global("Normal");
 			}*/
 		}
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Resident recp = CivGlobal.getResident(event.getPlayer());
-		if (!recp.hasChatEnabled()) {
-			CivMessage.sendError(recp, "Your chat is disabled!");
-			event.setCancelled(true);
-		}
-		
-		List<Player> playerRecipients = new ArrayList<Player>();
-		for (Player recipient : event.getRecipients()) {
-			Resident res = CivGlobal.getResident(recipient);
-			if (res.hasChatEnabled()) {
-				playerRecipients.add(recipient);
-			}
-		}
-		event.getRecipients().clear();
-		event.getRecipients().addAll(playerRecipients);
-	}
-	
-	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (CommandSender cs : event.getRecipients()) {
-			if (cs instanceof Player) {
-				players.add((Player) cs);
-			}
-		}
-		
-		List<Player> playerRecipients = new ArrayList<Player>();
-		for (Player recipient : players) {
-			Resident res = CivGlobal.getResident(recipient);
-			if (res.hasChatEnabled()) {
-				playerRecipients.add(recipient);
-			} else {
-				if (recipient.getName().equals(res.getName())) {
-					String msg = event.getMessage().toLowerCase();
-					if (msg.substring(0, 1).equals("/")) {
-						if (msg.contains("/msg") || msg.contains("/tell") || msg.contains("/whisper") || msg.contains("/r") ||
-								msg.contains("/reply") || msg.contains("/broadcast") || msg.contains("/bcast") || msg.contains("/bc") ||
-								msg.contains("/shout")) {
-							CivMessage.sendError(res, "Your chat is disabled!");
-							event.setCancelled(true);
-						}
-					}
-				}
-			}
-		}
-		event.getRecipients().clear();
-		event.getRecipients().addAll(playerRecipients);
-		
-/*		for (Player recipient : players) {
-			Resident res = CivGlobal.getResident(recipient);
-			if (!res.hasChatEnabled()) {
-				String msg = event.getMessage().toLowerCase();
-				
-				if (msg.contains("/ad") || msg.contains("/dbg") || msg.contains("/backpack") || msg.contains("/civ")
-						|| msg.contains("/c") || msg.contains("/town") || msg.contains("/t") || msg.contains("/resident")
-						|| msg.contains("/res") || msg.contains("/cmat")  || msg.contains("/plot") || msg.contains("/p")
-						|| msg.contains("/accept") || msg.contains("/deny") || msg.contains("/tc") || msg.contains("/cc")
-						|| msg.contains("/mod") || msg.contains("/build")  || msg.contains("/market") || msg.contains("/pay")
-						|| msg.contains("/econ")|| msg.contains("/money") || msg.contains("/camp") || msg.contains("/here")
-						
-						|| msg.contains("[Global]") || msg.contains("[Town]") || msg.contains("[Camp]") || msg.contains("[Civ]")) {
-					event.setCancelled(false);
-				}
-				
-				if (msg.contains("/msg") || msg.contains("/tell") || msg.contains("/whisper") || msg.contains("/r") ||
-						msg.contains("/reply") || msg.contains("/broadcast") || msg.contains("/bcast") || msg.contains("/bc") ||
-						msg.contains("/shout")) {
-					event.setCancelled(true);
-				}
-			}
-		}*/
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -565,8 +485,7 @@ public class PlayerListener implements Listener {
 		ChunkCoord coord = new ChunkCoord(event.getBlockClicked().getLocation());
 		CultureChunk cc = CivGlobal.getCultureChunk(coord);
 		if (cc != null) {
-			if (event.getBucket().equals(Material.LAVA_BUCKET) || 
-					event.getBucket().equals(Material.LAVA)) {
+			if (event.getBucket().equals(Material.LAVA_BUCKET) || event.getBucket().equals(Material.LAVA)) {
 				
 				if (!resident.hasTown() || (resident.getTown().getCiv() != cc.getCiv())) {
 					CivMessage.sendError(event.getPlayer(), "You cannot place lava inside another civ's culture.");

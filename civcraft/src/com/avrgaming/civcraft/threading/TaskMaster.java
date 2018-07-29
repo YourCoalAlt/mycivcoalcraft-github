@@ -147,7 +147,7 @@ public class TaskMaster {
 	public static List<String> getTimersList() {
 		List<String> out = new ArrayList<String>();
 		
-		out.add(CivMessage.buildTitle("Timers Running"));
+		out.add(CivMessage.buildHeading("Timers Running"));
 		for (String name : timers.keySet()) {
 			out.add("Timer: "+name+" running.");
 		}

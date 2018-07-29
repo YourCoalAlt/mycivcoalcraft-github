@@ -3,52 +3,58 @@ package com.avrgaming.civcraft.threading.timers;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
+import org.kitteh.tag.TagAPI;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.perms.CivPerms;
 import com.avrgaming.civcraft.main.CivGlobal;
 import com.avrgaming.civcraft.object.Resident;
 import com.avrgaming.civcraft.util.CivColor;
-import com.nametagedit.plugin.NametagEdit;
+import com.avrgaming.civcraft.war.War;
 
 public class PlayerTagUpdateTimer implements Runnable {
 	
 	@Override
 	public void run() {
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			Resident res = CivGlobal.getResident(p);
+		for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
+			Resident resPl = CivGlobal.getResident(pl);
+			if (resPl == null) continue;
+			
 			String suffix = "";
 			String prefix = "";
-			if (p.hasPermission(CivPerms.CONTROL)) {
+			if (CivPerms.isYourCoal(pl)) {
+				prefix = CivColor.GreenBold+"Plugin ";
+			} else if (CivPerms.isControl(pl)) {
 				prefix = CivColor.GoldBold+"Owner ";
-			} else if (p.hasPermission(CivPerms.ADMIN_OP)) {
+			} else if (CivPerms.isAdminOP(pl)) {
 				prefix = CivColor.RedBold+"Admin OP ";
-			} else if (p.hasPermission(CivPerms.ADMIN)) {
+			} else if (CivPerms.isAdmin(pl)) {
 				prefix = CivColor.RedItalic+"Admin ";
-			} else if (p.hasPermission(CivPerms.MINI_ADMIN)) {
-				prefix = CivColor.RoseBold+"Jr Admin ";
-			} else if (p.hasPermission(CivPerms.MODERATOR)) {
-				prefix = CivColor.LightBlueBold+"Mod ";
-			} else if (p.hasPermission(CivPerms.DEVELOPER)) {
+			} else if (CivPerms.isDev(pl)) {
 				prefix = CivColor.NavyBold+"Dev ";
-			} else if (p.hasPermission(CivPerms.HELPER)) {
+			} else if (CivPerms.isMiniAdmin(pl)) {
+				prefix = CivColor.RoseBold+"Jr Admin ";
+			} else if (CivPerms.isMod(pl)) {
+				prefix = CivColor.LightBlueBold+"Mod ";
+			} else if (CivPerms.isHelper(pl)) {
 				prefix = CivColor.LightGreenBold+"Helper ";
 			}
 			
-			if (res != null) {
-				if (res.hasCiv()) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(res.getCiv().getName(), 4)+"]";
-				if (res.hasCamp()) suffix = CivColor.GrayBold+" ["+StringUtils.left(res.getCamp().getName(), 4)+"]";
-//				if (!res.hasTown() && !res.hasCamp()) suffix = CivColor.GrayBold+" [None]";
-				res.changePlayerName(p, suffix);
+			if (resPl.hasCiv()) suffix = CivColor.LightPurpleBold+" ["+StringUtils.left(resPl.getCiv().getName(), 4)+"]";
+			if (resPl.hasCamp()) suffix = CivColor.GrayBold+" ["+StringUtils.left(resPl.getCamp().getName(), 4)+"]";
+			
+			String finalName = prefix+CivColor.RESET+pl.getName()+suffix;
+			pl.setDisplayName(finalName);
+			
+			if (War.isWarTime()) { // Change player names on tab for diplomatic relation
+				pl.setPlayerListName(pl.getName()); // Has to be changed to player's default name or TagAPI does not update
+				for (Player ob : Bukkit.getServer().getOnlinePlayers()) {
+					AsyncPlayerReceiveNameTagEvent prte = new AsyncPlayerReceiveNameTagEvent(pl, ob, CivGlobal.updateTag(pl, ob), ob.getUniqueId());
+					Bukkit.getServer().getPluginManager().callEvent(prte);
+					TagAPI.refreshPlayer(pl, ob);
+				}
 			} else {
-				suffix = CivColor.RoseItalic+" [NULL]";
-			}
-			
-			p.setDisplayName(prefix+CivColor.RESET+p.getName()+suffix);
-			
-			if (CivSettings.hasNametagEdit) {
-				NametagEdit.getApi().setPrefix(p, prefix+CivColor.RESET);
-				NametagEdit.getApi().setSuffix(p, suffix);
+				pl.setPlayerListName(finalName);
 			}
 			
 		}

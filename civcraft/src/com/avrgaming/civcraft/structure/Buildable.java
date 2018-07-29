@@ -907,7 +907,7 @@ public abstract class Buildable extends SQLObject {
 						deletedRoadBlocks.add(rb);
 					}
 					
-					if (CivSettings.hasWorldBorder) {
+					if (CivCraft.softdependWorldBorder) {
 						BorderData border = Config.Border(b.getWorld().getName());
 						if (border != null) {
 							if(!border.insideBorder(b.getLocation().getX(), b.getLocation().getZ(), Config.ShapeRound())) {

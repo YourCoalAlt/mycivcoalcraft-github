@@ -208,11 +208,6 @@ public class CivSettings {
 	public static HashMap<Integer, ConfigRemovedRecipes> removedRecipies = new HashMap<Integer, ConfigRemovedRecipes>();
 	public static HashSet<Material> restrictedUndoBlocks = new HashSet<Material>();
 	
-	public static boolean hasHolographicDisplays = false;
-	public static boolean hasNametagEdit = false;
-	public static boolean hasVanishNoPacket = false;
-	public static boolean hasWorldBorder = false;
-	
 //	public static final String ADMIN = "civ.admin";
 //	public static final String MINI_ADMIN = "civ.mini_admin";
 	public static final String MODERATOR = "civ.moderator";
@@ -309,30 +304,6 @@ public class CivSettings {
 		
 		WarListener.addPlaceables();
 		WarListener.AddFllowingBlocks();
-		
-		if (CivSettings.plugin.hasPlugin("HolographicDisplays")) {
-			hasHolographicDisplays = true;
-		} else {
-			CivLog.warning("We could not detect the plugin HolographicDisplays. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
-		
-		if (CivSettings.plugin.hasPlugin("NametagEdit")) {
-			hasNametagEdit = true;
-		} else {
-			CivLog.warning("We could not detect the plugin NametagEdit. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
-		
-		if (CivSettings.plugin.hasPlugin("VanishNoPacket")) {
-			hasVanishNoPacket = true;
-		} else {
-			CivLog.warning("We could not detect the plugin VanishNoPacket. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
-		
-		if (CivSettings.plugin.hasPlugin("WorldBorder")) {
-			hasWorldBorder = true;
-		} else {
-			CivLog.warning("We could not detect the plugin WorldBorder. This is okay, but some aspects of this plugin may not function correctly without that plugin.");
-		}
 	}
 	
 	private static void initRestrictedUndoBlocks() {

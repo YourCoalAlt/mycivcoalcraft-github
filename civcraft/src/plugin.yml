@@ -1,8 +1,10 @@
 name: CivCraft
 main: com.avrgaming.civcraft.main.CivCraft
-softdepends: [dynmap, HolographicDisplays, NametagEdit, TitleAPI, VanishNoPacket, WorldBorder]
+depend: [TagAPI, ProtocolLib, ArmorEquipEvent]
+softdepends: [dynmap, HolographicDisplays, VanishNoPacket, WorldBorder]
 author: YourCoal
-version: 1.11.1
+version: 1.12.2.11.1.0
+# MCversion:CIVversion
 
 commands:
     reboot:

@@ -23,7 +23,6 @@ public class ReportManager {
 	
 	public static String TABLE_NAME = "REPORTS";
 	public static void init() throws SQLException {
-		System.out.println("================= REPORTS INIT ======================");
 		// Check/Build SessionDB tables				
 		if (!SQL.hasGlobalTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + TABLE_NAME+" (" +
@@ -40,8 +39,7 @@ public class ReportManager {
 			CivLog.info("Created "+TABLE_NAME+" table");
 		} else {
 			CivLog.info(TABLE_NAME+" table OK!");
-		}		
-		System.out.println("==================================================");
+		}
 	}
 	
 	public static String getReportTypes() {

@@ -29,7 +29,6 @@ import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.inventory.ItemStack;
 
-import com.avrgaming.civcraft.config.CivSettings;
 import com.avrgaming.civcraft.config.ConfigTradeGood;
 import com.avrgaming.civcraft.main.CivCraft;
 import com.avrgaming.civcraft.main.CivData;
@@ -80,7 +79,7 @@ public class TradeGoodPopulator extends BlockPopulator {
 		}
 		
 		Location loc = new Location(coord.getBlock().getWorld(), coord.getBlock().getX()+0.5, coord.getBlock().getY()+5, coord.getBlock().getZ()+0.5);
-		if (CivSettings.hasHolographicDisplays) {
+		if (CivCraft.softdependHolographicDisplays) {
 			Hologram hologram = HologramsAPI.createHologram(CivCraft.getPlugin(), loc);
 			if (good.water == true) {
 				hologram.appendItemLine(new ItemStack(good.material, 1, (short)good.material_data));

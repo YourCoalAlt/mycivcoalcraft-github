@@ -82,16 +82,14 @@ import com.avrgaming.civcraft.structure.Wall;
 import com.avrgaming.civcraft.structure.wonders.Wonder;
 import com.avrgaming.civcraft.template.Template;
 import com.avrgaming.civcraft.template.TemplateStream;
-import com.avrgaming.civcraft.threading.TaskMaster;
-import com.avrgaming.civcraft.threading.sync.SyncUpdateTags;
 import com.avrgaming.civcraft.threading.tasks.BuildAsyncTask;
 import com.avrgaming.civcraft.threading.tasks.BuildUndoTask;
 import com.avrgaming.civcraft.util.BlockCoord;
 import com.avrgaming.civcraft.util.ChunkCoord;
 import com.avrgaming.civcraft.util.CivColor;
+import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.DateUtil;
 import com.avrgaming.civcraft.util.ItemFrameStorage;
-import com.avrgaming.civcraft.util.CivItem;
 import com.avrgaming.civcraft.util.SimpleBlock;
 import com.avrgaming.civcraft.war.War;
 import com.avrgaming.global.perks.Perk;
@@ -2222,17 +2220,16 @@ public class Town extends SQLObject {
 	public void addOutlaw(String name) {
 		Resident res = CivGlobal.getResident(name);
 		this.outlaws.add(res.getUUIDString());
-		TaskMaster.syncTask(new SyncUpdateTags(res.getUUIDString(), this.residents.keySet()));
+		CivCraft.playerTagUpdate();
 	}
 	
 	public void removeOutlaw(String name) {
 		Resident res = CivGlobal.getResident(name);
 		this.outlaws.remove(res.getUUIDString());
-		TaskMaster.syncTask(new SyncUpdateTags(res.getUUIDString(), this.residents.keySet()));
+		CivCraft.playerTagUpdate();
 	}
 	
 	public void changeCiv(Civilization newCiv) {
-		
 		/* Remove this town from its old civ. */
 		Civilization oldCiv = this.civ;
 		oldCiv.removeTown(this);
@@ -2257,7 +2254,7 @@ public class Town extends SQLObject {
 		
 		this.setCiv(newCiv);
 		CivGlobal.processCulture();
-		
+		CivCraft.playerTagUpdate();
 		this.save();
 	}
 

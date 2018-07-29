@@ -27,7 +27,6 @@ public class BiomeCache {
 	
 	public static String TABLE_NAME = "CHUNK_BIOMES";
 	public static void init() throws SQLException {
-		System.out.println("================= BiomeCache INIT ======================");
 		if (!SQL.hasTable(TABLE_NAME)) {
 			String table_create = "CREATE TABLE " + SQL.tb_prefix + TABLE_NAME+" (" + 
 					"`key` varchar(64) NOT NULL," +
@@ -61,8 +60,6 @@ public class BiomeCache {
 		} finally {
 			SQL.close(rs, ps, context);
 		}
-
-		System.out.println("==================================================");
 	}
 	
 	public static void saveBiomeInfo(CultureChunk cc) {
