@@ -71,7 +71,7 @@ public class BuildChooseTemplate implements GuiAction {
 					CivColor.DarkGray+"Then build again.");				
 			infoRec = LoreGuiItem.setAction(infoRec, "ActivatePerk");
 			infoRec = LoreGuiItem.setActionData(infoRec, "perk", perk.getIdent());
-			
+			inv.addItem(infoRec);
 		}
 		
 		TaskMaster.syncTask(new OpenInventoryTask(player, inv));
