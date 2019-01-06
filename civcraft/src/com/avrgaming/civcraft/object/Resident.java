@@ -1216,14 +1216,16 @@ public class Resident extends SQLObject {
 				continue;
 			}
 			
+			boolean has = false;
 			for (Perk perk : alreadyBoundPerkList) {
 				if (perk.getIdent().equals(ourPerk.getIdent())) {
 					/* Perk is already bound in this town, do not display for binding. */
+					has = true;
 					break;
 				}
 			}
 			
-			unboundPerks.add(ourPerk);
+			if (!has) unboundPerks.add(ourPerk);
 		}
 		
 		return unboundPerks;
@@ -1803,9 +1805,9 @@ public class Resident extends SQLObject {
 		
 		// Standard in all mail windows, but block the one out of the open viewing window.
 //		inv_mainmail.setItem(6, LoreGuiItem.build(CivColor.White+"Open Res Mail Panel", CivData.MINECART_WITH_CHEST, 0));
-		inv_mainmail.setItem(6, LoreGuiItem.build(CivColor.RoseBold+"Open Res Mail Panel", CivData.CONCRETE, 5, CivColor.Red+" « Already Selected » "));
-		inv_mainmail.setItem(7, LoreGuiItem.build(CivColor.White+"Open Civ Mail Panel", CivData.COMMAND_BLOCK, 0, CivColor.Red+" « Coming Soon » "));
-		inv_mainmail.setItem(8, LoreGuiItem.build(CivColor.White+"Open Town Mail Panel", CivData.IRON_DOOR_ITEM, 0, CivColor.Red+" « Coming Soon » "));
+		inv_mainmail.setItem(6, LoreGuiItem.build(CivColor.RoseBold+"Open Res Mail Panel", CivData.CONCRETE, 5, CivColor.Red+" Â« Already Selected Â» "));
+		inv_mainmail.setItem(7, LoreGuiItem.build(CivColor.White+"Open Civ Mail Panel", CivData.COMMAND_BLOCK, 0, CivColor.Red+" Â« Coming Soon Â» "));
+		inv_mainmail.setItem(8, LoreGuiItem.build(CivColor.White+"Open Town Mail Panel", CivData.IRON_DOOR_ITEM, 0, CivColor.Red+" Â« Coming Soon Â» "));
 		
 		p.openInventory(inv_mainmail);
 	}
@@ -1884,10 +1886,10 @@ public class Resident extends SQLObject {
 		
 		for (int i = 45; i <= 53; i++) inv.setItem(i, LoreGuiItem.build(CivColor.DarkGray+"Inventory Border", CivData.STAINED_GLASS_PANE, 7));
 		
-		inv.setItem(45, LoreGuiItem.build(CivColor.GreenBold+"Information", CivData.PAPER, 0, CivColor.Gray+"Sent By: "+CivColor.Red+"« In Dev » ", CivColor.Gray+"Forwarded: « In Dev » "));
-		inv.setItem(46, LoreGuiItem.build(CivColor.GreenBold+"Message", CivData.PAPER, 0, CivColor.RedBold+" « In Dev » ")); //XXX Messages need 10 line limit
-		inv.setItem(49, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.Gray+" « Click to Collect Materials » "));
-		inv.setItem(51, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.Gray+" « Click to Send to Another Player » ", CivColor.Red+"« In Dev » "));
+		inv.setItem(45, LoreGuiItem.build(CivColor.GreenBold+"Information", CivData.PAPER, 0, CivColor.Gray+"Sent By: "+CivColor.Red+"Â« In Dev Â» ", CivColor.Gray+"Forwarded: Â« In Dev Â» "));
+		inv.setItem(46, LoreGuiItem.build(CivColor.GreenBold+"Message", CivData.PAPER, 0, CivColor.RedBold+" Â« In Dev Â» ")); //XXX Messages need 10 line limit
+		inv.setItem(49, LoreGuiItem.build(CivColor.GreenBold+"Collect Mail", CivData.CAULDRON, 0, CivColor.Gray+" Â« Click to Collect Materials Â» "));
+		inv.setItem(51, LoreGuiItem.build(CivColor.GreenBold+"Forward Mail", CivData.MINECART, 0, CivColor.Gray+" Â« Click to Send to Another Player Â» ", CivColor.Red+"Â« In Dev Â» "));
 		
 		p.openInventory(inv);
 	}
